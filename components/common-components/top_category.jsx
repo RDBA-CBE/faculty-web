@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 
 const TopCategory = () => {
-  const [activeStep, setActiveStep] = useState(1);
+  const [activeStep, setActiveStep] = useState(0);
 
   const steps = [
     {
