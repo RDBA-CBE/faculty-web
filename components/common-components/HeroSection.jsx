@@ -1,74 +1,120 @@
-import React, { useState } from "react";
+import React from "react";
+import Image from "next/image";
+import { Search } from "lucide-react";
 
-const BannerSection = () => {
-  // State for active tab
-  const [activeTab, setActiveTab] = useState("Buy");
-
-  // Dynamic placeholder based on selected tab
-  const placeholderText = `Enter an address, neighborhood, city, or ZIP code for ${activeTab}`;
-
+const HeroSection = () => {
   return (
-    <section
-      className="relative flex items-center justify-center bg-cover bg-center bg-no-repeat"
-      style={{
-        height: "860px",
-        backgroundImage:
-          "linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://homez-appdir.vercel.app/_next/static/media/home-1.14c0d866.jpg')",
-      }}
-    >
-      <div className="container mx-auto px-4 text-center relative">
-        {/* Subheading */}
-        <h3 className="text-sm md:text-base font-medium text-white mb-3 uppercase tracking-widest">
-          The Best Way To
-        </h3>
-
-        {/* Main Heading */}
-        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-          Find Your Dream Home
-        </h1>
-
-        {/* Description */}
-        <p className="text-base md:text-lg text-gray-200 mb-10">
-          We’ve more than 745,000 apartments, places & plots.
-        </p>
-
-        {/* Search Card */} 
-        <div className="bg-[#ffffff2b] shadow-2xl rounded-2xl overflow-hidden max-w-4xl mx-auto">
-          {/* Tabs */}
-          <div className="flex border-b">
-            {["Buy", "Rent", "Sold"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`flex-1 py-3 font-semibold text-sm md:text-base transition-colors ${
-                  activeTab === tab
-                    ? "border-b-2 border-[#a9a7a7] text-white"
-                    : "text-[#131212fa] hover:text-white"
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-
-          {/* Search Bar */}
-          <div className="flex flex-col md:flex-row items-center gap-3 p-4 md:p-10">
-            <div className="flex-1 w-full">
-              <input
-                type="text"
-                placeholder={placeholderText}
-                className="w-full px-5 py-3 rounded-lg bg-transparent border border-[#a9a7a7] text-white placeholder-white focus:outline-none focus:border-red-500"
-              />
+    <section className="relative bg-gray-50 min-h-[650px] flex items-center">
+      <div className="w-full max-w-[1400px] mx-auto px-8 lg:px-16">
+        <div className="grid lg:grid-cols-2 gap-24 items-stretch h-full">
+          {/* Left Content */}
+          <div className="space-y-6 flex flex-col justify-center">
+            {/* Badge */}
+            <div className="inline-block">
+              <span className="bg-gradient-to-r from-[#F2B31D] to-transparent text-[#111111] px-6 py-2 rounded-full text-base font-medium">
+                Finding Job
+              </span>
             </div>
 
-            <div className="flex items-center gap-2 w-full md:w-auto">
-              <button className="w-full md:w-auto px-6 py-3 rounded-lg font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 transition whitespace-nowrap">
-                Advanced
-              </button>
-              <button className="w-full md:w-auto px-8 py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition whitespace-nowrap">
+            {/* Main Heading */}
+            <div className="space-y-6">
+              <h1 className="text-[50px] font-bold text-gray-900 leading-[60px]">
+                Find Your Dream Job
+                <br />
+                Today!
+              </h1>
+              <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
+                Ultrices purus dolor viverra mi laoreet at cursus justo.
+                Ultrices purus diam egestas amet faucibus tempor blandit. Elit
+                velit mauris aliquam est diam. Leo
+              </p>
+            </div>
+
+            {/* Search Form */}
+            <div className="bg-white rounded-2xl shadow-lg p-3 flex items-center gap-3 max-w-2xl">
+              <input
+                type="text"
+                placeholder="Job Title or College"
+                className="flex-1 px-4 py-3 border-0 focus:outline-none text-gray-700 text-base"
+              />
+              <div className="w-px h-10 bg-gray-200"></div>
+              <select className="px-4 py-3 border-0 focus:outline-none text-gray-700 bg-transparent text-base min-w-[140px]">
+                <option>Select Location</option>
+              </select>
+              <div className="w-px h-10 bg-gray-200"></div>
+              <select className="px-4 py-3 border-0 focus:outline-none text-gray-700 bg-transparent text-base min-w-[140px]">
+                <option>Select Category</option>
+              </select>
+              <button className="bg-gray-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-gray-700 transition-colors text-base font-medium">
+                <Search className="w-4 h-4" />
                 Search
               </button>
             </div>
+
+            {/* Stats */}
+            <div className="flex items-center gap-12 pt-6">
+              <div>
+                <div className="text-3xl font-bold text-gray-900">125K+</div>
+                <div className="text-gray-600 text-sm mt-1">People joined</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-gray-900">9,99%</div>
+                <div className="text-gray-600 text-sm mt-1">
+                  Success Probability
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="text-3xl font-bold text-gray-900">5.0</div>
+                <div className="flex text-[#F2B31D] text-lg">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i}>★</span>
+                  ))}
+                </div>
+                <div className="flex -space-x-2 ml-3">
+                  <div className="w-10 h-10 bg-gray-300 rounded-full border-2 border-white">
+                    <Image
+                      src="/assets/images/image_1.png"
+                      alt="Professional woman with book"
+                      width={100}
+                      height={100}
+                      className="w-full h-auto max-w-lg"
+                    />
+                  </div>
+                  <div className="w-10 h-10 bg-gray-400 rounded-full border-2 border-white">
+                  <Image
+                      src="/assets/images/image_2.png"
+                      alt="Professional woman with book"
+                      width={100}
+                      height={100}
+                      className="w-full h-auto max-w-lg"
+                    />
+                  </div>
+                  <div className="w-10 h-10 bg-gray-500 rounded-full border-2 border-white">
+                  <Image
+                      src="/assets/images/image_3.png"
+                      alt="Professional woman with book"
+                      width={100}
+                      height={100}
+                      className="w-full h-auto max-w-lg"
+                    />
+                  </div>
+                  <div className="w-10 h-10 bg-gray-800 text-white rounded-full border-2 border-white flex items-center justify-center text-base font-bold">
+                    +
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Image */}
+          <div className="relative flex justify-end items-center h-full">
+            <Image
+              src="/assets/images/home_banner.png"
+              alt="Professional woman with book"
+              width={960}
+              height={860}
+              className="w-full h-auto max-w-lg"
+            />
           </div>
         </div>
       </div>
@@ -76,4 +122,4 @@ const BannerSection = () => {
   );
 };
 
-export default BannerSection;
+export default HeroSection;

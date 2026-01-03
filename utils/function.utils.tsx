@@ -482,3 +482,20 @@ export const formatPriceRange = (
 
   return `${formattedMin} - ${formattedMax}`;
 };
+
+
+
+export const generateMockJobs = (jobs: any[], total: number) => {
+  const result = [];
+
+  for (let i = 1; i <= total; i++) {
+    const baseJob = jobs[(i - 1) % jobs.length];
+
+    result.push({
+      ...baseJob,
+      id: i.toString(), // ✅ ONLY ID changes
+    });
+  }
+
+  return result;
+};

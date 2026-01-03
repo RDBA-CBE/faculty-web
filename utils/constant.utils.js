@@ -1,4 +1,4 @@
-export const BASEURL = "https://file.boomrealtys.com/api/";
+export const BASEURL = "http://88.222.213.249/api/";
 
 
 export const CLIENT_ID =
@@ -532,4 +532,103 @@ export const FURNISHING_TYPE = [
     label: "Semi-Furnished",
   },
   { value: "unfurnished", label: "Unfurnished" },
+];
+
+export const CATEGORIES = [
+  { label: 'Commerce', count: 10 },
+  { label: 'Telecommunications', count: 10 },
+  { label: 'Hotels & Tourism', count: 10 },
+  { label: 'Education', count: 10 },
+  { label: 'Financial Services', count: 10 }
+];
+
+export const JOB_TYPES = ['Full Time', 'Part Time', 'Freelance', 'Seasonal', 'Fixed-Price'];
+export const EXPERIENCE_LEVELS = ['No-experience', 'Fresher', 'Intermediate', 'Expert'];
+export const POSTED_DATE_OPTIONS = ['All', 'Last Hour', 'Last 24 Hours', 'Last 7 Days', 'Last 30 Days'];
+export const TAGS = ['engineering', 'design', 'ui/ux', 'marketing', 'management', 'soft', 'construction'];
+
+
+
+export const MOCK_JOBS = [
+  {
+    id: '1',
+    title: 'Assistant Professor',
+    company: 'Kumaraguru College of Technology',
+    logo: 'https://picsum.photos/seed/kct1/100/100',
+    location: 'Coimbatore',
+    postedDate: '5 days ago',
+    type: 'Full time',
+    experience: '2 years Experience',
+    description: 'As a design team that is responsible for delivering final design for our end-users, you will be assigned to a team...',
+    salary: '$5000',
+    category: 'Education',
+    tags: ['engineering', 'design'],
+    position: "Assistant Professor",
+
+  },
+  {
+    id: '2',
+    title: 'Senior UX Designer',
+    company: 'TechFlow Solutions',
+    logo: 'https://picsum.photos/seed/tech1/100/100',
+    location: 'Bangalore',
+    postedDate: '2 days ago',
+    type: 'Full time',
+    experience: '5 years Experience',
+    description: 'Lead the design of our next-generation cloud infrastructure dashboard and collaborate with stakeholders globally.',
+    salary: '$8000',
+    category: 'Financial Services',
+    tags: ['design', 'ui/ux', 'marketing'],
+    position: "Assistant Professor",
+
+  },
+  {
+    id: '3',
+    title: 'Assistant Professor',
+    company: 'Kumaraguru College of Technology',
+    logo: 'https://picsum.photos/seed/kct2/100/100',
+    location: 'Coimbatore',
+    postedDate: '5 days ago',
+    type: 'Full time',
+    experience: '2 years Experience',
+    description: 'As a design team that is responsible for delivering final design for our end-users, you will be assigned to a team...',
+    salary: '$5200',
+    category: 'Education',
+    tags: ['education', 'management'],
+    position: "Assistant Professor",
+
+  },
+  {
+    id: '4',
+    title: 'Assistant Professor',
+    company: 'Kumaraguru College of Technology',
+    logo: 'https://picsum.photos/seed/kct3/100/100',
+    location: 'Coimbatore',
+    postedDate: '5 days ago',
+    type: 'Full time',
+    experience: '2 years Experience',
+    description: 'As a design team that is responsible for delivering final design for our end-users, you will be assigned to a team...',
+    salary: '$4800',
+    category: 'Education',
+    tags: ['ui/ux', 'design'],
+    position: "Assistant Professor",
+
+  },
+  {
+    id: '5',
+    title: 'Senior UX Designer',
+    company: 'TechFlow Solutions',
+    logo: 'https://picsum.photos/seed/tech1/100/100',
+    location: 'Bangalore',
+    postedDate: '2 days ago',
+    type: 'Full time',
+    experience: '5 years Experience',
+    description: 'Lead the design of our next-generation cloud infrastructure dashboard and collaborate with stakeholders globally.',
+    salary: '$8000',
+    category: 'Financial Services',
+    tags: ['design', 'ui/ux', 'marketing'],
+    position: "Assistant Professor",
+
+  },
+ 
 ];
