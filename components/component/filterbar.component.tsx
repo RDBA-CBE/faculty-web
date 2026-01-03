@@ -21,7 +21,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
 
   return (
     <aside className="w-full lg:w-72 bg-white rounded-2xl shadow-sm border-0 md:border border-slate-100 h-fit sticky top-24">
-      <div className="space-y-8">
+      <div className=" lg:p-[19px] lg:py-[10px]">
 
         {/* Category */}
         <FilterSection
@@ -69,7 +69,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
 
         {/* Date Posted */}
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-3">Date Posted</h3>
+          <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">Date Posted</h3>
           <div className="space-y-2">
             {POSTED_DATE_OPTIONS.map((opt) => (
               <label
@@ -98,7 +98,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
 
         {/* Salary Slider */}
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-3">Salary</h3>
+          <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">Salary</h3>
           <input
             type="range"
             min="0"
@@ -124,7 +124,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
 
         {/* Tags */}
         <div>
-          <h3 className="text-sm font-bold text-slate-800 mb-3">Tags</h3>
+          <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">Tags</h3>
           <div className="flex flex-wrap gap-2">
             {TAGS.map((tag) => (
               <button
@@ -159,7 +159,7 @@ const FilterSection: React.FC<{
   onToggle: (item: string) => void;
 }> = ({ title, items, counts, selected, onToggle }) => (
   <div>
-    <h3 className="text-sm font-bold text-slate-800 mb-3">{title}</h3>
+    <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
     <div className="space-y-2">
       {items.map((item, idx) => (
         <label
