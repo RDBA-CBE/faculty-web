@@ -5,10 +5,12 @@ import { Eye, EyeOff } from "lucide-react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string | boolean;
+  bg?: string;
+  height?: string;
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, error, type = "text", title, required, ...props }, ref) => {
+  ({ className, error, type = "text", title, required, bg,height, ...props }, ref) => {
     const [showPassword, setShowPassword] = React.useState(false);
     const isPassword = type === "password";
 
@@ -25,8 +27,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             type={isPassword && showPassword ? "text" : type}
             className={cn(
-              "flex h-9 w-full rounded-md border bg-transparent px-3 pr-10 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              "flex w-full rounded-md border  px-3 pr-10 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none  disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
               className,
+              bg ?? "bg-transparent",
+              height??"h-9",
               error
                 ? "border-red-500 focus-visible:ring-red-500"
                 : "border-input focus-visible:ring-ring"

@@ -19,6 +19,8 @@ interface ModalProps {
   renderComponent: () => React.ReactNode;
   onSubmit?: () => void;
   width?: string;
+  hideHeader?: boolean;
+  closeIcon?:boolean
 }
 
 export default function Modal({
@@ -28,10 +30,14 @@ export default function Modal({
   description,
   renderComponent,
   width,
+  hideHeader = false,
+  closeIcon=true
 }: ModalProps) {
   const widthClasses: Record<string, string> = {
     "500px": "sm:max-w-[500px]",
     "700px": "sm:max-w-[700px]",
+    "750px": "sm:max-w-[750px]",
+
     "900px": "sm:max-w-[900px]",
   };
 
@@ -40,30 +46,45 @@ export default function Modal({
       <DialogContent
         hideClose
         // className={`p-0 ${width ? `sm:max-w-[${width}]` : "sm:max-w-[500px]"}`}
-        className={cn("p-0", width ? widthClasses[width] : "sm:max-w-[500px]")}
+        className={cn("p-0 bg-[#FFFCF3]", width ? widthClasses[width] : "sm:max-w-[500px]")}
       >
         {/* Custom header with title + close in one row */}
-        <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-          <div>
-            <DialogTitle className="text-lg font-semibold text-gray-900">
-              {title}
-            </DialogTitle>
-            {description && (
-              <DialogDescription className="text-sm text-gray-500 mt-1">
-                {description}
-              </DialogDescription>
-            )}
-          </div>
+        {!hideHeader && (
+          <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+            <div>
+              <DialogTitle className="text-lg font-semibold text-gray-900">
+                {title}
+              </DialogTitle>
+              {description && (
+                <DialogDescription className="text-sm text-gray-500 mt-1">
+                  {description}
+                </DialogDescription>
+              )}
+            </div>
 
-          <DialogClose asChild>
-            <button className="rounded-md text-gray-700 hover:opacity-70 focus:outline-none">
-              <X className="h-6 w-6" /> {/* bigger close icon */}
-            </button>
-          </DialogClose>
-        </div>
+            <DialogClose asChild>
+              <button className="rounded-md text-gray-700 hover:opacity-70 focus:outline-none">
+                <X className="h-6 w-6" /> 
+              </button>
+            </DialogClose>
+          </div>
+        )}
+
+        {hideHeader && (
+          <>
+            <DialogTitle className="sr-only">{title}</DialogTitle>
+            {closeIcon && (
+              <DialogClose asChild>
+                <button className="absolute top-4 right-4 z-10 rounded-md text-gray-700 hover:opacity-70 focus:outline-none">
+                  <X className="h-6 w-6" /> 
+                </button>
+              </DialogClose>
+            )}
+          </>
+        )}
 
         {/* Body */}
-        <div className="px-6 py-6">{renderComponent()}</div>
+        <div className={hideHeader ? "p-0" : "px-6"}>{renderComponent()}</div>
       </DialogContent>
     </Dialog>
   );

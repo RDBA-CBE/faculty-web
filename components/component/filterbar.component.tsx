@@ -37,7 +37,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
           }
         />
 
-        <button className="w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-lg text-sm transition-colors mb-4">
+        <button className=" mt-6 w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-lg text-sm transition-colors mb-4">
           Show More
         </button>
 

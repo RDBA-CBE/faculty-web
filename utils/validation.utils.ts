@@ -1,37 +1,34 @@
-import moment from "moment";
-import * as Yup from "yup";
+import * as Yup from 'yup';
 
-export const signup = Yup.object().shape({
-  email: Yup.string().required("Email is required"),
-  first_name: Yup.string().required("First Name is required"),
-  last_name: Yup.string().required("Last Name is required"),
-  password: Yup.string().required("Password is required"),
-});
-
-export const signin = Yup.object().shape({
-  email: Yup.string().required("Email is required"),
-  password: Yup.string().required("Password is required"),
-});
-
-export const forgetPassword = Yup.object().shape({
-  email: Yup.string().required("Email is required"),
-});
-
-export const profileSchema = Yup.object({
-  first_name: Yup.string()
-  .required("First Name is required"),
-  last_name: Yup.string()
-  .required("Last Name is required"),
+export const jobApplicationSchema = Yup.object().shape({
+  firstName: Yup.string()
+    .required('First name is required'),
+  lastName: Yup.string()
+    .required('Last name is required'),
   email: Yup.string()
-    .email("Please enter a valid email address")
-    .required("Email is required"),
+    .email('Invalid email format')
+    .required('Email is required'),
   phone: Yup.string()
-    .matches(/^[\+]?[1-9][\d]{0,15}$/, "Please enter a valid phone number")
-    .required("Phone number is required"),
-  // city: Yup.string().required("City is required"),
-  // country: Yup.string().required("Country is required"),
-  // postal_code: Yup.string()
-  //   .matches(/^\d{5}(-\d{4})?$/, "Please enter a valid zip code")
-  //   .required("Zip code is required"),
-  // address: Yup.string().max(500, "Address me cannot exceed 500 characters"),
+    .required('Phone number is required')
+    .min(10, 'Phone number must be at least 10 digits'),
+  experience: Yup.string()
+    .required('Experience is required'),
+  message: Yup.string()
+    .required('Message is required')
+    .min(10, 'Message must be at least 10 characters'),
+  resume: Yup.mixed()
+    .required('Resume is required')
+    .test('fileType', 'Only PDF and DOC/DOCX files are allowed', (value:any) => {
+      if (!value) return false;
+      const allowedTypes:any = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      ];
+      return allowedTypes.includes(value.type);
+    })
+    .test('fileSize', 'File size must be less than 12MB', (value:any) => {
+      if (!value) return false;
+      return value.size <= 12 * 1024 * 1024;
+    })
 });

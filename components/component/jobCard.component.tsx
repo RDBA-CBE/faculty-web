@@ -1,9 +1,14 @@
 import { Briefcase, Heart, MapPin } from "lucide-react";
 import React from "react";
 
-const JobCard = ({ job }) => {
+const JobCard = (props: any) => {
+  const { job, onClick } = props;
   return (
-    <div key={job.id} className="bg-white rounded-2xl p-6 border">
+    <div
+      key={job.id}
+      className="bg-white rounded-2xl p-6 border cursor-pointer"
+      onClick={onClick}
+    >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -20,7 +25,7 @@ const JobCard = ({ job }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded rounded-xl text-xs font-medium">
+          <span className="bg-[#FBE6DB] text-[#F34F0E] px-2 py-1 rounded rounded-xl text-xs font-medium whitespace-nowrap">
             {job.type}
           </span>
           {/* <Heart className="w-5 h-5 text-gray-300 hover:text-red-500 cursor-pointer" /> */}
@@ -43,10 +48,20 @@ const JobCard = ({ job }) => {
 
       {/* Actions */}
       <div className="flex items-center justify-between">
-        <button className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl text-black px-6 py-1  hover:bg-[#E5A519] transition-colors">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl text-black px-6 py-1  hover:bg-[#E5A519] transition-colors"
+        >
           Apply Now
         </button>
-        <button className="flex items-center gap-2  text-gray-500 hover:text-gray-700">
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+          className="flex items-center gap-2  text-gray-500 hover:text-gray-700"
+        >
           <MapPin className="w-4 h-4" />
           Coimbatore
         </button>
