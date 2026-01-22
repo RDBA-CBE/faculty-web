@@ -1329,3 +1329,12 @@ body {
   scrollbar-width: thin;
   scrollbar-color: #c1c1c1 transparent;
 } */
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
