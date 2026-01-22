@@ -13,6 +13,7 @@ import Footer from '@/components/common-components/Footer';
 
 // ---------------- PAGE ----------------
 export default function HomePage() {
+  
   return (
     <div className='min-h-screen'>
       <motion.div

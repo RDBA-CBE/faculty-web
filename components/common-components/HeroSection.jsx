@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Search } from "lucide-react";
 
 const HeroSection = () => {
+  
   return (
     <section className="relative bg-gray-50 min-h-[650px] flex items-center">
       <div className="w-full max-w-[1400px] mx-auto px-8 lg:px-16">
