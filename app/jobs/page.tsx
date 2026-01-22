@@ -4,7 +4,12 @@ import Filterbar from "@/components/component/filterbar.component";
 import ChipFilters from "@/components/component/chipFilters.component";
 import JobCard from "@/components/component/jobCard.component";
 import { MOCK_JOBS } from "@/utils/constant.utils";
-import { generateMockJobs, useSetState } from "@/utils/function.utils";
+import {
+  Failure,
+  generateMockJobs,
+  getAvatarColor,
+  useSetState,
+} from "@/utils/function.utils";
 import {
   MapPin,
   Search,
@@ -45,6 +50,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Models from "@/imports/models.import";
 
 export default function JobsPage() {
   const [state, setState] = useSetState({
@@ -54,7 +60,7 @@ export default function JobsPage() {
     phone: "",
     message: "",
     resume: null,
-    congratsOpen:false
+    congratsOpen: false,
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [showJobDetail, setShowJobDetail] = useState(false);
@@ -74,6 +80,44 @@ export default function JobsPage() {
       setTimeout(() => setIsAnimating(true), 100);
     }
   }, [selectedJob, isTabScreen]);
+
+  useEffect(() => {
+    jobList(1);
+  }, []);
+
+  const jobList = async (page) => {
+    try {
+      setState({ loading: true });
+
+      const body = bodyData();
+      const res: any = await Models.job.list(page, body);
+      setState({
+        loading: false,
+        page,
+        count: res?.count,
+        jobList: res?.results,
+        next: res?.next,
+        prev: res?.previous,
+      });
+    } catch (error) {
+      setState({ loading: false });
+      Failure("Failed to fetch jobs");
+    }
+  };
+
+  console.log("✌️jobList --->", state.jobList);
+
+  const bodyData = () => {
+    const body: any = {};
+    if (state.search) {
+      body.search = state.search;
+    }
+    if (state.sortBy) {
+      body.ordering =
+        state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
+    }
+    return body;
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -167,10 +211,11 @@ export default function JobsPage() {
       setState({ errors: validationErrors });
     }
   };
+  console.log("✌️selectedJob --->", selectedJob);
 
   return (
     <div className=" bg-white">
-      <div className="bg-black py-12 px-4 ">
+      <div className="bg-black py-6 px-4 ">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl font-bold text-white ">Jobs</h1>
         </div>
@@ -211,11 +256,19 @@ export default function JobsPage() {
                 </button> */}
               </div>
               <div className="flex items-start gap-4 mb-6 ">
-                <img
-                  src={selectedJob.logo}
-                  alt={selectedJob.company}
-                  className="w-16 h-16 rounded-lg"
-                />
+             {selectedJob.logo ? (
+                         <img
+                           src={selectedJob.logo}
+                           alt={selectedJob.company}
+                           className="w-10 h-10 rounded-lg"
+                         />
+                       ) : (
+                         <div
+                           className={`w-10 h-10 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                         >
+                           {selectedJob.company?.slice(0, 1).toUpperCase()}
+                         </div>
+                       )}
                 <div className="flex-1">
                   {/* <div className="flex items-center gap-2 mb-2">
                     <Star className="w-5 h-5 text-amber-400 fill-current" />
@@ -225,7 +278,7 @@ export default function JobsPage() {
                   </div> */}
                   <div className="flex items-center gap-2 ">
                     <h1 className="text-3xl font-bold text-gray-900">
-                      {selectedJob.title}
+                      {selectedJob.job_title}
                     </h1>
                     <Star className="w-6 h-6 text-gray-300 hover:text-amber-400 cursor-pointer mt-1" />
                   </div>
@@ -235,18 +288,15 @@ export default function JobsPage() {
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                     <div className="flex items-center gap-1">
                       <Briefcase className="w-4 h-4 text-[#F2B31D]" />
-                      <span>{selectedJob.experience}</span>
+                      <span>{selectedJob.experiences} Experiences</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4 text-[#F2B31D]" />
-                      <span>{selectedJob.type}</span>
+                      <span>{selectedJob.job_type}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <DollarSign className="w-4 h-4 text-[#F2B31D]" />
-                      <span>
-                        {selectedJob.salary}-
-                        {parseInt(selectedJob.salary.replace("$", "")) + 6000}
-                      </span>
+                      <span>{selectedJob.salary_range}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <MapPin className="w-4 h-4 text-[#F2B31D]" />
@@ -374,7 +424,7 @@ export default function JobsPage() {
                   <div>
                     <p className="font-medium text-gray-900">Job Title</p>
                     <p className="text-sm text-gray-600">
-                      Corporate Solutions Executive
+                      {selectedJob.job_title}
                     </p>
                   </div>
                 </div>
@@ -384,28 +434,31 @@ export default function JobsPage() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Job Type</p>
-                    <p className="text-sm text-gray-600">{selectedJob.type}</p>
+                    <p className="text-sm text-gray-600">
+                      {selectedJob.job_type}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
-                    {/* <div className="w-4 h-4 bg-amber-600 rounded"></div> */}
+                {/* <div className="flex items-start gap-3"> */}
+                  {/* <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
                     <BriefcaseBusinessIcon className="w-5 h-5 text-[#F2B31D]" />
-                  </div>
-                  <div>
+                  </div> */}
+                  {/* <div>
                     <p className="font-medium text-gray-900">Category</p>
                     <p className="text-sm text-gray-600">
                       {selectedJob.category}
                     </p>
-                  </div>
-                </div>
+                  </div> */}
+                {/* </div> */}
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
                     <Star className="w-5 h-5 text-[#F2B31D]" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900">Experience</p>
-                    <p className="text-sm text-gray-600">5 Years</p>
+                    <p className="text-sm text-gray-600">
+                      {selectedJob.experiences}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -413,8 +466,10 @@ export default function JobsPage() {
                     <GraduationCap className="w-5 h-5 text-[#F2B31D]" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900">Degree</p>
-                    <p className="text-sm text-gray-600">Master</p>
+                    <p className="font-medium text-gray-900">Qualification</p>
+                    <p className="text-sm text-gray-600">
+                      {selectedJob.qualification}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
@@ -424,12 +479,7 @@ export default function JobsPage() {
                   <div>
                     <p className="font-medium text-gray-900">Offered Salary</p>
                     <p className="text-sm text-gray-600">
-                      {selectedJob.salary}-
-                      {selectedJob.salary.replace(
-                        "$",
-                        "$" +
-                          (parseInt(selectedJob.salary.replace("$", "")) + 6000)
-                      )}
+                      {selectedJob.salary_range}
                     </p>
                   </div>
                 </div>
@@ -468,7 +518,7 @@ export default function JobsPage() {
                 {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
               </div>
               <div className="sticky top-16 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2">
-                {filteredJobs.map((job) => (
+                {state.jobList?.map((job) => (
                   <div
                     key={job.id}
                     onClick={() => setSelectedJob(job)}
@@ -480,20 +530,28 @@ export default function JobsPage() {
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="bg-[#FBE6DB] text-[#F34F0E] px-3 py-1 rounded-full text-xs font-medium">
-                        {job.postedDate}
+                        {/* {job.postedDate} */}
                       </div>
                       <Star className="w-5 h-5 text-gray-300 hover:text-amber-400 cursor-pointer" />
                     </div>
 
                     <div className="flex items-start gap-3 mb-4">
-                      <img
-                        src={job.logo}
-                        alt={job.company}
-                        className="w-12 h-12 rounded-lg"
-                      />
+                      {job.logo ? (
+                        <img
+                          src={job?.logo}
+                          alt={job?.company}
+                          className="w-10 h-10 rounded-lg"
+                        />
+                      ) : (
+                        <div
+                          className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                        >
+                          {job.company?.slice(0, 1).toUpperCase()}
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 mb-1">
-                          {job.title}
+                          {job.job_title}
                         </h3>
                         <p className="text-gray-600 text-sm">{job.company}</p>
                       </div>
@@ -502,18 +560,15 @@ export default function JobsPage() {
                     <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600">
                       <div className="flex items-center gap-1">
                         <Briefcase className="w-3 h-3 text-amber-500" />
-                        <span>{job.experience}</span>
+                        <span>{job.experiences}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3 text-amber-500" />
-                        <span>{job.type}</span>
+                        <span>{job.job_type}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <DollarSign className="w-3 h-3 text-amber-500" />
-                        <span>
-                          {job.salary}-
-                          {parseInt(job.salary.replace("$", "")) + 6000}
-                        </span>
+                        <span>{job.salary_range}</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <MapPin className="w-3 h-3 text-amber-500" />
@@ -542,15 +597,23 @@ export default function JobsPage() {
                   </div>
 
                   <div className="flex items-start gap-4 mb-6 pb-4">
-                    <img
-                      src={selectedJob.logo}
-                      alt={selectedJob.company}
-                      className="w-16 h-16 rounded-lg"
-                    />
+                    {selectedJob.logo ? (
+                      <img
+                        src={selectedJob.logo}
+                        alt={selectedJob.company}
+                        className="w-10 h-10 rounded-lg"
+                      />
+                    ) : (
+                      <div
+                        className={`w-10 h-10 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                      >
+                        {selectedJob.company?.slice(0, 1).toUpperCase()}
+                      </div>
+                    )}
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h1 className="text-3xl font-bold text-gray-900">
-                          {selectedJob.title}
+                          {selectedJob.job_title}
                         </h1>
                         <Star className="w-6 h-6 text-gray-300 hover:text-amber-400 cursor-pointer" />
                       </div>
@@ -560,19 +623,15 @@ export default function JobsPage() {
                       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                         <div className="flex items-center gap-1">
                           <Briefcase className="w-4 h-4 text-[#F2B31D]" />
-                          <span>{selectedJob.experience}</span>
+                          <span>{selectedJob.experiences}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4 text-[#F2B31D]" />
-                          <span>{selectedJob.type}</span>
+                          <span>{selectedJob.job_type}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <DollarSign className="w-4 h-4 text-[#F2B31D]" />
-                          <span>
-                            {selectedJob.salary}-
-                            {parseInt(selectedJob.salary.replace("$", "")) +
-                              6000}
-                          </span>
+                          <span>{selectedJob.salary_range}</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <MapPin className="w-4 h-4 text-[#F2B31D]" />
@@ -714,7 +773,7 @@ export default function JobsPage() {
                               Job Title
                             </p>
                             <p className="text-sm text-gray-600">
-                              Corporate Solutions Executive
+                              {selectedJob.job_title}
                             </p>
                           </div>
                         </div>
@@ -727,23 +786,23 @@ export default function JobsPage() {
                               Job Type
                             </p>
                             <p className="text-sm text-gray-600">
-                              {selectedJob.type}
+                              {selectedJob.job_type}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
+                        {/* <div className="flex items-start gap-3"> */}
+                          {/* <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
                             <BriefcaseBusinessIcon className="w-5 h-5 text-[#F2B31D]" />
-                          </div>
-                          <div>
+                          </div> */}
+                          {/* <div>
                             <p className="font-medium text-gray-900">
                               Category
                             </p>
                             <p className="text-sm text-gray-600">
-                              {selectedJob.category}
+                              selectedJob.category
                             </p>
-                          </div>
-                        </div>
+                          </div> */}
+                        {/* </div> */}
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8  rounded-lg flex items-center justify-center flex-shrink-0">
                             <Star className="w-5 h-5 text-[#F2B31D]" />
@@ -752,7 +811,9 @@ export default function JobsPage() {
                             <p className="font-medium text-gray-900">
                               Experience
                             </p>
-                            <p className="text-sm text-gray-600">5 Years</p>
+                            <p className="text-sm text-gray-600">
+                              {selectedJob.experiences} Experience
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -760,8 +821,12 @@ export default function JobsPage() {
                             <GraduationCap className="w-5 h-5 text-[#F2B31D]" />
                           </div>
                           <div>
-                            <p className="font-medium text-gray-900">Degree</p>
-                            <p className="text-sm text-gray-600">Master</p>
+                            <p className="font-medium text-gray-900">
+                              Qualification
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              {selectedJob.qualification}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
@@ -773,15 +838,7 @@ export default function JobsPage() {
                               Offered Salary
                             </p>
                             <p className="text-sm text-gray-600">
-                              {selectedJob.salary}-
-                              {selectedJob.salary.replace(
-                                "$",
-                                "$" +
-                                  (parseInt(
-                                    selectedJob.salary.replace("$", "")
-                                  ) +
-                                    6000)
-                              )}
+                              {selectedJob.salary_range}
                             </p>
                           </div>
                         </div>
@@ -794,7 +851,7 @@ export default function JobsPage() {
                               Location
                             </p>
                             <p className="text-sm text-gray-600">
-                              {selectedJob.location}, USA
+                              {selectedJob.location}
                             </p>
                           </div>
                         </div>
@@ -908,14 +965,15 @@ export default function JobsPage() {
                 </div>
               </div>
 
-              {filteredJobs.length > 0 ? (
+              {state.jobList?.length > 0 ? (
                 <div
                   className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
                   style={{
                     gap: "20px",
                   }}
                 >
-                  {filteredJobs.map((job) => (
+                  {/* {filteredJobs.map((job) => ( */}
+                  {state.jobList?.map((job) => (
                     <div
                       key={job.id}
                       onClick={() => {
@@ -996,14 +1054,22 @@ export default function JobsPage() {
                   <div className="flex-1 overflow-y-auto space-y-6 pb-20">
                     <SheetHeader>
                       <div className="flex items-start gap-4 ">
-                        <img
-                          src={selectedJob.logo}
-                          alt={selectedJob.company}
-                          className="w-12 h-12 rounded-lg"
-                        />
+                        {selectedJob.logo ? (
+                          <img
+                            src={selectedJob.logo}
+                            alt={selectedJob.company}
+                            className="w-10 h-10 rounded-lg"
+                          />
+                        ) : (
+                          <div
+                            className={`w-10 h-10 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                          >
+                            {selectedJob.company?.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
                         <div className="flex-1 text-left">
                           <SheetTitle className="text-xl font-bold text-gray-900 text-left">
-                            {selectedJob.title}
+                            {selectedJob.job_title}
                           </SheetTitle>
                           <p className="text-gray-600 text-left">
                             {selectedJob.company}
@@ -1021,15 +1087,15 @@ export default function JobsPage() {
                     <div className="flex flex-wrap gap-2">
                       <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <Briefcase className="w-3 h-3" />
-                        <span>{selectedJob.experience}</span>
+                        <span>{selectedJob.experiences} Experiences</span>
                       </div>
                       <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <Clock className="w-3 h-3" />
-                        <span>{selectedJob.type}</span>
+                        <span>{selectedJob.job_type}</span>
                       </div>
                       <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <DollarSign className="w-3 h-3" />
-                        <span>{selectedJob.salary}</span>
+                        <span>{selectedJob.salary_range}</span>
                       </div>
                       <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <MapPin className="w-3 h-3" />
@@ -1081,7 +1147,7 @@ export default function JobsPage() {
                               Job Title
                             </p>
                             <p className="text-xs text-gray-600">
-                              Corporate Solutions Executive
+                              {selectedJob.job_title}
                             </p>
                           </div>
                         </div>
@@ -1092,37 +1158,41 @@ export default function JobsPage() {
                               Job Type
                             </p>
                             <p className="text-xs text-gray-600">
-                              {selectedJob.type}
+                              {selectedJob.job_type}
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-4 h-4 bg-amber-600 rounded"></div>
-                          <div>
+                        {/* <div className="flex items-center gap-2"> */}
+                          {/* <div className="w-4 h-4 bg-amber-600 rounded"></div> */}
+                          {/* <div>
                             <p className="font-medium text-gray-900 text-sm">
                               Category
                             </p>
                             <p className="text-xs text-gray-600">
                               {selectedJob.category}
                             </p>
-                          </div>
-                        </div>
+                          </div> */}
+                        {/* </div> */}
                         <div className="flex items-center gap-2">
                           <Star className="w-5 h-5 text-[#F2B31D]" />
                           <div>
                             <p className="font-medium text-gray-900 text-sm">
                               Experience
                             </p>
-                            <p className="text-xs text-gray-600">5 Years</p>
+                            <p className="text-xs text-gray-600">
+                              {selectedJob.experiences}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <GraduationCap className="w-5 h-5 text-[#F2B31D]" />
                           <div>
                             <p className="font-medium text-gray-900 text-sm">
-                              Degree
+                              Qualification
                             </p>
-                            <p className="text-xs text-gray-600">Master</p>
+                            <p className="text-xs text-gray-600">
+                              {selectedJob.qualification}
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1132,7 +1202,7 @@ export default function JobsPage() {
                               Salary
                             </p>
                             <p className="text-xs text-gray-600">
-                              {selectedJob.salary}
+                              {selectedJob.salary_range}
                             </p>
                           </div>
                         </div>
@@ -1160,7 +1230,7 @@ export default function JobsPage() {
             setState({ errors: {} });
             setShowApplicationModal(false);
           }}
-          title={selectedJob?.title}
+          title={selectedJob?.job_title}
           width="700px"
           renderComponent={() => (
             <div className="space-y-6 bg-[#FFFCF3] overflow-y-auto py-2 px-2 max-h-[85vh]">
@@ -1240,7 +1310,6 @@ export default function JobsPage() {
                     <SelectContent>
                       <SelectItem value="0-1 Years">0-1 Years</SelectItem>
                       <SelectItem value="1-3 Years">1-3 Years</SelectItem>
-                      <SelectItem value="3-5 Years">3-5 Years</SelectItem>
                       <SelectItem value="5-10 Years">5-10 Years</SelectItem>
                       <SelectItem value="10+ Years">10+ Years</SelectItem>
                     </SelectContent>
@@ -1304,36 +1373,47 @@ export default function JobsPage() {
               {/* Large background circles */}
               <div className="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full opacity-30"></div>
               <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-to-tl from-amber-200 to-orange-200 rounded-full opacity-25"></div>
-              
+
               {/* Small decorative circles */}
               <div className="absolute top-12 left-16 w-6 h-6 bg-amber-400 rounded-full opacity-80"></div>
               <div className="absolute top-20 right-20 w-16 h-16 bg-amber-300 rounded-full opacity-60"></div>
               <div className="absolute bottom-24 left-24 w-12 h-12 bg-yellow-200 rounded-full opacity-70"></div>
-              
+
               {/* Success star badge */}
               <div className="relative mb-8 z-10">
                 <div className="w-40 h-40 relative">
                   {/* Vector star background */}
-                  <img 
-                    src="/assets/images/Vector.png" 
-                    alt="Success Star" 
+                  <img
+                    src="/assets/images/Vector.png"
+                    alt="Success Star"
                     className="w-full h-full object-contain"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <svg className="w-16 h-16 text-white z-20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" />
+                    <svg
+                      className="w-16 h-16 text-white z-20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="4"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
                 </div>
               </div>
-              
+
               <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
                 Congrats, your job applied!
               </h2>
               <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur dignissim rutrum dui quis malesuada.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                Curabitur dignissim rutrum dui quis malesuada.
               </p>
-              <button 
+              <button
                 onClick={() => setState({ congratsOpen: false })}
                 className="w-full max-w-md py-4 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full text-lg transition-colors z-10 shadow-lg"
               >

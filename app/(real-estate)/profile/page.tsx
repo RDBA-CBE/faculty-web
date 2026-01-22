@@ -1,687 +1,706 @@
 "use client";
-import React, { useEffect } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  Badge,
-  Edit,
-  EditIcon,
-  FileEdit,
-  Heart,
-  Home,
+  Edit3,
   MapPin,
-  MessageCircle,
-  Pencil,
-  Search,
-  UserCircle2,
-  X,
+  Phone,
+  Mail,
+  Calendar,
+  IndianRupee,
+  Clock,
+  Download,
+  Trash2,
+  Plus,
+  CheckCircle,
+  Upload,
+  Crown,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
-import ContactAgentForm from "@/components/real-estate/property-detail/ContactAgentForm.component";
-import { Failure, Success, useSetState } from "@/utils/function.utils";
-
 import { Input } from "@/components/ui/input";
-import CustomPhoneInput from "@/components/common-components/phoneInput";
+import { Textarea } from "@/components/ui/textarea";
+import { useSetState } from "@/utils/function.utils";
 
-import { useRouter } from "next/navigation";
-import Utils from "@/imports/utils.import";
-import Models from "@/imports/models.import";
-import * as Yup from "yup";
-import TextArea from "@/components/common-components/textArea";
+export default function NaukriProfilePage() {
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const headerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsHeaderVisible(entry.isIntersecting);
+      },
+      { 
+        threshold: 0,
+        rootMargin: '-1px 0px 0px 0px'
+      }
+    );
+    
+    if (headerRef.current) {
+      observer.observe(headerRef.current);
+    }
+    
+    return () => observer.disconnect();
+  }, []);
 
-export default function ProfilePage() {
-  const router = useRouter();
   const [state, setState] = useSetState({
-    first_name: "",
-    last_name: "",
-    email: "",
-    phone: "",
-    address: "",
-    isEditProfile: false,
-    isChangePassword: false,
-    id: null,
-    loading: false,
-    error: null,
+    // Profile Data
+    name: "RAJESH KUMAR",
+    title: "Full Stack Developer",
+    company: "at TechCorp Solutions Pvt Ltd",
+    location: "Chennai, INDIA",
+    experience: "6 Years",
+    salary: "₹ 12,00,000",
+    phone: "9876543210",
+    email: "rajesh.kumar@techcorp.com",
+    noticePeriod: "1 Month notice period",
+    profileCompletion: 95,
+    lastUpdated: "21 Jan, 2026",
+    resumeFile: "Rajesh_Kumar_Resume.pdf",
+    resumeUploadDate: "Jan 15, 2026",
+
+    // Edit States
+    isEditingProfile: false,
+    isEditingEmployment: false,
+    isEditingEducation: false,
+    isEditingSkills: false,
+
+    // Employment Data
+    employments: [
+      {
+        id: "1",
+        company: "Repute Digital Business Agency",
+        designation: "Software Developer",
+        startDate: "Jan 2021",
+        endDate: "Present",
+        current: true,
+        salary: "₹ 6,00,000",
+        description:
+          "Working on web development projects using React, Node.js and other modern technologies.",
+      },
+    ],
+
+    // Education Data
+    educations: [
+      {
+        id: "1",
+        institution: "Anna University",
+        degree: "Bachelor of Engineering",
+        field: "Computer Science",
+        startYear: "2017",
+        endYear: "2021",
+        grade: "8.5 CGPA",
+      },
+    ],
+
+    // Skills Data
+    skills: [
+      { id: "1", name: "JavaScript", experience: "4 years" },
+      { id: "2", name: "React.js", experience: "3 years" },
+      { id: "3", name: "Node.js", experience: "3 years" },
+      { id: "4", name: "Python", experience: "2 years" },
+      { id: "5", name: "MongoDB", experience: "2 years" },
+    ],
+
+    // Form States
+    employmentForm: {
+      company: "",
+      designation: "",
+      startDate: "",
+      endDate: "",
+      current: false,
+      salary: "",
+      description: "",
+    },
+
+    educationForm: {
+      institution: "",
+      degree: "",
+      field: "",
+      startYear: "",
+      endYear: "",
+      grade: "",
+    },
+
+    skillForm: {
+      name: "",
+      experience: "",
+    },
   });
 
-  useEffect(() => {
-    const id = localStorage.getItem("userId");
-    setState({ id: id });
-  }, []);
-
-  useEffect(() => {
-    getUser();
-    wishlist();
-  }, []);
-
-  console.log("state.id", state.id);
-
-  const getUser = async () => {
-    try {
-      const id = localStorage.getItem("userId");
-      setState({ loading: true });
-
-      const res: any = await Models.user.details(id);
-      setState({
-        loading: false,
-        user: res,
-        first_name: res?.first_name || "",
-        last_name: res?.last_name || "",
-        email: res?.email || "",
-        phone: res?.phone || "",
-        address: res?.address || "",
-      });
-
-      console.log("user detail", res);
-    } catch (error) {
-      setState({
-        loading: false,
-      });
-
-      console.log("✌️error --->", error);
-    }
-  };
-
-  const wishlist = async () => {
-    try {
-      setState({ loading: true });
-      const wishlist_id = localStorage.getItem("wishlist_id");
-      const res: any = await Models.wishlist.list(wishlist_id);
-      console.log("✌️res --->", res);
-      setState({
-        properties: res?.properties || [],
-        loading: false,
-      });
-    } catch (error) {
-      console.log("✌️error --->", error);
-      setState({
-        error: "Failed to load wishlist",
-        loading: false,
-      });
-    }
-  };
-
-  const handleRemoveFromWishlist = async (propertyId: number) => {
-    try {
-      await Models.wishlist.remove_property({
-        property_id: propertyId,
-      });
-
-      const updatedProperties = state.properties.filter(
-        (property: any) => property.id !== propertyId
-      );
-      setState({ properties: updatedProperties });
-      Success("Removed from your wishlist !");
-    } catch (error) {
-      console.log("✌️error removing from wishlist --->", error);
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    try {
-      e.preventDefault();
-      const body = {
-        first_name: state.first_name,
-        last_name: state.last_name,
-        email: state.email,
-        phone: state.phone,
-
-        address: state.address,
-      };
-
-      console.log("body", body);
-
-      await Utils.Validation.profileSchema.validate(body, {
-        abortEarly: false,
-      });
-
-      const res: any = await Models.user.update(body, state.id);
-
-      console.log("res", res);
-
-      Success("Profile Updated");
-    } catch (error) {
-      if (error instanceof Yup.ValidationError) {
-        const validationErrors = {};
-        error.inner.forEach((err) => {
-          validationErrors[err.path] = err?.message;
-        });
-        console.log("✌️validationErrors --->", validationErrors);
-
-        setState({ error: validationErrors, loading: false });
-      } else {
-        Failure(error?.error);
-      }
-      console.log("✌️error --->", error);
-      setState({ loading: false });
-    }
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
+  const addEmployment = () => {
+    const newEmployment = {
+      id: Date.now().toString(),
+      ...state.employmentForm,
+    };
     setState({
-      [name]: value,
+      employments: [...state.employments, newEmployment],
+      employmentForm: {
+        company: "",
+        designation: "",
+        startDate: "",
+        endDate: "",
+        current: false,
+        salary: "",
+        description: "",
+      },
+      isEditingEmployment: false,
+    });
+  };
+
+  const addEducation = () => {
+    const newEducation = {
+      id: Date.now().toString(),
+      ...state.educationForm,
+    };
+    setState({
+      educations: [...state.educations, newEducation],
+      educationForm: {
+        institution: "",
+        degree: "",
+        field: "",
+        startYear: "",
+        endYear: "",
+        grade: "",
+      },
+      isEditingEducation: false,
+    });
+  };
+
+  const addSkill = () => {
+    const newSkill = {
+      id: Date.now().toString(),
+      ...state.skillForm,
+    };
+    setState({
+      skills: [...state.skills, newSkill],
+      skillForm: { name: "", experience: "" },
+      isEditingSkills: false,
+    });
+  };
+
+  const deleteEmployment = (id: string) => {
+    setState({
+      employments: state.employments.filter((emp) => emp.id !== id),
+    });
+  };
+
+  const deleteEducation = (id: string) => {
+    setState({
+      educations: state.educations.filter((edu) => edu.id !== id),
+    });
+  };
+
+  const deleteSkill = (id: string) => {
+    setState({
+      skills: state.skills.filter((skill) => skill.id !== id),
     });
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-[93vh]  px-8"
-    >
-      <div className="container mt-6">
-        <div className="w-full bg-gray-100  text-white rounded-xl flex flex-col md:flex-row items-center justify-between p-4 md:p-6 shadow-sm">
-          {/* Left Section */}
-          <div className="flex items-center space-x-4">
-            <Image
-              src="/assets/images/real-estate/dummy.png" // change to your image path
-              alt="Profile"
-              width={60}
-              height={60}
-              className="rounded-full  "
-            />
-
-            <div>
-              <div className="flex flex-col">
-                <h2 className="text-lg text-black font-semibold">
-                  {state.user?.first_name} {state.user?.last_name}
-                </h2>
-                <div className="flex gap-2 px-0 mx-0">
-                  <p className="text-gray-600">{state.user?.email} |</p>
-                  <p className="text-gray-600">{state.user?.phone}</p>
-                </div>
-              </div>
-
-              <p className="text-sm text-gray-600 mt-1">
-                {state?.properties?.length} Wishlist · 1 Active Search · Last Login: Just Now
-              </p>
-            </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="flex space-x-3 mt-4 md:mt-0">
-            <Button
-              variant="outline"
-              className="w-full rounded-full border-red-500 bg-transparent hover:bg-red-600 text-red-500 hover:text-white hover:border-none"
-              onClick={() => setState({ isEditProfile: true })}
-            >
-              <Pencil size={16} />
-              Edit Profile
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full rounded-full border-red-500 bg-transparent hover:bg-red-600 text-red-500 hover:text-white hover:border-none"
-              onClick={() => setState({ isChangePassword: true })}
-            >
-              <MessageCircle size={16} />
-              Change Password
-            </Button>
-          </div>
-        </div>
-
-        <div className="w-full bg-gray-100 mt-5 text-white p-6 rounded-2xl grid md:grid-cols-2 gap-6 items-stretch">
-          {/* Left Column - My Dream Home */}
-          <div className="space-y-5 flex flex-col h-full">
-            <h2 className="text-lg text-black font-semibold">My Preference</h2>
-
-            <Card className="bg-white border-none text-white rounded-xl flex-1">
-              <CardContent className="flex justify-between items-center p-4 h-full">
-                <div className="flex items-start gap-3">
-                  <div className="bg-emerald-500/10 p-2 rounded-md">
-                    <MapPin size={20} className="text-emerald-400" />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto p-4">
+        {/* Profile Header - Will hide on scroll */}
+        <Card ref={headerRef} className="bg-white shadow-sm border border-gray-200 mb-6">
+            <CardContent className="p-8">
+              <div className="flex items-start gap-6">
+                {/* Profile Image */}
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-full border-4 border-green-500 overflow-hidden bg-gray-100">
+                    <Image
+                      src="/assets/images/profile-placeholder.jpg"
+                      alt="Profile"
+                      width={128}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Location</p>
-                    <h3 className="text-black font-medium">
-                      Downtown Loft, West End Arts District
-                    </h3>
-                  </div>
-                </div>
-                <Button
-                  variant="outline"
-                  className="text-emerald-400 border-emerald-500 hover:bg-emerald-500/10 text-sm px-3 py-0 rounded-md"
-                >
-                  Edit
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-none text-white rounded-xl flex-1">
-              <CardContent className="flex justify-between items-center p-4 h-full">
-                <div className="flex items-start gap-3">
-                  <div className="bg-emerald-500/10 p-2 rounded-md">
-                    <Home size={20} className="text-emerald-400" />
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-600">Property Type</p>
-                    <h3 className="text-black font-medium">
-                      Residential, Commercial
-                    </h3>
+                  <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                    {state.profileCompletion}%
                   </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="text-emerald-400 border-emerald-500 hover:bg-emerald-500/10 text-sm px-3 py-0 rounded-md"
-                >
-                  Edit
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-none text-white rounded-xl flex-1">
-              <CardContent className="flex items-start gap-4 p-5 h-full">
-                <div className="bg-emerald-500/10 p-3 rounded-md">
-                  <Search size={22} className="text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-black">
-                    Create Search Alerts
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Stay informed on new listings
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - My Activity */}
-          <div className="space-y-5 flex flex-col h-full">
-            <h2 className="text-lg font-semibold text-black">My Activity</h2>
-
-            {state?.properties?.length > 0 ? (
-              <div className="grid grid-cols-3 !gap-2 flex-1">
-                {state?.properties?.slice(0, 3).map((property, index) => (
-                  <div
-                    key={index}
-                    className="relative rounded-md overflow-hidden bg-gray-700 aspect-[4/3]"
-                  >
-                    <div className="relative">
-                      <Image
-                        src={property.primary_image}
-                        alt={property.title}
-                        width={400}
-                        height={250}
-                        className="w-full h-48 object-cover"
-                      />
-                      <button
-                        onClick={() => handleRemoveFromWishlist(property.id)}
-                        className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-md hover:bg-red-50 hover:text-red-600 transition-colors"
-                      >
-                        <Heart className="w-4 h-4 fill-current text-red-500" />
-                      </button>
+                {/* Profile Info */}
+                <div className="flex-1">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <h1 className="text-2xl font-bold text-gray-900">
+                          {state.name}
+                        </h1>
+                        <Button variant="ghost" size="sm" className="p-1">
+                          <Edit3 className="w-4 h-4 text-gray-500" />
+                        </Button>
+                      </div>
+                      <p className="text-lg text-gray-700 mb-1">{state.title}</p>
+                      <p className="text-gray-600 mb-4">{state.company}</p>
+                    </div>
+                    <div className="text-right text-sm text-gray-500">
+                      Profile last updated - {state.lastUpdated}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col justify-center gap-4 items-center w-full rounded-md overflow-hidden bg-white h-48 ">
-              <div className="flex justify-center items-center gap-8 w-full ">
-                {" "}
-                {[1, 2, 3].map((i) => (
-                  <svg
-                    key={i}
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 512 512"
-                    fill="none"
-                    stroke="#00FFCC"
-                    strokeWidth="24"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="w-16 h-16"
-                  >
-                    <path d="M64 240L256 64l192 176" />
-                    <path d="M112 224v224h288V224" />
-                    <path d="M192 448V320h128v128" />
-                  </svg>
-                ))}
-              </div>
-              <p className="font-xl text-black font-semibold">No Properties added to Wishlist</p>
-              </div>
-              
-            )}
 
-            <div className="flex gap-3">
-              <Button
-                className="bg-red-500 hover:bg-red-700 text-white w-full"
-                onClick={() => router.push("/property-list")}
-              >
-                Search Properties
-              </Button>
-              <Button
-                className="bg-red-500 hover:bg-red-700 text-white w-full"
-                onClick={() => router.push(state?.properties?.length > 0 ? "/wishlist" : "/property-list")}
-              >
-               {state?.properties?.length > 0 ? "View All Favorites" : "Add Properties to Wishlist"}
-              </Button>
-            </div>
-
-            <Card className="bg-white border-none text-white rounded-xl flex-1">
-              <CardContent className="flex items-start justify-between gap-4 p-5 h-full">
-                <div className="flex gap-4">
-                  <div className="bg-emerald-500/10 p-3 rounded-md">
-                    <UserCircle2 size={22} className="text-emerald-400" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-black">
-                      Connect with an Agent
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      Find a local expert to guide your search
-                    </p>
+                  {/* Profile Details Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <MapPin className="w-4 h-4" />
+                      {state.location}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Phone className="w-4 h-4" />
+                      {state.phone}
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Calendar className="w-4 h-4" />
+                      {state.experience}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Mail className="w-4 h-4" />
+                      {state.email}
+                      <CheckCircle className="w-4 h-4 text-green-500" />
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <IndianRupee className="w-4 h-4" />
+                      {state.salary}
+                    </div>
+                    <div className="flex items-center gap-2 text-gray-600">
+                      <Clock className="w-4 h-4" />
+                      {state.noticePeriod}
+                    </div>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <Button className="bg-emerald-500 hover:bg-emerald-600 text-white text-sm rounded-full px-4 py-1 h-auto">
-                  Find one
-                </Button>
-              </CardContent>
-            </Card>
+        {/* Main Content Container */}
+        <div className="flex flex-col lg:flex-row gap-6 h-[calc(100vh-100px)]">
+          {/* Left Sidebar - Quick Links */}
+          <div className="lg:w-1/4">
+            <div className={!isHeaderVisible ? "sticky top-4" : ""}>
+              <Card className="bg-white shadow-sm border border-gray-200 h-fit">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-6">
+                    Quick links
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Resume</span>
+                      <Button
+                        variant="link"
+                        className="text-blue-600 p-0 h-auto font-normal"
+                      >
+                        Update
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Resume headline</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Key skills</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Employment</span>
+                      <Button
+                        variant="link"
+                        className="text-blue-600 p-0 h-auto font-normal"
+                        onClick={() => setState({ isEditingEmployment: true })}
+                      >
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Education</span>
+                      <Button
+                        variant="link"
+                        className="text-blue-600 p-0 h-auto font-normal"
+                        onClick={() => setState({ isEditingEducation: true })}
+                      >
+                        Add
+                      </Button>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">IT skills</span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-gray-700">Projects</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Right Content Area - Scrollable */}
+          <div className="lg:w-3/4 overflow-y-auto">
+            <div className="space-y-6 pr-2">
+              {/* Naukri Pro Banner */}
+             
+
+              {/* Resume Section */}
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-6">Resume</h3>
+                  
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg mb-6">
+                    <div>
+                      <h4 className="font-medium text-gray-900">{state.resumeFile}</h4>
+                      <p className="text-sm text-gray-500">Uploaded on {state.resumeUploadDate}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="outline" size="sm">
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <Button variant="outline" size="sm">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <Button className="mb-4">
+                      <Upload className="w-4 h-4 mr-2" />
+                      Update resume
+                    </Button>
+                    <p className="text-sm text-gray-500">
+                      Supported Formats: doc, docx, rtf, pdf, upto 2 MB
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Employment Section */}
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Employment</h3>
+                    <Button
+                      onClick={() => setState({ isEditingEmployment: true })}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Employment
+                    </Button>
+                  </div>
+
+                  {/* Add Employment Form */}
+                  <AnimatePresence>
+                    {state.isEditingEmployment && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-6 p-6 bg-gray-50 rounded-lg border"
+                      >
+                        <h4 className="font-semibold mb-4">Add Employment Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <Input
+                            placeholder="Company Name"
+                            value={state.employmentForm.company}
+                            onChange={(e) => setState({ 
+                              employmentForm: { ...state.employmentForm, company: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Designation"
+                            value={state.employmentForm.designation}
+                            onChange={(e) => setState({ 
+                              employmentForm: { ...state.employmentForm, designation: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Start Date (e.g., Jan 2021)"
+                            value={state.employmentForm.startDate}
+                            onChange={(e) => setState({ 
+                              employmentForm: { ...state.employmentForm, startDate: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="End Date (e.g., Present)"
+                            value={state.employmentForm.endDate}
+                            onChange={(e) => setState({ 
+                              employmentForm: { ...state.employmentForm, endDate: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Salary (e.g., ₹ 6,00,000)"
+                            value={state.employmentForm.salary}
+                            onChange={(e) => setState({ 
+                              employmentForm: { ...state.employmentForm, salary: e.target.value }
+                            })}
+                          />
+                        </div>
+                        <Textarea
+                          placeholder="Job Description"
+                          value={state.employmentForm.description}
+                          onChange={(e) => setState({ 
+                            employmentForm: { ...state.employmentForm, description: e.target.value }
+                          })}
+                          className="mb-4"
+                        />
+                        <div className="flex gap-2">
+                          <Button onClick={addEmployment} className="bg-green-600 hover:bg-green-700">
+                            Save
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setState({ isEditingEmployment: false })}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Employment List */}
+                  <div className="space-y-4">
+                    {state.employments.map((emp) => (
+                      <div key={emp.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-1">{emp.designation}</h4>
+                            <p className="text-blue-600 font-medium mb-2">{emp.company}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+                              <span>{emp.startDate} - {emp.endDate}</span>
+                              <span>{emp.salary}</span>
+                            </div>
+                            <p className="text-gray-700 text-sm">{emp.description}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteEmployment(emp.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Education Section */}
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Education</h3>
+                    <Button 
+                      onClick={() => setState({ isEditingEducation: true })}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Education
+                    </Button>
+                  </div>
+
+                  {/* Add Education Form */}
+                  <AnimatePresence>
+                    {state.isEditingEducation && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-6 p-6 bg-gray-50 rounded-lg border"
+                      >
+                        <h4 className="font-semibold mb-4">Add Education Details</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <Input
+                            placeholder="Institution Name"
+                            value={state.educationForm.institution}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, institution: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Degree"
+                            value={state.educationForm.degree}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, degree: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Field of Study"
+                            value={state.educationForm.field}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, field: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Grade/CGPA"
+                            value={state.educationForm.grade}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, grade: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Start Year"
+                            value={state.educationForm.startYear}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, startYear: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="End Year"
+                            value={state.educationForm.endYear}
+                            onChange={(e) => setState({ 
+                              educationForm: { ...state.educationForm, endYear: e.target.value }
+                            })}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={addEducation} className="bg-green-600 hover:bg-green-700">
+                            Save
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setState({ isEditingEducation: false })}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Education List */}
+                  <div className="space-y-4">
+                    {state.educations.map((edu) => (
+                      <div key={edu.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-gray-900 mb-1">{edu.degree}</h4>
+                            <p className="text-blue-600 font-medium mb-1">{edu.institution}</p>
+                            <p className="text-gray-600 text-sm mb-1">{edu.field}</p>
+                            <div className="flex items-center gap-4 text-sm text-gray-600">
+                              <span>{edu.startYear} - {edu.endYear}</span>
+                              <span>{edu.grade}</span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteEducation(edu.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Skills Section */}
+              <Card className="bg-white shadow-sm border border-gray-200">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">IT Skills</h3>
+                    <Button 
+                      onClick={() => setState({ isEditingSkills: true })}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Skill
+                    </Button>
+                  </div>
+
+                  {/* Add Skill Form */}
+                  <AnimatePresence>
+                    {state.isEditingSkills && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-6 p-6 bg-gray-50 rounded-lg border"
+                      >
+                        <h4 className="font-semibold mb-4">Add Skill</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                          <Input
+                            placeholder="Skill Name"
+                            value={state.skillForm.name}
+                            onChange={(e) => setState({ 
+                              skillForm: { ...state.skillForm, name: e.target.value }
+                            })}
+                          />
+                          <Input
+                            placeholder="Experience (e.g., 3 years)"
+                            value={state.skillForm.experience}
+                            onChange={(e) => setState({ 
+                              skillForm: { ...state.skillForm, experience: e.target.value }
+                            })}
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={addSkill} className="bg-green-600 hover:bg-green-700">
+                            Save
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setState({ isEditingSkills: false })}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Skills List */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {state.skills.map((skill) => (
+                      <div key={skill.id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h4 className="font-medium text-gray-900">{skill.name}</h4>
+                            <p className="text-sm text-gray-600">{skill.experience}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <Button variant="outline" size="sm">
+                              <Edit3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => deleteSkill(skill.id)}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
-
-      <AnimatePresence>
-        {state.isEditProfile && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              className="fixed inset-0 bg-black/50 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setState({ isEditProfile: false })}
-            />
-
-            {/* Modal Wrapper */}
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 p-4 "
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-            >
-              <Card
-                className={`rounded-2xl shadow-lg border border-gray-200 max-w-md mx-auto !bg-gray ${
-                  state.isEditProfile ? "w-[500px]" : "me-0"
-                }`}
-              >
-                {state.isEditProfile && (
-                  <div className="w-full text-right">
-                    <button
-                      onClick={() => setState({ isEditProfile: false })}
-                      className="px-5 pt-4"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
-
-                <CardContent
-                  className={`p-6 space-y-6 ${
-                    state.isEditProfile ? "pt-0" : ""
-                  }`}
-                >
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <p className="text-gray-600 text-sm text-center mb-4">
-                      Please fill in your profile details
-                    </p>
-
-                    {/* Upload Profile Image - Full Width */}
-                    <div className="flex flex-col items-center space-y-3 col-span-2">
-                      <label htmlFor="profileImage" className="cursor-pointer">
-                        <div className="relative w-24 h-24">
-                          <Image
-                            src={
-                              state.profileImage ||
-                              "/assets/images/real-estate/dummy.png"
-                            }
-                            alt="Profile"
-                            width={96}
-                            height={96}
-                            className="rounded-full object-cover border-2 border-gray-300 w-24 h-24"
-                          />
-                          <div className="absolute bottom-0 right-0 bg-red-500 text-white rounded-full p-1.5 text-xs">
-                            <Pencil size={14} />
-                          </div>
-                        </div>
-                      </label>
-                      <input
-                        type="file"
-                        id="profileImage"
-                        accept="image/*"
-                        onChange={(e) =>
-                          setState({
-                            profileImage: URL.createObjectURL(
-                              e.target.files[0]
-                            ),
-                          })
-                        }
-                        className="hidden"
-                      />
-                    </div>
-
-                    {/* Two-column grid for form fields */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 !gap-3">
-                      {/* Full Name */}
-                      <Input
-                        name="first_name"
-                        title="First Name"
-                        value={state.first_name}
-                        onChange={handleInputChange}
-                        placeholder="Enter your full name"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.first_name}
-                      />
-
-                      <Input
-                        name="last_name"
-                        title="Last Name"
-                        value={state.last_name}
-                        onChange={handleInputChange}
-                        placeholder="Enter your full name"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.last_name}
-                      />
-
-                      {/* Email */}
-                      <Input
-                        name="email"
-                        type="email"
-                        title="Email Address"
-                        value={state.email}
-                        onChange={handleInputChange}
-                        placeholder="Enter your email"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.email}
-                      />
-
-                      {/* Phone */}
-                      <Input
-                        value={state.phone}
-                        onChange={handleInputChange}
-                        title="Phone Number"
-                        placeholder="Enter your Phone"
-                        className="border-gray-300 rounded-lg py-2"
-                        name="phone"
-                        required
-                        error={state.errors?.phone}
-                      />
-
-                      {/* City */}
-                      {/* <Input
-                        name="city"
-                        title="City"
-                        value={state.city}
-                        onChange={handleInputChange}
-                        placeholder="Enter your city"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.city}
-                      /> */}
-
-                      {/* Country */}
-                      {/* <Input
-                        name="country"
-                        title="Country"
-                        value={state.country}
-                        onChange={handleInputChange}
-                        placeholder="Enter your country"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.country}
-                      /> */}
-
-                      {/* ZIP */}
-                      {/* <Input
-                        name="zip"
-                        title="ZIP Code"
-                        value={state.zip}
-                        onChange={handleInputChange}
-                        placeholder="Enter ZIP code"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.zip}
-                      /> */}
-                    </div>
-
-                    {/* About Me - Full Width */}
-                    <div className="col-span-2">
-                      <TextArea
-                        title="Address"
-                        name="address"
-                        placeholder="Write a short description about yourself"
-                        value={state.address}
-                        onChange={(e) => setState({ address: e.target.value })}
-                        className="border-gray-300 rounded-lg py-2"
-                        rows={4}
-                      />
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      disabled={state.btnLoading}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 text-base rounded-lg mt-4 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                      {state.btnLoading ? "Saving..." : "Submit"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {state.isChangePassword && (
-          <>
-            {/* Overlay */}
-            <motion.div
-              className="fixed inset-0 bg-black/50 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setState({ isChangePassword: false })}
-            />
-
-            {/* Modal Wrapper */}
-            <motion.div
-              className="fixed inset-0 flex items-center justify-center z-50 p-4 "
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-            >
-              <Card
-                className={`rounded-2xl shadow-lg border border-gray-200 max-w-md mx-auto !bg-gray ${
-                  state.isChangePassword ? "w-[500px]" : "me-0"
-                }`}
-              >
-                {state.isChangePassword && (
-                  <div className="w-full text-right">
-                    <button
-                      onClick={() => setState({ isChangePassword: false })}
-                      className="px-5 pt-4"
-                    >
-                      <X className="h-5 w-5" />
-                    </button>
-                  </div>
-                )}
-
-                <CardContent
-                  className={`p-6 space-y-6 ${
-                    state.isChangePassword ? "pt-0" : ""
-                  }`}
-                >
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Upload Profile Image - Full Width */}
-
-                    {/* Two-column grid for form fields */}
-                    <div className=" grid grid-col !gap-3">
-                      {/* Full Name */}
-                      <Input
-                        name="current_password"
-                        title="Current Password"
-                        value={state.current_password}
-                        onChange={handleInputChange}
-                        placeholder="Enter your current password"
-                        className="border-gray-300 rounded-lg py-2 mt-0"
-                        required
-                        error={state.errors?.full_name}
-                      />
-
-                      {/* Email */}
-                      <Input
-                        name="new_password"
-                        title="New Password"
-                        value={state.current_password}
-                        onChange={handleInputChange}
-                        placeholder="Enter your new password"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.full_name}
-                      />
-
-                      <Input
-                        name="confirm_password"
-                        title="Confirm Password"
-                        value={state.current_password}
-                        onChange={handleInputChange}
-                        placeholder="Confirm your new password"
-                        className="border-gray-300 rounded-lg py-2"
-                        required
-                        error={state.errors?.full_name}
-                      />
-                    </div>
-
-                    {/* Submit Button */}
-                    <Button
-                      type="submit"
-                      disabled={state.btnLoading}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 text-base rounded-lg mt-4 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                    >
-                      {state.btnLoading ? "Saving..." : "Submit"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }

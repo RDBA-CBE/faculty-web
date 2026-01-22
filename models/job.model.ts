@@ -1,9 +1,15 @@
 import instance from "@/utils/axios.utils";
 
-const image = {
-  list: (page) => {
+const job = {
+  list: (page, body) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `property-images?page=${page}`;
+      let url = `jobs/?page=${page}`;
+      if (body?.search) {
+        url += `&search=${encodeURIComponent(body.search)}`;
+      }
+      if (body?.ordering) {
+        url += `&ordering=${encodeURIComponent(body.ordering)}`;
+      }
       instance()
         .get(url)
         .then((res) => {
@@ -22,20 +28,15 @@ const image = {
 
   create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `property-images/`;
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data; charset=utf-8;",
-        },
-      };
+      let url = `jobs/`;
       instance()
-        .post(url, data, config)
+        .post(url, data)
         .then((res) => {
           resolve(res.data);
         })
         .catch((error) => {
           if (error.response) {
-            reject(error.response.data.message);
+            reject(error.response);
           } else {
             reject(error);
           }
@@ -46,20 +47,15 @@ const image = {
 
   update: (data: any, id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `property-images/${id}/`;
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data; charset=utf-8;",
-        },
-      };
+      let url = `jobs/${id}/`;
       instance()
-        .patch(url, data, config)
+        .patch(url, data)
         .then((res) => {
           resolve(res.data);
         })
         .catch((error) => {
           if (error.response) {
-            reject(error.response.data.message);
+            reject(error.response.message);
           } else {
             reject(error);
           }
@@ -70,8 +66,7 @@ const image = {
 
   delete: (id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `property-images/${id}/`;
-
+      let url = `jobs/${id}/`;
       instance()
         .delete(url)
         .then((res) => {
@@ -79,7 +74,7 @@ const image = {
         })
         .catch((error) => {
           if (error.response) {
-            reject(error.response.data.message);
+            reject(error.response.message);
           } else {
             reject(error);
           }
@@ -90,8 +85,7 @@ const image = {
 
   details: (id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `property-images/${id}/`;
-
+      let url = `jobs/${id}`;
       instance()
         .get(url)
         .then((res) => {
@@ -99,7 +93,7 @@ const image = {
         })
         .catch((error) => {
           if (error.response) {
-            reject(error.response.data.message);
+            reject(error.response.message);
           } else {
             reject(error);
           }
@@ -107,8 +101,6 @@ const image = {
     });
     return promise;
   },
-
-  
 };
 
-export default image;
+export default job;

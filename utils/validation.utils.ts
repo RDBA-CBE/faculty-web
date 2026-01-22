@@ -32,3 +32,8 @@ export const jobApplicationSchema = Yup.object().shape({
       return value.size <= 12 * 1024 * 1024;
     })
 });
+
+export const login = Yup.object().shape({
+  email: Yup.string().required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});

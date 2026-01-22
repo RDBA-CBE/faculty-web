@@ -58,7 +58,7 @@ export default function RootLayout({ children }) {
             <>
               <div className="flex flex-col w-full min-h-screen">
                 {!isLoginPath && !isSigninPath && !isForgetPassword && <Header />}
-                <main className="w-full">{children}</main>
+                <main className="w-full overflow-x-hidden">{children}</main>
               </div>
               <Toaster position="top-center" />
             </>

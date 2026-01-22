@@ -42,7 +42,7 @@ const TopCategory = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-[1400px] mx-auto px-8 lg:px-16">
+      <div className=" mx-auto px-8 lg:px-16">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-4">

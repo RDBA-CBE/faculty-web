@@ -185,8 +185,6 @@ export const formatNumber = (num) => {
   return Number(num) % 1 === 0 ? parseInt(num) : Number(num);
 };
 
-
-
 export const transformSlots = (data) => {
   return Object.entries(data).map(([date, slots]) => ({
     date,
@@ -239,7 +237,7 @@ export const formatTimeRange = (date, time, intervalMinutes) => {
   const end = moment(start).add(intervalMinutes, "minutes");
 
   return `${start.format("MMMM D, YYYY")} at ${start.format(
-    "h:mm A"
+    "h:mm A",
   )} - ${end.format("h:mm A")}`;
 };
 
@@ -310,7 +308,7 @@ export const buildFormData = (data: Record<string, any>): FormData => {
       value.forEach((item, index) => {
         formData.append(
           `${key}`,
-          item instanceof File || item instanceof Blob ? item : String(item)
+          item instanceof File || item instanceof Blob ? item : String(item),
         );
       });
     }
@@ -359,7 +357,7 @@ export const getTime = (startDate, startTime) => {
     hours,
     minutes,
     seconds,
-    milliseconds
+    milliseconds,
   );
   return combinedDate;
 };
@@ -435,8 +433,6 @@ export const removePlus = (data) => {
   return data.replaceAll("+", "");
 };
 
-
-
 export const formatToINRS = (price: number | string): string => {
   const numericPrice = typeof price === "string" ? parseFloat(price) : price;
 
@@ -458,22 +454,24 @@ export const formatToINRS = (price: number | string): string => {
 
 export const formatPriceRange = (
   minPrice: number | string | null,
-  maxPrice: number | string | null
+  maxPrice: number | string | null,
 ): string => {
   if (minPrice === null && maxPrice === null) {
     return "Price on request";
   }
-  
+
   if (minPrice === null) {
     return `Max: ${formatToINRS(maxPrice)}`;
   }
-  
+
   if (maxPrice === null) {
     return `Min: ${formatToINRS(minPrice)}`;
   }
 
-  const numericMin = typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
-  const numericMax = typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
+  const numericMin =
+    typeof minPrice === "string" ? parseFloat(minPrice) : minPrice;
+  const numericMax =
+    typeof maxPrice === "string" ? parseFloat(maxPrice) : maxPrice;
 
   if (isNaN(numericMin) || isNaN(numericMax)) return "Contact for price";
 
@@ -482,8 +480,6 @@ export const formatPriceRange = (
 
   return `${formattedMin} - ${formattedMax}`;
 };
-
-
 
 export const generateMockJobs = (jobs: any[], total: number) => {
   const result = [];
@@ -498,4 +494,19 @@ export const generateMockJobs = (jobs: any[], total: number) => {
   }
 
   return result;
+};
+
+export const getAvatarColor = (name: string) => {
+  const colors = [
+    "bg-red-500",
+    "bg-blue-500",
+    "bg-green-500",
+    "bg-yellow-500",
+    "bg-purple-500",
+    "bg-pink-500",
+    "bg-indigo-500",
+    "bg-teal-500",
+  ];
+  const firstLetter = name?.charAt(0).toUpperCase() || "A";
+  return colors[firstLetter.charCodeAt(0) % colors.length];
 };

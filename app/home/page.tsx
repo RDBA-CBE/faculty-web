@@ -14,15 +14,16 @@ import Footer from '@/components/common-components/Footer';
 // ---------------- PAGE ----------------
 export default function HomePage() {
   return (
-    <div className='min-h-screen'>
+    <div className='min-h-screen w-full overflow-x-hidden'>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
+        className="w-full"
       >
         <BannerSection />
         <About />
-        <div>
+        <div className="w-full">
           <Discover />
           <TopCategory />
           <Banner />
