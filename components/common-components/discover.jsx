@@ -72,7 +72,7 @@ const Discover = () => {
 
   return (
     <section className="py-16 bg-gray-50">
-      <div className="max-w-[1400px] mx-auto px-8 lg:px-16">
+      <div className=" mx-auto px-8 lg:px-16">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-block mb-4">

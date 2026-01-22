@@ -4,7 +4,7 @@ import Image from 'next/image';
 const About = () => {
   return (
     <section className="py-16 bg-white">
-      <div className="max-w-[1400px] mx-auto px-8 lg:px-16">
+      <div className=" mx-auto px-8 lg:px-16">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Image */}
           <div className="relative">
