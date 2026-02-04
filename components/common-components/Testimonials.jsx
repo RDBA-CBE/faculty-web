@@ -41,8 +41,8 @@ export default function FaqSection() {
   const [active, setActive] = useState("01");
 
   return (
-    <section className="py-16">
-      <div className="mx-auto max-w-4xl px-4 text-center">
+    <section className="bg-white py-16">
+      <div className="section-wid text-center">
         {/* HEADER */}
 
         <div className="text-center mb-16">
@@ -51,10 +51,10 @@ export default function FaqSection() {
               FAQ
             </span>
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="section-ti mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className=" ">
             There Are Many Variations Of Passages Of Lorem Ipsum AvailableThere
           </p>
         </div>
@@ -67,9 +67,9 @@ export default function FaqSection() {
             return (
               <div
                 key={item.id}
-                className={`rounded-2xl transition-all
+                className={` transition-all
                 ${
-                  isOpen ? "bg-[#FFFBF1] p-6" : "border-b border-teal-200 pb-6"
+                  isOpen ? "bg-[#FFFBF1] p-6" : "border-b border-teal-200 py-3"
                 }`}
               >
                 <button
@@ -77,7 +77,7 @@ export default function FaqSection() {
                   className="flex w-full items-start justify-between gap-6"
                 >
                   <div className="flex gap-4">
-                    <span className="text-lg font-bold text-yellow-600">
+                    <span className=" font-bold text-yellow-600">
                       {item.id}
                     </span>
                     <h3 className="text-base font-semibold text-gray-900">
@@ -99,7 +99,7 @@ export default function FaqSection() {
                       : "grid-rows-[0fr] opacity-0"
                   }`}
                 >
-                  <div className="overflow-hidden pl-10 text-sm text-gray-600">
+                  <div className="overflow-hidden pl-10  text-gray-600">
                     {item.answer}
                   </div>
                 </div>

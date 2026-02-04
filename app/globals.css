@@ -1,17 +1,25 @@
-@import url('https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cabin:ital,wght@0,400..700;1,400..700&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
 body {
   font-family: "Cabin", sans-serif;
   font-optical-sizing: auto;
+  color: #000;
 }
 
 p {
   font-family: "Cabin", sans-serif;
   font-optical-sizing: auto;
+  color: #393939;
+}
+div,
+span,
+li,
+ul {
+  color: #393939;
+  font-size: 16px;
 }
 
 h1 {
@@ -48,9 +56,26 @@ h6 {
   font-family: "Marcellus";
 }
 
-.font-sans{
+.font-sans {
   font-family: "Cabin", sans-serif;
   font-optical-sizing: auto;
+}
+.section-ti{
+  color: #000;
+  font-size: 36px;
+  font-weight: 500;
+}
+
+.main-ti{
+  color: #000;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.sub-ti{
+  font-size: 22px;
+  color: #000;
+  font-weight: 500;
 }
 
 @layer base {
@@ -174,15 +199,15 @@ h6 {
   .custom-success-toast {
     @apply bg-black text-white rounded-lg shadow-lg;
   }
-  
+
   .custom-success-title {
     @apply text-white ml-2 font-medium;
   }
-  
+
   .custom-success-icon {
     @apply text-green-500 border-green-500;
   }
-  
+
   .swal2-timer-progress-bar {
     @apply bg-green-500;
   }
@@ -197,7 +222,7 @@ h6 {
   background-color: #000 !important;
   color: #fff !important;
   border-radius: 0.5rem;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .custom-success-icon {
@@ -363,11 +388,15 @@ h6 {
   opacity: 0;
   z-index: -1;
   border-bottom: 3px solid var(--theme-color);
-  box-shadow: 0px 10px 60px 0px rgba(0, 0, 0, 0.09),
+  box-shadow:
+    0px 10px 60px 0px rgba(0, 0, 0, 0.09),
     0px 3px 0px 0px rgba(231, 13, 60, 0.004);
   transform-origin: top center;
-  transition: margin-top 0.4s ease-in-out 0s, visibility 0.4s ease-in-out 0s,
-    opacity 0.4s ease-in-out 0s, z-index 0s;
+  transition:
+    margin-top 0.4s ease-in-out 0s,
+    visibility 0.4s ease-in-out 0s,
+    opacity 0.4s ease-in-out 0s,
+    z-index 0s;
 }
 
 .main-menu ul.sub-menu a,
@@ -513,11 +542,15 @@ h6 {
   opacity: 0;
   visibility: hidden;
   transform: translateX(-50%);
-  transition: margin-top 0.4s ease-in-out 0s, visibility 0.4s ease-in-out 0s,
-    opacity 0.4s ease-in-out 0s, z-index 0s;
+  transition:
+    margin-top 0.4s ease-in-out 0s,
+    visibility 0.4s ease-in-out 0s,
+    opacity 0.4s ease-in-out 0s,
+    z-index 0s;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  box-shadow: 0px 10px 60px 0px rgba(0, 0, 0, 0.09),
+  box-shadow:
+    0px 10px 60px 0px rgba(0, 0, 0, 0.09),
     0px 3px 0px 0px rgba(231, 13, 60, 0.004);
 }
 
@@ -1102,8 +1135,6 @@ h6 {
   background: transparent;
 }
 
-
-
 /* App.css */
 /* * {
   margin: 0;
@@ -1203,11 +1234,11 @@ body {
   .grid-3 {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .grid-4 {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .grid-6 {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1219,7 +1250,7 @@ body {
   .grid-6 {
     grid-template-columns: 1fr;
   }
-  
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;
@@ -1237,41 +1268,56 @@ body {
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) {
-  .container, .container-sm {
+  .container,
+  .container-sm {
     max-width: 540px;
   }
 }
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) {
-  .container, .container-sm, .container-md {
+  .container,
+  .container-sm,
+  .container-md {
     max-width: 720px;
   }
 }
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) {
-  .container, .container-sm, .container-md, .container-lg {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg {
     max-width: 960px;
   }
 }
 
 /* X-Large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
-  .container, .container-sm, .container-md, .container-lg, .container-xl {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl {
     max-width: 1140px;
   }
 }
 
 /* XX-Large devices (larger desktops, 1400px and up) */
 @media (min-width: 1400px) {
-  .container, .container-sm, .container-md, .container-lg, .container-xl, .container-xxl {
+  .container,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
     max-width: 1320px;
   }
 }
 
-.bg-dark{
-  background-color: #181A2A;
+.bg-dark {
+  background-color: #181a2a;
 }
 
 .top-32 {
@@ -1312,7 +1358,7 @@ body {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
@@ -1321,8 +1367,6 @@ body {
 .thin-scrollbar::-webkit-scrollbar {
   width: 4px;
 }
-
-
 
 /* For Firefox
 .thin-scrollbar {
@@ -1337,4 +1381,23 @@ body {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+.section-wid {
+  width: 80%;
+  margin: auto;
+}
+
+@media (max-width: 1700px) {
+  .section-wid {
+    width: 75%;
+    margin: auto;
+  }
+}
+
+@media (max-width: 1500px) {
+  .section-wid {
+    width: 90%;
+    margin: auto;
+  }
 }

@@ -10,6 +10,11 @@ const TopCategory = () => {
       title: "Login Or Register",
       description:
         "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      list: [
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      ],
       active: activeStep === 0,
     },
     {
@@ -17,24 +22,36 @@ const TopCategory = () => {
       title: "Fill Your Personal Data",
       description:
         "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      list: [
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      ],
       active: activeStep === 1,
-
     },
     {
       number: "03",
       title: "Upload Your Resume",
       description:
         "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      list: [
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      ],
       active: activeStep === 2,
-
     },
     {
       number: "04",
       title: "Find The Match Job",
       description:
         "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      list: [
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+        "Classical Latin Literature From 45 BC, Making It Over 2000 Years Old. Richard McClintock, A Latin Professor At Hampden Sydney College In Virginia.",
+      ],
       active: activeStep === 3,
-
     },
   ];
 
@@ -42,7 +59,7 @@ const TopCategory = () => {
 
   return (
     <section className="py-16 bg-white">
-      <div className=" mx-auto px-8 lg:px-16">
+      <div className="section-wid">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-block mb-4">
@@ -50,15 +67,16 @@ const TopCategory = () => {
               Finding Job
             </span>
           </div>
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Top Categories
-          </h2>
-          <p className="text-gray-600 text-lg">
+          <h2 className="section-ti mb-4">Top Categories</h2>
+          <p className="">
             There Are Many Variations Of Passages Of Lorem Ipsum Available
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 items-start mb-12" style={{gap: '60px'}}>
+        <div
+          className="grid lg:grid-cols-2 items-start mb-12"
+          style={{ gap: "60px" }}
+        >
           {/* Left Side - Mobile App Mockup */}
           <div className="relative">
             <div className="bg-gradient-to-br from-[#F2B31D] to-[#E5A519] rounded-3xl  pt-[40px]">
@@ -169,26 +187,24 @@ const TopCategory = () => {
           {/* Right Side - Active Step Detail */}
           <div className="flex-flex-col pt-5">
             <div className="space-y-3 ">
-              <div className="text-[#F2B31D] text-xl font-bold">{activeStepData.number}</div>
-              <h3 className="text-3xl font-bold text-gray-900">
-                {activeStepData.title}
-              </h3>
-              <p className="text-gray-600 text-lg leading-relaxed">
-                {activeStepData.description}
-              </p>
+              <div className="text-[#F2B31D] text-xl font-bold">
+                {activeStepData.number}
+              </div>
+              <h3 className="main-ti">{activeStepData.title}</h3>
+              <p className=" leading-relaxed">{activeStepData.description}</p>
 
               {/* Sub-steps */}
               <div className="space-y-4">
-                {[1, 2, 3].map((item) => (
-                  <div key={item} className="flex items-start gap-4">
+                {activeStepData.list.map((item, index) => (
+                  <div key={index} className="flex items-start gap-4">
                     <div className="w-8 h-8 bg-[#F2B31D] rounded-sm flex items-center justify-center mt-1 flex-shrink-0 relative">
                       <div className="absolute inset-0 bg-[#F2B31D] opacity-20 rounded-sm transform translate-x-1 translate-y-1"></div>
-                      <span className="text-black text-lg font-bold relative z-10">›</span>
+                      <span className="text-black text-lg font-bold relative z-10">
+                        ›
+                      </span>
                     </div>
                     <p className="text-gray-600 leading-relaxed">
-                      Classical Latin Literature From 45 BC, Making It Over 2000
-                      Years Old. Richard McClintock, A Latin Professor At
-                      Hampden Sydney
+                      {item}
                     </p>
                   </div>
                 ))}
@@ -200,9 +216,9 @@ const TopCategory = () => {
         {/* Bottom Steps Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {steps.map((step, index) => (
-            <div 
-              key={step.number} 
-              className="relative cursor-pointer" 
+            <div
+              key={step.number}
+              className="relative cursor-pointer"
               onClick={() => setActiveStep(index)}
             >
               <div
@@ -213,13 +229,13 @@ const TopCategory = () => {
 
               <div className="text-gray-400 text-sm mb-2">{step.number}</div>
               <h4
-                className={`text-lg font-bold mb-3 ${
-                  step.active ? "text-[#F2B31D]" : "text-gray-900"
+                className={`sub-ti mb-3 ${
+                  step.active ? "!text-[#F2B31D]" : "text-gray-900"
                 }`}
               >
                 {step.title}
               </h4>
-              <p className="text-gray-600 text-sm leading-relaxed">
+              <p className="text-gray-600  leading-relaxed">
                 {step.description}
               </p>
             </div>

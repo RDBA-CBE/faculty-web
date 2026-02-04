@@ -552,7 +552,7 @@ export const MOCK_JOBS = [
   {
     id: '1',
     title: 'Assistant Professor',
-    company: 'Kumaraguru College of Technology',
+    company: 'Karpagam College of Technology',
     logo: 'https://picsum.photos/seed/kct1/100/100',
     location: 'Coimbatore',
     postedDate: '5 days ago',
@@ -584,7 +584,7 @@ export const MOCK_JOBS = [
   {
     id: '3',
     title: 'Assistant Professor',
-    company: 'Kumaraguru College of Technology',
+    company: 'Karpagam College of Technology',
     logo: 'https://picsum.photos/seed/kct2/100/100',
     location: 'Coimbatore',
     postedDate: '5 days ago',
@@ -600,7 +600,7 @@ export const MOCK_JOBS = [
   {
     id: '4',
     title: 'Assistant Professor',
-    company: 'Kumaraguru College of Technology',
+    company: 'Karpagam College of Technology',
     logo: 'https://picsum.photos/seed/kct3/100/100',
     location: 'Coimbatore',
     postedDate: '5 days ago',

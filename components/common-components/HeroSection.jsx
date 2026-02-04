@@ -6,7 +6,7 @@ const HeroSection = () => {
   
   return (
     <section className="relative bg-gray-50 min-h-[650px] flex items-center">
-      <div className="w-full max-w-[1400px] mx-auto px-8 lg:px-16">
+      <div className="section-wid ">
         <div className="grid lg:grid-cols-2 gap-24 items-stretch h-full">
           {/* Left Content */}
           <div className="space-y-6 flex flex-col justify-center">
@@ -19,12 +19,12 @@ const HeroSection = () => {
 
             {/* Main Heading */}
             <div className="space-y-6">
-              <h1 className="text-[50px] font-bold text-gray-900 leading-[60px]">
+              <h1 className="text-[50px] text-[#000] leading-[60px] font-[500]">
                 Find Your Dream Job
                 <br />
                 Today!
               </h1>
-              <p className="text-lg text-gray-600 max-w-lg leading-relaxed">
+              <p className="text-black-600 max-w-lg leading-relaxed">
                 Ultrices purus dolor viverra mi laoreet at cursus justo.
                 Ultrices purus diam egestas amet faucibus tempor blandit. Elit
                 velit mauris aliquam est diam. Leo
@@ -36,14 +36,14 @@ const HeroSection = () => {
               <input
                 type="text"
                 placeholder="Job Title or College"
-                className="flex-1 px-4 py-3 border-0 focus:outline-none text-gray-700 text-base"
+                className="flex-1 px-4 py-3 border-0 focus:outline-none text-black-700 text-base"
               />
               <div className="w-px h-10 bg-gray-200"></div>
-              <select className="px-4 py-3 border-0 focus:outline-none text-gray-700 bg-transparent text-base min-w-[140px]">
+              <select className="px-4 py-3 border-0 focus:outline-none text-black-700 bg-transparent text-base min-w-[140px]">
                 <option>Select Location</option>
               </select>
               <div className="w-px h-10 bg-gray-200"></div>
-              <select className="px-4 py-3 border-0 focus:outline-none text-gray-700 bg-transparent text-base min-w-[140px]">
+              <select className="px-4 py-3 border-0 focus:outline-none text-black-700 bg-transparent text-base min-w-[140px]">
                 <option>Select Category</option>
               </select>
               <button className="bg-gray-800 text-white px-6 py-3 rounded-xl flex items-center gap-2 hover:bg-gray-700 transition-colors text-base font-medium">
@@ -55,20 +55,20 @@ const HeroSection = () => {
             {/* Stats */}
             <div className="flex items-center gap-12 pt-6">
               <div>
-                <div className="text-3xl font-bold text-gray-900">125K+</div>
-                <div className="text-gray-600 text-sm mt-1">People joined</div>
+                <div className="text-3xl font-bold text-black">125K+</div>
+                <div className="text-black-600 text-sm mt-1">People joined</div>
               </div>
               <div>
-                <div className="text-3xl font-bold text-gray-900">9,99%</div>
-                <div className="text-gray-600 text-sm mt-1">
+                <div className="text-3xl font-bold text-black">9,99%</div>
+                <div className="text-black-600 text-sm mt-1">
                   Success Probability
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <div className="text-3xl font-bold text-gray-900">5.0</div>
-                <div className="flex text-[#F2B31D] text-lg">
+                <div className="text-3xl font-bold text-black">5.0</div>
+                <div className="flex  text-lg">
                   {[...Array(5)].map((_, i) => (
-                    <span key={i}>★</span>
+                    <span className="text-[#F2B31D]" key={i}>★</span>
                   ))}
                 </div>
                 <div className="flex -space-x-2 ml-3">

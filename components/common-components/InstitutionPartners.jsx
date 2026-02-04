@@ -249,46 +249,50 @@ export default function InstitutionPartners() {
   const rightPartners = [PARTNERS[0], PARTNERS[1], PARTNERS[4], PARTNERS[5]];
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center  px-4 sm:px-8">
-      <div className="max-w-[1240px] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        {/* LEFT SECTION: Header + 4 Cards */}
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-4 pl-2">
-            <div className="inline-block mb-4">
-              <span className="bg-gradient-to-r from-[#F2B31D] to-transparent text-black px-6 py-2 rounded-full text-base font-medium">
-                Finding Job
-              </span>
+    <section className="bg-gray-50 py-16">
+      <div className="section-wid">
+        <div className="flex items-center justify-center">
+          <div className=" w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* LEFT SECTION: Header + 4 Cards */}
+            <div className="flex flex-col gap-10">
+              <div className="flex flex-col gap-4 pl-2">
+                <div className="inline-block mb-4">
+                  <span className="bg-gradient-to-r from-[#F2B31D] to-transparent text-black px-6 py-2 rounded-full text-base font-medium">
+                    Finding Job
+                  </span>
+                </div>
+
+                {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
+                <h2 className="section-ti">
+                  Institution Partners
+                </h2>
+
+                <p className="text-gray-600">
+                  Classical Latin Literature From 45 BC, Making It Over 2000
+                  Years Old. Richard McClintock, A Latin Professor At Hampden
+                  Sydney College In Virginia.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                {leftPartners.map((p) => (
+                  <PartnerCard p={p} key={p.id} />
+                ))}
+              </div>
             </div>
 
-            {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
-            <h2 className="text-4xl font-bold text-gray-900 ">
-              Institution Partners
-            </h2>
-
-            <p className="text-gray-600 text-lg">
-              Classical Latin Literature From 45 BC, Making It Over 2000 Years
-              Old. Richard McClintock, A Latin Professor At Hampden Sydney
-              College In Virginia.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            {leftPartners.map((p) => (
-              <PartnerCard p={p} key={p.id} />
-            ))}
-          </div>
-        </div>
-
-        {/* RIGHT SECTION: 4 Cards (Aligned with Title) */}
-        <div className="pt-0 lg:pt-8">
-          <div className="grid grid-cols-2 gap-6">
-            {rightPartners.map((p) => (
-              <PartnerCard p={p} key={p.id} />
-            ))}
+            {/* RIGHT SECTION: 4 Cards (Aligned with Title) */}
+            <div className="pt-0">
+              <div className="grid grid-cols-2 gap-6">
+                {rightPartners.map((p) => (
+                  <PartnerCard p={p} key={p.id} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -303,7 +307,7 @@ const PartnerCard = (props) => {
         border border-gray-200
         ${
           p.isDark
-            ? "bg-[#1e1e1e] border-gray-700 text-white  hover:scale-[1.02] border "
+            ? "bg-[#1e1e1e] border-gray-700 !text-[#fff]  hover:scale-[1.02] border "
             : "bg-white border-gray-100 text-[#1a1a1a] hover:border-gray-300 hover:shadow-lg hover:scale-[1.02]"
         }
       `}
@@ -311,9 +315,12 @@ const PartnerCard = (props) => {
       <div className="mb-4 transform transition-transform duration-500 group-hover:scale-110">
         {p.logo}
       </div>
-      <h3 className="text-center font-semibold text-[14px] px-1 leading-tight">
-        {p.name}
-      </h3>
+      <h3
+        className={`text-center sub-ti px-1 leading-tight ${
+          p.isDark ? "!text-[#fff]" : "text-[#000]"
+        }`}
+      >{p.name}</h3>
+    
     </div>
   );
 };
