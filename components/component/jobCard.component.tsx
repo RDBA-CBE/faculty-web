@@ -1,88 +1,88 @@
 import { capitalizeFLetter, getAvatarColor } from "@/utils/function.utils";
-import { Briefcase, Heart, MapPin } from "lucide-react";
+import { MapPin, Briefcase, Clock, Bookmark, Share2, DollarSign, IndianRupee } from "lucide-react";
 import React from "react";
 
-const JobCard = (props: any) => {
-  const { job, onClick } = props;
+interface JobCardProps {
+  job: {
+    id: number;
+    job_title: string;
+    job_type: string;
+    salary_range: string;
+    company: string;
+    location: string;
+    experiences: string;
+  };
+  onClick?: () => void;
+}
 
+export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
+  const getSalaryIcon = (salaryRange: string) => {
+    if (salaryRange.includes('$')) {
+      return <DollarSign className="w-4 h-4" />;
+    }
+    return <IndianRupee className="w-4 h-4" />;
+  };
 
   return (
     <div
-      key={job.id}
-      className="bg-white rounded-2xl p-6 border cursor-pointer"
+      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          {job.logo ? (
-            <img
-              src={job.logo}
-              alt={job.company}
-              className="w-10 h-10 rounded-lg"
-            />
-          ) : (
-            <div
-              className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold text-sm`}
-            >
-              {job.company?.slice(0, 1).toUpperCase()}
-            </div>
-          )}
-          <div>
-            <h3 className="font-semibold text-gray-900 text-sm">
-              {job.company}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex items-start gap-3">
+          <div
+            className={`w-12 h-12 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+          >
+            {job.company?.charAt(0).toUpperCase()}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+              {job.job_title}
             </h3>
-            <p className="text-gray-500 text-xs">5 days ago</p>
+            <p className="text-gray-600 font-medium">{job.company}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="bg-[#FBE6DB] text-[#F34F0E] px-2 py-1 rounded rounded-xl text-xs font-medium whitespace-nowrap">
-            {job.job_type}
-          </span>
-          {/* <Heart className="w-5 h-5 text-gray-300 hover:text-red-500 cursor-pointer" /> */}
+          <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+          <Share2 className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
         </div>
       </div>
-      <hr className="py-2" />
-      {/* Job Title */}
-      <h4 className="text-xl font-bold text-gray-900 mb-3">{job.job_title}</h4>
+
+      {/* Experience and Salary */}
+      <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+        <div className="flex items-center gap-1">
+          <Briefcase className="w-4 h-4" />
+          <span>{job.experiences}</span>
+        </div>
+        <div className="w-px h-4 bg-gray-300"></div>
+        <div className="flex items-center gap-1">
+          {getSalaryIcon(job.salary_range)}
+          <span className="font-semibold text-gray-900">{job.salary_range}</span>
+        </div>
+      </div>
+
+      {/* Location */}
+      <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
+        <MapPin className="w-4 h-4" />
+        <span>{job.location}</span>
+      </div>
 
       {/* Description */}
-      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-        {job.job_description}
+      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+        Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment.
       </p>
 
-      {/* Experience */}
-      <div className="flex items-center gap-2 mb-6">
-        <Briefcase className="w-4 h-4 text-gray-400" />
-        <span className="text-gray-600 text-sm">
-          {job.experiences} Experience
+      {/* Footer */}
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+          {capitalizeFLetter(job.job_type)}
         </span>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-          className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl text-black px-6 py-1  hover:bg-[#E5A519] transition-colors"
-        >
-          Apply Now
-        </button>
-        {job?.location && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-            className="flex items-center gap-2  text-gray-500 hover:text-gray-700"
-          >
-            <MapPin className="w-4 h-4" />
-            {capitalizeFLetter(job?.location)}
-          </button>
-        )}
+        <div className="flex items-center gap-1 text-xs text-gray-500">
+          <Clock className="w-3 h-3" />
+          <span>2 days ago</span>
+        </div>
       </div>
     </div>
-  );
-};
-
-export default JobCard;
+  )
+}

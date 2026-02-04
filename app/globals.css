@@ -60,22 +60,64 @@ h6 {
   font-family: "Cabin", sans-serif;
   font-optical-sizing: auto;
 }
-.section-ti{
+.section-ti {
   color: #000;
   font-size: 36px;
   font-weight: 500;
 }
 
-.main-ti{
+.main-ti {
   color: #000;
   font-size: 32px;
   font-weight: 500;
 }
 
-.sub-ti{
+.sub-ti {
   font-size: 22px;
   color: #000;
   font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  .section-ti {
+    font-size: 34px;
+  }
+
+  .main-ti {
+    font-size: 28px;
+  }
+
+  .sub-ti {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 700px) {
+  .section-ti {
+    font-size: 32px;
+  }
+
+  .main-ti {
+    font-size: 25px;
+  }
+
+  .sub-ti {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section-ti {
+    font-size: 28px;
+  }
+
+  .main-ti {
+    font-size: 22px;
+  }
+
+  .sub-ti {
+    font-size: 18px;
+  }
 }
 
 @layer base {

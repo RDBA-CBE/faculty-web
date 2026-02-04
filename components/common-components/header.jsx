@@ -196,7 +196,7 @@ const Header = () => {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
         className={`shadow-sm sticky top-0 z-[50] ${
-          isHomePage ? "bg-white" : "bg-black"
+          isHomePage ? "bg-white" : "bg-white"
         }`}
       >
         <div className="section-wid">
@@ -209,7 +209,7 @@ const Header = () => {
                 </div>
                 <span
                   className={`font-semibold text-lg ${
-                    isHomePage ? "text-gray-900" : "text-white"
+                    isHomePage ? "text-gray-900" : "text-gray-900"
                   }`}
                 >
                   Faculty Plus
@@ -233,7 +233,7 @@ const Header = () => {
                           ? "text-[#F2B31D]"
                           : isHomePage
                           ? "text-gray-700 hover:text-[#F2B31D]"
-                          : "text-white hover:text-[#F2B31D]"
+                          : "text-gray-700 hover:text-[#F2B31D]"
                       }`}
                     >
                       {menu.title}
@@ -284,7 +284,7 @@ const Header = () => {
                     onClick={() => setState({ isOpenLogin: true })}
                     variant="ghost"
                     className={`hover:text-[#F2B31D] hover:bg-transparent ${
-                      isHomePage ? "text-gray-700" : "text-white"
+                      isHomePage ? "text-gray-700" : "text-gray-700"
                     }`}
                   >
                     Login
@@ -305,7 +305,7 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden ${
-                      isHomePage ? "text-gray-700" : "text-white"
+                      isHomePage ? "text-gray-700" : "text-gray-700"
                     }`}
                   >
                     <MenuIcon className="h-6 w-6" />
