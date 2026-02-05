@@ -10,6 +10,36 @@ const job = {
       if (body?.ordering) {
         url += `&ordering=${encodeURIComponent(body.ordering)}`;
       }
+       if (body.role) {
+       url += `&role=${body.role}`;
+      }
+      if (body?.search) {
+        url +=  `&search=${body.search}`;
+      }
+      if (body?.college_id) {
+        url +=  `&college_id=${body.college_id}`;
+      }
+
+      if (body?.department_id) {
+        url +=  `&department_id=${body.department_id}`;
+      }
+
+
+      if (body?.institution_id) {
+       url +=  `&institution_id=${body.institution_id}`;
+      }
+
+      if (body.created_by) {
+        url +=  `&created_by=${body.created_by}`;
+      }
+
+      if (body.team == "No") {
+       url +=  `&team=${false}`;
+      }
+
+      if (body.team == "Yes") {
+        url +=  `&team=${true}`;
+      }
       instance()
         .get(url)
         .then((res) => {

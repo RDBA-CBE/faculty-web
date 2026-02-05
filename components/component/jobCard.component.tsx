@@ -18,14 +18,14 @@ interface JobCardProps {
 export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
   const getSalaryIcon = (salaryRange: string) => {
     if (salaryRange.includes('$')) {
-      return <DollarSign className="w-4 h-4" />;
+      return <DollarSign className="w-3.5 h-3.5" />;
     }
-    return <IndianRupee className="w-4 h-4" />;
+    return <IndianRupee className="w-3.5 h-3.5" />;
   };
 
   return (
     <div
-      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+      className="bg-clr2 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
       {/* Header */}
@@ -37,7 +37,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
             {job.company?.charAt(0).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1 group-hover:text-blue-600 transition-colors">
+            <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1 group-hover:text-[#000] transition-colors">
               {job.job_title}
             </h3>
             <p className="text-gray-600 font-medium">{job.company}</p>
@@ -50,32 +50,32 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       </div>
 
       {/* Experience and Salary */}
-      <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-        <div className="flex items-center gap-1">
-          <Briefcase className="w-4 h-4" />
-          <span>{job.experiences}</span>
+      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
+        <div className="flex items-center gap-2">
+          <Briefcase className="w-3.5 h-3.5" />
+          <span className="text-sm">{job.experiences}</span>
         </div>
         <div className="w-px h-4 bg-gray-300"></div>
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           {getSalaryIcon(job.salary_range)}
-          <span className="font-semibold text-gray-900">{job.salary_range}</span>
+          <span className="text-sm">{job.salary_range}</span>
         </div>
       </div>
 
       {/* Location */}
-      <div className="flex items-center gap-1 text-sm text-gray-600 mb-3">
-        <MapPin className="w-4 h-4" />
-        <span>{job.location}</span>
+      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+        <MapPin className="w-3.5 h-3.5" />
+        <span className="text-sm">{job.location}</span>
       </div>
 
       {/* Description */}
-      <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+      <p className=" text-gray-600 mb-4 line-clamp-2">
         Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment.
       </p>
 
       {/* Footer */}
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <span className="bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium">
+      <div className="flex items-center justify-between  border-t border-gray-100">
+        <span className="bg-green-50 text-green-700 px-3  rounded-full text-xs font-medium">
           {capitalizeFLetter(job.job_type)}
         </span>
         <div className="flex items-center gap-1 text-xs text-gray-500">

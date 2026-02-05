@@ -1425,8 +1425,22 @@ body {
   display: none;
 }
 
+
+
+/* .no-scrollbar::-webkit-scrollbar {
+  display: none;     
+} */
+
+.bg-clr1{
+   background: #fff;
+}
+
+.bg-clr2{
+   background: #f3f4f6;
+}
+
 .section-wid {
-  width: 80%;
+  width: 70%;
   margin: auto;
 }
 

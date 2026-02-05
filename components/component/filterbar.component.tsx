@@ -20,7 +20,7 @@ const Filterbar: React.FC<SidebarProps> = ({ filters, onFilterChange }) => {
   };
 
   return (
-    <aside className="w-full lg:w-72 bg-white rounded-2xl shadow-sm border-0 md:border border-slate-100 h-fit sticky top-24">
+    <aside className="w-full h-full">
       <div className=" lg:p-[19px] lg:py-[10px]">
 
         {/* Category */}

@@ -2,7 +2,6 @@
 
 import Filterbar from "@/components/component/filterbar.component";
 import ChipFilters from "@/components/component/chipFilters.component";
-import useDebounce from "@/components/common-components/useDebounce";
 
 import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
@@ -56,8 +55,6 @@ import {
 } from "@/components/ui/select";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
-import PaginationCom from "@/components/component/PaginationCom";
-import page from "../(real-estate)/test/page";
 
 export default function JobsPage() {
   const [state, setState] = useSetState({
@@ -101,8 +98,6 @@ export default function JobsPage() {
     jobID: null,
   });
 
-  // const debouncedSearch = useDebounce(state.search, 500);
-
   useEffect(() => {
     if (selectedJob && isTabScreen) {
       setTimeout(() => setIsAnimating(true), 100);
@@ -113,22 +108,15 @@ export default function JobsPage() {
     jobList(1);
   }, []);
 
-  // useEffect(() => {
-  //   jobList(1);
-  // }, []);
-
-  const jobList = async (page = 1) => {
+  const jobList = async (page) => {
     try {
       setState({ loading: true });
 
       const body = bodyData();
-
-      console.log("body", body);
-
       const res: any = await Models.job.list(page, body);
       setState({
         loading: false,
-        page: state.page,
+        page,
         count: res?.count,
         jobList: res?.results,
         next: res?.next,
@@ -166,7 +154,6 @@ export default function JobsPage() {
       body.ordering =
         state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
     }
-
     return body;
   };
 
@@ -183,19 +170,39 @@ export default function JobsPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleNext = () => {
-    if (!state.next) return;
-    setState({ page: state.page + 1 });
-    jobList(state.page + 1);
-    
-  };
+  const filteredJobs = useMemo(() => {
+    return generateMockJobs(MOCK_JOBS, 51).filter((job) => {
+      const matchSearch =
+        job.title.toLowerCase().includes(filters.searchQuery.toLowerCase()) ||
+        job.company.toLowerCase().includes(filters.searchQuery.toLowerCase());
+      const matchLocation =
+        !filters.location || job.location === filters.location;
+      const matchCategory =
+        filters.categories.length === 0 ||
+        filters.categories.includes(job.category);
+      const matchType =
+        filters.jobTypes.length === 0 || filters.jobTypes.includes(job.type);
+      const matchExperience =
+        filters.experienceLevels.length === 0 ||
+        filters.experienceLevels.includes(job.experience);
+      const matchTags =
+        filters.tags.length === 0 ||
+        job.tags.some((tag) => filters.tags.includes(tag));
 
-  const handlePrev = () => {
-    if (!state.prev) return;
-     setState({ page: state.page - 1 });
-    jobList(state.page);
-   
-  };
+      const jobSalary = parseInt(job.salary.replace(/[^0-9]/g, ""));
+      const matchSalary = jobSalary <= filters.salaryRange[1];
+
+      return (
+        matchSearch &&
+        matchLocation &&
+        matchCategory &&
+        matchType &&
+        matchExperience &&
+        matchTags &&
+        matchSalary
+      );
+    });
+  }, [filters]);
 
   const handleFormChange = (field, value) => {
     setState({
@@ -233,10 +240,10 @@ export default function JobsPage() {
   console.log("✌️selectedJob --->", selectedJob);
 
   return (
-    <div className=" bg-clr1">
-      <div className="bg-black py-4 px-4 ">
+    <div className=" bg-white">
+      <div className="bg-black py-6 px-4 ">
         <div className="max-w-7xl mx-auto text-center">
-          <h1 className="sub-ti !text-white ">Jobs</h1>
+          <h1 className="section-ti !text-white ">Jobs</h1>
         </div>
       </div>
 
@@ -517,10 +524,10 @@ export default function JobsPage() {
             </div>
           </div>
         ) : isDesktopScreen && selectedJob && showJobDetail ? (
-          <div className="flex gap-6 ">
+          <div className="flex gap-6">
             {/* Left Sidebar - Jobs List */}
             <div className="w-80 flex-shrink-0">
-              <div className="mb-4 flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-sm  overflow-hidden p-1">
+              <div className="mb-4 flex flex-col lg:flex-row items-center w-full bg-gray-100  rounded-sm  overflow-hidden p-1">
                 <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
                   <Search color="#F2B31D" size={22} />
                   <input
@@ -541,10 +548,10 @@ export default function JobsPage() {
                   <div
                     key={job.id}
                     onClick={() => setSelectedJob(job)}
-                    className={`cursor-pointer p-4 rounded-lg  transition-all hover:shadow-lg ${
+                    className={`cursor-pointer p-4 bg-gray-100 rounded-lg  transition-all hover:shadow-lg ${
                       selectedJob?.id === job.id
-                        ? "border border-amber-400 bg-clr1 shadow-md"
-                        : "hover:border hover:border-gray-300 bg-clr2"
+                        ? "border border-amber-400 bg-white shadow-md"
+                        : "hover:border hover:border-gray-300"
                     }`}
                   >
                     {/* Header */}
@@ -611,9 +618,9 @@ export default function JobsPage() {
             </div>
 
             <div className="flex-1 ">
-              <div className="flex gap-6 flex-col xl:flex-row">
+              <div className="flex gap-6">
                 {/* Main Content */}
-                <div className="flex-1 space-y-1  bg-clr2 rounded-lg p-6">
+                <div className="flex-1 space-y-1  bg-gray-100 rounded-lg p-6">
                   {/* Job Header Card */}
                   <div className=" border-b  px-2 py-2 pb-5">
                     <div className="flex items-start justify-between mb-2">
@@ -676,6 +683,8 @@ export default function JobsPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      
+
                       <button
                         onClick={() => setShowApplicationModal(true)}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
@@ -684,18 +693,18 @@ export default function JobsPage() {
                       </button>
 
                       <div className="flex items-center gap-2">
-                        <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
-                        <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                        <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                        <Share2 className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </div>
                     </div>
                   </div>
 
                   {/* Job Description */}
                   <div className="border-b  px-2 py-2 pb-5">
-                    <h2 className="text-lg font-semibold text-black mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
                       About the job
                     </h2>
-                    <div className="leading-relaxed space-y-4">
+                    <div className="text-gray-700 leading-relaxed space-y-4">
                       <p>
                         {/* {state?.jobDetail?.job_description} */}
                         We are looking for a talented professional to join our
@@ -715,7 +724,7 @@ export default function JobsPage() {
 
                   {/* Responsibilities */}
                   <div className="border-b  px-2 py-2 pb-5">
-                    <h2 className="text-lg font-semibold text-black mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
                       Key responsibilities
                     </h2>
                     <ul className="space-y-3">
@@ -729,7 +738,7 @@ export default function JobsPage() {
                         <li key={index} className="flex items-start gap-3">
                           <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                          <span className="">{item}</span>
+                          <span className="text-gray-700">{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -737,7 +746,7 @@ export default function JobsPage() {
 
                   {/* Requirements */}
                   <div className="border-b  px-2 py-2 pb-5">
-                    <h2 className="text-lg font-semibold text-black mb-4">
+                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
                       Requirements
                     </h2>
                     <ul className="space-y-3">
@@ -750,7 +759,7 @@ export default function JobsPage() {
                       ].map((item, index) => (
                         <li key={index} className="flex items-start gap-3">
                           <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                          <span className="">{item}</span>
+                          <span className="text-gray-700">{item}</span>
                         </li>
                       ))}
                     </ul>
@@ -774,7 +783,7 @@ export default function JobsPage() {
                       ].map((skill, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1 bg-clr1 text-gray-700 rounded-full text-sm font-medium"
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm font-medium"
                         >
                           {skill}
                         </span>
@@ -784,37 +793,43 @@ export default function JobsPage() {
                 </div>
 
                 {/* Right Sidebar */}
-                <div className="w-full xl:w-80 flex-shrink-0">
+                <div className="w-80 flex-shrink-0">
                   <div className="sticky top-20 space-y-4">
                     {/* Job Details */}
-                    <div className="bg-clr2 rounded-lg   p-6">
-                      <h3 className="text-lg font-semibold text-black mb-4">
+                    <div className="bg-gray-100 rounded-lg   p-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         Job details
                       </h3>
-                      <div className="space-y-2">
+                      <div className="space-y-4">
                         <div>
-                          <p className="text-md font-medium  pb-1">Job type</p>
-                          <p className="text-md text-black">
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Job type
+                          </p>
+                          <p className="text-sm text-gray-900">
                             {state?.jobDetail?.job_type}
                           </p>
                         </div>
                         <div>
-                          <p className="text-md font-medium  pb-1">
+                          <p className="text-sm font-medium text-gray-500 mb-1">
                             Experience level
                           </p>
-                          <p className="text-md text-black">
+                          <p className="text-sm text-gray-900">
                             {state?.jobDetail?.experiences}
                           </p>
                         </div>
                         <div>
-                          <p className="text-md font-medium  pb-1">Salary</p>
-                          <p className="text-md text-black">
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Salary
+                          </p>
+                          <p className="text-sm text-gray-900">
                             {state?.jobDetail?.salary_range}
                           </p>
                         </div>
                         <div>
-                          <p className="text-md font-medium  pb-1">Location</p>
-                          <p className="text-md text-black">
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Location
+                          </p>
+                          <p className="text-sm text-gray-900">
                             {state?.jobDetail?.location}
                           </p>
                         </div>
@@ -822,7 +837,7 @@ export default function JobsPage() {
                     </div>
 
                     {/* Company Info */}
-                    <div className="bg-clr2 rounded-lg  p-6">
+                    <div className="bg-gray-100 rounded-lg  p-6">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         About {state?.jobDetail?.company}
                       </h3>
@@ -837,9 +852,7 @@ export default function JobsPage() {
                           <div
                             className={`w-12 h-12 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold`}
                           >
-                            {state?.jobDetail?.company
-                              ?.slice(0, 1)
-                              .toUpperCase()}
+                            {state?.jobDetail?.company?.slice(0, 1).toUpperCase()}
                           </div>
                         )}
                         <div>
@@ -851,7 +864,7 @@ export default function JobsPage() {
                           </p>
                         </div>
                       </div>
-                      <p className="leading-relaxed">
+                      <p className="text-sm text-gray-700 leading-relaxed">
                         A leading technology company focused on innovation and
                         delivering exceptional solutions to clients worldwide.
                       </p>
@@ -862,7 +875,7 @@ export default function JobsPage() {
             </div>
           </div>
         ) : (
-          <div className="relative flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8">
             <div
               className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
                 isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -870,34 +883,27 @@ export default function JobsPage() {
               onClick={() => setIsSidebarOpen(false)}
             />
 
-            {/* Mobile STICKY SIDEBAR */}
             <div
-              className={`fixed lg:hidden z-50 left-0 top-0 h-full w-80 bg-clr1 transition-transform ${
+              className={`fixed lg:sticky lg:top-16 z-50 lg:z-0 left-0 top-0 h-full lg:h-auto w-80 lg:w-auto transition-transform lg:translate-x-0 ${
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
               }`}
             >
               <Filterbar filters={filters} onFilterChange={setFilters} />
             </div>
 
-            {/* DESKTOP STICKY SIDEBAR */}
-            <div className="hidden lg:block shrink-0  bg-clr2 rounded-xl self-start">
-              <div className="h-fit w-72 ">
-                <Filterbar filters={filters} onFilterChange={setFilters} />
-              </div>
-            </div>
-
             <div className="flex-grow">
-              {/* content input header start */}
-              <div className="z-30 bg-white lg:pb-5 self-start">
-                <div className="flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-xl  p-1">
+              <div className="sticky top-16 z-10 bg-white lg:pb-5">
+                <div className="flex flex-col lg:flex-row items-center w-full bg-white border border-slate-100 rounded-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-1">
                   <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
                     <Search color="#F2B31D" size={22} />
                     <input
                       type="text"
                       placeholder="Search by: Job tittle, Position, Keyword..."
                       className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
-                      value={state.search}
-                      onChange={(e) => setState({ search: e.target.value })}
+                      value={filters.searchQuery}
+                      onChange={(e) =>
+                        setFilters({ ...filters, searchQuery: e.target.value })
+                      }
                     />
                   </div>
 
@@ -919,10 +925,7 @@ export default function JobsPage() {
                       <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
                     </div>
 
-                    <button
-                      className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
-                      onClick={() => jobList(state?.page)}
-                    >
+                    <button className="px-8 py-3 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-xl text-sm shadow-sm transition-all active:scale-95 whitespace-nowrap">
                       Find Job
                     </button>
                   </div>
@@ -957,7 +960,7 @@ export default function JobsPage() {
                           </SheetTitle>
                           <button
                             onClick={() => setIsMobileFilterOpen(false)}
-                            className="p-1 hover:bg-clr2 rounded-full"
+                            className="p-1 hover:bg-gray-100 rounded-full"
                           >
                             <X size={20} className="text-gray-500" />
                           </button>
@@ -973,58 +976,43 @@ export default function JobsPage() {
                   </div>
                 </div>
               </div>
-              {/* content input header end */}
-
-              {/* content body job list */}
 
               {state.jobList?.length > 0 ? (
-                <>
-                  <div
-                    className="grid grid-cols-1 md:grid grid-cols-2  "
-                    style={{
-                      gap: "20px",
-                    }}
-                  >
-                    {/* {filteredJobs.map((job) => ( */}
-                    {state.jobList?.map((job: any) => (
-                      <div
-                        key={job.id}
-                        onClick={() => {
-                          if (isTabScreen) {
-                            setIsAnimating(false);
-                            setTimeout(() => {
-                              setSelectedJob(job);
-                              setState({ jobId: job.id });
-                              setIsAnimating(true);
-                              jobDetail(job.id);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
-                            }, 100);
-                          } else {
+                <div
+                  className="grid grid-cols-1 "
+                  style={{
+                    gap: "20px",
+                  }}
+                >
+                  {/* {filteredJobs.map((job) => ( */}
+                  {state.jobList?.map((job: any) => (
+                    <div
+                      key={job.id}
+                      onClick={() => {
+                        if (isTabScreen) {
+                          setIsAnimating(false);
+                          setTimeout(() => {
                             setSelectedJob(job);
                             setState({ jobId: job.id });
+                            setIsAnimating(true);
                             jobDetail(job.id);
-                            if (isDesktopScreen) setShowJobDetail(true);
-                          }
-                        }}
-                        className="cursor-pointer transition-transform hover:scale-10"
-                      >
-                        <JobCard job={job} />
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex justify-center items-center mt-10">
-                    <PaginationCom
-                      page={state.page}
-                      next={state.next}
-                      prev={state.prev}
-                      onNext={handleNext}
-                      onPrev={handlePrev}
-                    />
-                  </div>
-                </>
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }, 100);
+                        } else {
+                          setSelectedJob(job);
+                          setState({ jobId: job.id });
+                          jobDetail(job.id);
+                          if (isDesktopScreen) setShowJobDetail(true);
+                        }
+                      }}
+                      className="cursor-pointer transition-transform hover:scale-105"
+                    >
+                      <JobCard job={job} />
+                    </div>
+                  ))}
+                </div>
               ) : (
-                <div className="flex flex-col items-center justify-center py-20 bg-clr1 rounded-2xl border border-slate-100">
+                <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-100">
                   <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                     <svg
                       className="w-10 h-10 text-slate-300"
@@ -1113,19 +1101,19 @@ export default function JobsPage() {
                     </SheetHeader>
 
                     <div className="flex flex-wrap gap-2">
-                      <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                      <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <Briefcase className="w-3 h-3" />
                         <span>{selectedJob.experiences} Experiences</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                      <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <Clock className="w-3 h-3" />
                         <span>{selectedJob.job_type}</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                      <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <DollarSign className="w-3 h-3" />
                         <span>{selectedJob.salary_range}</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                      <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded text-xs">
                         <MapPin className="w-3 h-3" />
                         <span>{selectedJob.location}</span>
                       </div>
@@ -1238,7 +1226,7 @@ export default function JobsPage() {
                     </div>
                   </div>
 
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t">
                     <button
                       onClick={() => setShowApplicationModal(true)}
                       className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
@@ -1329,7 +1317,7 @@ export default function JobsPage() {
                     }
                   >
                     <SelectTrigger
-                      className={`bg-clr1 ${
+                      className={`bg-white ${
                         state.errors?.experience ? "border-red-500" : ""
                       } `}
                     >
