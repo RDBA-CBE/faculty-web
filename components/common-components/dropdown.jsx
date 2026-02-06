@@ -44,23 +44,24 @@ const CustomSelect = (props) => {
       )}
       <div className="relative">
         <Select
+          value={value ? String(value) : ""}
           onValueChange={(val) => {
-            const selected = options?.find((option) => option.value === val);
-            if (selected) {
-              onChange(selected);
-            }
+            const selected = options?.find(
+              (option) => String(option.value) === val,
+            );
+            onChange(selected || null);
           }}
-          value={value}
           disabled={disabled}
         >
-          <SelectTrigger hideIcon={!!value}>
+          <SelectTrigger className={`border-none shadow-none bg-none 
+ ${selectedOption ? " pr-10 [&>svg]:hidden" : ""}`}>
             {" "}
             {/* Space for clear icon */}
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
             {options?.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
+              <SelectItem key={option.value} value={String(option.value)}>
                 {option.label}
               </SelectItem>
             ))}

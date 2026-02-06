@@ -1,23 +1,33 @@
 import { capitalizeFLetter, getAvatarColor } from "@/utils/function.utils";
-import { MapPin, Briefcase, Clock, Bookmark, Share2, DollarSign, IndianRupee } from "lucide-react";
+import {
+  MapPin,
+  Briefcase,
+  Clock,
+  Bookmark,
+  Share2,
+  DollarSign,
+  IndianRupee,
+} from "lucide-react";
+import moment from "moment";
 import React from "react";
 
 interface JobCardProps {
   job: {
     id: number;
     job_title: string;
-    job_type: string;
-    salary_range: string;
+    job_type_obj: any;
+    salary_range_obj: any;
     company: string;
-    location: string;
+    locations: any;
     experiences: string;
+    created_at: string;
   };
   onClick?: () => void;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
-  const getSalaryIcon = (salaryRange: string) => {
-    if (salaryRange.includes('$')) {
+  const getSalaryIcon = (salary_range_obj_name: string) => {
+    if (salary_range_obj_name?.includes("$")) {
       return <DollarSign className="w-3.5 h-3.5" />;
     }
     return <IndianRupee className="w-3.5 h-3.5" />;
@@ -57,32 +67,40 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         </div>
         <div className="w-px h-4 bg-gray-300"></div>
         <div className="flex items-center gap-2">
-          {getSalaryIcon(job.salary_range)}
-          <span className="text-sm">{job.salary_range}</span>
+          {getSalaryIcon(job?.salary_range_obj?.name)}
+          <span className="text-sm">{job?.salary_range_obj?.name}</span>
         </div>
       </div>
 
       {/* Location */}
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
         <MapPin className="w-3.5 h-3.5" />
-        <span className="text-sm">{job.location}</span>
+        <span className="text-sm">
+          {job.locations?.map((item) => item.city).join(", ")}
+        </span>
       </div>
 
       {/* Description */}
       <p className=" text-gray-600 mb-4 line-clamp-2">
-        Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment.
+        Looking for a skilled professional to join our team. Great opportunity
+        for career growth and development in a dynamic work environment.
       </p>
 
       {/* Footer */}
       <div className="flex items-center justify-between  border-t border-gray-100">
         <span className="bg-green-50 text-green-700 px-3  rounded-full text-xs font-medium">
-          {capitalizeFLetter(job.job_type)}
+          {capitalizeFLetter(job?.job_type_obj?.name)}
         </span>
         <div className="flex items-center gap-1 text-xs text-gray-500">
           <Clock className="w-3 h-3" />
-          <span>2 days ago</span>
+          <span>
+            {moment(job.created_at).isValid() &&
+            moment(job.created_at).year() > 1900
+              ? moment(job.created_at).fromNow()
+              : "Just now"}
+          </span>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

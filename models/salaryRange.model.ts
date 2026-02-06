@@ -1,49 +1,11 @@
 import instance from "@/utils/axios.utils";
 
-const job = {
-  list: (page, body) => {
+
+const salaryRange = {
+  list: () => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/?page=${page}`;
-      if (body?.search) {
-        url += `&search=${encodeURIComponent(body.search)}`;
-      }
-      if (body?.ordering) {
-        url += `&ordering=${encodeURIComponent(body.ordering)}`;
-      }
-      if (body.category) {
-        url += `&category=${encodeURIComponent(body.category)}`;
-      }
-      if (body.location) {
-        url += `&location_id=${encodeURIComponent(body.location)}`;
-      }
+      let url = `salary-ranges/`;
 
-      if (body.jobTypes) {
-        url += `&job_type=${encodeURIComponent(body.jobTypes)}`;
-      }
-       if (body.experience) {
-        url += `&experience=${encodeURIComponent(body.experience)}`;
-      }
-
-      if (body.created_by) {
-        url += `&created_by=${body.created_by}`;
-      }
-
-      if (body.salary_range) {
-        url += `&salary_range=${body.salary_range}`;
-      }
-
-      if (body.tags) {
-        url += `&tags=${body.tags}`;
-      }
-
-      if (body.date_posted_before) {
-        url += `&date_posted_before=${body.date_posted_before}`;
-      }
-
-      if (body.date_posted_after) {
-        url += `&date_posted_after=${body.date_posted_after}`;
-      }
-      
       instance()
         .get(url)
         .then((res) => {
@@ -62,7 +24,7 @@ const job = {
 
   create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/`;
+      let url = `salary-ranges/`;
       instance()
         .post(url, data)
         .then((res) => {
@@ -81,7 +43,7 @@ const job = {
 
   update: (data: any, id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/${id}/`;
+      let url = `salary-ranges/${id}/`;
       instance()
         .patch(url, data)
         .then((res) => {
@@ -100,7 +62,7 @@ const job = {
 
   delete: (id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/${id}/`;
+      let url = `salary-ranges/${id}/`;
       instance()
         .delete(url)
         .then((res) => {
@@ -119,7 +81,7 @@ const job = {
 
   details: (id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/${id}/`;
+      let url = `salary-ranges/${id}/`;
       instance()
         .get(url)
         .then((res) => {
@@ -137,4 +99,4 @@ const job = {
   },
 };
 
-export default job;
+export default salaryRange;

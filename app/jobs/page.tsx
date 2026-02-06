@@ -6,6 +6,8 @@ import useDebounce from "@/components/common-components/useDebounce";
 
 import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
+  capitalizeFLetter,
+  Dropdown,
   Failure,
   generateMockJobs,
   getAvatarColor,
@@ -58,6 +60,8 @@ import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
 import PaginationCom from "@/components/component/PaginationCom";
 import page from "../(real-estate)/test/page";
+import CustomSelect from "@/components/common-components/dropdown";
+import moment from "moment";
 
 export default function JobsPage() {
   const [state, setState] = useSetState({
@@ -95,13 +99,15 @@ export default function JobsPage() {
     jobTypes: [],
     experienceLevels: [],
     datePosted: "All",
-    salaryRange: [0, 9999],
+    salaryRange: [],
     tags: [],
     experience: "",
     jobID: null,
   });
 
-  // const debouncedSearch = useDebounce(state.search, 500);
+  console.log("filters?.location", filters?.location);
+
+  const debouncedSearch = useDebounce(state.search, 500);
 
   useEffect(() => {
     if (selectedJob && isTabScreen) {
@@ -111,11 +117,126 @@ export default function JobsPage() {
 
   useEffect(() => {
     jobList(1);
+    categoryList();
+    jobTypeList();
+    locationList();
+    experienceList();
+    DatePosted();
+    salaryRangeList();
+    tagsList();
   }, []);
 
-  // useEffect(() => {
-  //   jobList(1);
-  // }, []);
+  useEffect(() => {
+    jobList(1);
+  }, [
+    debouncedSearch,
+    filters?.categories,
+    filters.location,
+    filters.jobTypes,
+    filters?.experienceLevels,
+    filters?.datePosted,
+    filters.salaryRange,
+    filters?.tags,
+  ]);
+
+  const categoryList = async () => {
+    try {
+      const res: any = await Models.category.list();
+      const dropdown = Dropdown(res?.results, "name");
+      setState({
+        categoryList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const locationList = async () => {
+    try {
+      const res: any = await Models.location.list();
+      const dropdown = Dropdown(res?.results, "city");
+      setState({
+        locationList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const jobTypeList = async () => {
+    try {
+      const res: any = await Models.jobtype.list();
+      const dropdown = Dropdown(res?.results, "name");
+      setState({
+        jobTypeList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const experienceList = async () => {
+    try {
+      const experienceList = [
+        { value: "fresher", label: "Fresher" },
+        { value: "0 – 1 Year", label: "0 – 1 Year" },
+        { value: "1 – 3 Years", label: "1 – 3 Years" },
+        { value: "3 – 5 Years", label: "3 – 5 Years" },
+        { value: "5 – 10 Years", label: "5 – 10 Years" },
+        { value: "10+ Years", label: "10+ Years" },
+      ];
+
+      setState({
+        experienceList: experienceList,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const DatePosted = async () => {
+    try {
+      const datePosted = [
+        { value: "24h", label: "Last 24 hours" },
+        { value: "7d", label: "Last 7 days" },
+        { value: "15d", label: "Last 15 days" },
+        { value: "30d", label: "Last 30 days" },
+        { value: "last-mon", label: "Last Month" },
+        // { value: "all", label: "All" },
+      ];
+
+      setState({
+        datePostedList: datePosted,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const salaryRangeList = async () => {
+    try {
+      const res: any = await Models.salaryRange.list();
+      const dropdown = Dropdown(res?.results, "name");
+      setState({
+        salaryRangeList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const tagsList = async () => {
+    try {
+      const res: any = await Models.jobtags.list();
+      const dropdown = Dropdown(res?.results, "name");
+      setState({
+        tagsList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+  console.log("tagsList", state.tagsList);
 
   const jobList = async (page = 1) => {
     try {
@@ -159,12 +280,63 @@ export default function JobsPage() {
 
   const bodyData = () => {
     const body: any = {};
-    if (state.search) {
-      body.search = state.search;
+    if (debouncedSearch) {
+      body.search = debouncedSearch;
     }
     if (state.sortBy) {
       body.ordering =
         state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
+    }
+
+    if (filters?.categories?.length > 0) {
+      body.category = filters.categories;
+    }
+
+    if (filters?.location) {
+      body.location = filters.location;
+    }
+
+    if (filters?.jobTypes?.length > 0) {
+      body.jobTypes = filters.jobTypes;
+    }
+
+    if (filters?.experienceLevels?.length > 0) {
+      body.experience = filters.experienceLevels;
+    }
+
+    if (filters?.salaryRange?.length > 0) {
+      body.salary_range = filters.salaryRange;
+    }
+
+    if (filters?.tags?.length > 0) {
+      body.tags = filters.tags?.map((tag) => tag.value).join(",");
+    }
+
+    if (filters?.datePosted == "24h") {
+      body.date_posted_after = moment()
+        .subtract(24, "hours")
+        .format("YYYY-MM-DD");
+    }
+
+    if (filters?.datePosted == "7d") {
+      body.date_posted_after = moment()
+        .subtract(7, "days")
+        .format("YYYY-MM-DD");
+      body.date_posted_before = moment().format("YYYY-MM-DD");
+    }
+
+    if (filters?.datePosted == "15d") {
+      body.date_posted_after = moment()
+        .subtract(15, "days")
+        .format("YYYY-MM-DD");
+      body.date_posted_before = moment().format("YYYY-MM-DD");
+    }
+
+    if (filters?.datePosted == "30d") {
+      body.date_posted_after = moment()
+        .subtract(30, "days")
+        .format("YYYY-MM-DD");
+      body.date_posted_before = moment().format("YYYY-MM-DD");
     }
 
     return body;
@@ -187,14 +359,12 @@ export default function JobsPage() {
     if (!state.next) return;
     setState({ page: state.page + 1 });
     jobList(state.page + 1);
-    
   };
 
   const handlePrev = () => {
     if (!state.prev) return;
-     setState({ page: state.page - 1 });
+    setState({ page: state.page - 1 });
     jobList(state.page);
-   
   };
 
   const handleFormChange = (field, value) => {
@@ -527,10 +697,8 @@ export default function JobsPage() {
                     type="text"
                     placeholder="Search by: Job tittle, Position, Keyword..."
                     className="w-full pl-4 py-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
-                    value={filters.searchQuery}
-                    onChange={(e) =>
-                      setFilters({ ...filters, searchQuery: e.target.value })
-                    }
+                    value={state.search}
+                    onChange={(e) => setState({ search: e.target.value })}
                   />
                 </div>
 
@@ -578,13 +746,13 @@ export default function JobsPage() {
                       </div>
                       <div className="w-px h-3 bg-gray-300"></div>
                       <div className="flex items-center gap-1">
-                        {job.salary_range?.includes("$") ? (
+                        {job.salary_range_obj?.name?.includes("$") ? (
                           <DollarSign className="w-3 h-3" />
                         ) : (
                           <IndianRupee className="w-3 h-3" />
                         )}
                         <span className="font-semibold text-gray-900">
-                          {job.salary_range}
+                          {job?.salary_range_obj?.name}
                         </span>
                       </div>
                     </div>
@@ -592,17 +760,24 @@ export default function JobsPage() {
                     {/* Location */}
                     <div className="flex items-center gap-1 text-xs text-gray-600 mb-3">
                       <MapPin className="w-3 h-3" />
-                      <span>{job.location}</span>
+                      <span>
+                        {job.locations?.map((item) => item.city).join(", ")}
+                      </span>
                     </div>
 
                     {/* Footer */}
                     <div className="flex items-center justify-between pt-3 border-t border-gray-100">
                       <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
-                        {job.job_type}
+                        {job?.job_type_obj?.name}
                       </span>
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Clock className="w-3 h-3" />
-                        <span>2 days ago</span>
+                        <span>
+                          {moment(job.created_at).isValid() &&
+                          moment(job.created_at).year() > 1900
+                            ? moment(job.created_at).fromNow()
+                            : "Just now"}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -652,7 +827,7 @@ export default function JobsPage() {
 
                     <div className="mb-3">
                       <p className="text-sm text-gray-500 mb-3">
-                        {state?.jobDetail?.location} • Posted{" "}
+                        {capitalizeFLetter(state?.jobDetail?.locations?.map((item) => item.city).join(", "))} • Posted{" "}
                         {state?.jobDetail?.postedDate || "2 days ago"}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
@@ -662,7 +837,7 @@ export default function JobsPage() {
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
-                          {state?.jobDetail?.job_type}
+                          {state?.jobDetail?.job_type_obj?.name}
                         </span>
                         <span className="flex items-center gap-1">
                           {selectedJob.salary_range?.includes("$") ? (
@@ -670,7 +845,7 @@ export default function JobsPage() {
                           ) : (
                             <IndianRupee className="w-4 h-4" />
                           )}
-                          {state?.jobDetail?.salary_range}
+                          {state?.jobDetail?.salary_range_obj?.name}
                         </span>
                       </div>
                     </div>
@@ -876,13 +1051,33 @@ export default function JobsPage() {
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
               }`}
             >
-              <Filterbar filters={filters} onFilterChange={setFilters} />
+              <Filterbar
+                filters={filters}
+                onFilterChange={setFilters}
+                categoryList={state?.categoryList}
+                locationList={state?.locationList}
+                jobTypeList={state?.jobTypeList}
+                experienceList={state?.experienceList}
+                datePostedList={state?.datePostedList}
+                salaryRangeList={state?.salaryRangeList}
+                tagsList={state?.tagsList}
+              />
             </div>
 
             {/* DESKTOP STICKY SIDEBAR */}
             <div className="hidden lg:block shrink-0  bg-clr2 rounded-xl self-start">
               <div className="h-fit w-72 ">
-                <Filterbar filters={filters} onFilterChange={setFilters} />
+                <Filterbar
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  categoryList={state?.categoryList}
+                  locationList={state?.locationList}
+                  jobTypeList={state?.jobTypeList}
+                  experienceList={state?.experienceList}
+                  datePostedList={state?.datePostedList}
+                  salaryRangeList={state?.salaryRangeList}
+                  tagsList={state?.tagsList}
+                />
               </div>
             </div>
 
@@ -907,7 +1102,19 @@ export default function JobsPage() {
                     <div className="flex items-center px-4 flex-grow lg:w-64">
                       <MapPin color="#F2B31D" size={22} />
 
-                      <input
+                      <CustomSelect
+                        className="w-full pl-4 bg-transparent text-sm text-slate-600 "
+                        options={state.locationList}
+                        value={filters?.location || ""}
+                        onChange={(selected) =>
+                          setFilters({
+                            ...filters,
+                            location: selected ? selected.value : "",
+                          })
+                        }
+                        placeholder="Location"
+                      />
+                      {/* <input
                         type="text"
                         placeholder="City, state or zip code"
                         className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
@@ -915,16 +1122,16 @@ export default function JobsPage() {
                         onChange={(e) =>
                           setFilters({ ...filters, location: e.target.value })
                         }
-                      />
+                      /> */}
                       <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
                     </div>
 
-                    <button
+                    {/* <button
                       className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       onClick={() => jobList(state?.page)}
                     >
                       Find Job
-                    </button>
+                    </button> */}
                   </div>
                 </div>
 

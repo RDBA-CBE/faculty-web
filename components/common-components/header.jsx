@@ -440,6 +440,7 @@ const Header = () => {
             <Button
               type="button"
               className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg flex items-center justify-center gap-2"
+              onClick={handleLogin}
             >
               Sign In
               <ArrowRight className="w-4 h-4" />
