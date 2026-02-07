@@ -27,7 +27,7 @@
     ".next/types/**/*.ts",
     "app/(real-estate)/login2/page.jsx",
     "app/(real-estate)/test/page.tsx",
-    "app/layout.jsx",
+    "app/layout.tsx",
     "components/common-components/checkbox.jsx",
     "components/common-components/timePicker.jsx",
     "components/common-components/toast.jsx",

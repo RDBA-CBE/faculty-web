@@ -25,6 +25,7 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useSetState } from "@/utils/function.utils";
 import { Models } from "@/imports/models.import";
 import { Failure } from "@/components/common-components/toast";
+import * as Yup from "yup";
+
 
 export default function NaukriProfilePage() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -44,7 +47,7 @@ export default function NaukriProfilePage() {
   const [state, setState] = useSetState({
     // Profile Data
     name: "JOHN DOE",
-    title: "Software Engineer",
+    short_desc: "Software Engineer",
     company: "at Tech Solutions Inc",
     location: "Bangalore, INDIA",
     experience: "5 Years",
@@ -213,7 +216,6 @@ export default function NaukriProfilePage() {
       },
     ],
 
-    // Form States
     employmentForm: {
       company: "",
       designation: "",
@@ -267,8 +269,10 @@ export default function NaukriProfilePage() {
   }, [state.userDetail]);
 
   useEffect(() => {
-    userDetail(state.usrId);
-  });
+    if (!state.userId) return;
+
+    userDetail(state.userId);
+  }, [state.userId]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -329,8 +333,78 @@ export default function NaukriProfilePage() {
       });
     } catch (error) {
       setState({ loading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
+  };
+
+  console.log("userDetail", state.userDetail);
+
+  const profileUpdate = async () => {
+    console.log("hello");
+    
+    try {
+      const body = {
+        first_name: state?.first_name || "",
+        last_name: state?.last_name || "",
+        username: state.first_name + " " + state.last_name,
+        short_desc: state?.short_desc || "",
+        company: state?.company || "",
+        location: state?.location || "",
+        experience: state?.experience || "",
+        gender: state?.gender || "",
+        phone: state?.phone || "",
+        email: state?.email || "",
+        current_company: state?.current_company || "",
+      };
+
+      console.log("body", body);
+
+      const res = await Models.profile.update(body, state.userId);
+      console.log(" res", res);
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const validationErrors = {};
+        error.inner.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+
+        console.log("validationErrors", validationErrors);
+
+        setState((prev) => ({
+          ...prev,
+          errors: validationErrors,
+          btnLoading: false,
+        }));
+      }
+
+      // API ERROR
+      else {
+        Failure(error?.error || "Something went wrong");
+
+        setState((prev) => ({
+          ...prev,
+          btnLoading: false,
+        }));
+      }
+    }
+  };
+
+  const saveProfile = () => {
+    // setState({
+    //   userDetail: {
+    //     ...state.userDetail,
+    //     username: state.profileForm.username,
+    //     location: state.profileForm.location,
+    //     phone: state.profileForm.phone,
+    //     email: state.profileForm.email,
+    //     experience: state.profileForm.experience,
+    //   },
+    //   title: state.profileForm.title,
+    //   company: state.profileForm.company,
+    //   salary: state.profileForm.salary,
+    //   noticePeriod: state.profileForm.noticePeriod,
+    //   isEditingProfile: false,
+    // });
   };
 
   const addEmployment = () => {
@@ -501,6 +575,16 @@ export default function NaukriProfilePage() {
     });
   };
 
+  const handleFormChange = (field, value) => {
+    setState({
+      [field]: value,
+      errors: {
+        ...state.errors,
+        [field]: "",
+      },
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
@@ -534,18 +618,37 @@ export default function NaukriProfilePage() {
                   <div className="text-center sm:text-left">
                     <div className="flex items-center gap-2 justify-center sm:justify-start">
                       <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                        {state.name}
+                        {state.userDetail?.username}
                       </h1>
                       <Button
                         variant="ghost"
                         size="sm"
                         className="p-1.5 hover:bg-blue-50 rounded-full"
+                        onClick={() => {
+                          setState({
+                            isEditingProfile: true,
+                            first_name: state.userDetail?.first_name || "",
+                            last_name: state.userDetail?.last_name || "",
+                            username: state.userDetail?.username || "",
+                            short_desc:
+                              state.userDetail?.short_desc ||
+                              "Software Engineer",
+                            company: state.userDetail?.company || "",
+                            location: state.userDetail?.location || "",
+                            experience: state.userDetail?.experience || "",
+                            gender: state?.userDetail?.gender || "",
+                            phone: state.userDetail?.phone || "",
+                            email: state.userDetail?.email || "",
+                            current_company:
+                              state.userDetail?.current_company || "",
+                          });
+                        }}
                       >
                         <Edit className="w-4 h-4 text-blue-600" />
                       </Button>
                     </div>
                     <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                      {state.title}
+                      {state.short_desc}
                     </p>
                     <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
                       <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
@@ -572,36 +675,36 @@ export default function NaukriProfilePage() {
                   {[
                     {
                       icon: MapPin,
-                      label: state.location,
+                      label: state?.userDetail?.location,
                       color: "text-red-500",
                     },
                     {
                       icon: Phone,
-                      label: state.phone,
+                      label: state?.userDetail?.phone,
                       color: "text-green-500",
                       verified: true,
                     },
                     {
                       icon: Calendar,
-                      label: state.experience,
+                      label: state?.userDetail?.experience,
                       color: "text-blue-500",
                     },
                     {
                       icon: Mail,
-                      label: state.email,
+                      label: state?.userDetail?.email,
                       color: "text-purple-500",
                       verified: true,
                     },
                     {
-                      icon: IndianRupee,
-                      label: state.salary,
+                      icon: User,
+                      label: state?.userDetail?.gender,
                       color: "text-emerald-500",
                     },
-                    {
-                      icon: Clock,
-                      label: state.noticePeriod,
-                      color: "text-orange-500",
-                    },
+                    // {
+                    //   icon: Clock,
+                    //   label: state.noticePeriod,
+                    //   color: "text-orange-500",
+                    // },
                   ].map((item, index) => (
                     <div
                       key={index}
@@ -640,8 +743,8 @@ export default function NaukriProfilePage() {
                   <div className="space-y-4">
                     {[
                       {
-                        label: "Resume",
-                        action: "Update",
+                        label: "Resume/login",
+                        // action: "Update",
                         onClick: () => scrollToSection("resume-section"),
                       },
                       {
@@ -651,27 +754,27 @@ export default function NaukriProfilePage() {
                       },
                       {
                         label: "Skills",
-                        action: null,
+                        // action: null,
                         onClick: () => scrollToSection("skills-section"),
                       },
                       {
                         label: "Experience",
-                        action: "Add",
+                        // action: "Add",
                         onClick: () => scrollToSection("employment-section"),
                       },
                       {
                         label: "Education",
-                        action: "Add",
+                        // action: "Add",
                         onClick: () => scrollToSection("education-section"),
                       },
                       {
                         label: "Projects",
-                        action: null,
+                        // action: null,
                         onClick: () => scrollToSection("projects-section"),
                       },
                       {
                         label: "Achievements",
-                        action: null,
+                        // action: null,
                         onClick: () => scrollToSection("achievements-section"),
                       },
                     ].map((item, index) => (
@@ -2603,7 +2706,7 @@ export default function NaukriProfilePage() {
                                           }
                                           className="hover:bg-red-50 border-red-200 group/btn"
                                         >
-                                          <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Trash2 className="w-4 h-4 current_companytext-red-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                       </div>
                                     </div>
@@ -2677,6 +2780,165 @@ export default function NaukriProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Edit Profile Modal */}
+        <AnimatePresence>
+          {state.isEditingProfile && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Profile
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingProfile: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        First Name
+                      </label>
+                      <Input
+                        value={state.first_name}
+                        onChange={(e) =>
+                          handleFormChange("first_name", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Last Name
+                      </label>
+                      <Input
+                        value={state.last_name}
+                        onChange={(e) =>
+                          handleFormChange("last_name", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Short Description
+                      </label>
+                      <Input
+                        value={state.short_desc}
+                        onChange={(e) =>
+                          handleFormChange("short_desc", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Experience
+                      </label>
+                      <Input
+                        value={state.experience}
+                        onChange={(e) =>
+                          handleFormChange("experience", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Current Company
+                      </label>
+                      <Input
+                        value={state.current_company}
+                        onChange={(e) =>
+                          handleFormChange("current_company", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Location
+                      </label>
+                      <Input
+                        value={state.location}
+                        onChange={(e) =>
+                          handleFormChange("location", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Phone
+                      </label>
+                      <Input
+                        value={state.phone}
+                        onChange={(e) =>
+                          handleFormChange("phone", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Email
+                      </label>
+                      <Input
+                        value={state.email}
+                        onChange={(e) =>
+                          handleFormChange("email", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Gender
+                      </label>
+                      <Input
+                        value={state.gender}
+                        onChange={(e) =>
+                          handleFormChange("gender", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingProfile: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={profileUpdate}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

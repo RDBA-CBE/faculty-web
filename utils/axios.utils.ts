@@ -47,8 +47,10 @@ export const instance = (): AxiosInstance => {
     async (error: AxiosError | any) => {
       const originalRequest: any = error.config;
 
+      console.log("error",error);
+      
       if (
-        error.response?.data?.code === "token_not_valid" &&
+        error.response?.data?.error === "invalid or expired token" &&
         !originalRequest._retry
       ) {
         originalRequest._retry = true;
@@ -56,7 +58,7 @@ export const instance = (): AxiosInstance => {
         const refreshToken = localStorage.getItem("refresh");
 
         if (!refreshToken) {
-          window.location.href = "/login";
+          window.location.href = "/";
           localStorage.clear();
 
           return Promise.reject(error);
@@ -97,7 +99,7 @@ export const instance = (): AxiosInstance => {
           } catch (err) {
             processQueue(err, null);
             localStorage.clear();
-            window.location.href = "/login";
+            window.location.href = "/";
             reject(err);
           } finally {
             isRefreshing = false;
