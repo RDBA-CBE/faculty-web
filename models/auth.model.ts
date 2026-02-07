@@ -20,7 +20,7 @@ const auth = {
     return promise;
   },
 
-  singup: (body: any) => {
+  create: (body: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `users/`;
       instance()

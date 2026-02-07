@@ -96,19 +96,38 @@ const Header = () => {
 
   const handleRegister = async () => {
     try {
+      console.log("hello");
+      console.log(state.first_name);
+
       setState({ btnLoading: true });
-      const body = {
-        username: state.first_name.trim() + " " + state.last_name.trim(),
+
+      const validateBody = {
+        first_name: state.first_name,
+        last_name: state.last_name,
+
         email: state.email.trim(),
         password: state.password,
         password_confirm: state.confirmPassword,
-        role: "applicant",
       };
-      const res = await Models.auth.singup(body);
-      console.log("✌️res --->", res);
-      setState({ isOpenReg: false, isOpenEmailVerify: true });
 
-      setState({ errors: {}, isOpenLogin: false });
+      await Validation.register.validate(validateBody, { abortEarly: false });
+
+      const body = {
+        username: state.first_name + " " + state.last_name,
+        role: "applicant",
+        ...validateBody,
+      };
+
+      console.log("body", body);
+
+      const res = await Models.auth.create(body);
+      console.log("✌️res --->", res);
+      setState({
+        isOpenReg: false,
+        // isOpenEmailVerify: true,
+        errors: {},
+        isOpenLogin: false,
+      });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -232,8 +251,8 @@ const Header = () => {
                         isActive
                           ? "text-[#F2B31D]"
                           : isHomePage
-                          ? "text-gray-700 hover:text-[#F2B31D]"
-                          : "text-gray-700 hover:text-[#F2B31D]"
+                            ? "text-gray-700 hover:text-[#F2B31D]"
+                            : "text-gray-700 hover:text-[#F2B31D]"
                       }`}
                     >
                       {menu.title}
@@ -258,16 +277,13 @@ const Header = () => {
                     </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                    {/* <DropdownMenuLabel>My Account</DropdownMenuLabel> */}
+                    {/* <DropdownMenuSeparator /> */}
                     <DropdownMenuItem onClick={() => router.push("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => router.push("/dashboard")}>
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
-                    </DropdownMenuItem>
+                   
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}
@@ -536,20 +552,24 @@ const Header = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <Input
-                  placeholder="Full Name"
-                  value={state.fullName || ""}
-                  onChange={(e) => handleFormChange("fullName", e.target.value)}
+                  placeholder="First Name"
+                  value={state.first_name || ""}
+                  onChange={(e) =>
+                    handleFormChange("first_name", e.target.value)
+                  }
                   required
                   bg="ffffff"
-                  error={state.errors?.fullName}
+                  error={state.errors?.first_name}
                 />
                 <Input
                   placeholder="Last Name"
-                  value={state.lastname || ""}
-                  onChange={(e) => handleFormChange("lastname", e.target.value)}
+                  value={state.last_name || ""}
+                  onChange={(e) =>
+                    handleFormChange("last_name", e.target.value)
+                  }
                   required
                   bg="ffffff"
-                  error={state.errors?.lastname}
+                  error={state.errors?.last_name}
                 />
               </div>
 

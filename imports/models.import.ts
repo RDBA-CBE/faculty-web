@@ -7,6 +7,8 @@ import location from "@/models/location.model";
 import jobtype from "@/models/jobtype.model";
 import salaryRange from "@/models/salaryRange.model";
 import jobtags from "@/models/tags. copy";
+import applications from "@/models/applications.model";
+import profile from "@/models/profile.models";
 
 
 
@@ -17,7 +19,9 @@ export const Models = {
   location,
   jobtype,
   salaryRange,
-  jobtags
+  jobtags,
+  applications,
+  profile
   
   
 };

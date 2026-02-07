@@ -49,6 +49,7 @@ import TextArea from "@/components/common-components/textArea";
 import CustomPhoneInput from "@/components/common-components/phoneInput";
 import FileUpload from "@/components/common-components/fileUpload";
 import { jobApplicationSchema } from "@/utils/validation.utils";
+import * as Yup from "yup";
 import {
   Select,
   SelectContent,
@@ -62,6 +63,7 @@ import PaginationCom from "@/components/component/PaginationCom";
 import page from "../(real-estate)/test/page";
 import CustomSelect from "@/components/common-components/dropdown";
 import moment from "moment";
+import { Success } from "@/components/common-components/toast";
 
 export default function JobsPage() {
   const [state, setState] = useSetState({
@@ -104,8 +106,6 @@ export default function JobsPage() {
     experience: "",
     jobID: null,
   });
-
-  console.log("filters?.location", filters?.location);
 
   const debouncedSearch = useDebounce(state.search, 500);
 
@@ -236,7 +236,6 @@ export default function JobsPage() {
       console.log("✌️error --->", error);
     }
   };
-  console.log("tagsList", state.tagsList);
 
   const jobList = async (page = 1) => {
     try {
@@ -244,12 +243,10 @@ export default function JobsPage() {
 
       const body = bodyData();
 
-      console.log("body", body);
-
       const res: any = await Models.job.list(page, body);
       setState({
         loading: false,
-        page: state.page,
+        // page: state.page,
         count: res?.count,
         jobList: res?.results,
         next: res?.next,
@@ -265,9 +262,14 @@ export default function JobsPage() {
     try {
       setState({ loading: true });
       const res: any = await Models.job.details(jobId);
+      const responsibilities =
+        res?.responsibility?.blocks
+          ?.filter((block) => block.type === "list")
+          ?.flatMap((block) => block.data.items) || [];
       setState({
         loading: false,
         jobDetail: res,
+        responsibilities: responsibilities,
       });
     } catch (error) {
       setState({ loading: false });
@@ -275,8 +277,123 @@ export default function JobsPage() {
     }
   };
 
-  console.log("✌️jobList --->", state.jobList);
-  console.log("jobDetail", state?.jobDetail);
+  const handleApply = () => {
+    const profile = JSON.parse(localStorage.getItem("user") || "null");
+
+    if (profile) {
+      handleFormSubmit();
+    } else {
+      setShowApplicationModal(true);
+    }
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      //  never overwrite state
+      setState({ btnLoading: true, errors: {} });
+
+      const profile = JSON.parse(localStorage.getItem("user") || "null");
+      console.log("profile", profile);
+
+      //  LOGGED-IN USER (NO RESUME)
+
+      if (profile?.id) {
+        const body = {
+          job_id: state?.jobDetail?.id,
+          applicant: profile.id,
+        };
+
+        console.log("logged-in body", body);
+
+        const res = await Models.applications.create(body);
+        console.log("job apply res", res);
+      }
+
+      //  GUEST USER (WITH RESUME)
+      else {
+        const validateBody = {
+          first_name: state.firstName,
+          last_name: state.lastName,
+          phone: state.phone,
+          message: state.message,
+          resume: state.resume,
+          email: state.email?.trim(),
+          experience: state.experience,
+        };
+
+        await jobApplicationSchema.validate(validateBody, {
+          abortEarly: false,
+        });
+
+        //  FormData
+        const formData = new FormData();
+
+        formData.append("job_id", state.jobID);
+        formData.append("first_name", state.firstName);
+        formData.append("last_name", state.lastName);
+        formData.append("email", state.email?.trim());
+        formData.append("phone", state.phone);
+        formData.append("experience", state.experience);
+        formData.append("message", state.message || "");
+
+        if (state.resume) {
+          formData.append("resume", state.resume); // FILE OBJECT
+        }
+
+        //  Debug FormData
+        for (let pair of formData.entries()) {
+          console.log(pair[0], pair[1]);
+        }
+
+        const res = await Models.applications.create(formData);
+        console.log("job apply res", res);
+      }
+
+      //  COMMON SUCCESS STATE
+
+      setShowApplicationModal(false);
+      Success("Application submitted successfully");
+
+      setState({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        message: "",
+        experience: "",
+        resume: null,
+        congratsOpen: true,
+        btnLoading: false,
+      });
+    } catch (error) {
+      //  YUP VALIDATION ERROR
+
+      if (error instanceof Yup.ValidationError) {
+        const validationErrors = {};
+        error.inner.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+
+        console.log("validationErrors", validationErrors);
+
+        setState((prev) => ({
+          ...prev,
+          errors: validationErrors,
+          btnLoading: false,
+        }));
+      }
+
+      // API ERROR
+      else {
+        Failure(error?.error || "Something went wrong");
+
+        setState((prev) => ({
+          ...prev,
+          btnLoading: false,
+        }));
+      }
+    }
+  };
 
   const bodyData = () => {
     const body: any = {};
@@ -361,6 +478,8 @@ export default function JobsPage() {
     jobList(state.page + 1);
   };
 
+  console.log("state.page", state.page);
+
   const handlePrev = () => {
     if (!state.prev) return;
     setState({ page: state.page - 1 });
@@ -376,31 +495,6 @@ export default function JobsPage() {
       },
     });
   };
-
-  const handleFormSubmit = async () => {
-    try {
-      // await jobApplicationSchema.validate(state, { abortEarly: false });
-      console.log("Form submitted:", state);
-      setShowApplicationModal(false);
-      setState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: "",
-        experience: "",
-        resume: null,
-        congratsOpen: true,
-      });
-    } catch (error) {
-      const validationErrors = {};
-      error.inner?.forEach((err) => {
-        validationErrors[err.path] = err.message;
-      });
-      setState({ errors: validationErrors });
-    }
-  };
-  console.log("✌️selectedJob --->", selectedJob);
 
   return (
     <div className=" bg-clr1">
@@ -718,11 +812,20 @@ export default function JobsPage() {
                     {/* Header */}
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-start gap-3">
-                        <div
-                          className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
-                        >
-                          {job.company?.charAt(0).toUpperCase()}
-                        </div>
+                        {job?.company_logo ? (
+                          <img
+                            src={job?.company_logo}
+                            alt="company image"
+                            className="w-10 h-10  object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+                          >
+                            {job.company?.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+
                         <div className="min-w-0 flex-1">
                           <h3 className="font-semibold text-gray-900 leading-tight mb-1">
                             {job.job_title}
@@ -793,11 +896,11 @@ export default function JobsPage() {
                   <div className=" border-b  px-2 py-2 pb-5">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-start gap-4">
-                        {state?.jobDetail?.logo ? (
+                        {state?.jobDetail?.company_logo ? (
                           <img
-                            src={state?.jobDetail?.logo}
+                            src={state?.jobDetail?.company_logo}
                             alt={state?.jobDetail?.company}
-                            className="w-14 h-14 rounded-lg object-cover"
+                            className="w-14 h-14  object-cover"
                           />
                         ) : (
                           <div
@@ -827,8 +930,12 @@ export default function JobsPage() {
 
                     <div className="mb-3">
                       <p className="text-sm text-gray-500 mb-3">
-                        {capitalizeFLetter(state?.jobDetail?.locations?.map((item) => item.city).join(", "))} • Posted{" "}
-                        {state?.jobDetail?.postedDate || "2 days ago"}
+                        {capitalizeFLetter(
+                          state?.jobDetail?.locations
+                            ?.map((item) => item.city)
+                            .join(", "),
+                        )}{" "}
+                        • Posted {state?.jobDetail?.postedDate || "2 days ago"}
                       </p>
                       <div className="flex items-center gap-4 text-sm text-gray-600">
                         <span className="flex items-center gap-1">
@@ -852,7 +959,10 @@ export default function JobsPage() {
 
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                       <button
-                        onClick={() => setShowApplicationModal(true)}
+                        onClick={() => {
+                          setState({ jobID: state?.jobDetail?.id });
+                          handleApply();
+                        }}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       >
                         Apply Now
@@ -872,19 +982,19 @@ export default function JobsPage() {
                     </h2>
                     <div className="leading-relaxed space-y-4">
                       <p>
-                        {/* {state?.jobDetail?.job_description} */}
-                        We are looking for a talented professional to join our
+                        {state?.jobDetail?.job_description}
+                        {/* We are looking for a talented professional to join our
                         dynamic team. This role offers an excellent opportunity
                         to work with cutting-edge technologies and contribute to
-                        meaningful projects that impact thousands of users.
+                        meaningful projects that impact thousands of users. */}
                       </p>
-                      <p>
+                      {/* <p>
                         The ideal candidate will have strong technical skills,
                         excellent communication abilities, and a passion for
                         innovation. You'll be working in a collaborative
                         environment where your ideas and contributions are
                         valued.
-                      </p>
+                      </p> */}
                     </div>
                   </div>
 
@@ -894,13 +1004,7 @@ export default function JobsPage() {
                       Key responsibilities
                     </h2>
                     <ul className="space-y-3">
-                      {[
-                        "Design and develop scalable software solutions using modern technologies",
-                        "Collaborate with cross-functional teams to deliver high-quality products",
-                        "Participate in code reviews and maintain coding standards",
-                        "Troubleshoot and debug applications to optimize performance",
-                        "Stay updated with industry trends and best practices",
-                      ].map((item, index) => (
+                      {state?.responsibilities?.map((item, index) => (
                         <li key={index} className="flex items-start gap-3">
                           <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
@@ -970,9 +1074,9 @@ export default function JobsPage() {
                         <div>
                           <p className="text-md font-medium  pb-1">Job type</p>
                           <p className="text-md text-black">
-                            {state?.jobDetail?.job_type}
+                            {state?.jobDetail?.job_type_obj?.name}
                           </p>
-                        </div>
+                        </div>city
                         <div>
                           <p className="text-md font-medium  pb-1">
                             Experience level
@@ -984,13 +1088,13 @@ export default function JobsPage() {
                         <div>
                           <p className="text-md font-medium  pb-1">Salary</p>
                           <p className="text-md text-black">
-                            {state?.jobDetail?.salary_range}
+                            {state?.jobDetail?.salary_range_obj?.name}
                           </p>
                         </div>
                         <div>
                           <p className="text-md font-medium  pb-1">Location</p>
                           <p className="text-md text-black">
-                            {state?.jobDetail?.location}
+                            {state?.jobDetail?.locations?.map((item) => item.city).join(", ")}
                           </p>
                         </div>
                       </div>
@@ -1002,9 +1106,9 @@ export default function JobsPage() {
                         About {state?.jobDetail?.company}
                       </h3>
                       <div className="flex items-start gap-3 mb-4">
-                        {selectedJob.logo ? (
+                        {selectedJob.company_logo ? (
                           <img
-                            src={selectedJob.logo}
+                            src={selectedJob.company_logo}
                             alt={selectedJob.company}
                             className="w-12 h-12 rounded-lg object-cover"
                           />
@@ -1027,8 +1131,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                       <p className="leading-relaxed">
-                        A leading technology company focused on innovation and
-                        delivering exceptional solutions to clients worldwide.
+                        {state?.jobDetail?.company_detail}
                       </p>
                     </div>
                   </div>
