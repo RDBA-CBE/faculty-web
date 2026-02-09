@@ -1,3 +1,4 @@
+import { Phone } from "lucide-react";
 import * as Yup from "yup";
 
 export const jobApplicationSchema = Yup.object().shape({
@@ -45,4 +46,16 @@ export const register = Yup.object().shape({
   email: Yup.string().required("Email is required"),
   password: Yup.string().required("Password is required"),
   password_confirm: Yup.string().required("Password Confirm is required"),
+});
+
+export const user = Yup.object().shape({
+  first_name: Yup.string().required("First Name is required"),
+  last_name: Yup.string().required("Last Name is required"),
+  email: Yup.string().required("Email is required"),
+  phone: Yup.string()
+    .required("Phone number is required")
+    .min(10, "Phone number must be at least 10 digits"),
+  location: Yup.string().required("Location is required"),
+  experience: Yup.string().required("Experience is required"),
+  gender: Yup.string().required("Gender is required"),
 });

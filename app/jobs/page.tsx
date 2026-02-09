@@ -1076,7 +1076,7 @@ export default function JobsPage() {
                           <p className="text-md text-black">
                             {state?.jobDetail?.job_type_obj?.name}
                           </p>
-                        </div>city
+                        </div>
                         <div>
                           <p className="text-md font-medium  pb-1">
                             Experience level
@@ -1206,7 +1206,6 @@ export default function JobsPage() {
                       <MapPin color="#F2B31D" size={22} />
 
                       <CustomSelect
-                        className="w-full pl-4 bg-transparent text-sm text-slate-600 "
                         options={state.locationList}
                         value={filters?.location || ""}
                         onChange={(selected) =>

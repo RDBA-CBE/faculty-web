@@ -32,11 +32,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useSetState } from "@/utils/function.utils";
+import { DateFormat, useSetState } from "@/utils/function.utils";
 import { Models } from "@/imports/models.import";
 import { Failure } from "@/components/common-components/toast";
 import * as Yup from "yup";
-
+import CustomSelect from "@/components/common-components/dropdown";
+import { user } from "@/utils/validation.utils";
 
 export default function NaukriProfilePage() {
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
@@ -46,21 +47,8 @@ export default function NaukriProfilePage() {
 
   const [state, setState] = useSetState({
     // Profile Data
-    name: "JOHN DOE",
-    short_desc: "Software Engineer",
-    company: "at Tech Solutions Inc",
-    location: "Bangalore, INDIA",
-    experience: "5 Years",
-    salary: "₹ 8,00,000",
-    phone: "9876543210",
-    email: "john.doe@example.com",
-    noticePeriod: "2 Month notice period",
-    profileCompletion: 85,
-    lastUpdated: "22 Jan, 2026",
-    resumeFile: "John_Doe_Resume.pdf",
-    resumeUploadDate: "Jan 20, 2026",
-    resumeHeadline:
-      "Experienced Software Engineer with 5+ years in full-stack development, specializing in React, Node.js, and cloud technologies. Passionate about building scalable applications and leading development teams.",
+    location: "",
+    errors: {},
 
     // Edit States
     isEditingProfile: false,
@@ -264,6 +252,10 @@ export default function NaukriProfilePage() {
   });
 
   useEffect(() => {
+    experienceList();
+  }, []);
+
+  useEffect(() => {
     const profile = JSON.parse(localStorage.getItem("user") || "null");
     setState({ userId: profile?.id || null });
   }, [state.userDetail]);
@@ -341,20 +333,28 @@ export default function NaukriProfilePage() {
 
   const profileUpdate = async () => {
     console.log("hello");
-    
+
     try {
-      const body = {
+      const validateBody = {
         first_name: state?.first_name || "",
         last_name: state?.last_name || "",
-        username: state.first_name + " " + state.last_name,
-        short_desc: state?.short_desc || "",
-        company: state?.company || "",
         location: state?.location || "",
         experience: state?.experience || "",
         gender: state?.gender || "",
         phone: state?.phone || "",
         email: state?.email || "",
+      };
+
+      await user.validate(validateBody, {
+        abortEarly: false,
+      });
+
+      const body = {
+        ...validateBody,
+        username: state.first_name + " " + state.last_name,
+        short_desc: state?.short_desc || "",
         current_company: state?.current_company || "",
+        current_position: state?.current_position || "",
       };
 
       console.log("body", body);
@@ -370,24 +370,24 @@ export default function NaukriProfilePage() {
 
         console.log("validationErrors", validationErrors);
 
-        setState((prev) => ({
-          ...prev,
+        setState({
           errors: validationErrors,
           btnLoading: false,
-        }));
+        });
       }
 
       // API ERROR
       else {
         Failure(error?.error || "Something went wrong");
 
-        setState((prev) => ({
-          ...prev,
+        setState({
           btnLoading: false,
-        }));
+        });
       }
     }
   };
+
+  console.log("state?.errors", state?.errors);
 
   const saveProfile = () => {
     // setState({
@@ -405,6 +405,25 @@ export default function NaukriProfilePage() {
     //   noticePeriod: state.profileForm.noticePeriod,
     //   isEditingProfile: false,
     // });
+  };
+
+  const experienceList = async () => {
+    try {
+      const experienceList = [
+        { value: "fresher", label: "Fresher" },
+        { value: "0 – 1 Year", label: "0 – 1 Year" },
+        { value: "1 – 3 Years", label: "1 – 3 Years" },
+        { value: "3 – 5 Years", label: "3 – 5 Years" },
+        { value: "5 – 10 Years", label: "5 – 10 Years" },
+        { value: "10+ Years", label: "10+ Years" },
+      ];
+
+      setState({
+        experienceList: experienceList,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
   };
 
   const addEmployment = () => {
@@ -580,7 +599,7 @@ export default function NaukriProfilePage() {
       [field]: value,
       errors: {
         ...state.errors,
-        [field]: "",
+        [field]: undefined,
       },
     });
   };
@@ -630,10 +649,9 @@ export default function NaukriProfilePage() {
                             first_name: state.userDetail?.first_name || "",
                             last_name: state.userDetail?.last_name || "",
                             username: state.userDetail?.username || "",
-                            short_desc:
-                              state.userDetail?.short_desc ||
-                              "Software Engineer",
-                            company: state.userDetail?.company || "",
+                            short_desc: state.userDetail?.short_desc || "",
+                            about: state.userDetail?.about || "",
+
                             location: state.userDetail?.location || "",
                             experience: state.userDetail?.experience || "",
                             gender: state?.userDetail?.gender || "",
@@ -641,26 +659,38 @@ export default function NaukriProfilePage() {
                             email: state.userDetail?.email || "",
                             current_company:
                               state.userDetail?.current_company || "",
+                            current_position:
+                              state.userDetail?.current_position || "",
+                            resume: state.userDetail?.resume || "",
                           });
                         }}
                       >
                         <Edit className="w-4 h-4 text-blue-600" />
                       </Button>
                     </div>
-                    <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                      {state.short_desc}
-                    </p>
-                    <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm">{state.company}</span>
-                    </div>
+                    {state?.userDetail?.short_desc && (
+                      <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
+                        {state?.userDetail?.short_desc}
+                      </p>
+                    )}
+                    {(state?.userDetail?.current_company ||
+                      state?.userDetail?.location) && (
+                      <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+
+                        <span className="text-sm">
+                          {state?.userDetail?.current_company} -{" "}
+                          {state?.userDetail?.location}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="flex-shrink-0">
                     <div className="bg-white/60 rounded-lg px-3 py-2 shadow-sm border">
                       <p className="text-xs text-gray-500 whitespace-nowrap">
                         Last Updated:{" "}
                         <span className="font-semibold text-gray-700">
-                          {state.lastUpdated}
+                         {DateFormat(state.userDetail?.updated_at, "date")}   
                         </span>
                       </p>
                     </div>
@@ -930,11 +960,7 @@ export default function NaukriProfilePage() {
                                       Latest Version
                                     </span>
                                   </div>
-                                  <div className="bg-gradient-to-r from-green-100 to-emerald-100 px-3 py-1 rounded-full">
-                                    <span className="text-green-700 font-semibold text-sm">
-                                      ATS Optimized
-                                    </span>
-                                  </div>
+                                  
                                 </div>
 
                                 {/* Mobile Action Buttons - Bottom Right */}
@@ -2806,35 +2832,34 @@ export default function NaukriProfilePage() {
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        First Name
-                      </label>
                       <Input
+                        title="First Name"
                         value={state.first_name}
+                        required
                         onChange={(e) =>
                           handleFormChange("first_name", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.first_name}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Last Name
-                      </label>
                       <Input
+                        title="Last Name"
+                        required
                         value={state.last_name}
                         onChange={(e) =>
                           handleFormChange("last_name", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.last_name}
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Short Description
-                      </label>
                       <Input
+                        title="Short Description"
                         value={state.short_desc}
                         onChange={(e) =>
                           handleFormChange("short_desc", e.target.value)
@@ -2844,23 +2869,26 @@ export default function NaukriProfilePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Experience
-                      </label>
-                      <Input
-                        value={state.experience}
-                        onChange={(e) =>
-                          handleFormChange("experience", e.target.value)
+                      <CustomSelect
+                        title="Experience"
+                        required
+                        className="border border-gray-200 "
+                        options={state.experienceList}
+                        value={state?.experience || ""}
+                        onChange={(selected) =>
+                          setState({
+                            ...state,
+                            experience: selected ? selected.value : "",
+                          })
                         }
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.experience}
+                        // placeholder="Experience"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Current Company
-                      </label>
                       <Input
+                        title=" Current Company"
                         value={state.current_company}
                         onChange={(e) =>
                           handleFormChange("current_company", e.target.value)
@@ -2868,54 +2896,66 @@ export default function NaukriProfilePage() {
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
+
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Location
-                      </label>
                       <Input
+                        title=" Current Position"
+                        value={state.current_position}
+                        onChange={(e) =>
+                          handleFormChange("current_position", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Input
+                        title="Location"
+                        required
                         value={state.location}
                         onChange={(e) =>
                           handleFormChange("location", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.location}
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Phone
-                      </label>
                       <Input
+                        title="Phone"
+                        required
                         value={state.phone}
                         onChange={(e) =>
                           handleFormChange("phone", e.target.value)
                         }
+                        error={state?.errors?.phone}
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Email
-                      </label>
                       <Input
+                        title="Email"
+                        required
                         value={state.email}
                         onChange={(e) =>
                           handleFormChange("email", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.email}
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Gender
-                      </label>
                       <Input
+                        title="Gender"
+                        required
                         value={state.gender}
                         onChange={(e) =>
                           handleFormChange("gender", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                         error={state?.errors?.gender}
                       />
                     </div>
                   </div>
@@ -2932,7 +2972,7 @@ export default function NaukriProfilePage() {
                     onClick={profileUpdate}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    Save Changes
+                    Update
                   </Button>
                 </div>
               </motion.div>

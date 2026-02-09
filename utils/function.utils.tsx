@@ -510,3 +510,37 @@ export const getAvatarColor = (name: string) => {
   const firstLetter = name?.charAt(0).toUpperCase() || "A";
   return colors[firstLetter.charCodeAt(0) % colors.length];
 };
+
+
+export const DateFormat = (
+  date,
+  type = "dateTime"
+) => {
+  if (!date) return "-";
+
+  const m = moment(date);
+  if (!m.isValid()) return "-";
+
+  switch (type) {
+    case "date":
+      return m.format("DD MMM YYYY"); // 09 Feb 2026
+
+    case "time":
+      return m.format("hh:mm A"); // 11:49 AM
+
+    case "relative":
+      return m.fromNow(); // 2 hours ago
+
+    case "full":
+      return m.format("dddd, DD MMM YYYY, hh:mm A");
+      // Monday, 09 Feb 2026, 11:49 AM
+
+    case "iso":
+      return m.toISOString();
+
+    case "dateTime":
+    default:
+      return m.format("DD MMM YYYY, hh:mm A");
+  }
+};
+

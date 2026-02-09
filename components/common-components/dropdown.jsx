@@ -32,6 +32,7 @@ const CustomSelect = (props) => {
     required,
     error,
     disabled,
+    className,
   } = props;
   const selectedOption = options?.find((option) => option.value === value);
 
@@ -53,8 +54,10 @@ const CustomSelect = (props) => {
           }}
           disabled={disabled}
         >
-          <SelectTrigger className={`border-none shadow-none bg-none 
- ${selectedOption ? " pr-10 [&>svg]:hidden" : ""}`}>
+          <SelectTrigger
+            className={` shadow-none bg-none 
+ ${selectedOption ? " pr-10 [&>svg]:hidden" : ""} ${className || "border-none"}`}
+          >
             {" "}
             {/* Space for clear icon */}
             <SelectValue placeholder={placeholder} />
