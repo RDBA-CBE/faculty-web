@@ -26,38 +26,52 @@ import {
   ChevronDown,
   ChevronUp,
   User,
+  Delete,
+  Trash,
+  PlusIcon,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { DateFormat, useSetState } from "@/utils/function.utils";
+import {
+  DateFormat,
+  useSetState,
+  getFileNameFromUrl,
+  Success,
+} from "@/utils/function.utils";
 import { Models } from "@/imports/models.import";
 import { Failure } from "@/components/common-components/toast";
 import * as Yup from "yup";
 import CustomSelect from "@/components/common-components/dropdown";
-import { user } from "@/utils/validation.utils";
+import { user, userResume } from "@/utils/validation.utils";
+import Swal from "sweetalert2";
+import skill from "@/models/skill.models";
+import { log } from "console";
+import { DatePicker } from "@/components/common-components/datePicker";
 
 export default function NaukriProfilePage() {
-  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [activeTab, setActiveTab] = useState("resume");
   const [isManualScroll, setIsManualScroll] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useSetState({
     // Profile Data
     location: "",
+    about:
+      "Developed and maintained web applications using React and Node.js. Collaborated with cross-functional teams to deliver high-quality software solutions. Implemented responsive designs and optimized application performance for better user experience.",
     errors: {},
 
     // Edit States
     isEditingProfile: false,
+    isEditingResume: false,
     isEditingEmployment: false,
     isEditingEducation: false,
     isEditingSkills: false,
     isEditingProjects: false,
     isEditingHeadline: false,
     isEditingAchievements: false,
+    isEditingExperience: false,
 
     // Accordion States
     expandedSections: {
@@ -151,11 +165,11 @@ export default function NaukriProfilePage() {
 
     // Skills Data
     skills: [
-      { id: "1", name: "JavaScript", experience: "5 years" },
-      { id: "2", name: "React.js", experience: "4 years" },
-      { id: "3", name: "Node.js", experience: "3 years" },
-      { id: "4", name: "TypeScript", experience: "2 years" },
-      { id: "5", name: "AWS", experience: "2 years" },
+      { id: "1", name: "JavaScript" },
+      { id: "2", name: "React.js" },
+      { id: "3", name: "Node.js" },
+      { id: "4", name: "TypeScript" },
+      { id: "5", name: "AWS" },
     ],
 
     // Projects Data
@@ -266,24 +280,6 @@ export default function NaukriProfilePage() {
     userDetail(state.userId);
   }, [state.userId]);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsHeaderVisible(entry.isIntersecting);
-      },
-      {
-        threshold: 0.1,
-        rootMargin: "-10px 0px 0px 0px",
-      },
-    );
-
-    if (headerRef.current) {
-      observer.observe(headerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
-
   // Intersection Observer for active tab tracking
   useEffect(() => {
     const sections = tabItems
@@ -332,8 +328,6 @@ export default function NaukriProfilePage() {
   console.log("userDetail", state.userDetail);
 
   const profileUpdate = async () => {
-    console.log("hello");
-
     try {
       const validateBody = {
         first_name: state?.first_name || "",
@@ -387,7 +381,309 @@ export default function NaukriProfilePage() {
     }
   };
 
-  console.log("state?.errors", state?.errors);
+  const resumeUpdate = async () => {
+    try {
+      const body = {
+        resume: state.resume,
+      };
+
+      await userResume.validate(body, {
+        abortEarly: false,
+      });
+
+      const formData = new FormData();
+      formData.append("resume", state.resume);
+
+      const res = await Models.profile.update(formData, state.userId);
+      console.log(" res", res);
+      setState({
+        isEditingResume: false,
+        resume: null,
+      });
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        const validationErrors = {};
+        error.inner.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+
+        console.log("validationErrors", validationErrors);
+
+        setState({
+          errors: validationErrors,
+          btnLoading: false,
+        });
+      }
+
+      // API ERROR
+      else {
+        Failure(error?.error || "Something went wrong");
+
+        setState({
+          btnLoading: false,
+        });
+      }
+    }
+  };
+
+  const handleResumeFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setState({ resume: file });
+    }
+  };
+
+  const downloadResume = () => {
+    if (state.userDetail?.resume) {
+      const link = document.createElement("a");
+      link.href = state.userDetail.resume;
+      const filename = getFileNameFromUrl(state.userDetail.resume);
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      Failure("No resume available to download.");
+    }
+  };
+
+  const deleteResume = async () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f2b31d",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      customClass: {
+        title: "text-gray-800",
+        htmlContainer: "text-gray-600",
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          if (!state.userId) return;
+
+          const formData = new FormData();
+          formData.append("resume", "");
+
+          await Models.profile.update(formData, state.userId);
+
+          userDetail(state.userId);
+          Success("Resume deleted successfully.");
+        } catch (error) {
+          Failure("Failed to delete resume");
+        }
+      }
+    });
+  };
+
+  const aboutUpdate = async () => {
+    try {
+      setState({
+        isEditingHeadline: false,
+      });
+
+      const body = {
+        about: state.about,
+      };
+
+      const res = await Models.profile.update(body, state.userId);
+      console.log(" res", res);
+      // setState({
+      //   isEditingHeadline: false,
+      // });
+    } catch (error) {
+      console.log("hello frm ctach");
+      if (error instanceof Yup.ValidationError) {
+        const validationErrors = {};
+        error.inner.forEach((err) => {
+          validationErrors[err.path] = err.message;
+        });
+
+        console.log("validationErrors", validationErrors);
+
+        setState({
+          errors: validationErrors,
+          btnLoading: false,
+        });
+      }
+
+      // API ERROR
+      else {
+        Failure(error?.error || "Something went wrong");
+
+        setState({
+          btnLoading: false,
+        });
+      }
+    }
+  };
+
+  const addSkill = async () => {
+    try {
+      if (!state.skill?.trim()) return;
+
+      setState({
+        isEditingSkills: false,
+        btnLoading: true,
+        errors: {},
+      });
+
+      const body = {
+        name: state.skill.trim(),
+      };
+
+      console.log("body", body);
+
+      const res = await Models.skill.update(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deleteSkill = async (skillId) => {
+    try {
+      const body = { skill_id: skillId };
+      const res = await Models.skill.delete(body, state.userId);
+
+      console.log("deleted skill", res);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete skill");
+    }
+  };
+
+  const addEmployment = async () => {
+    try {
+      setState({
+        isEditingEmployment: false,
+      });
+
+      const body = {
+        company: state.company,
+        designation: state.designation,
+        start_date: state.start_date,
+        end_date: state.end_date,
+        job_description: state.job_description,
+      };
+      console.log("body", body);
+
+      const res = await Models.experience.create(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const updateEmployment = async () => {
+    try {
+      setState({
+        isEditingExperience: false,
+      });
+
+      const body = {
+        experience_id: state.editingId,
+        company: state.company,
+        designation: state.designation,
+        start_date: state.start_date,
+        end_date: state.end_date,
+        job_description: state.job_description,
+      };
+      console.log("body", body);
+
+      const res = await Models.experience.update(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deleteEmployment = async (experienceId) => {
+    try {
+      const body = { experience_id: experienceId };
+      const res = await Models.experience.delete(body, state.userId);
+
+      console.log("deleted experience", res);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete experience");
+    }
+  };
+
+  const addEducation = async () => {
+    try {
+      setState({
+        isEditingEducation: false,
+      });
+
+      const body = {
+        company: state.company,
+        designation: state.designation,
+        start_date: state.start_date,
+        end_date: state.end_date,
+        job_description: state.job_description,
+      };
+      console.log("body", body);
+
+      const res = await Models.education.create(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const updateEducation = async () => {
+    try {
+      setState({
+        isEditingEducation: false,
+      });
+
+      const body = {
+        education_id: state.editingId,
+        institution: state.institution,
+        degree: state.degree,
+        field: state.field,
+        startYear: state.startYear,
+        endYear: state.endYear,
+        grade: state.grade,
+        project: state.project,
+      };
+      console.log("body", body);
+
+      const res = await Models.education.update(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deleteEducation = async (educationId) => {
+    try {
+      const body = { education_id: educationId };
+      const res = await Models.education.delete(body, state.userId);
+      
+      console.log("deleted education", res);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete education");
+    }
+  };
 
   const saveProfile = () => {
     // setState({
@@ -426,61 +722,7 @@ export default function NaukriProfilePage() {
     }
   };
 
-  const addEmployment = () => {
-    const newEmployment = {
-      id: Date.now().toString(),
-      ...state.employmentForm,
-    };
-    setState({
-      employments: [...state.employments, newEmployment],
-      employmentForm: {
-        company: "",
-        designation: "",
-        startDate: "",
-        endDate: "",
-        current: false,
-        jobType: "",
-        duration: "",
-        noticePeriod: "",
-        salary: "",
-        description: "",
-        keySkills: [],
-      },
-      isEditingEmployment: false,
-    });
-  };
-
-  const addEducation = () => {
-    const newEducation = {
-      id: Date.now().toString(),
-      ...state.educationForm,
-    };
-    setState({
-      educations: [...state.educations, newEducation],
-      educationForm: {
-        institution: "",
-        degree: "",
-        field: "",
-        startYear: "",
-        endYear: "",
-        grade: "",
-        project: "",
-      },
-      isEditingEducation: false,
-    });
-  };
-
-  const addSkill = () => {
-    const newSkill = {
-      id: Date.now().toString(),
-      ...state.skillForm,
-    };
-    setState({
-      skills: [...state.skills, newSkill],
-      skillForm: { name: "", experience: "" },
-      isEditingSkills: false,
-    });
-  };
+  
 
   const addProject = () => {
     const newProject = {
@@ -550,23 +792,6 @@ export default function NaukriProfilePage() {
     { id: "achievements", label: "Awards", icon: Award },
   ];
 
-  const deleteEmployment = (id: string) => {
-    setState({
-      employments: state.employments.filter((emp) => emp.id !== id),
-    });
-  };
-
-  const deleteEducation = (id: string) => {
-    setState({
-      educations: state.educations.filter((edu) => edu.id !== id),
-    });
-  };
-
-  const deleteSkill = (id: string) => {
-    setState({
-      skills: state.skills.filter((skill) => skill.id !== id),
-    });
-  };
 
   const deleteProject = (id: string) => {
     setState({
@@ -581,6 +806,8 @@ export default function NaukriProfilePage() {
       ),
     });
   };
+
+  console.log("resume", state?.resume);
 
   const toggleSection = (section: string) => {
     setState({
@@ -608,10 +835,7 @@ export default function NaukriProfilePage() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
         {/* Profile Header - Will hide on scroll */}
-        <Card
-          ref={headerRef}
-          className="bg-white/80 border-0 mb-8 overflow-hidden"
-        >
+        <Card className="bg-white/80 border-0 mb-8 overflow-hidden">
           <div className="absolute"></div>
           <CardContent className="relative p-4 md:p-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
@@ -661,7 +885,6 @@ export default function NaukriProfilePage() {
                               state.userDetail?.current_company || "",
                             current_position:
                               state.userDetail?.current_position || "",
-                            resume: state.userDetail?.resume || "",
                           });
                         }}
                       >
@@ -690,7 +913,7 @@ export default function NaukriProfilePage() {
                       <p className="text-xs text-gray-500 whitespace-nowrap">
                         Last Updated:{" "}
                         <span className="font-semibold text-gray-700">
-                         {DateFormat(state.userDetail?.updated_at, "date")}   
+                          {DateFormat(state.userDetail?.updated_at, "date")}
                         </span>
                       </p>
                     </div>
@@ -760,8 +983,8 @@ export default function NaukriProfilePage() {
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Left Sidebar - Quick Links */}
-          <div className="lg:w-1/3 quick-links-sidebar">
-            <div className={!isHeaderVisible ? "sticky top-4" : ""}>
+          <div className="lg:w-1/4 quick-links-sidebar">
+            <div className="sticky top-24 z-10">
               <Card className="bg-white/80  border-0 overflow-hidden">
                 <div className=""></div>
                 <CardContent className="relative p-4">
@@ -840,10 +1063,8 @@ export default function NaukriProfilePage() {
           </div>
 
           {/* Right Content Area - Scrollable */}
-          <div
-            className={`quick-links-content ${!isHeaderVisible ? "max-h-[calc(100vh-5rem)] overflow-y-scroll scrollbar-hide" : ""}`}
-          >
-            <div className="space-y-4 pr-2">
+          <div className="quick-links-content flex-1">
+            <div className="space-y-4">
               {/* Naukri Pro Banner */}
 
               {/* Resume Section */}
@@ -889,6 +1110,86 @@ export default function NaukriProfilePage() {
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
                       >
+                        {/* Edit Resume Form */}
+                        <AnimatePresence>
+                          {state.isEditingResume && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0, y: -20 }}
+                              animate={{ opacity: 1, height: "auto", y: 0 }}
+                              exit={{ opacity: 0, height: 0, y: -20 }}
+                              transition={{ duration: 0.3, ease: "easeOut" }}
+                              className="mb-6 relative"
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-3xl blur-sm"></div>
+                              <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <Upload className="w-4 h-4 text-white" />
+                                  </div>
+                                  <h4 className="text-lg font-bold text-gray-900">
+                                    Upload Resume
+                                  </h4>
+                                </div>
+
+                                <div className="space-y-4 mb-4">
+                                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors bg-white/50">
+                                    <Input
+                                      type="file"
+                                      accept=".pdf,.doc,.docx"
+                                      onChange={handleResumeFileChange}
+                                      className="hidden"
+                                      id="resume-upload"
+                                    />
+                                    <label
+                                      htmlFor="resume-upload"
+                                      className="cursor-pointer flex flex-col items-center gap-2 w-full h-full"
+                                    >
+                                      <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center">
+                                        <Upload className="w-6 h-6 text-blue-600" />
+                                      </div>
+                                      <span className="text-sm font-medium text-gray-700">
+                                        Click to upload or drag and drop
+                                      </span>
+                                      <span className="text-xs text-gray-500">
+                                        PDF, DOC, DOCX (Max 5MB)
+                                      </span>
+                                    </label>
+                                    {state.resume && (
+                                      <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium break-all">
+                                        <CheckCircle className="w-4 h-4" />
+                                        {state.resume.name}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex gap-3">
+                                  <Button
+                                    onClick={resumeUpdate}
+                                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg"
+                                    disabled={!state.resume}
+                                  >
+                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                    Upload
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    onClick={() =>
+                                      setState({
+                                        isEditingResume: false,
+                                        resume: null,
+                                      })
+                                    }
+                                    className="border-gray-300 hover:bg-gray-50"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
                         {/* Current Resume Card */}
                         <div className="relative">
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-3xl blur-sm group-hover:from-blue-500/10 group-hover:to-purple-500/10 transition-all duration-300"></div>
@@ -917,71 +1218,72 @@ export default function NaukriProfilePage() {
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-start justify-between md:mb-3">
                                   <div className="flex-1">
-                                    <h4 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors">
+                                    {/* <h4 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-blue-700 transition-colors">
                                       {state.resumeFile}
-                                    </h4>
+                                    </h4> */}
                                     <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
                                       <span className="flex items-center gap-1">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        Uploaded {state.resumeUploadDate}
+                                        {state?.userDetail?.resume
+                                          ? "Uploaded"
+                                          : "No Resume Uploaded"}
                                       </span>
-                                      <span className="flex items-center gap-1">
+                                      {/* <span className="flex items-center gap-1">
                                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                                         2.4 MB
-                                      </span>
+                                      </span> */}
                                     </div>
                                   </div>
 
                                   {/* Desktop Action Buttons - Top Right */}
                                   <div className="hidden md:flex gap-2">
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="hover:bg-blue-50 border-blue-200 group/btn"
-                                      title="Download Resume"
-                                    >
-                                      <Download className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="hover:bg-orange-50 border-orange-200 group/btn"
-                                      title="Upload New Resume"
-                                    >
-                                      <Upload className="w-4 h-4 text-orange-600 group-hover/btn:scale-110 transition-transform" />
-                                    </Button>
+                                    {state?.userDetail?.resume ? (
+                                      <>
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="hover:bg-blue-50 border-blue-200 group/btn"
+                                          onClick={downloadResume}
+                                          title="Download Resume"
+                                        >
+                                          <Download className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          onClick={deleteResume}
+                                          size="sm"
+                                          className="hover:bg-orange-50 border-orange-200 group/btn"
+                                          title="Delete Resume"
+                                        >
+                                          <Trash className="w-4 h-4 text-orange-600 group-hover/btn:scale-110 transition-transform" />
+                                        </Button>
+                                      </>
+                                    ) : (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="hover:bg-blue-50 border-blue-200 group/btn"
+                                        title="Upload Resume"
+                                        onClick={() =>
+                                          setState({ isEditingResume: true })
+                                        }
+                                      >
+                                        <PlusIcon className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
+                                      </Button>
+                                    )}
                                   </div>
                                 </div>
 
                                 {/* Status Badges */}
-                                <div className="flex flex-wrap items-center gap-3 mb-4">
-                                  <div className="bg-gradient-to-r from-blue-100 to-indigo-100 px-3 py-1 rounded-full">
-                                    <span className="text-blue-700 font-semibold text-sm">
-                                      Latest Version
-                                    </span>
+                                {state?.userDetail?.resume && (
+                                  <div className="flex flex-wrap items-center gap-3 mb-4">
+                                    <div className="bg-gradient-to-r from-blue-100 to-indigo-100 px-3 py-1 rounded-full">
+                                      <span className="text-blue-700 font-semibold text-sm">
+                                        Latest Version
+                                      </span>
+                                    </div>
                                   </div>
-                                  
-                                </div>
-
-                                {/* Mobile Action Buttons - Bottom Right */}
-                                <div className="flex md:hidden justify-end gap-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="hover:bg-blue-50 border-blue-200 group/btn"
-                                    title="Download Resume"
-                                  >
-                                    <Download className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="hover:bg-orange-50 border-orange-200 group/btn"
-                                    title="Upload New Resume"
-                                  >
-                                    <Upload className="w-4 h-4 text-orange-600 group-hover/btn:scale-110 transition-transform" />
-                                  </Button>
-                                </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -1067,22 +1369,20 @@ export default function NaukriProfilePage() {
 
                                 <Textarea
                                   placeholder="Write a compelling headline that summarizes your professional experience and key skills..."
-                                  value={state.resumeHeadline}
+                                  value={state?.userDetail?.about}
                                   onChange={(e) =>
-                                    setState({ resumeHeadline: e.target.value })
+                                    setState({ about: e.target.value })
                                   }
                                   className="border-gray-200 focus:border-cyan-500 focus:ring-cyan-500 min-h-[100px] mb-4"
                                 />
 
                                 <div className="flex gap-3">
                                   <Button
-                                    onClick={() =>
-                                      setState({ isEditingHeadline: false })
-                                    }
+                                    onClick={aboutUpdate}
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                    Save Headline
+                                    Update
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -1104,7 +1404,7 @@ export default function NaukriProfilePage() {
                           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 rounded-3xl blur-sm"></div>
                           <div className="flex-1 px-3">
                             <p className="text-md text-gray-500">
-                              Professional headline optimized for recruiters
+                              {state.userDetail?.about}
                             </p>
                           </div>
                         </div>
@@ -1194,21 +1494,19 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., JavaScript"
-                                      value={state.skillForm.name}
+                                      value={state.skill || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          skillForm: {
-                                            ...state.skillForm,
-                                            name: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "skill",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-green-500 focus:ring-green-500"
                                     />
                                   </div>
-                                  <div className="space-y-2">
+                                  {/* <div className="space-y-2">
                                     <label className="text-sm font-semibold text-gray-700">
-                                      Experience
+                                      Experience 
                                     </label>
                                     <Input
                                       placeholder="e.g., 3 years"
@@ -1223,7 +1521,7 @@ export default function NaukriProfilePage() {
                                       }
                                       className="border-gray-200 focus:border-green-500 focus:ring-green-500"
                                     />
-                                  </div>
+                                  </div> */}
                                 </div>
 
                                 <div className="flex gap-3">
@@ -1251,7 +1549,7 @@ export default function NaukriProfilePage() {
 
                         {/* Skills List - Chip Format */}
                         <div className="flex flex-wrap gap-3">
-                          {state.skills.map((skill, index) => (
+                          {state?.userDetail?.skills?.map((skill, index) => (
                             <motion.div
                               key={skill.id}
                               initial={{ opacity: 0, scale: 0.8 }}
@@ -1263,9 +1561,9 @@ export default function NaukriProfilePage() {
                                 <span className="text-green-700 font-medium text-sm">
                                   {skill.name}
                                 </span>
-                                <span className="text-green-600 text-xs bg-white/60 px-2 py-0.5 rounded-full">
+                                {/* <span className="text-green-600 text-xs bg-white/60 px-2 py-0.5 rounded-full">
                                   {skill.experience}
-                                </span>
+                                </span> */}
                                 <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
                                   <button
                                     onClick={() => deleteSkill(skill.id)}
@@ -1392,14 +1690,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Google Inc."
-                                      value={state.employmentForm.company}
+                                      value={state.company || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          employmentForm: {
-                                            ...state.employmentForm,
-                                            company: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "company",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
                                     />
@@ -1410,70 +1706,40 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Senior Software Engineer"
-                                      value={state.employmentForm.designation}
+                                      value={state.designation || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          employmentForm: {
-                                            ...state.employmentForm,
-                                            designation: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "designation",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Start Date
-                                    </label>
-                                    <Input
-                                      placeholder="e.g., Jan 2021"
-                                      value={state.employmentForm.startDate}
-                                      onChange={(e) =>
+                                    <DatePicker
+                                      placeholder="Start Date"
+                                      title="Start Date"
+                                      closeIcon={true}
+                                      selectedDate={state.start_date}
+                                      onChange={(date) => {
                                         setState({
-                                          employmentForm: {
-                                            ...state.employmentForm,
-                                            startDate: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                                          start_date: date,
+                                        });
+                                      }}
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      End Date
-                                    </label>
-                                    <Input
-                                      placeholder="e.g., Present"
-                                      value={state.employmentForm.endDate}
-                                      onChange={(e) =>
+                                    <DatePicker
+                                      placeholder="End Date"
+                                      title="End Date"
+                                      closeIcon={true}
+                                      selectedDate={state.end_date}
+                                      onChange={(date) => {
                                         setState({
-                                          employmentForm: {
-                                            ...state.employmentForm,
-                                            endDate: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
-                                    />
-                                  </div>
-                                  <div className="space-y-2 md:col-span-2">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Salary
-                                    </label>
-                                    <Input
-                                      placeholder="e.g., ₹ 12,00,000"
-                                      value={state.employmentForm.salary}
-                                      onChange={(e) =>
-                                        setState({
-                                          employmentForm: {
-                                            ...state.employmentForm,
-                                            salary: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                                          end_date: date,
+                                        });
+                                      }}
                                     />
                                   </div>
                                 </div>
@@ -1484,14 +1750,12 @@ export default function NaukriProfilePage() {
                                   </label>
                                   <Textarea
                                     placeholder="Describe your key responsibilities and achievements..."
-                                    value={state.employmentForm.description}
+                                    value={state.job_description}
                                     onChange={(e) =>
-                                      setState({
-                                        employmentForm: {
-                                          ...state.employmentForm,
-                                          description: e.target.value,
-                                        },
-                                      })
+                                      handleFormChange(
+                                        "job_description",
+                                        e.target.value,
+                                      )
                                     }
                                     className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 min-h-[100px]"
                                   />
@@ -1503,7 +1767,7 @@ export default function NaukriProfilePage() {
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                    Save Experience
+                                    Update Experience
                                   </Button>
                                   <Button
                                     variant="outline"
@@ -1581,6 +1845,17 @@ export default function NaukriProfilePage() {
                                           variant="outline"
                                           size="sm"
                                           className="hover:bg-blue-50 border-blue-200 group/btn"
+                                          onClick={() =>
+                                            setState({
+                                              isEditingExperience: true,
+                                              company: emp.company,
+                                              designation: emp.designation,
+                                              start_date: emp.startDate,
+                                              end_date: emp.endDate,
+                                              job_description: emp.description,
+                                              editingId: emp.id,
+                                            })
+                                          }
                                         >
                                           <Edit className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
@@ -1650,6 +1925,17 @@ export default function NaukriProfilePage() {
                                           variant="outline"
                                           size="sm"
                                           className="hover:bg-blue-50 border-blue-200 group/btn"
+                                          onClick={() =>
+                                            setState({
+                                              isEditingExperience: true,
+                                              company: emp.company,
+                                              designation: emp.designation,
+                                              start_date: emp.startDate,
+                                              end_date: emp.endDate,
+                                              job_description: emp.description,
+                                              editingId: emp.id,
+                                            })
+                                          }
                                         >
                                           <Edit className="w-4 h-4 text-blue-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
@@ -2840,7 +3126,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("first_name", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                         error={state?.errors?.first_name}
+                        error={state?.errors?.first_name}
                       />
                     </div>
 
@@ -2853,7 +3139,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("last_name", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                         error={state?.errors?.last_name}
+                        error={state?.errors?.last_name}
                       />
                     </div>
 
@@ -2881,7 +3167,7 @@ export default function NaukriProfilePage() {
                             experience: selected ? selected.value : "",
                           })
                         }
-                         error={state?.errors?.experience}
+                        error={state?.errors?.experience}
                         // placeholder="Experience"
                       />
                     </div>
@@ -2917,7 +3203,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("location", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                         error={state?.errors?.location}
+                        error={state?.errors?.location}
                       />
                     </div>
 
@@ -2943,7 +3229,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("email", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                         error={state?.errors?.email}
+                        error={state?.errors?.email}
                       />
                     </div>
                     <div className="space-y-2">
@@ -2955,7 +3241,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("gender", e.target.value)
                         }
                         className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                         error={state?.errors?.gender}
+                        error={state?.errors?.gender}
                       />
                     </div>
                   </div>
@@ -2970,6 +3256,120 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={profileUpdate}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {state.isEditingExperience && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Experience
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingExperience: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Company Name
+                      </label>
+                      <Input
+                        placeholder="e.g., Google Inc."
+                        value={state.company || ""}
+                        onChange={(e) =>
+                          handleFormChange("company", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Job Title
+                      </label>
+                      <Input
+                        placeholder="e.g., Senior Software Engineer"
+                        value={state.designation || ""}
+                        onChange={(e) =>
+                          handleFormChange("designation", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      {/* <DatePicker
+                        placeholder="Start Date"
+                        title="Start Date"
+                        closeIcon={true}
+                        selectedDate={state.start_date}
+                        onChange={(date) => {
+                          setState({
+                            start_date: date,
+                          });
+                        }}
+                      /> */}
+                    </div>
+
+                    <div className="space-y-2">
+                      {/* <DatePicker
+                        placeholder="End Date"
+                        title="End Date"
+                        closeIcon={true}
+                        selectedDate={state.end_date}
+                        onChange={(date) => {
+                          setState({
+                            end_date: date,
+                          });
+                        }}
+                      /> */}
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Job Description
+                      </label>
+                      <Textarea
+                        placeholder="Describe your key responsibilities and achievements..."
+                        value={state.job_description}
+                        onChange={(e) =>
+                          handleFormChange("job_description", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-indigo-500 focus:ring-indigo-500 min-h-[100px]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingExperience: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updateEmployment}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     Update

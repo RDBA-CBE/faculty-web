@@ -9,6 +9,10 @@ import salaryRange from "@/models/salaryRange.model";
 import jobtags from "@/models/tags. copy";
 import applications from "@/models/applications.model";
 import profile from "@/models/profile.models";
+import skill from "@/models/skill.models";
+import experience from "@/models/experience.models";
+import education from "@/models/education.models ";
+import projects from "@/models/projects.models";
 
 
 
@@ -21,7 +25,11 @@ export const Models = {
   salaryRange,
   jobtags,
   applications,
-  profile
+  profile,
+  skill,
+  experience,
+  education,
+  projects,
   
   
 };

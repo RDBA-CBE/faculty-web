@@ -59,3 +59,21 @@ export const user = Yup.object().shape({
   experience: Yup.string().required("Experience is required"),
   gender: Yup.string().required("Gender is required"),
 });
+
+export const userResume = Yup.object({
+  resume: Yup.mixed()
+    .required("Resume is required")
+    .test(
+      "fileValidation",
+      "Only PDF/DOC/DOCX files under 12MB are allowed",
+      (file: any) =>
+        file &&
+        [
+          "application/pdf",
+          "application/msword",
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ].includes(file.type) &&
+        file.size <= 12 * 1024 * 1024
+    ),
+});
+
