@@ -476,7 +476,6 @@ export default function NaukriProfilePage() {
 
   const deleteEmployment = async (experienceId) => {
     try {
-    
       const res = await Models.experience.delete(experienceId);
 
       console.log("deleted experience", res);
@@ -505,6 +504,7 @@ export default function NaukriProfilePage() {
 
       const res = await Models.education.create(body);
       console.log("res", res);
+
       userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Something went wrong");
@@ -547,6 +547,7 @@ export default function NaukriProfilePage() {
       const res = await Models.education.delete(educationId);
 
       console.log("deleted education", res);
+      userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Failed to delete education");
     }
@@ -608,10 +609,10 @@ export default function NaukriProfilePage() {
 
   const deleteProject = async (projectId) => {
     try {
-     
       const res = await Models.projects.delete(projectId);
 
       console.log("deleted project", res);
+      userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Failed to delete project");
     }
@@ -619,21 +620,30 @@ export default function NaukriProfilePage() {
 
   const addAchievement = async () => {
     try {
-      setState({
-        isCreateAchievements: false,
-      });
+      setState({ isCreateAchievements: false, btnLoading: true });
 
       const body = {
-        achievement_title: state.achievement_title,
-        achievement_description: state.achievement_description,
-
-        organization: state.organization,
-        achievement_file: state.achievement_file,
+        user_id: state.userId,
+        achievement_title: state.achievement_title || "",
+        achievement_description: state.achievement_description || "",
+        organization: state.organization || "",
       };
-      console.log("body", body);
 
-      const res = await Models.achievements.create(body, state.userId);
+      const formData = new FormData();
+
+      Object.entries(body).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value as string);
+        }
+      });
+
+      if (state.achievement_file) {
+        formData.append("achievement_file_url", state.achievement_file);
+      }
+
+      const res = await Models.achievements.create(formData);
       console.log("res", res);
+
       userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Something went wrong");
@@ -644,22 +654,33 @@ export default function NaukriProfilePage() {
 
   const updateAchievement = async () => {
     try {
-      setState({
-        isEditingAchievements: false,
-      });
+      setState({ isEditingAchievements: false, btnLoading: true });
 
       const body = {
         achievement_id: state.achievement_id,
-        achievement_title: state.achievement_title,
-        achievement_description: state.achievement_description,
-
-        organization: state.organization,
-        achievement_file: state.achievement_file,
+        achievement_title: state.achievement_title || "",
+        achievement_description: state.achievement_description || "",
+        organization: state.organization || "",
       };
-      console.log("body", body);
 
-      const res = await Models.achievements.update(body, state.userId);
+      const formData = new FormData();
+
+      Object.entries(body).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          formData.append(key, value as string);
+        }
+      });
+
+      if (state.achievement_file) {
+        formData.append("achievement_file_url", state.achievement_file);
+      }
+
+      const res = await Models.achievements.update(
+        formData,
+        state.achievement_id,
+      );
       console.log("res", res);
+
       userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Something went wrong");
@@ -671,9 +692,10 @@ export default function NaukriProfilePage() {
   const deleteAchievement = async (achievementId) => {
     try {
       const body = { achievement_id: achievementId };
-      const res = await Models.achievements.delete(body, state.userId);
+      const res = await Models.achievements.delete(achievementId);
 
       console.log("deleted achievement", res);
+      userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Failed to delete achievement");
     }
@@ -2193,7 +2215,7 @@ export default function NaukriProfilePage() {
 
                         {/* Education List */}
                         <div className="space-y-4">
-                          {state?.userDetails?.educations?.map((edu, index) => (
+                          {state?.userDetail?.educations?.map((edu, index) => (
                             <motion.div
                               key={edu.id}
                               initial={{ opacity: 0, y: 20 }}
@@ -2247,8 +2269,8 @@ export default function NaukriProfilePage() {
                                               degree: edu.degree,
                                               field: edu.field,
                                               cgpa: edu.cgpa,
-                                              start_year: edu.startYear,
-                                              end_year: edu.endYear,
+                                              start_year: edu.start_year,
+                                              end_year: edu.end_year,
                                               education_id: edu.id,
                                             })
                                           }
@@ -2287,8 +2309,8 @@ export default function NaukriProfilePage() {
                                             degree: edu.degree,
                                             field: edu.field,
                                             cgpa: edu.cgpa,
-                                            start_year: edu.startYear,
-                                            end_year: edu.endYear,
+                                            start_year: edu.start_year,
+                                            end_year: edu.end_year,
                                             education_id: edu.id,
                                           })
                                         }
@@ -2308,7 +2330,8 @@ export default function NaukriProfilePage() {
                                 </div>
 
                                 {/* Timeline Connector */}
-                                {index < state.educations.length - 1 && (
+                                {index <
+                                  state?.userDetail?.educations?.length - 1 && (
                                   <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-purple-300 to-transparent"></div>
                                 )}
                               </div>
@@ -2758,7 +2781,8 @@ export default function NaukriProfilePage() {
                                 </div>
 
                                 {/* Timeline Connector */}
-                                {index < state.projects.length - 1 && (
+                                {index <
+                                  state.userDetail?.projects?.length - 1 && (
                                   <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-purple-300 to-transparent"></div>
                                 )}
                               </div>
@@ -2845,6 +2869,7 @@ export default function NaukriProfilePage() {
                             achievement_title: "",
                             organization: "",
                             achievement_file: null,
+                            achievement_file_url: null,
                             achievement_description: "",
                           });
                         }}
@@ -2930,34 +2955,32 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-center gap-3">
                                       <Input
                                         ref={(ref) => {
-                                          if (ref && !state.achievement_file) {
+                                          if (
+                                            ref && !state.achievement_file_url
+                                          ) {
                                             ref.value = "";
                                           }
                                         }}
                                         type="file"
-                                        accept="pdf/*"
+                                        accept="image/*,application/pdf"
                                         onChange={(e) => {
                                           const file = e.target.files?.[0];
-                                          if (file) {
-                                            const reader = new FileReader();
-                                            reader.onload = (event) => {
-                                              setState({
-                                                ...state,
-                                                achievement_file: event.target
-                                                  ?.result as string,
-                                              });
-                                            };
-                                            reader.readAsDataURL(file);
-                                          }
+                                          if (!file) return;
+                                          setState({
+                                            ...state,
+                                            achievement_file: file,
+                                            achievement_file_url:
+                                              URL.createObjectURL(file),
+                                          });
                                         }}
                                         className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                       />
                                       <Upload className="w-5 h-5 text-gray-400" />
                                     </div>
-                                    {state.aachievement_file && (
+                                    {state.achievement_file_url && (
                                       <div className="mt-2 relative inline-block">
                                         <img
-                                          src={state.achievement_file}
+                                          src={state.achievement_file_url}
                                           alt="Preview"
                                           className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                                         />
@@ -2968,6 +2991,7 @@ export default function NaukriProfilePage() {
                                             setState({
                                               ...state,
                                               achievement_file: null,
+                                              achievement_file_url: null,
                                             });
                                             // Clear the file input
                                             const fileInput =
@@ -3083,15 +3107,12 @@ export default function NaukriProfilePage() {
                                             onClick={() => {
                                               setState({
                                                 isEditingAchievements: true,
-                                                achievement_title:
-                                                  achievement.title,
-                                                organization:
-                                                  achievement.organization,
-                                                achievement_File:
-                                                  achievement.file,
-                                                achievement_description:
-                                                  achievement.description,
+                                                achievement_title: achievement.achievement_title,
+                                                organization: achievement.achievement_organization,
+                                                achievement_file_url: achievement.achievement_file,
+                                                achievement_description: achievement.achievement_description,
                                                 achievement_id: achievement.id,
+                                                achievement_file: null,
                                               });
                                             }}
                                           >
@@ -3126,15 +3147,12 @@ export default function NaukriProfilePage() {
                                           onClick={() => {
                                             setState({
                                               isEditingAchievements: true,
-                                              achievement_title:
-                                                achievement.title,
-                                              organization:
-                                                achievement.organization,
-                                              achievement_File:
-                                                achievement.file,
-                                              achievement_description:
-                                                achievement.description,
+                                              achievement_title: achievement.achievement_title,
+                                              organization: achievement.achievement_organization,
+                                              achievement_file_url: achievement.achievement_file,
+                                              achievement_description: achievement.achievement_description,
                                               achievement_id: achievement.id,
+                                              achievement_file: null,
                                             });
                                           }}
                                         >
@@ -3828,35 +3846,27 @@ export default function NaukriProfilePage() {
                       </label>
                       <div className="flex items-center gap-3">
                         <Input
-                          ref={(ref) => {
-                            if (ref && !state.achievement_file) {
-                              ref.value = "";
-                            }
-                          }}
                           type="file"
-                          accept="pdf/*"
+                          accept="image/*,application/pdf"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = (event) => {
-                                setState({
-                                  ...state,
-                                  achievement_file: event.target
-                                    ?.result as string,
-                                });
-                              };
-                              reader.readAsDataURL(file);
-                            }
+                            if (!file) return;
+
+                            setState((prev) => ({
+                              ...prev,
+                              achievement_file: file,
+                              achievement_file_url: URL.createObjectURL(file),
+                            }));
                           }}
                           className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         />
                         <Upload className="w-5 h-5 text-gray-400" />
                       </div>
-                      {state.aachievement_file && (
+
+                      {state.achievement_file_url && (
                         <div className="mt-2 relative inline-block">
                           <img
-                            src={state.achievement_file}
+                            src={state.achievement_file_url}
                             alt="Preview"
                             className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                           />
@@ -3867,6 +3877,7 @@ export default function NaukriProfilePage() {
                               setState({
                                 ...state,
                                 achievement_file: null,
+                                achievement_file_url: null,
                               });
                               // Clear the file input
                               const fileInput =
