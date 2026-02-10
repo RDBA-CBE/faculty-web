@@ -13,6 +13,7 @@ import skill from "@/models/skill.models";
 import experience from "@/models/experience.models";
 import education from "@/models/education.models ";
 import projects from "@/models/projects.models";
+import achievements from "@/models/achievements.models";
 
 
 
@@ -30,6 +31,7 @@ export const Models = {
   experience,
   education,
   projects,
+  achievements
   
   
 };

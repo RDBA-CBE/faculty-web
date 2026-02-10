@@ -50,6 +50,7 @@ import Swal from "sweetalert2";
 import skill from "@/models/skill.models";
 import { log } from "console";
 import { DatePicker } from "@/components/common-components/datePicker";
+import { start } from "repl";
 
 export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
@@ -66,10 +67,13 @@ export default function NaukriProfilePage() {
     isEditingProfile: false,
     isEditingResume: false,
     isCreateExperience: false,
+    isCreateEducation: false,
     isEditingEducation: false,
     isEditingSkills: false,
+    isCreateProjects: false,
     isEditingProjects: false,
     isEditingHeadline: false,
+    isCreateAchievements: false,
     isEditingAchievements: false,
     isEditingExperience: false,
 
@@ -624,15 +628,16 @@ export default function NaukriProfilePage() {
   const addEducation = async () => {
     try {
       setState({
-        isEditingEducation: false,
+        isCreateEducation: false,
       });
 
       const body = {
-        company: state.company,
-        designation: state.designation,
-        start_date: state.start_date,
-        end_date: state.end_date,
-        job_description: state.job_description,
+        institution: state.institution,
+        degree: state.degree,
+        field: state.field,
+        start_year: state.start_year,
+        end_year: state.end_year,
+        cgpa: state.cgpa,
       };
       console.log("body", body);
 
@@ -653,7 +658,7 @@ export default function NaukriProfilePage() {
       });
 
       const body = {
-        education_id: state.editingId,
+        education_id: state.education_id,
         institution: state.institution,
         degree: state.degree,
         field: state.field,
@@ -682,6 +687,132 @@ export default function NaukriProfilePage() {
       console.log("deleted education", res);
     } catch (error) {
       Failure(error?.error || "Failed to delete education");
+    }
+  };
+
+  const addProject = async () => {
+    try {
+      setState({
+        isCreateProjects: false,
+      });
+
+      const body = {
+        project_title: state.project_title,
+        project_description: state.project_description,
+        technologies: state.technologies,
+        duration: state.duration,
+        status: state.status,
+        project_link: state.project_link,
+      };
+      console.log("body", body);
+
+      const res = await Models.projects.create(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const updateProjects = async () => {
+    try {
+      setState({
+        isEditingProjects: false,
+      });
+
+      const body = {
+        project_id: state.project_id,
+        project_title: state.project_title,
+        description: state.description,
+        technologies: state.technologies,
+        duration: state.duration,
+        status: state.status,
+        link: state.link,
+      };
+      console.log("body", body);
+
+      const res = await Models.projects.update(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deleteProject = async (projectId) => {
+    try {
+      const body = { project_id: projectId };
+      const res = await Models.projects.delete(body, state.userId);
+
+      console.log("deleted project", res);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete project");
+    }
+  };
+
+  const addAchievement = async () => {
+    try {
+      setState({
+        isCreateAchievements: false,
+      });
+
+      const body = {
+        achievement_title: state.achievement_title,
+        achievement_description: state.achievement_description,
+
+        organization: state.organization,
+        achievement_file: state.achievement_file,
+      };
+      console.log("body", body);
+
+      const res = await Models.achievements.create(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const updateAchievement = async () => {
+    try {
+      setState({
+        isEditingProjects: false,
+      });
+
+      const body = {
+        achievement_id: state.achievement_id,
+        achievement_title: state.achievement_title,
+        achievement_description: state.achievement_description,
+
+        organization: state.organization,
+        achievement_file: state.achievement_file,
+      };
+      console.log("body", body);
+
+      const res = await Models.achievements.update(body, state.userId);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deleteAchievement = async (achievementId) => {
+    try {
+      const body = { achievement_id: achievementId };
+      const res = await Models.achievements.delete(body, state.userId);
+
+      console.log("deleted achievement", res);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete achievement");
     }
   };
 
@@ -722,26 +853,7 @@ export default function NaukriProfilePage() {
     }
   };
 
-  const addProject = () => {
-    const newProject = {
-      id: Date.now().toString(),
-      ...state.projectForm,
-    };
-    setState({
-      projects: [...state.projects, newProject],
-      projectForm: {
-        title: "",
-        description: "",
-        technologies: [],
-        duration: "",
-        status: "",
-        link: "",
-      },
-      isEditingProjects: false,
-    });
-  };
-
-  const addAchievement = () => {
+  const addAchievements = () => {
     const newAchievement = {
       id: Date.now().toString(),
       ...state.achievementForm,
@@ -789,20 +901,6 @@ export default function NaukriProfilePage() {
     { id: "projects", label: "Projects", icon: FolderOpen },
     { id: "achievements", label: "Awards", icon: Award },
   ];
-
-  const deleteProject = (id: string) => {
-    setState({
-      projects: state.projects.filter((project) => project.id !== id),
-    });
-  };
-
-  const deleteAchievement = (id: string) => {
-    setState({
-      achievements: state.achievements.filter(
-        (achievement) => achievement.id !== id,
-      ),
-    });
-  };
 
   console.log("resume", state?.resume);
 
@@ -1784,7 +1882,7 @@ export default function NaukriProfilePage() {
 
                         {/* Employment List */}
                         <div className="space-y-4">
-                          {state.employments.map((emp, index) => (
+                          {state.userDetails?.experience?.map((emp, index) => (
                             <motion.div
                               key={emp.id}
                               initial={{ opacity: 0, y: 20 }}
@@ -1962,7 +2060,9 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Empty State */}
-                        {state.employments.length === 0 && (
+                        {(state.userDetails?.experience?.length === 0 ||
+                          state.userDetails?.experience?.length ==
+                            undefined) && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -2024,8 +2124,7 @@ export default function NaukriProfilePage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          setState({ isEditingEducation: true });
+                          setState({ isCreateEducation: true });
                         }}
                         className="w-8 h-8 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -2049,7 +2148,7 @@ export default function NaukriProfilePage() {
                       >
                         {/* Add Education Form */}
                         <AnimatePresence>
-                          {state.isEditingEducation && (
+                          {state.isCreateEducation && (
                             <motion.div
                               initial={{ opacity: 0, height: 0, y: -20 }}
                               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -2075,14 +2174,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Harvard University"
-                                      value={state.educationForm.institution}
+                                      value={state.institution || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            institution: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "institution",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2093,14 +2190,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Bachelor of Technology"
-                                      value={state.educationForm.degree}
+                                      value={state.degree || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            degree: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "degree",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2111,14 +2206,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Computer Science"
-                                      value={state.educationForm.field}
+                                      value={state.field || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            field: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "field",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2129,14 +2222,9 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., 8.5 CGPA"
-                                      value={state.educationForm.grade}
+                                      value={state.cgpa || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            grade: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange("cgpa", e.target.value)
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2147,14 +2235,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., 2016"
-                                      value={state.educationForm.startYear}
+                                      value={state.start_year || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            startYear: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "start_year",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2165,14 +2251,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., 2020"
-                                      value={state.educationForm.endYear}
+                                      value={state.end_year || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          educationForm: {
-                                            ...state.educationForm,
-                                            endYear: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "end_year",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
                                     />
@@ -2185,12 +2269,12 @@ export default function NaukriProfilePage() {
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                    Save Education
+                                    Create Education
                                   </Button>
                                   <Button
                                     variant="outline"
                                     onClick={() =>
-                                      setState({ isEditingEducation: false })
+                                      setState({ isCreateEducation: false })
                                     }
                                     className="border-gray-300 hover:bg-gray-50"
                                   >
@@ -2204,7 +2288,7 @@ export default function NaukriProfilePage() {
 
                         {/* Education List */}
                         <div className="space-y-4">
-                          {state.educations.map((edu, index) => (
+                          {state?.userDetails?.educations.map((edu, index) => (
                             <motion.div
                               key={edu.id}
                               initial={{ opacity: 0, y: 20 }}
@@ -2251,6 +2335,18 @@ export default function NaukriProfilePage() {
                                           variant="outline"
                                           size="sm"
                                           className="hover:bg-orange-50 border-orange-200 group/btn"
+                                          onClick={() =>
+                                            setState({
+                                              isEditingEducation: true,
+                                              institution: edu.institution,
+                                              degree: edu.degree,
+                                              field: edu.field,
+                                              cgpa: edu.cgpa,
+                                              start_year: edu.startYear,
+                                              end_year: edu.endYear,
+                                              education_id: edu.id,
+                                            })
+                                          }
                                         >
                                           <Edit className="w-4 h-4 text-orange-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
@@ -2268,24 +2364,10 @@ export default function NaukriProfilePage() {
                                     </div>
                                     <div className="text-sm text-gray-600 mb-2">
                                       <span className="font-medium">
-                                        {edu.startYear} - {edu.endYear}
+                                        {edu.start_year} - {edu.end_year}
                                       </span>{" "}
-                                      |<span className="ml-1">{edu.grade}</span>
+                                      |<span className="ml-1">{edu.cgpa}</span>
                                     </div>
-
-                                    {/* Project */}
-                                    {edu.project && (
-                                      <div className="mb-4">
-                                        <h5 className="text-md font-semibold text-gray-700 mb-2">
-                                          Projects
-                                        </h5>
-                                        <div className="bg-gradient-to-r from-orange-100 to-amber-100 px-4 py-2 rounded-full inline-block">
-                                          <span className="text-orange-700 font-semibold text-sm">
-                                            {edu.project}
-                                          </span>
-                                        </div>
-                                      </div>
-                                    )}
 
                                     {/* Mobile Action Buttons - Bottom Right */}
                                     <div className="flex md:hidden justify-end gap-2 mt-4">
@@ -2293,6 +2375,18 @@ export default function NaukriProfilePage() {
                                         variant="outline"
                                         size="sm"
                                         className="hover:bg-orange-50 border-orange-200 group/btn"
+                                        onClick={() =>
+                                          setState({
+                                            isEditingEducation: true,
+                                            institution: edu.institution,
+                                            degree: edu.degree,
+                                            field: edu.field,
+                                            cgpa: edu.cgpa,
+                                            start_year: edu.startYear,
+                                            end_year: edu.endYear,
+                                            education_id: edu.id,
+                                          })
+                                        }
                                       >
                                         <Edit className="w-4 h-4 text-orange-600 group-hover/btn:scale-110 transition-transform" />
                                       </Button>
@@ -2318,7 +2412,8 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Empty State */}
-                        {state.educations.length === 0 && (
+                        {(state?.userDetails?.educations.length === 0 ||
+                          !state?.userDetails?.educations) && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -2336,7 +2431,7 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isEditingEducation: true })
+                                setState({ isCreateEducation: true })
                               }
                               className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700"
                             >
@@ -2380,8 +2475,7 @@ export default function NaukriProfilePage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={(e) => {
-                          e.stopPropagation();
-                          setState({ isEditingProjects: true });
+                          setState({ isCreateProjects: true });
                         }}
                         className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -2405,7 +2499,7 @@ export default function NaukriProfilePage() {
                       >
                         {/* Add Project Form */}
                         <AnimatePresence>
-                          {state.isEditingProjects && (
+                          {state.isCreateProjects && (
                             <motion.div
                               initial={{ opacity: 0, height: 0, y: -20 }}
                               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -2431,14 +2525,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., E-Commerce Platform"
-                                      value={state.projectForm.title}
+                                      value={state.project_title || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          projectForm: {
-                                            ...state.projectForm,
-                                            title: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "project_title",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                     />
@@ -2449,14 +2541,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., 3 months"
-                                      value={state.projectForm.duration}
+                                      value={state.duration || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          projectForm: {
-                                            ...state.projectForm,
-                                            duration: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "duration",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                     />
@@ -2467,14 +2557,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Completed"
-                                      value={state.projectForm.status}
+                                      value={state.status || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          projectForm: {
-                                            ...state.projectForm,
-                                            status: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "status",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                     />
@@ -2485,14 +2573,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., https://github.com/username/project"
-                                      value={state.projectForm.link}
+                                      value={state.project_link || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          projectForm: {
-                                            ...state.projectForm,
-                                            link: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "project_link",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                     />
@@ -2505,14 +2591,12 @@ export default function NaukriProfilePage() {
                                   </label>
                                   <Textarea
                                     placeholder="Describe your project, its features, and your role..."
-                                    value={state.projectForm.description}
+                                    value={state.project_description || ""}
                                     onChange={(e) =>
-                                      setState({
-                                        projectForm: {
-                                          ...state.projectForm,
-                                          description: e.target.value,
-                                        },
-                                      })
+                                      handleFormChange(
+                                        "project_description",
+                                        e.target.value,
+                                      )
                                     }
                                     className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
                                   />
@@ -2524,12 +2608,12 @@ export default function NaukriProfilePage() {
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                    Save Project
+                                    Create Project
                                   </Button>
                                   <Button
                                     variant="outline"
                                     onClick={() =>
-                                      setState({ isEditingProjects: false })
+                                      setState({ isCreateProjects: false })
                                     }
                                     className="border-gray-300 hover:bg-gray-50"
                                   >
@@ -2543,7 +2627,7 @@ export default function NaukriProfilePage() {
 
                         {/* Projects List */}
                         <div className="space-y-4">
-                          {state.projects.map((project, index) => (
+                          {state.userDetails?.projects.map((project, index) => (
                             <motion.div
                               key={project.id}
                               initial={{ opacity: 0, y: 20 }}
@@ -2558,7 +2642,9 @@ export default function NaukriProfilePage() {
                                   <div className="flex-shrink-0 pt-1">
                                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                       <span className="text-white font-bold text-md">
-                                        {project.title.charAt(0).toUpperCase()}
+                                        {project.project_title
+                                          .charAt(0)
+                                          .toUpperCase()}
                                       </span>
                                     </div>
                                   </div>
@@ -2569,18 +2655,18 @@ export default function NaukriProfilePage() {
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2">
                                           <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
-                                            {project.title}
+                                            {project.project_title}
                                           </h4>
                                         </div>
                                         <div className="text-sm text-gray-600 mb-2">
                                           <span className="font-medium">
                                             Duration: {project.duration}
                                           </span>
-                                          {project.link && (
+                                          {project.Project_link && (
                                             <span className="ml-2">
                                               |{" "}
                                               <a
-                                                href={project.link}
+                                                href={project.project_link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className="text-purple-600 hover:underline"
@@ -2598,6 +2684,22 @@ export default function NaukriProfilePage() {
                                           variant="outline"
                                           size="sm"
                                           className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          onClick={() => {
+                                            setState({
+                                              isEditingProject: true,
+                                              project_title:
+                                                project.project_title,
+                                              duration: project.duration,
+                                              status: project.status,
+                                              project_link:
+                                                project.Project_link,
+                                              project_description:
+                                                project.project_description,
+                                              technologies:
+                                                project.technologies,
+                                              project_id: project.id,
+                                            });
+                                          }}
                                         >
                                           <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
@@ -2617,7 +2719,7 @@ export default function NaukriProfilePage() {
                                     {/* Project Description */}
                                     <div className="bg-gradient-to-r from-gray-50 to-purple-50/50 rounded-2xl p-4 border border-gray-100 mb-4">
                                       <p className="text-gray-700 leading-relaxed text-sm">
-                                        {project.description}
+                                        {project.project_description}
                                       </p>
                                     </div>
 
@@ -2649,6 +2751,20 @@ export default function NaukriProfilePage() {
                                         variant="outline"
                                         size="sm"
                                         className="hover:bg-purple-50 border-purple-200 group/btn"
+                                        onClick={() => {
+                                          setState({
+                                            isEditingProject: true,
+                                            project_title:
+                                              project.project_title,
+                                            duration: project.duration,
+                                            status: project.status,
+                                            project_link: project.Project_link,
+                                            project_description:
+                                              project.project_description,
+                                            technologies: project.technologies,
+                                            project_id: project.id,
+                                          });
+                                        }}
                                       >
                                         <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
                                       </Button>
@@ -2676,7 +2792,8 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Empty State */}
-                        {state.projects.length === 0 && (
+                        {(state.userDetails?.projects.length === 0 ||
+                          !state.userDetails?.projects) && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -2694,7 +2811,7 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isEditingProjects: true })
+                                setState({ isCreateProjects: true })
                               }
                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                             >
@@ -2739,7 +2856,7 @@ export default function NaukriProfilePage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setState({ isEditingAchievements: true });
+                          setState({ isCreateAchievements: true });
                         }}
                         className="w-8 h-8 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -2763,7 +2880,7 @@ export default function NaukriProfilePage() {
                       >
                         {/* Add Achievement Form */}
                         <AnimatePresence>
-                          {state.isEditingAchievements && (
+                          {state.isCreateAchievements && (
                             <motion.div
                               initial={{ opacity: 0, height: 0, y: -20 }}
                               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -2789,14 +2906,12 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Employee of the Year"
-                                      value={state.achievementForm.title}
+                                      value={state.achievement_title || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          achievementForm: {
-                                            ...state.achievementForm,
-                                            title: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "achievement_title",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
                                     />
@@ -2807,36 +2922,17 @@ export default function NaukriProfilePage() {
                                     </label>
                                     <Input
                                       placeholder="e.g., Tech Solutions Inc"
-                                      value={state.achievementForm.organization}
+                                      value={state.organization || ""}
                                       onChange={(e) =>
-                                        setState({
-                                          achievementForm: {
-                                            ...state.achievementForm,
-                                            organization: e.target.value,
-                                          },
-                                        })
+                                        handleFormChange(
+                                          "organization",
+                                          e.target.value,
+                                        )
                                       }
                                       className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
                                     />
                                   </div>
-                                  <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Date
-                                    </label>
-                                    <Input
-                                      placeholder="e.g., Dec 2023"
-                                      value={state.achievementForm.date}
-                                      onChange={(e) =>
-                                        setState({
-                                          achievementForm: {
-                                            ...state.achievementForm,
-                                            date: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
-                                    />
-                                  </div>
+
                                   <div className="space-y-2">
                                     <label className="text-sm font-semibold text-gray-700">
                                       Achievement Image
@@ -2844,26 +2940,21 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-center gap-3">
                                       <Input
                                         ref={(ref) => {
-                                          if (
-                                            ref &&
-                                            !state.achievementForm.image
-                                          ) {
+                                          if (ref && !state.achievement_file) {
                                             ref.value = "";
                                           }
                                         }}
                                         type="file"
-                                        accept="image/*"
+                                        accept="pdf/*"
                                         onChange={(e) => {
                                           const file = e.target.files?.[0];
                                           if (file) {
                                             const reader = new FileReader();
                                             reader.onload = (event) => {
                                               setState({
-                                                achievementForm: {
-                                                  ...state.achievementForm,
-                                                  image: event.target
-                                                    ?.result as string,
-                                                },
+                                                ...state,
+                                                achievement_file: event.target
+                                                  ?.result as string,
                                               });
                                             };
                                             reader.readAsDataURL(file);
@@ -2873,10 +2964,10 @@ export default function NaukriProfilePage() {
                                       />
                                       <Upload className="w-5 h-5 text-gray-400" />
                                     </div>
-                                    {state.achievementForm.image && (
+                                    {state.aachievement_file && (
                                       <div className="mt-2 relative inline-block">
                                         <img
-                                          src={state.achievementForm.image}
+                                          src={state.achievement_file}
                                           alt="Preview"
                                           className="w-20 h-20 object-cover rounded-lg border border-gray-200"
                                         />
@@ -2885,10 +2976,8 @@ export default function NaukriProfilePage() {
                                           onClick={(e) => {
                                             e.preventDefault();
                                             setState({
-                                              achievementForm: {
-                                                ...state.achievementForm,
-                                                image: null,
-                                              },
+                                              ...state,
+                                              achievement_file: null,
                                             });
                                             // Clear the file input
                                             const fileInput =
@@ -2914,13 +3003,11 @@ export default function NaukriProfilePage() {
                                   </label>
                                   <Textarea
                                     placeholder="Describe your achievement and its significance..."
-                                    value={state.achievementForm.description}
+                                    value={state.achievement_description || ""}
                                     onChange={(e) =>
                                       setState({
-                                        achievementForm: {
-                                          ...state.achievementForm,
-                                          description: e.target.value,
-                                        },
+                                        ...state,
+                                        achievement_description: e.target.value,
                                       })
                                     }
                                     className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500 min-h-[100px]"
@@ -2938,7 +3025,7 @@ export default function NaukriProfilePage() {
                                   <Button
                                     variant="outline"
                                     onClick={() =>
-                                      setState({ isEditingAchievements: false })
+                                      setState({ isCreateAchievements: false })
                                     }
                                     className="border-gray-300 hover:bg-gray-50"
                                   >
@@ -2952,7 +3039,7 @@ export default function NaukriProfilePage() {
 
                         {/* Achievements List */}
                         <div className="space-y-4">
-                          {state.achievements.map((achievement, index) => (
+                          {state.userDetails?.achievements.map((achievement, index) => (
                             <motion.div
                               key={achievement.id}
                               initial={{ opacity: 0, y: 20 }}
@@ -2965,13 +3052,13 @@ export default function NaukriProfilePage() {
                                 <div className="flex items-start gap-6">
                                   {/* Achievement Icon */}
                                   <div className="flex-shrink-0">
-                                    {achievement.image ? (
+                                    {achievement.achievement_file ? (
                                       <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                        <img
+                                        {/* <img
                                           src={achievement.image}
                                           alt={achievement.title}
                                           className="w-full h-full object-cover"
-                                        />
+                                        /> */}
                                       </div>
                                     ) : (
                                       <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
@@ -2986,17 +3073,13 @@ export default function NaukriProfilePage() {
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2">
                                           <h4 className="text-lg font-bold text-gray-900 group-hover:text-yellow-700 transition-colors">
-                                            {achievement.title}
+                                            {achievement.achievement_title}
                                           </h4>
                                         </div>
                                         <p className="text-md font-semibold text-yellow-600 mb-1">
-                                          {achievement.organization}
+                                          {achievement.achievement_organization}
                                         </p>
-                                        <div className="text-sm text-gray-600 mb-2">
-                                          <span className="font-medium">
-                                            {achievement.date}
-                                          </span>
-                                        </div>
+                                       
                                       </div>
 
                                       {/* Desktop Action Buttons - Top Right */}
@@ -3005,6 +3088,20 @@ export default function NaukriProfilePage() {
                                           variant="outline"
                                           size="sm"
                                           className="hover:bg-yellow-50 border-yellow-200 group/btn"
+                                          onClick={() => {
+                                            setState({
+                                              isEditingAchievements: true,
+                                              achievement_title:
+                                                achievement.title,
+                                              organization:
+                                                achievement.organization,
+                                              achievement_File:
+                                                achievement.file,
+                                              achievement_description:
+                                                achievement.description,
+                                              achievement_id: achievement.id,
+                                            });
+                                          }}
                                         >
                                           <Edit className="w-4 h-4 text-yellow-600 group-hover/btn:scale-110 transition-transform" />
                                         </Button>
@@ -3024,7 +3121,7 @@ export default function NaukriProfilePage() {
                                     {/* Achievement Description */}
                                     <div className="bg-gradient-to-r from-gray-50 to-yellow-50/50 rounded-2xl p-4 border border-gray-100 mb-4">
                                       <p className="text-gray-700 leading-relaxed text-sm">
-                                        {achievement.description}
+                                        {achievement.achievement_description}
                                       </p>
                                     </div>
 
@@ -3034,6 +3131,19 @@ export default function NaukriProfilePage() {
                                         variant="outline"
                                         size="sm"
                                         className="hover:bg-yellow-50 border-yellow-200 group/btn"
+                                        onClick={() => {
+                                          setState({
+                                            isEditingAchievements: true,
+                                            achievement_title:
+                                              achievement.title,
+                                            organization:
+                                              achievement.organization,
+                                            achievement_File: achievement.file,
+                                            achievement_description:
+                                              achievement.description,
+                                            achievement_id: achievement.id,
+                                          });
+                                        }}
                                       >
                                         <Edit className="w-4 h-4 text-yellow-600 group-hover/btn:scale-110 transition-transform" />
                                       </Button>
@@ -3056,7 +3166,7 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Empty State */}
-                        {state.achievements.length === 0 && (
+                        {(state.userDetails?.achievements?.length === 0 || !state.userDetails?.achievements) && (
                           <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -3316,7 +3426,7 @@ export default function NaukriProfilePage() {
                     </div>
 
                     <div className="space-y-2">
-                      {/* <DatePicker
+                      <DatePicker
                         placeholder="Start Date"
                         title="Start Date"
                         closeIcon={true}
@@ -3326,11 +3436,11 @@ export default function NaukriProfilePage() {
                             start_date: date,
                           });
                         }}
-                      /> */}
+                      />
                     </div>
 
                     <div className="space-y-2">
-                      {/* <DatePicker
+                      <DatePicker
                         placeholder="End Date"
                         title="End Date"
                         closeIcon={true}
@@ -3340,7 +3450,7 @@ export default function NaukriProfilePage() {
                             end_date: date,
                           });
                         }}
-                      /> */}
+                      />
                     </div>
 
                     <div className="space-y-2">
@@ -3368,6 +3478,403 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateEmployment}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {state.isEditingEducation && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Education
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingEducation: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Institution Name
+                      </label>
+                      <Input
+                        placeholder="e.g., Harvard University"
+                        value={state.institution || ""}
+                        onChange={(e) =>
+                          handleFormChange("institution", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Degree
+                      </label>
+                      <Input
+                        placeholder="e.g., Bachelor of Technology"
+                        value={state.degree || ""}
+                        onChange={(e) =>
+                          handleFormChange("degree", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Field of Study
+                      </label>
+                      <Input
+                        placeholder="e.g., Computer Science"
+                        value={state.field || ""}
+                        onChange={(e) =>
+                          handleFormChange("field", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Grade/CGPA
+                      </label>
+                      <Input
+                        placeholder="e.g., 8.5 CGPA"
+                        value={state.cgpa || ""}
+                        onChange={(e) =>
+                          handleFormChange("cgpa", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Start Year
+                      </label>
+                      <Input
+                        placeholder="e.g., 2016"
+                        value={state.start_year || ""}
+                        onChange={(e) =>
+                          handleFormChange("start_year", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        End Year
+                      </label>
+                      <Input
+                        placeholder="e.g., 2020"
+                        value={state.end_year || ""}
+                        onChange={(e) =>
+                          handleFormChange("end_year", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingEducation: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updateEducation}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {state.isEditingProject && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Project
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingProject: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Institution Name
+                      </label>
+                      <Input
+                        placeholder="e.g., Harvard University"
+                        value={state.institution || ""}
+                        onChange={(e) =>
+                          handleFormChange("institution", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Degree
+                      </label>
+                      <Input
+                        placeholder="e.g., Bachelor of Technology"
+                        value={state.degree || ""}
+                        onChange={(e) =>
+                          handleFormChange("degree", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Field of Study
+                      </label>
+                      <Input
+                        placeholder="e.g., Computer Science"
+                        value={state.field || ""}
+                        onChange={(e) =>
+                          handleFormChange("field", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Grade/CGPA
+                      </label>
+                      <Input
+                        placeholder="e.g., 8.5 CGPA"
+                        value={state.cgpa || ""}
+                        onChange={(e) =>
+                          handleFormChange("cgpa", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Start Year
+                      </label>
+                      <Input
+                        placeholder="e.g., 2016"
+                        value={state.start_year || ""}
+                        onChange={(e) =>
+                          handleFormChange("start_year", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        End Year
+                      </label>
+                      <Input
+                        placeholder="e.g., 2020"
+                        value={state.end_year || ""}
+                        onChange={(e) =>
+                          handleFormChange("end_year", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingProjects: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updateProjects}
+                    className="bg-blue-600 hover:bg-blue-700"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {state.isEditingAchievements && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Achievements
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingAchievements: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Achievement Title
+                      </label>
+                      <Input
+                        placeholder="e.g., Employee of the Year"
+                        value={state.achievement_title || ""}
+                        onChange={(e) =>
+                          handleFormChange("achievement_title", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Organization
+                      </label>
+                      <Input
+                        placeholder="e.g., Tech Solutions Inc"
+                        value={state.organization || ""}
+                        onChange={(e) =>
+                          handleFormChange("organization", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Achievement Image
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <Input
+                          ref={(ref) => {
+                            if (ref && !state.achievement_file) {
+                              ref.value = "";
+                            }
+                          }}
+                          type="file"
+                          accept="pdf/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                setState({
+                                  ...state,
+                                  achievement_file: event.target
+                                    ?.result as string,
+                                });
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500"
+                        />
+                        <Upload className="w-5 h-5 text-gray-400" />
+                      </div>
+                      {state.aachievement_file && (
+                        <div className="mt-2 relative inline-block">
+                          <img
+                            src={state.achievement_file}
+                            alt="Preview"
+                            className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                          />
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setState({
+                                ...state,
+                                achievement_file: null,
+                              });
+                              // Clear the file input
+                              const fileInput =
+                                e.currentTarget.parentElement?.parentElement?.querySelector(
+                                  'input[type="file"]',
+                                ) as HTMLInputElement;
+                              if (fileInput) {
+                                fileInput.value = "";
+                              }
+                            }}
+                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 mb-6">
+                    <label className="text-sm font-semibold text-gray-700">
+                      Description
+                    </label>
+                    <Textarea
+                      placeholder="Describe your achievement and its significance..."
+                      value={state.achievement_description || ""}
+                      onChange={(e) =>
+                        setState({
+                          ...state,
+                          achievement_description: e.target.value,
+                        })
+                      }
+                      className="border-gray-200 focus:border-yellow-500 focus:ring-yellow-500 min-h-[100px]"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingAchievements: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updateAchievement}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     Update
