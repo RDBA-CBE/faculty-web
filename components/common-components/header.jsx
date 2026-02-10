@@ -158,7 +158,7 @@ const Header = () => {
       localStorage.setItem("refresh", res.refresh);
       localStorage.setItem("user", JSON.stringify(res.user));
 
-      setState({ errors: {}, isOpenLogin: false });
+      setState({ token: res.access, errors: {}, isOpenLogin: false });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -283,7 +283,7 @@ const Header = () => {
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
                     </DropdownMenuItem>
-                   
+
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onClick={handleLogout}

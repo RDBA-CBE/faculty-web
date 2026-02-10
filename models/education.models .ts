@@ -1,9 +1,9 @@
 import instance from "@/utils/axios.utils";
 
 const education = {
-   create: (data: any, id: any) => {
+   create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `education/${id}/`;
+      let url = `educations/`;
       instance()
         .post(url, data)
         .then((res) => {
@@ -22,7 +22,7 @@ const education = {
 
   update: (data: any, id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `education/${id}/`;
+      let url = `educations/${id}/`;
       instance()
         .patch(url, data)
         .then((res) => {
@@ -39,12 +39,12 @@ const education = {
     return promise;
   },
 
-  delete: (body, id) => {
+  delete: (id) => {
     return new Promise((resolve, reject) => {
-      const url = `education/${id}/`; // id = userId
+      const url = `educations/${id}/`; // id = userId
 
       instance()
-        .delete(url, { data: body }) // <-- body goes here
+        .delete(url) // <-- body goes here
         .then((res) => resolve(res.data))
         .catch((error) => {
           if (error.response) {

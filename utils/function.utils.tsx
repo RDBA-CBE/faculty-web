@@ -511,17 +511,20 @@ export const getAvatarColor = (name: string) => {
   return colors[firstLetter.charCodeAt(0) % colors.length];
 };
 
-
-export const DateFormat = (
-  date,
-  type = "dateTime"
-) => {
+export const DateFormat = (date, type = "dateTime") => {
   if (!date) return "-";
 
   const m = moment(date);
   if (!m.isValid()) return "-";
 
   switch (type) {
+    case "api":
+      return m.format("YYYY-MM-DD");
+
+    case "dateSlash":
+      return m.format("DD/MM/YYYY");
+    // 02/12/2020 ✅
+
     case "date":
       return m.format("DD MMM YYYY"); // 09 Feb 2026
 
@@ -533,7 +536,7 @@ export const DateFormat = (
 
     case "full":
       return m.format("dddd, DD MMM YYYY, hh:mm A");
-      // Monday, 09 Feb 2026, 11:49 AM
+    // Monday, 09 Feb 2026, 11:49 AM
 
     case "iso":
       return m.toISOString();
@@ -543,4 +546,3 @@ export const DateFormat = (
       return m.format("DD MMM YYYY, hh:mm A");
   }
 };
-
