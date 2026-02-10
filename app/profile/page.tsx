@@ -65,7 +65,7 @@ export default function NaukriProfilePage() {
     // Edit States
     isEditingProfile: false,
     isEditingResume: false,
-    isEditingEmployment: false,
+    isCreateExperience: false,
     isEditingEducation: false,
     isEditingSkills: false,
     isEditingProjects: false,
@@ -562,7 +562,7 @@ export default function NaukriProfilePage() {
   const addEmployment = async () => {
     try {
       setState({
-        isEditingEmployment: false,
+        isCreateExperience: false,
       });
 
       const body = {
@@ -678,7 +678,7 @@ export default function NaukriProfilePage() {
     try {
       const body = { education_id: educationId };
       const res = await Models.education.delete(body, state.userId);
-      
+
       console.log("deleted education", res);
     } catch (error) {
       Failure(error?.error || "Failed to delete education");
@@ -721,8 +721,6 @@ export default function NaukriProfilePage() {
       console.log("✌️error --->", error);
     }
   };
-
-  
 
   const addProject = () => {
     const newProject = {
@@ -791,7 +789,6 @@ export default function NaukriProfilePage() {
     { id: "projects", label: "Projects", icon: FolderOpen },
     { id: "achievements", label: "Awards", icon: Award },
   ];
-
 
   const deleteProject = (id: string) => {
     setState({
@@ -1039,7 +1036,7 @@ export default function NaukriProfilePage() {
                         <span className="text-gray-700 font-medium group-hover:text-gray-900">
                           {item.label}
                         </span>
-                        {item.action && (
+                        {/* {item.action && (
                           <Button
                             variant="link"
                             className="text-blue-600 hover:text-blue-700 p-0 h-auto font-semibold text-sm"
@@ -1053,7 +1050,7 @@ export default function NaukriProfilePage() {
                           >
                             {item.action}
                           </Button>
-                        )}
+                        )} */}
                       </div>
                     ))}
                   </div>
@@ -1321,14 +1318,15 @@ export default function NaukriProfilePage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setState({ isEditingHeadline: true });
-                        }}
-                        className="w-8 h-8 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                      >
-                        <Edit3 className="w-4 h-4" />
+                      <button className="w-8 h-8 bg-cyan-500 hover:bg-cyan-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl">
+                        <Edit3
+                          className="w-4 h-4"
+                          onClick={(e) => {
+                            setState({
+                              isEditingHeadline: true,
+                            });
+                          }}
+                        />
                       </button>
                       {state.expandedSections.headline ? (
                         <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1638,13 +1636,16 @@ export default function NaukriProfilePage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setState({ isEditingEmployment: true });
-                        }}
                         className="w-8 h-8 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        onClick={(e) => {
+                          
+                          setState({ isCreateExperience: true });
+                        }}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus
+                          className="w-4 h-4"
+
+                        />
                       </button>
                       {state.expandedSections.employment ? (
                         <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1664,7 +1665,7 @@ export default function NaukriProfilePage() {
                       >
                         {/* Add Employment Form */}
                         <AnimatePresence>
-                          {state.isEditingEmployment && (
+                          {state.isCreateExperience && (
                             <motion.div
                               initial={{ opacity: 0, height: 0, y: -20 }}
                               animate={{ opacity: 1, height: "auto", y: 0 }}
@@ -1772,7 +1773,7 @@ export default function NaukriProfilePage() {
                                   <Button
                                     variant="outline"
                                     onClick={() =>
-                                      setState({ isEditingEmployment: false })
+                                      setState({ isCreateExperience: false })
                                     }
                                     className="border-gray-300 hover:bg-gray-50"
                                   >
@@ -1982,7 +1983,7 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isEditingEmployment: true })
+                                setState({ isCreateExperience: true })
                               }
                               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                             >

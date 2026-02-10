@@ -12,7 +12,7 @@ import {
 import "react-day-picker/dist/style.css";
 
 interface DatePickerProps {
-  selectedDate?: Date | null;
+  selectedDate?: Date | null | string;
   onChange?: (date: Date | null) => void;
   placeholder?: string;
   title?: string;
@@ -36,7 +36,12 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   fromDate,
   disabled,
 }) => {
- 
+  const parsedDate = React.useMemo(() => {
+    if (!selectedDate) return undefined;
+    if (selectedDate instanceof Date) return selectedDate;
+    const d = new Date(selectedDate);
+    return isNaN(d.getTime()) ? undefined : d;
+  }, [selectedDate]);
 
   return (
     <div className="w-full relative">
@@ -57,10 +62,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             >
               <div className="flex items-center gap-3">
                 <CalendarIcon height={20} width={20} />
-                {selectedDate ? (
-                  format(selectedDate, "PPP")
+                {parsedDate ? (
+                  format(parsedDate, "PPP")
                 ) : (
-                  <span>{placeholder}</span>
+                  <span>{selectedDate ? String(selectedDate) : placeholder}</span>
                 )}
               </div>
             </Button>
@@ -82,7 +87,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
-            selected={selectedDate || undefined}
+            selected={parsedDate}
             onSelect={(date) => onChange?.(date ?? null)}
             initialFocus
             disabled={(date) => {
