@@ -1638,14 +1638,11 @@ export default function NaukriProfilePage() {
                       <button
                         className="w-8 h-8 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                         onClick={(e) => {
-                          
                           setState({ isCreateExperience: true });
                         }}
+                        title="Add Experience"
                       >
-                        <Plus
-                          className="w-4 h-4"
-
-                        />
+                        <Plus className="w-4 h-4" />
                       </button>
                       {state.expandedSections.employment ? (
                         <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1768,7 +1765,7 @@ export default function NaukriProfilePage() {
                                     className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
-                                    Update Experience
+                                    Create Experience
                                   </Button>
                                   <Button
                                     variant="outline"

@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { format } from "date-fns";
 import { CalendarIcon, X } from "lucide-react";
@@ -6,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
-  PopoverContent,
+  PopoverContent as PopoverContentPrimitive,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import "react-day-picker/dist/style.css";
+
+// Workaround for PopoverContent type definition issue
+const PopoverContent = PopoverContentPrimitive as any;
 
 interface DatePickerProps {
   selectedDate?: Date | null | string;
@@ -57,7 +62,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
               variant="outline"
               className={cn(
                 "w-full justify-between text-left font-normal pr-10",
-                !selectedDate && "text-muted-foreground"
+                !selectedDate && "text-muted-foreground",
               )}
             >
               <div className="flex items-center gap-3">
@@ -65,7 +70,9 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 {parsedDate ? (
                   format(parsedDate, "PPP")
                 ) : (
-                  <span>{selectedDate ? String(selectedDate) : placeholder}</span>
+                  <span>
+                    {selectedDate ? String(selectedDate) : placeholder}
+                  </span>
                 )}
               </div>
             </Button>
@@ -92,8 +99,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             initialFocus
             disabled={(date) => {
               if (disabled) return true;
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
 
               if (fromDate) {
                 const from = new Date(fromDate);
@@ -101,7 +106,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 return date < from;
               }
 
-              return date < today;
+              return false; // ✅ allow all dates
             }}
             captionLayout="dropdown"
             fromYear={1900}
