@@ -71,7 +71,7 @@ export default function NaukriProfilePage() {
     isEditingEducation: false,
     isEditingSkills: false,
     isCreateProjects: false,
-    isEditingProjects: false,
+    isEditingProject: false,
     isEditingHeadline: false,
     isCreateAchievements: false,
     isEditingAchievements: false,
@@ -719,17 +719,17 @@ export default function NaukriProfilePage() {
   const updateProjects = async () => {
     try {
       setState({
-        isEditingProjects: false,
+        isEditingProject: false,
       });
 
       const body = {
         project_id: state.project_id,
         project_title: state.project_title,
-        description: state.description,
+        project_description: state.project_description,
         technologies: state.technologies,
         duration: state.duration,
         status: state.status,
-        link: state.link,
+        project_link: state.project_link,
       };
       console.log("body", body);
 
@@ -782,7 +782,7 @@ export default function NaukriProfilePage() {
   const updateAchievement = async () => {
     try {
       setState({
-        isEditingProjects: false,
+        isEditingAchievements: false,
       });
 
       const body = {
@@ -923,6 +923,28 @@ export default function NaukriProfilePage() {
         ...state.errors,
         [field]: undefined,
       },
+    });
+  };
+
+  const handleAddTechnology = () => {
+    if (
+      state.technology?.trim() &&
+      !state.technologies?.includes(state.technology.trim())
+    ) {
+      setState({
+        technologies: [...(state.technologies || []), state.technology.trim()],
+        technology: "",
+      });
+    } else {
+      setState({ technology: "" });
+    }
+  };
+
+  const handleRemoveTechnology = (techToRemove: string) => {
+    setState({
+      technologies: state.technologies.filter(
+        (tech: string) => tech !== techToRemove,
+      ),
     });
   };
 
@@ -1540,7 +1562,7 @@ export default function NaukriProfilePage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setState({ isEditingSkills: true });
+                          setState({ isEditingSkills: true, skill: "" });
                         }}
                         className="w-8 h-8 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -1691,7 +1713,7 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isEditingSkills: true })
+                                setState({ isEditingSkills: true, skill: "" })
                               }
                               className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                             >
@@ -1736,7 +1758,14 @@ export default function NaukriProfilePage() {
                       <button
                         className="w-8 h-8 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                         onClick={(e) => {
-                          setState({ isCreateExperience: true });
+                          setState({
+                            isCreateExperience: true,
+                            company: "",
+                            designation: "",
+                            start_date: "",
+                            end_date: "",
+                            job_description: "",
+                          });
                         }}
                         title="Add Experience"
                       >
@@ -2080,7 +2109,14 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isCreateExperience: true })
+                                setState({
+                                  isCreateExperience: true,
+                                  company: "",
+                                  designation: "",
+                                  start_date: "",
+                                  end_date: "",
+                                  job_description: "",
+                                })
                               }
                               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
                             >
@@ -2124,7 +2160,15 @@ export default function NaukriProfilePage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={(e) => {
-                          setState({ isCreateEducation: true });
+                          setState({
+                            isCreateEducation: true,
+                            institution: "",
+                            degree: "",
+                            field: "",
+                            start_year: "",
+                            end_year: "",
+                            cgpa: "",
+                          });
                         }}
                         className="w-8 h-8 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -2431,7 +2475,15 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isCreateEducation: true })
+                                setState({
+                                  isCreateEducation: true,
+                                  institution: "",
+                                  degree: "",
+                                  field: "",
+                                  start_year: "",
+                                  end_year: "",
+                                  cgpa: "",
+                                })
                               }
                               className="bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700"
                             >
@@ -2475,7 +2527,17 @@ export default function NaukriProfilePage() {
                     <div className="flex items-center gap-3">
                       <button
                         onClick={(e) => {
-                          setState({ isCreateProjects: true });
+                          e.stopPropagation();
+                          setState({
+                            isCreateProjects: true,
+                            project_title: "",
+                            project_description: "",
+                            technologies: [],
+                            duration: "",
+                            status: "",
+                            project_link: "",
+                            technology: "",
+                          });
                         }}
                         className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -2582,6 +2644,49 @@ export default function NaukriProfilePage() {
                                       }
                                       className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                     />
+                                  </div>
+                                  <div className="space-y-2 md:col-span-2">
+                                    <label className="text-sm font-semibold text-gray-700">
+                                      Technologies
+                                    </label>
+                                    <div className="flex gap-2">
+                                      <Input
+                                        placeholder="e.g., React.js"
+                                        value={state.technology || ""}
+                                        onChange={(e) =>
+                                          handleFormChange(
+                                            "technology",
+                                            e.target.value,
+                                          )
+                                        }
+                                        onKeyDown={(e) => {
+                                          if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            handleAddTechnology();
+                                          }
+                                        }}
+                                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      />
+                                      <Button
+                                        variant="outline"
+                                        type="button"
+                                        onClick={handleAddTechnology}
+                                      >
+                                        Add
+                                      </Button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {state.technologies?.map(
+                                        (tech: string, index: number) => (
+                                          <div key={index} className="bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2">
+                                            {tech}
+                                            <button type="button" onClick={() => handleRemoveTechnology(tech)} className="text-purple-800 hover:text-purple-900" >
+                                              <X className="w-3 h-3" />
+                                            </button>
+                                          </div>
+                                        ),
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
 
@@ -2692,7 +2797,7 @@ export default function NaukriProfilePage() {
                                               duration: project.duration,
                                               status: project.status,
                                               project_link:
-                                                project.Project_link,
+                                              project.project_link,
                                               project_description:
                                                 project.project_description,
                                               technologies:
@@ -2811,7 +2916,16 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isCreateProjects: true })
+                                setState({
+                                  isCreateProjects: true,
+                                  project_title: "",
+                                  project_description: "",
+                                  technologies: [],
+                                  duration: "",
+                                  status: "",
+                                  project_link: "",
+                                  technology: "",
+                                })
                               }
                               className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
                             >
@@ -2856,7 +2970,13 @@ export default function NaukriProfilePage() {
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          setState({ isCreateAchievements: true });
+                          setState({
+                            isCreateAchievements: true,
+                            achievement_title: "",
+                            organization: "",
+                            achievement_file: null,
+                            achievement_description: "",
+                          });
                         }}
                         className="w-8 h-8 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
@@ -3183,7 +3303,13 @@ export default function NaukriProfilePage() {
                             </p>
                             <Button
                               onClick={() =>
-                                setState({ isEditingAchievements: true })
+                                setState({
+                                  isCreateAchievements: true,
+                                  achievement_title: "",
+                                  organization: "",
+                                  achievement_file: null,
+                                  achievement_description: "",
+                                })
                               }
                               className="bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700"
                             >
@@ -3636,80 +3762,110 @@ export default function NaukriProfilePage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Institution Name
+                        Project Title
                       </label>
                       <Input
-                        placeholder="e.g., Harvard University"
-                        value={state.institution || ""}
+                        placeholder="e.g., E-Commerce Platform"
+                        value={state.project_title || ""}
                         onChange={(e) =>
-                          handleFormChange("institution", e.target.value)
+                          handleFormChange("project_title", e.target.value)
                         }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Degree
+                        Duration
                       </label>
                       <Input
-                        placeholder="e.g., Bachelor of Technology"
-                        value={state.degree || ""}
+                        placeholder="e.g., 3 months"
+                        value={state.duration || ""}
                         onChange={(e) =>
-                          handleFormChange("degree", e.target.value)
+                          handleFormChange("duration", e.target.value)
                         }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Field of Study
+                        Status
                       </label>
                       <Input
-                        placeholder="e.g., Computer Science"
-                        value={state.field || ""}
+                        placeholder="e.g., Completed"
+                        value={state.status || ""}
                         onChange={(e) =>
-                          handleFormChange("field", e.target.value)
+                          handleFormChange("status", e.target.value)
                         }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Grade/CGPA
+                        Project Link
                       </label>
                       <Input
-                        placeholder="e.g., 8.5 CGPA"
-                        value={state.cgpa || ""}
+                        placeholder="e.g., https://github.com/username/project"
+                        value={state.project_link || ""}
                         onChange={(e) =>
-                          handleFormChange("cgpa", e.target.value)
+                          handleFormChange("project_link", e.target.value)
                         }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                       />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 md:col-span-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Start Year
+                        Technologies
                       </label>
-                      <Input
-                        placeholder="e.g., 2016"
-                        value={state.start_year || ""}
-                        onChange={(e) =>
-                          handleFormChange("start_year", e.target.value)
-                        }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
-                      />
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="e.g., React.js"
+                          value={state.technology || ""}
+                          onChange={(e) =>
+                            handleFormChange("technology", e.target.value)
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleAddTechnology();
+                            }
+                          }}
+                          className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        />
+                        <Button
+                          variant="outline"
+                          type="button"
+                          onClick={handleAddTechnology}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {state.technologies?.map(
+                          (tech: string, index: number) => (
+                            <div key={index} className="bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2">
+                              {tech}
+                              <button type="button" onClick={() => handleRemoveTechnology(tech)} className="text-purple-800 hover:text-purple-900" >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ),
+                        )}
+                      </div>
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-2 md:col-span-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        End Year
+                        Project Description
                       </label>
-                      <Input
-                        placeholder="e.g., 2020"
-                        value={state.end_year || ""}
+                      <Textarea
+                        placeholder="Describe your project, its features, and your role..."
+                        value={state.project_description || ""}
                         onChange={(e) =>
-                          handleFormChange("end_year", e.target.value)
+                          handleFormChange(
+                            "project_description",
+                            e.target.value,
+                          )
                         }
-                        className="border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
                       />
                     </div>
                   </div>
@@ -3718,7 +3874,7 @@ export default function NaukriProfilePage() {
                 <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
                   <Button
                     variant="outline"
-                    onClick={() => setState({ isEditingProjects: false })}
+                    onClick={() => setState({ isEditingProject: false })}
                   >
                     Cancel
                   </Button>
