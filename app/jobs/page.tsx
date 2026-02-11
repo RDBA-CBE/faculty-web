@@ -226,6 +226,9 @@ export default function JobsPage() {
     }
   };
 
+  console.log("salaryRangeList", state?.salaryRangeList);
+  console.log("salaryRange", filters?.salaryRange);
+
   const tagsList = async () => {
     try {
       const res: any = await Models.jobtags.list();
@@ -299,14 +302,15 @@ export default function JobsPage() {
       //  LOGGED-IN USER (NO RESUME)
 
       if (profile?.id) {
-        const body = {
-          job_id: state?.jobDetail?.id,
-          applicant: profile.id,
-        };
+        const formData = new FormData();
 
-        console.log("logged-in body", body);
+        formData.append("job_id", (state?.jobDetail?.id));
+        formData.append("applicant", (profile.id));
+        formData.append("status", "Applied");
 
-        const res = await Models.applications.create(body);
+        console.log("logged-in formData", [...formData.entries()]);
+
+        const res = await Models.applications.create(formData);
         console.log("job apply res", res);
       }
 
@@ -316,7 +320,6 @@ export default function JobsPage() {
           first_name: state.firstName,
           last_name: state.lastName,
           phone: state.phone,
-          message: state.message,
           resume: state.resume,
           email: state.email?.trim(),
           experience: state.experience,
@@ -336,6 +339,7 @@ export default function JobsPage() {
         formData.append("phone", state.phone);
         formData.append("experience", state.experience);
         formData.append("message", state.message || "");
+        formData.append("status", "Applied");
 
         if (state.resume) {
           formData.append("resume", state.resume); // FILE OBJECT
@@ -649,14 +653,22 @@ export default function JobsPage() {
 
             {/* Skills */}
             <div className="bg-gray-50 rounded-lg px-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Skills
-              </h2>
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Skills</h2>
               <div className="flex flex-wrap gap-2">
                 {[
-                  "JavaScript", "React", "Node.js", "Python", "SQL", "Git", "AWS", "Docker",
+                  "JavaScript",
+                  "React",
+                  "Node.js",
+                  "Python",
+                  "SQL",
+                  "Git",
+                  "AWS",
+                  "Docker",
                 ].map((skill, index) => (
-                  <span key={index} className="px-3 py-1 bg-[#F2B31D1A] text-[#F2B31D] rounded-full text-sm">
+                  <span
+                    key={index}
+                    className="px-3 py-1 bg-[#F2B31D1A] text-[#F2B31D] rounded-full text-sm"
+                  >
                     {skill}
                   </span>
                 ))}
@@ -690,21 +702,37 @@ export default function JobsPage() {
               </h3>
               <div className="space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Job type</p>
-                  <p className="text-sm text-gray-900">{state.jobDetail?.job_type_obj?.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Experience level</p>
-                  <p className="text-sm text-gray-900">{state.jobDetail?.experiences}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Salary</p>
-                  <p className="text-sm text-gray-900">{state.jobDetail?.salary_range_obj?.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">Location</p>
+                  <p className="text-sm font-medium text-gray-500 mb-1">
+                    Job type
+                  </p>
                   <p className="text-sm text-gray-900">
-                    {state.jobDetail?.locations?.map((item) => item.city).join(", ")}
+                    {state.jobDetail?.job_type_obj?.name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">
+                    Experience level
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {state.jobDetail?.experiences}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">
+                    Salary
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {state.jobDetail?.salary_range_obj?.name}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">
+                    Location
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    {state.jobDetail?.locations
+                      ?.map((item) => item.city)
+                      .join(", ")}
                   </p>
                 </div>
               </div>
@@ -723,12 +751,16 @@ export default function JobsPage() {
                     className="w-12 h-12 rounded-lg object-cover"
                   />
                 ) : (
-                  <div className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold`}>
+                  <div
+                    className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold`}
+                  >
                     {state.jobDetail?.company?.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 <div>
-                  <h4 className="font-medium text-gray-900">{state.jobDetail?.company}</h4>
+                  <h4 className="font-medium text-gray-900">
+                    {state.jobDetail?.company}
+                  </h4>
                   <p className="text-sm text-gray-500">Technology Company</p>
                 </div>
               </div>
@@ -793,7 +825,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Bookmark className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                        {/* <Bookmark className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
                         <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </div>
                     </div>
@@ -926,7 +958,7 @@ export default function JobsPage() {
                       </button>
 
                       <div className="flex items-center gap-2">
-                        <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                        {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
                         <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                       </div>
                     </div>
@@ -1051,7 +1083,9 @@ export default function JobsPage() {
                         <div>
                           <p className="text-md font-medium  pb-1">Location</p>
                           <p className="text-md text-black">
-                            {state?.jobDetail?.locations?.map((item) => item.city).join(", ")}
+                            {state?.jobDetail?.locations
+                              ?.map((item) => item.city)
+                              .join(", ")}
                           </p>
                         </div>
                       </div>
@@ -1267,14 +1301,14 @@ export default function JobsPage() {
                             setIsAnimating(false);
                             setTimeout(() => {
                               setSelectedJob(job);
-                            setState({ jobID: job.id });
+                              setState({ jobID: job.id });
                               setIsAnimating(true);
                               jobDetail(job.id);
                               window.scrollTo({ top: 0, behavior: "smooth" });
                             }, 100);
                           } else {
                             setSelectedJob(job);
-                          setState({ jobID: job.id });
+                            setState({ jobID: job.id });
                             jobDetail(job.id);
                             if (isDesktopScreen) setShowJobDetail(true);
                           }
@@ -1365,7 +1399,9 @@ export default function JobsPage() {
                           <div
                             className={`w-10 h-10 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold text-sm`}
                           >
-                            {state.jobDetail?.company?.slice(0, 1).toUpperCase()}
+                            {state.jobDetail?.company
+                              ?.slice(0, 1)
+                              .toUpperCase()}
                           </div>
                         )}
                         <div className="flex-1 text-left">
@@ -1424,14 +1460,16 @@ export default function JobsPage() {
                         Key Responsibilities
                       </h3>
                       <div className="space-y-2">
-                        {state.responsibilities?.map((responsibility, index) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <p className="text-gray-600 text-sm">
-                              {responsibility}
-                            </p>
-                          </div>
-                        ))}
+                        {state.responsibilities?.map(
+                          (responsibility, index) => (
+                            <div key={index} className="flex items-start gap-2">
+                              <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                              <p className="text-gray-600 text-sm">
+                                {responsibility}
+                              </p>
+                            </div>
+                          ),
+                        )}
                       </div>
                     </div>
 
@@ -1449,17 +1487,33 @@ export default function JobsPage() {
                         ].map((responsibility, index) => (
                           <div key={index} className="flex items-start gap-2">
                             <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <p className="text-gray-600 text-sm">{responsibility}</p>
+                            <p className="text-gray-600 text-sm">
+                              {responsibility}
+                            </p>
                           </div>
                         ))}
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-3">Skills</h3>
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">
+                        Skills
+                      </h3>
                       <div className="flex flex-wrap gap-2">
-                        {["JavaScript", "React", "Node.js", "Python", "SQL", "Git", "AWS", "Docker"].map((skill, index) => (
-                          <span key={index} className="px-3 py-1 bg-clr2 text-gray-700 rounded-full text-sm font-medium">
+                        {[
+                          "JavaScript",
+                          "React",
+                          "Node.js",
+                          "Python",
+                          "SQL",
+                          "Git",
+                          "AWS",
+                          "Docker",
+                        ].map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-clr2 text-gray-700 rounded-full text-sm font-medium"
+                          >
                             {skill}
                           </span>
                         ))}
@@ -1472,21 +1526,37 @@ export default function JobsPage() {
                       </h3>
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm font-medium text-gray-500 mb-1">Job type</p>
-                          <p className="text-sm text-gray-900">{state.jobDetail?.job_type_obj?.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 mb-1">Experience level</p>
-                          <p className="text-sm text-gray-900">{state.jobDetail?.experiences}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 mb-1">Salary</p>
-                          <p className="text-sm text-gray-900">{state.jobDetail?.salary_range_obj?.name}</p>
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-gray-500 mb-1">Location</p>
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Job type
+                          </p>
                           <p className="text-sm text-gray-900">
-                            {state.jobDetail?.locations?.map((item) => item.city).join(", ")}
+                            {state.jobDetail?.job_type_obj?.name}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Experience level
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {state.jobDetail?.experiences}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Salary
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {state.jobDetail?.salary_range_obj?.name}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-500 mb-1">
+                            Location
+                          </p>
+                          <p className="text-sm text-gray-900">
+                            {state.jobDetail?.locations
+                              ?.map((item) => item.city)
+                              .join(", ")}
                           </p>
                         </div>
                       </div>
@@ -1504,13 +1574,21 @@ export default function JobsPage() {
                             className="w-12 h-12 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold`}>
-                            {state.jobDetail?.company?.slice(0, 1).toUpperCase()}
+                          <div
+                            className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold`}
+                          >
+                            {state.jobDetail?.company
+                              ?.slice(0, 1)
+                              .toUpperCase()}
                           </div>
                         )}
                         <div>
-                          <h4 className="font-medium text-gray-900">{state.jobDetail?.company}</h4>
-                          <p className="text-sm text-gray-500">Technology Company</p>
+                          <h4 className="font-medium text-gray-900">
+                            {state.jobDetail?.company}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            Technology Company
+                          </p>
                         </div>
                       </div>
                       <p className="text-sm text-gray-700 leading-relaxed">
@@ -1725,12 +1803,12 @@ export default function JobsPage() {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 Curabitur dignissim rutrum dui quis malesuada.
               </p>
-              <button
+              {/* <button
                 onClick={() => setState({ congratsOpen: false })}
                 className="w-full max-w-md py-4 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full text-lg transition-colors z-10 shadow-lg"
               >
                 Let's Discover
-              </button>
+              </button> */}
             </div>
           )}
         />

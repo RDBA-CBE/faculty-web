@@ -11,9 +11,7 @@ export const jobApplicationSchema = Yup.object().shape({
     .required("Phone number is required")
     .min(10, "Phone number must be at least 10 digits"),
   experience: Yup.string().required("Experience is required"),
-  message: Yup.string()
-    .required("Message is required")
-    .min(10, "Message must be at least 10 characters"),
+  
   resume: Yup.mixed()
     .required("Resume is required")
     .test(

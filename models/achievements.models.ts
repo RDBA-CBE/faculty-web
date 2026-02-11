@@ -24,7 +24,7 @@ const achievements = {
     let promise = new Promise((resolve, reject) => {
       let url = `achievements/${id}/`;
       instance()
-        .patch(url, data)
+        .put(url, data)
         .then((res) => {
           resolve(res.data);
         })

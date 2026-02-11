@@ -29,6 +29,7 @@ import {
   Delete,
   Trash,
   PlusIcon,
+  File,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -185,11 +186,9 @@ export default function NaukriProfilePage() {
         }
       });
 
-      
-
       const res = await Models.profile.update(formData, state.userId);
       console.log("res", res);
-      userDetail(state?.userId)
+      userDetail(state?.userId);
 
       setState({ btnLoading: false, isEditingProfile: false });
     } catch (error) {
@@ -626,6 +625,7 @@ export default function NaukriProfilePage() {
         achievement_title: state.achievement_title || "",
         achievement_description: state.achievement_description || "",
         organization: state.organization || "",
+        achievement_file: state.achievement_file || null,
       };
 
       const formData = new FormData();
@@ -635,10 +635,6 @@ export default function NaukriProfilePage() {
           formData.append(key, value as string);
         }
       });
-
-      if (state.achievement_file) {
-        formData.append("achievement_file_url", state.achievement_file);
-      }
 
       const res = await Models.achievements.create(formData);
       console.log("res", res);
@@ -660,6 +656,7 @@ export default function NaukriProfilePage() {
         achievement_title: state.achievement_title || "",
         achievement_description: state.achievement_description || "",
         organization: state.organization || "",
+        achievement_file: state.achievement_file || null,
       };
 
       const formData = new FormData();
@@ -669,10 +666,6 @@ export default function NaukriProfilePage() {
           formData.append(key, value as string);
         }
       });
-
-      if (state.achievement_file) {
-        formData.append("achievement_file_url", state.achievement_file);
-      }
 
       const res = await Models.achievements.update(
         formData,
@@ -844,7 +837,10 @@ export default function NaukriProfilePage() {
               <div className="relative flex-shrink-0">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
                   <img
-                    src={state.userDetail?.profile_logo_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"}
+                    src={
+                      state.userDetail?.profile_logo_url ||
+                      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                    }
                     alt="Profile"
                     width={128}
                     height={128}
@@ -888,7 +884,8 @@ export default function NaukriProfilePage() {
                             current_position:
                               state.userDetail?.current_position || "",
                             profile_logo: null,
-                            profile_logo_preview: state.userDetail?.profile_logo_url || null,
+                            profile_logo_preview:
+                              state.userDetail?.profile_logo_url || null,
                           });
                         }}
                       >
@@ -2870,7 +2867,7 @@ export default function NaukriProfilePage() {
                             achievement_title: "",
                             organization: "",
                             achievement_file: null,
-                            achievement_file_url: null,
+
                             achievement_description: "",
                           });
                         }}
@@ -2951,13 +2948,14 @@ export default function NaukriProfilePage() {
 
                                   <div className="space-y-2">
                                     <label className="text-sm font-semibold text-gray-700">
-                                      Achievement Image
+                                      Achievement File (PDF)
                                     </label>
-                                    <div className="flex items-center gap-3">
+                                    {/* <div className="flex items-center gap-3">
                                       <Input
                                         ref={(ref) => {
                                           if (
-                                            ref && !state.achievement_file_url
+                                            ref &&
+                                            !state.achievement_file_url
                                           ) {
                                             ref.value = "";
                                           }
@@ -2977,38 +2975,26 @@ export default function NaukriProfilePage() {
                                         className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                                       />
                                       <Upload className="w-5 h-5 text-gray-400" />
-                                    </div>
-                                    {state.achievement_file_url && (
-                                      <div className="mt-2 relative inline-block">
-                                        <img
-                                          src={state.achievement_file_url}
-                                          alt="Preview"
-                                          className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                                        />
-                                        <button
-                                          type="button"
-                                          onClick={(e) => {
-                                            e.preventDefault();
+                                    </div> */}
+
+                                    <div className="flex items-center gap-3">
+                                      <Input
+                                        type="file"
+                                        accept="pdf/*"
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
                                             setState({
-                                              ...state,
-                                              achievement_file: null,
-                                              achievement_file_url: null,
+                                              achievement_file: file,
+                                              achievement_file_preview:
+                                                URL.createObjectURL(file),
                                             });
-                                            // Clear the file input
-                                            const fileInput =
-                                              e.currentTarget.parentElement?.parentElement?.querySelector(
-                                                'input[type="file"]',
-                                              ) as HTMLInputElement;
-                                            if (fileInput) {
-                                              fileInput.value = "";
-                                            }
-                                          }}
-                                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                                        >
-                                          <X className="w-3 h-3" />
-                                        </button>
-                                      </div>
-                                    )}
+                                          }
+                                        }}
+                                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      />
+                                      <Upload className="w-5 h-5 text-gray-400" />
+                                    </div>
                                   </div>
                                 </div>
 
@@ -3068,19 +3054,9 @@ export default function NaukriProfilePage() {
                                   <div className="flex items-start gap-6">
                                     {/* Achievement Icon */}
                                     <div className="flex-shrink-0">
-                                      {achievement.achievement_file ? (
-                                        <div className="w-10 h-10 rounded-xl overflow-hidden shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          {/* <img
-                                          src={achievement.image}
-                                          alt={achievement.title}
-                                          className="w-full h-full object-cover"
-                                        /> */}
-                                        </div>
-                                      ) : (
-                                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <Award className="w-4 h-4 text-white" />
-                                        </div>
-                                      )}
+                                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                        <Award className="w-4 h-4 text-white" />
+                                      </div>
                                     </div>
 
                                     {/* Achievement Details */}
@@ -3094,7 +3070,7 @@ export default function NaukriProfilePage() {
                                           </div>
                                           <p className="text-md font-semibold text-purple-600 mb-1">
                                             {
-                                              achievement.achievement_organization
+                                              achievement.organization
                                             }
                                           </p>
                                         </div>
@@ -3108,12 +3084,15 @@ export default function NaukriProfilePage() {
                                             onClick={() => {
                                               setState({
                                                 isEditingAchievements: true,
-                                                achievement_title: achievement.achievement_title,
-                                                organization: achievement.achievement_organization,
-                                                achievement_file_url: achievement.achievement_file,
-                                                achievement_description: achievement.achievement_description,
+                                                achievement_title:
+                                                  achievement.achievement_title,
+                                                organization:
+                                                  achievement.organization,
+                                                achievement_file:
+                                                  achievement.achievement_file_url,
+                                                achievement_description:
+                                                  achievement.achievement_description,
                                                 achievement_id: achievement.id,
-                                                achievement_file: null,
                                               });
                                             }}
                                           >
@@ -3137,6 +3116,20 @@ export default function NaukriProfilePage() {
                                         <p className="text-gray-700 leading-relaxed text-sm">
                                           {achievement.achievement_description}
                                         </p>
+
+                                        {achievement.achievement_file_url && (
+                                          <a className="flex items-center text-gray-700 leading-relaxed text-sm"
+                                            href={
+                                              achievement.achievement_file_url
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                          >
+                                            {" "}
+                                            View file
+                                           <File className="w-3 h-3 ml-2" />
+                                          </a>
+                                        )}
                                       </div>
 
                                       {/* Mobile Action Buttons - Bottom Right */}
@@ -3148,12 +3141,15 @@ export default function NaukriProfilePage() {
                                           onClick={() => {
                                             setState({
                                               isEditingAchievements: true,
-                                              achievement_title: achievement.achievement_title,
-                                              organization: achievement.achievement_organization,
-                                              achievement_file_url: achievement.achievement_file,
-                                              achievement_description: achievement.achievement_description,
+                                              achievement_title:
+                                                achievement.achievement_title,
+                                              organization:
+                                                achievement.organization,
+                                              achievement_file:
+                                                achievement.achievement_file_url,
+                                              achievement_description:
+                                                achievement.achievement_description,
                                               achievement_id: achievement.id,
-                                              achievement_file: null,
                                             });
                                           }}
                                         >
@@ -3874,56 +3870,41 @@ export default function NaukriProfilePage() {
 
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-gray-700">
-                        Achievement Image
+                        Achievement File (PDF)
                       </label>
                       <div className="flex items-center gap-3">
                         <Input
                           type="file"
-                          accept="image/*,application/pdf"
+                          accept=".pdf,application/pdf"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
-                            if (!file) return;
-
-                            setState((prev) => ({
-                              ...prev,
-                              achievement_file: file,
-                              achievement_file_url: URL.createObjectURL(file),
-                            }));
+                            if (file) {
+                              setState({
+                                achievement_file: file,
+                                achievement_file_preview:
+                                  URL.createObjectURL(file),
+                              });
+                            }
                           }}
                           className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
                         />
                         <Upload className="w-5 h-5 text-gray-400" />
                       </div>
-
-                      {state.achievement_file_url && (
-                        <div className="mt-2 relative inline-block">
-                          <img
-                            src={state.achievement_file_url}
-                            alt="Preview"
-                            className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                          />
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              setState({
-                                ...state,
-                                achievement_file: null,
-                                achievement_file_url: null,
-                              });
-                              // Clear the file input
-                              const fileInput =
-                                e.currentTarget.parentElement?.parentElement?.querySelector(
-                                  'input[type="file"]',
-                                ) as HTMLInputElement;
-                              if (fileInput) {
-                                fileInput.value = "";
-                              }
-                            }}
-                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
+                      {state.achievement_file && (
+                        <div className="text-sm text-gray-600 mt-1">
+                          Current file:{" "}
+                          {typeof state.achievement_file === "string" ? (
+                            <a
+                              href={state.achievement_file}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-purple-600 hover:underline"
+                            >
+                              View File
+                            </a>
+                          ) : (
+                            state.achievement_file.name
+                          )}
                         </div>
                       )}
                     </div>
