@@ -3,7 +3,7 @@ import instance from "@/utils/axios.utils";
 const job = {
   list: (page, body) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `jobs/?page=${page}&approved=true`;
+      let url = `jobs/?page=${page}&is_approved=true`;
       if (body?.search) {
         url += `&search=${encodeURIComponent(body.search)}`;
       }

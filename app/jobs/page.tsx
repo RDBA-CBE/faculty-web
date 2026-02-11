@@ -657,25 +657,38 @@ export default function JobsPage() {
               </div>
 
               {/* Requirements */}
-              <div className="border-b  px-2 py-2 pb-5">
+              {state?.jobDetail?.requirements && <div className="border-b  px-2 py-2 pb-5">
                 <h2 className="text-lg font-semibold text-black mb-4">
                   Requirements
                 </h2>
                 <ul className="space-y-3">
-                  {[
-                    "Bachelor's degree in Computer Science or related field",
-                    "3+ years of experience in software development",
-                    "Proficiency in modern programming languages and frameworks",
-                    "Strong problem-solving and analytical skills",
-                    "Excellent communication and teamwork abilities",
-                  ].map((item, index) => (
+                  {state?.jobDetail?.requirements?.map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
                       <span className="">{item}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div>}
+
+              {/* Skills */}
+              {state?.jobDetail?.skills && (
+                <div className="  px-2 py-2 pb-5">
+                  <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                    Skills
+                  </h2>
+                  <div className="flex flex-wrap gap-2">
+                    {state?.jobDetail?.skills?.map((skill, index) => (
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-clr1 text-gray-700 rounded-full text-sm font-medium"
+                      >
+                        {skill?.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Job Details */}
@@ -980,51 +993,38 @@ export default function JobsPage() {
                   </div>
 
                   {/* Requirements */}
-                  <div className="border-b  px-2 py-2 pb-5">
+                  {state?.jobDetail?.requirements && <div className="border-b  px-2 py-2 pb-5">
                     <h2 className="text-lg font-semibold text-black mb-4">
                       Requirements
                     </h2>
                     <ul className="space-y-3">
-                      {[
-                        "Bachelor's degree in Computer Science or related field",
-                        "3+ years of experience in software development",
-                        "Proficiency in modern programming languages and frameworks",
-                        "Strong problem-solving and analytical skills",
-                        "Excellent communication and teamwork abilities",
-                      ].map((item, index) => (
+                      {state?.jobDetail?.requirements?.map((item, index) => (
                         <li key={index} className="flex items-start gap-3">
                           <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
                           <span className="">{item}</span>
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </div>}
 
                   {/* Skills */}
-                  <div className="  px-2 py-2 pb-5">
-                    <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                      Skills
-                    </h2>
-                    <div className="flex flex-wrap gap-2">
-                      {[
-                        "JavaScript",
-                        "React",
-                        "Node.js",
-                        "Python",
-                        "SQL",
-                        "Git",
-                        "AWS",
-                        "Docker",
-                      ].map((skill, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1 bg-clr1 text-gray-700 rounded-full text-sm font-medium"
-                        >
-                          {skill}
-                        </span>
-                      ))}
+                  {state?.jobDetail?.skills && (
+                    <div className="  px-2 py-2 pb-5">
+                      <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                        Skills
+                      </h2>
+                      <div className="flex flex-wrap gap-2">
+                        {state?.jobDetail?.skills?.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1 bg-clr1 text-gray-700 rounded-full text-sm font-medium"
+                          >
+                            {skill?.name}
+                          </span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 {/* Right Sidebar */}
@@ -1455,52 +1455,39 @@ export default function JobsPage() {
                       </div>
                     </div>
 
-                    <div>
+                    {state?.jobDetail?.requirements && <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3">
                         Requirements
                       </h3>
                       <div className="space-y-2">
-                        {[
-                          "Bachelor's degree in Computer Science or related field",
-                          "3+ years of experience in software development",
-                          "Proficiency in modern programming languages and frameworks",
-                          "Strong problem-solving and analytical skills",
-                          "Excellent communication and teamwork abilities",
-                        ].map((responsibility, index) => (
+                        {state?.jobDetail?.requirements?.map((requirements, index) => (
                           <div key={index} className="flex items-start gap-2">
                             <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
                             <p className="text-gray-600 text-sm">
-                              {responsibility}
+                              {requirements}
                             </p>
                           </div>
                         ))}
                       </div>
-                    </div>
+                    </div>}
 
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900 mb-3">
-                        Skills
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          "JavaScript",
-                          "React",
-                          "Node.js",
-                          "Python",
-                          "SQL",
-                          "Git",
-                          "AWS",
-                          "Docker",
-                        ].map((skill, index) => (
-                          <span
-                            key={index}
-                            className="px-3 py-1 bg-clr2 text-gray-700 rounded-full text-sm font-medium"
-                          >
-                            {skill}
-                          </span>
-                        ))}
+                    {state?.jobDetail?.skills && (
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-3">
+                          Skills
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {state?.jobDetail?.skills?.map((skill, index) => (
+                            <span
+                              key={index}
+                              className="px-3 py-1 bg-clr2 text-gray-700 rounded-full text-sm font-medium"
+                            >
+                              {skill?.name}
+                            </span>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 mb-3">

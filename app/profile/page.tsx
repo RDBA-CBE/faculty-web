@@ -826,16 +826,16 @@ export default function NaukriProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-clr1 py-4">
       <div className="max-w-7xl mx-auto p-4">
         {/* Profile Header - Will hide on scroll */}
-        <Card className="bg-white/80 border-0 mb-8 overflow-hidden">
+        <Card className="bg-clr2 border-0 mb-8 overflow-hidden">
           <div className="absolute"></div>
           <CardContent className="relative p-4 md:p-6">
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
               {/* Profile Image - Enhanced */}
               <div className="relative flex-shrink-0">
-                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-yellow-100 to-orange-100">
                   <img
                     src={
                       state.userDetail?.profile_logo_url ||
@@ -863,7 +863,7 @@ export default function NaukriProfilePage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="p-1.5 hover:bg-purple-50 rounded-full"
+                        className="p-1.5 hover:bg-[#f2b31d]/10 rounded-full"
                         onClick={() => {
                           setState({
                             isEditingProfile: true,
@@ -889,7 +889,7 @@ export default function NaukriProfilePage() {
                           });
                         }}
                       >
-                        <Edit className="w-4 h-4 text-purple-600" />
+                        <Edit className="w-4 h-4 text-[#f2b31d]" />
                       </Button>
                     </div>
                     {state?.userDetail?.short_desc && (
@@ -900,7 +900,7 @@ export default function NaukriProfilePage() {
                     {(state?.userDetail?.current_company ||
                       state?.userDetail?.current_location) && (
                       <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                        <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
                         <span className="text-sm">
                           {state?.userDetail?.current_company} -{" "}
@@ -910,7 +910,7 @@ export default function NaukriProfilePage() {
                     )}
                   </div>
                   <div className="flex-shrink-0">
-                    <div className="bg-white/60 rounded-lg px-3 py-2 shadow-sm border">
+                    <div className="bg-white/100 rounded-lg px-3 py-2 shadow-sm border">
                       <p className="text-xs text-gray-500 whitespace-nowrap">
                         Last Updated:{" "}
                         <span className="font-semibold text-gray-700">
@@ -931,34 +931,34 @@ export default function NaukriProfilePage() {
                       icon: MapPin,
                       label:
                         state?.userDetail?.current_location || "Not specified",
-                      color: "text-purple-500",
+                      color: "text-[#f2b31d]",
                     },
                     {
                       icon: Phone,
                       label: state?.userDetail?.phone || "Not specified",
-                      color: "text-purple-500",
+                      color: "text-[#f2b31d]",
                       verified: true,
                     },
                     {
                       icon: Calendar,
                       label: state?.userDetail?.experience || "Not specified",
-                      color: "text-purple-500",
+                      color: "text-[#f2b31d]",
                     },
                     {
                       icon: Mail,
                       label: state?.userDetail?.email || "Not specified",
-                      color: "text-purple-500",
+                      color: "text-[#f2b31d]",
                       verified: true,
                     },
                     {
                       icon: User,
                       label: state?.userDetail?.gender || "Not specified",
-                      color: "text-purple-500",
+                      color: "text-[#f2b31d]",
                     },
                   ].map((item, index) => (
                     <div
                       key={index}
-                      className="flex items-center gap-2 p-2 sm:p-3 bg-white/50 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
+                      className="flex items-center gap-2 p-2 sm:p-3 bg-white/100 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
                     >
                       <item.icon
                         className={`w-4 h-4 ${item.color} flex-shrink-0`}
@@ -967,7 +967,7 @@ export default function NaukriProfilePage() {
                         {item.label}
                       </span>
                       {item.verified && (
-                        <CheckCircle className="w-3 h-3 text-purple-500 flex-shrink-0" />
+                        <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
                       )}
                     </div>
                   ))}
@@ -982,11 +982,11 @@ export default function NaukriProfilePage() {
           {/* Left Sidebar - Quick Links */}
           <div className="lg:w-1/4 quick-links-sidebar">
             <div className="sticky top-24 z-10">
-              <Card className="bg-white/80  border-0 overflow-hidden">
+              <Card className="bg-clr2  border-0 overflow-hidden">
                 <div className=""></div>
                 <CardContent className="relative p-4">
                   <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
                     Quick Links
                   </h3>
 
@@ -1030,7 +1030,7 @@ export default function NaukriProfilePage() {
                     ].map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between px-2 py-3 bg-white/60 rounded-xl  hover:bg-white/80 transition-all duration-200 group cursor-pointer"
+                        className="flex items-center justify-between px-2 py-3 bg-white/100 rounded-xl  hover:bg-white/80 transition-all duration-200 group cursor-pointer"
                         onClick={item.onClick}
                       >
                         <span className="text-gray-700 font-medium group-hover:text-gray-900">
@@ -1067,10 +1067,10 @@ export default function NaukriProfilePage() {
               {/* Resume Section */}
               <Card
                 id="resume-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -1078,11 +1078,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("resume")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <FileText className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Resume Manager
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -1117,10 +1117,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-6 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-4">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Upload className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-lg font-bold text-gray-900">
@@ -1129,7 +1129,7 @@ export default function NaukriProfilePage() {
                                 </div>
 
                                 <div className="space-y-4 mb-4">
-                                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-purple-500 transition-colors bg-white/50">
+                                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#f2b31d] transition-colors bg-white/100">
                                     <Input
                                       type="file"
                                       accept=".pdf,.doc,.docx"
@@ -1141,8 +1141,8 @@ export default function NaukriProfilePage() {
                                       htmlFor="resume-upload"
                                       className="cursor-pointer flex flex-col items-center gap-2 w-full h-full"
                                     >
-                                      <div className="w-12 h-12 bg-purple-50 rounded-full flex items-center justify-center">
-                                        <Upload className="w-6 h-6 text-purple-600" />
+                                      <div className="w-12 h-12 bg-[#f2b31d]/10 rounded-full flex items-center justify-center">
+                                        <Upload className="w-6 h-6 text-[#f2b31d]" />
                                       </div>
                                       <span className="text-sm font-medium text-gray-700">
                                         Click to upload or drag and drop
@@ -1163,7 +1163,7 @@ export default function NaukriProfilePage() {
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={resumeUpdate}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                     disabled={!state.resume_url}
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
@@ -1189,21 +1189,21 @@ export default function NaukriProfilePage() {
 
                         {/* Current Resume Card */}
                         <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
                           <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-[1.02]">
                             <div className="flex items-start gap-6">
                               {/* Resume Icon */}
                               <div className="flex-shrink-0">
-                                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
+                                <div className="w-14 h-14 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
                                   <div className="text-white">
                                     <div className="text-xs font-bold mb-1">
                                       PDF
                                     </div>
-                                    <div className="w-8 h-0.5 bg-white/60 mb-1"></div>
+                                    <div className="w-8 h-0.5 bg-white/100 mb-1"></div>
                                     <div className="w-6 h-0.5 bg-white/40 mb-1"></div>
-                                    <div className="w-7 h-0.5 bg-white/60"></div>
+                                    <div className="w-7 h-0.5 bg-white/100"></div>
                                   </div>
-                                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center shadow-lg">
+                                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#f2b31d] rounded-full flex items-center justify-center shadow-lg">
                                     <span className="text-white text-sm font-bold">
                                       ✓
                                     </span>
@@ -1217,7 +1217,7 @@ export default function NaukriProfilePage() {
                                   <div className="flex-1">
                                     <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
                                       <span className="flex items-center gap-1">
-                                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                        <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
                                         {state?.userDetail?.resume_url
                                           ? "Uploaded"
                                           : "No Resume Uploaded"}
@@ -1232,11 +1232,11 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={downloadResume}
                                           title="Download Resume"
                                         >
-                                          <Download className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Download className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -1252,13 +1252,13 @@ export default function NaukriProfilePage() {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="hover:bg-purple-50 border-purple-200 group/btn"
+                                        className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                         title="Upload Resume"
                                         onClick={() =>
                                           setState({ isEditingResume: true })
                                         }
                                       >
-                                        <PlusIcon className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                        <PlusIcon className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                       </Button>
                                     )}
                                   </div>
@@ -1266,8 +1266,8 @@ export default function NaukriProfilePage() {
 
                                 {state?.userDetail?.resume_url && (
                                   <div className="flex flex-wrap items-center gap-3 mb-4">
-                                    <div className="bg-gradient-to-r from-purple-100 to-indigo-100 px-3 py-1 rounded-full">
-                                      <span className="text-purple-700 font-semibold text-sm">
+                                    <div className="bg-gradient-to-r from-[#f2b31d]/20 to-orange-100 px-3 py-1 rounded-full">
+                                      <span className="text-[#b38315] font-semibold text-sm">
                                         Latest Version
                                       </span>
                                     </div>
@@ -1286,10 +1286,10 @@ export default function NaukriProfilePage() {
               {/* Resume Headline Section */}
               <Card
                 id="headline-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -1297,11 +1297,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("headline")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <Edit3 className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Profile Summary
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -1311,7 +1311,7 @@ export default function NaukriProfilePage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <button
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                         onClick={(e) => {
                           e.stopPropagation();
                           setState({
@@ -1348,10 +1348,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-6 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-4">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Edit3 className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-lg font-bold text-gray-900">
@@ -1365,13 +1365,13 @@ export default function NaukriProfilePage() {
                                   onChange={(e) =>
                                     setState({ about: e.target.value })
                                   }
-                                  className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px] mb-4"
+                                  className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px] mb-4"
                                 />
 
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={aboutUpdate}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Update
@@ -1393,7 +1393,7 @@ export default function NaukriProfilePage() {
 
                         {/* Headline Display */}
                         <div className="relative">
-                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm"></div>
+                          <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm"></div>
                           <div className="flex-1 px-3">
                             <p className="text-md text-gray-500">
                               {state.userDetail?.about}
@@ -1409,10 +1409,10 @@ export default function NaukriProfilePage() {
               {/* Skills Section */}
               <Card
                 id="skills-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -1420,11 +1420,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("skills")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <Code className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Skills
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -1438,7 +1438,7 @@ export default function NaukriProfilePage() {
                           e.stopPropagation();
                           setState({ isEditingSkills: true, skill: "" });
                         }}
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -1468,10 +1468,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-8 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl"></div>
                               <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Plus className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-xl font-bold text-gray-900">
@@ -1493,7 +1493,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   {/* <div className="space-y-2">
@@ -1528,7 +1528,7 @@ export default function NaukriProfilePage() {
                                     //     updateSkill();
                                     //   }
                                     // }}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Save Skill
@@ -1558,17 +1558,17 @@ export default function NaukriProfilePage() {
                               transition={{ delay: index * 0.05 }}
                               className="group relative"
                             >
-                              <div className="bg-gradient-to-r from-purple-100 to-indigo-100 hover:from-purple-200 hover:to-indigo-200 border border-purple-200 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
-                                <span className="text-purple-700 font-medium text-sm">
+                              <div className="bg-gradient-to-r from-[#f2b31d]/10 to-orange-100 hover:from-[#f2b31d]/20 hover:to-orange-200 border border-[#f2b31d]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                <span className="text-[#b38315] font-medium text-sm">
                                   {skill.name}
                                 </span>
-                                {/* <span className="text-purple-600 text-xs bg-white/60 px-2 py-0.5 rounded-full">
+                                {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
                                   {skill.experience}
                                 </span> */}
                                 <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
                                   <button
                                     onClick={() => deleteSkill(skill.id)}
-                                    className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/50"
+                                    className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
                                   >
                                     <X className="w-3 h-3  font-semibold" />
                                   </button>
@@ -1586,8 +1586,8 @@ export default function NaukriProfilePage() {
                             animate={{ opacity: 1, scale: 1 }}
                             className="text-center py-8"
                           >
-                            <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                              <Code className="w-8 h-8 text-purple-400" />
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#f2b31d]/20 to-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                              <Code className="w-8 h-8 text-[#f2b31d]/60" />
                             </div>
                             <h4 className="text-lg font-semibold text-gray-900 mb-2">
                               No Skills Added
@@ -1599,7 +1599,7 @@ export default function NaukriProfilePage() {
                               onClick={() =>
                                 setState({ isEditingSkills: true, skill: "" })
                               }
-                              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                              className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700"
                             >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Skills
@@ -1615,10 +1615,10 @@ export default function NaukriProfilePage() {
               {/* Employment Section */}
               <Card
                 id="employment-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -1626,11 +1626,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("employment")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <Briefcase className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Experience
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -1640,7 +1640,7 @@ export default function NaukriProfilePage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <button
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                         onClick={(e) => {
                           setState({
                             isCreateExperience: true,
@@ -1681,10 +1681,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-8 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Plus className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-xl font-bold text-gray-900">
@@ -1706,7 +1706,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -1722,7 +1722,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -1766,14 +1766,14 @@ export default function NaukriProfilePage() {
                                         e.target.value,
                                       )
                                     }
-                                    className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                                    className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                                   />
                                 </div>
 
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={addEmployment}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Create Experience
@@ -1803,12 +1803,12 @@ export default function NaukriProfilePage() {
                               transition={{ delay: index * 0.1 }}
                               className="relative group"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
                               <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                 <div className="flex items-start gap-3">
                                   {/* Company Logo Placeholder */}
                                   <div className="flex-shrink-0 pt-1">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                       <span className="text-white font-bold text-md">
                                         {emp.company.charAt(0).toUpperCase()}
                                       </span>
@@ -1825,11 +1825,11 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-start justify-between md:mb-1">
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                          <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                                          <h4 className="text-lg font-bold text-gray-900 group-hover:text-[#b38315] transition-colors">
                                             {emp.designation}
                                           </h4>
                                         </div>
-                                        <p className="text-md font-semibold text-purple-600 mb-1">
+                                        <p className="text-md font-semibold text-[#f2b31d] mb-1">
                                           {emp.company}
                                         </p>
                                         <div className="text-sm text-gray-600 mb-2">
@@ -1855,7 +1855,7 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={() =>
                                             setState({
                                               isEditingExperience: true,
@@ -1869,7 +1869,7 @@ export default function NaukriProfilePage() {
                                             })
                                           }
                                         >
-                                          <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -1885,7 +1885,7 @@ export default function NaukriProfilePage() {
                                     </div>
 
                                     {/* Job Description */}
-                                    <div className="bg-gradient-to-r from-gray-50 to-purple-50/50 rounded-2xl p-4 border border-gray-100 mb-2">
+                                    <div className="bg-gradient-to-r from-gray-50 to-[#f2b31d]/10 rounded-2xl p-4 border border-gray-100 mb-2">
                                       <p className="text-gray-700 leading-relaxed text-sm">
                                         {emp.job_description}
                                       </p>
@@ -1930,7 +1930,7 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={() =>
                                             setState({
                                               isEditingExperience: true,
@@ -1943,7 +1943,7 @@ export default function NaukriProfilePage() {
                                             })
                                           }
                                         >
-                                          <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -1963,7 +1963,7 @@ export default function NaukriProfilePage() {
                                 {/* Timeline Connector */}
                                 {index <
                                   state?.userDetail?.experiences.length - 1 && (
-                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-purple-300 to-transparent"></div>
+                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#f2b31d]/50 to-transparent"></div>
                                 )}
                               </div>
                             </motion.div>
@@ -1999,7 +1999,7 @@ export default function NaukriProfilePage() {
                                   job_description: "",
                                 })
                               }
-                              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                              className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700"
                             >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Your First Job
@@ -2015,10 +2015,10 @@ export default function NaukriProfilePage() {
               {/* Education Section */}
               <Card
                 id="education-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -2026,11 +2026,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("education")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <GraduationCap className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Education
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -2051,7 +2051,7 @@ export default function NaukriProfilePage() {
                             cgpa: "",
                           });
                         }}
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -2081,10 +2081,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-8 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Plus className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-xl font-bold text-gray-900">
@@ -2106,7 +2106,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2122,7 +2122,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2138,7 +2138,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2151,7 +2151,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange("cgpa", e.target.value)
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2167,7 +2167,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2183,7 +2183,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                 </div>
@@ -2191,7 +2191,7 @@ export default function NaukriProfilePage() {
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={addEducation}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Create Education
@@ -2221,12 +2221,12 @@ export default function NaukriProfilePage() {
                               transition={{ delay: index * 0.1 }}
                               className="relative group"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
                               <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                 <div className="flex items-start gap-3">
                                   {/* Institution Logo Placeholder */}
                                   <div className="flex-shrink-0 pt-1">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                       <span className="text-white font-bold text-md">
                                         {edu.institution
                                           .charAt(0)
@@ -2240,11 +2240,11 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-start justify-between md:mb-1">
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                          <h4 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                                          <h4 className="text-xl font-bold text-gray-900 group-hover:text-[#b38315] transition-colors">
                                             {edu.degree}
                                           </h4>
                                         </div>
-                                        <p className="text-md font-semibold text-purple-600">
+                                        <p className="text-md font-semibold text-[#f2b31d]">
                                           {edu.institution}
                                         </p>
                                         <div className="text-sm text-gray-600">
@@ -2259,7 +2259,7 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={() =>
                                             setState({
                                               isEditingEducation: true,
@@ -2273,7 +2273,7 @@ export default function NaukriProfilePage() {
                                             })
                                           }
                                         >
-                                          <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -2299,7 +2299,7 @@ export default function NaukriProfilePage() {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="hover:bg-purple-50 border-purple-200 group/btn"
+                                        className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                         onClick={() =>
                                           setState({
                                             isEditingEducation: true,
@@ -2313,7 +2313,7 @@ export default function NaukriProfilePage() {
                                           })
                                         }
                                       >
-                                        <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                        <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                       </Button>
                                       <Button
                                         variant="outline"
@@ -2330,7 +2330,7 @@ export default function NaukriProfilePage() {
                                 {/* Timeline Connector */}
                                 {index <
                                   state?.userDetail?.educations?.length - 1 && (
-                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-purple-300 to-transparent"></div>
+                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#f2b31d]/50 to-transparent"></div>
                                 )}
                               </div>
                             </motion.div>
@@ -2346,7 +2346,7 @@ export default function NaukriProfilePage() {
                             className="text-center py-12"
                           >
                             <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                              <GraduationCap className="w-12 h-12 text-purple-400" />
+                              <GraduationCap className="w-12 h-12 text-[#f2b31d]/60" />
                             </div>
                             <h4 className="text-xl font-semibold text-gray-900 mb-2">
                               No Education History
@@ -2367,7 +2367,7 @@ export default function NaukriProfilePage() {
                                   cgpa: "",
                                 })
                               }
-                              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                              className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700"
                             >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Your First Education
@@ -2383,10 +2383,10 @@ export default function NaukriProfilePage() {
               {/* Projects Section */}
               <Card
                 id="projects-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -2394,11 +2394,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("projects")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <FolderOpen className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Projects
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -2421,7 +2421,7 @@ export default function NaukriProfilePage() {
                             technology: "",
                           });
                         }}
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -2451,10 +2451,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-8 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Plus className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-xl font-bold text-gray-900">
@@ -2476,7 +2476,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2492,7 +2492,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2508,7 +2508,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2524,7 +2524,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2 md:col-span-2">
@@ -2547,7 +2547,7 @@ export default function NaukriProfilePage() {
                                             handleAddTechnology();
                                           }
                                         }}
-                                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                       />
                                       <Button
                                         variant="outline"
@@ -2562,7 +2562,7 @@ export default function NaukriProfilePage() {
                                         (tech: string, index: number) => (
                                           <div
                                             key={index}
-                                            className="bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                                            className="bg-[#f2b31d]/20 text-yellow-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
                                           >
                                             {tech}
                                             <button
@@ -2570,7 +2570,7 @@ export default function NaukriProfilePage() {
                                               onClick={() =>
                                                 handleRemoveTechnology(tech)
                                               }
-                                              className="text-purple-800 hover:text-purple-900"
+                                              className="text-yellow-800 hover:text-yellow-900"
                                             >
                                               <X className="w-3 h-3" />
                                             </button>
@@ -2594,14 +2594,14 @@ export default function NaukriProfilePage() {
                                         e.target.value,
                                       )
                                     }
-                                    className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                                    className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                                   />
                                 </div>
 
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={addProject}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Create Project
@@ -2631,12 +2631,12 @@ export default function NaukriProfilePage() {
                               transition={{ delay: index * 0.1 }}
                               className="relative group"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
                               <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                 <div className="flex items-start gap-3">
                                   {/* Project Icon */}
                                   <div className="flex-shrink-0 pt-1">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                       <span className="text-white font-bold text-md">
                                         {project.project_title
                                           .charAt(0)
@@ -2650,7 +2650,7 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-start justify-between md:mb-1">
                                       <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                          <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                                          <h4 className="text-lg font-bold text-gray-900 group-hover:text-[#b38315] transition-colors">
                                             {project.project_title}
                                           </h4>
                                         </div>
@@ -2665,7 +2665,7 @@ export default function NaukriProfilePage() {
                                                 href={project.project_link}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-purple-600 hover:underline"
+                                                className="text-[#f2b31d] hover:underline"
                                               >
                                                 View Project
                                               </a>
@@ -2679,7 +2679,7 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={() => {
                                             setState({
                                               isEditingProject: true,
@@ -2697,7 +2697,7 @@ export default function NaukriProfilePage() {
                                             });
                                           }}
                                         >
-                                          <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -2713,7 +2713,7 @@ export default function NaukriProfilePage() {
                                     </div>
 
                                     {/* Project Description */}
-                                    <div className="bg-gradient-to-r from-gray-50 to-purple-50/50 rounded-2xl p-4 border border-gray-100 mb-4">
+                                    <div className="bg-gradient-to-r from-gray-50 to-[#f2b31d]/10 rounded-2xl p-4 border border-gray-100 mb-4">
                                       <p className="text-gray-700 leading-relaxed text-sm">
                                         {project.project_description}
                                       </p>
@@ -2731,7 +2731,7 @@ export default function NaukriProfilePage() {
                                               (tech, techIndex) => (
                                                 <span
                                                   key={techIndex}
-                                                  className="bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium"
+                                                  className="bg-gradient-to-r from-[#f2b31d]/20 to-orange-100 text-[#b38315] px-3 py-1 rounded-full text-sm font-medium"
                                                 >
                                                   {tech}
                                                 </span>
@@ -2746,7 +2746,7 @@ export default function NaukriProfilePage() {
                                       <Button
                                         variant="outline"
                                         size="sm"
-                                        className="hover:bg-purple-50 border-purple-200 group/btn"
+                                        className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                         onClick={() => {
                                           setState({
                                             isEditingProject: true,
@@ -2762,7 +2762,7 @@ export default function NaukriProfilePage() {
                                           });
                                         }}
                                       >
-                                        <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                        <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                       </Button>
                                       <Button
                                         variant="outline"
@@ -2781,7 +2781,7 @@ export default function NaukriProfilePage() {
                                 {/* Timeline Connector */}
                                 {index <
                                   state.userDetail?.projects?.length - 1 && (
-                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-purple-300 to-transparent"></div>
+                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#f2b31d]/50 to-transparent"></div>
                                 )}
                               </div>
                             </motion.div>
@@ -2797,7 +2797,7 @@ export default function NaukriProfilePage() {
                             className="text-center py-12"
                           >
                             <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                              <FolderOpen className="w-12 h-12 text-purple-400" />
+                              <FolderOpen className="w-12 h-12 text-[#f2b31d]/60" />
                             </div>
                             <h4 className="text-xl font-semibold text-gray-900 mb-2">
                               No Projects Added
@@ -2819,7 +2819,7 @@ export default function NaukriProfilePage() {
                                   technology: "",
                                 })
                               }
-                              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                              className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700"
                             >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Your First Project
@@ -2835,10 +2835,10 @@ export default function NaukriProfilePage() {
               {/* Achievements Section */}
               <Card
                 id="achievements-section"
-                className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 border-0 overflow-hidden relative"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
               >
-                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-indigo-400/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-purple-400/20 to-indigo-400/20 rounded-full blur-2xl"></div>
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
 
                 <CardContent className="relative p-4 md:p-6">
                   <div
@@ -2846,11 +2846,11 @@ export default function NaukriProfilePage() {
                     onClick={() => toggleSection("achievements")}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                         <Award className="w-4 h-4 text-white transform -rotate-3" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
                           Achievements & Awards
                         </h3>
                         <p className="text-sm text-gray-500">
@@ -2871,7 +2871,7 @@ export default function NaukriProfilePage() {
                             achievement_description: "",
                           });
                         }}
-                        className="w-8 h-8 bg-purple-500 hover:bg-purple-600 text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                        className="w-8 h-8 bg-[#f2b31d] hover:bg-[#d9a01a] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -2901,10 +2901,10 @@ export default function NaukriProfilePage() {
                               transition={{ duration: 0.3, ease: "easeOut" }}
                               className="mb-8 relative"
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 rounded-3xl blur-sm"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                               <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                 <div className="flex items-center gap-3 mb-6">
-                                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                  <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                     <Plus className="w-4 h-4 text-white" />
                                   </div>
                                   <h4 className="text-xl font-bold text-gray-900">
@@ -2926,7 +2926,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
                                   <div className="space-y-2">
@@ -2942,7 +2942,7 @@ export default function NaukriProfilePage() {
                                           e.target.value,
                                         )
                                       }
-                                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                     />
                                   </div>
 
@@ -2966,7 +2966,7 @@ export default function NaukriProfilePage() {
                                             });
                                           }
                                         }}
-                                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                                       />
                                       <Upload className="w-5 h-5 text-gray-400" />
                                     </div>
@@ -2986,14 +2986,14 @@ export default function NaukriProfilePage() {
                                         achievement_description: e.target.value,
                                       })
                                     }
-                                    className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                                    className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                                   />
                                 </div>
 
                                 <div className="flex gap-3">
                                   <Button
                                     onClick={addAchievement}
-                                    className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg"
+                                    className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700 text-white shadow-lg"
                                   >
                                     <CheckCircle className="w-4 h-4 mr-2" />
                                     Save Achievement
@@ -3024,12 +3024,12 @@ export default function NaukriProfilePage() {
                                 transition={{ delay: index * 0.1 }}
                                 className="relative group"
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 rounded-3xl blur-sm group-hover:from-purple-500/10 group-hover:to-indigo-500/10 transition-all duration-300"></div>
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
                                 <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                   <div className="flex items-start gap-6">
                                     {/* Achievement Icon */}
                                     <div className="flex-shrink-0">
-                                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                         <Award className="w-4 h-4 text-white" />
                                       </div>
                                     </div>
@@ -3039,11 +3039,11 @@ export default function NaukriProfilePage() {
                                       <div className="flex items-start justify-between md:mb-1">
                                         <div className="flex-1">
                                           <div className="flex items-center gap-2">
-                                            <h4 className="text-lg font-bold text-gray-900 group-hover:text-purple-700 transition-colors">
+                                            <h4 className="text-lg font-bold text-gray-900 group-hover:text-[#b38315] transition-colors">
                                               {achievement.achievement_title}
                                             </h4>
                                           </div>
-                                          <p className="text-md font-semibold text-purple-600 mb-1">
+                                          <p className="text-md font-semibold text-[#f2b31d] mb-1">
                                             {
                                               achievement.organization
                                             }
@@ -3055,7 +3055,7 @@ export default function NaukriProfilePage() {
                                           <Button
                                             variant="outline"
                                             size="sm"
-                                            className="hover:bg-purple-50 border-purple-200 group/btn"
+                                            className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                             onClick={() => {
                                               setState({
                                                 isEditingAchievements: true,
@@ -3071,7 +3071,7 @@ export default function NaukriProfilePage() {
                                               });
                                             }}
                                           >
-                                            <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                            <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                           </Button>
                                           <Button
                                             variant="outline"
@@ -3087,7 +3087,7 @@ export default function NaukriProfilePage() {
                                       </div>
 
                                       {/* Achievement Description */}
-                                      <div className="bg-gradient-to-r from-gray-50 to-purple-50/50 rounded-2xl p-4 border border-gray-100 mb-4">
+                                      <div className="bg-gradient-to-r from-gray-50 to-[#f2b31d]/10 rounded-2xl p-4 border border-gray-100 mb-4">
                                         <p className="text-gray-700 leading-relaxed text-sm">
                                           {achievement.achievement_description}
                                         </p>
@@ -3112,7 +3112,7 @@ export default function NaukriProfilePage() {
                                         <Button
                                           variant="outline"
                                           size="sm"
-                                          className="hover:bg-purple-50 border-purple-200 group/btn"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
                                           onClick={() => {
                                             setState({
                                               isEditingAchievements: true,
@@ -3128,7 +3128,7 @@ export default function NaukriProfilePage() {
                                             });
                                           }}
                                         >
-                                          <Edit className="w-4 h-4 text-purple-600 group-hover/btn:scale-110 transition-transform" />
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
                                         </Button>
                                         <Button
                                           variant="outline"
@@ -3158,7 +3158,7 @@ export default function NaukriProfilePage() {
                             className="text-center py-12"
                           >
                             <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                              <Award className="w-12 h-12 text-purple-400" />
+                              <Award className="w-12 h-12 text-[#f2b31d]/60" />
                             </div>
                             <h4 className="text-xl font-semibold text-gray-900 mb-2">
                               No Achievements Added
@@ -3176,7 +3176,7 @@ export default function NaukriProfilePage() {
                                   achievement_description: "",
                                 })
                               }
-                              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                              className="bg-gradient-to-r from-[#f2b31d] to-orange-600 hover:from-[#d9a01a] hover:to-orange-700"
                             >
                               <Plus className="w-4 h-4 mr-2" />
                               Add Your First Achievement
@@ -3233,7 +3233,7 @@ export default function NaukriProfilePage() {
                               });
                             }
                           }}
-                          className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         />
                         <Upload className="w-5 h-5 text-gray-400" />
                       </div>
@@ -3255,7 +3255,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("first_name", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         error={state?.errors?.first_name}
                       />
                     </div>
@@ -3268,7 +3268,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("last_name", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         error={state?.errors?.last_name}
                       />
                     </div>
@@ -3280,7 +3280,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("short_desc", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3309,7 +3309,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("current_company", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3320,7 +3320,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("current_position", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3332,7 +3332,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("current_location", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         error={state?.errors?.current_location}
                       />
                     </div>
@@ -3346,7 +3346,7 @@ export default function NaukriProfilePage() {
                           handleFormChange("phone", e.target.value)
                         }
                         error={state?.errors?.phone}
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3358,7 +3358,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("email", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         error={state?.errors?.email}
                       />
                     </div>
@@ -3370,7 +3370,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("gender", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         error={state?.errors?.gender}
                       />
                     </div>
@@ -3386,7 +3386,7 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={profileUpdate}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
                   </Button>
@@ -3429,7 +3429,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("company", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3443,7 +3443,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("designation", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3485,7 +3485,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("job_description", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                       />
                     </div>
                   </div>
@@ -3500,7 +3500,7 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateEmployment}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
                   </Button>
@@ -3543,7 +3543,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("institution", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3556,7 +3556,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("degree", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3569,7 +3569,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("field", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3582,7 +3582,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("cgpa", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3595,7 +3595,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("start_year", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3608,7 +3608,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("end_year", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                   </div>
@@ -3623,7 +3623,7 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateEducation}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
                   </Button>
@@ -3666,7 +3666,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("project_title", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3679,7 +3679,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("duration", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3692,7 +3692,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("status", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3705,7 +3705,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("project_link", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2 md:col-span-2">
@@ -3725,7 +3725,7 @@ export default function NaukriProfilePage() {
                               handleAddTechnology();
                             }
                           }}
-                          className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         />
                         <Button
                           variant="outline"
@@ -3740,13 +3740,13 @@ export default function NaukriProfilePage() {
                           (tech: string, index: number) => (
                             <div
                               key={index}
-                              className="bg-purple-100 text-purple-800 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                              className="bg-[#f2b31d]/20 text-yellow-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
                             >
                               {tech}
                               <button
                                 type="button"
                                 onClick={() => handleRemoveTechnology(tech)}
-                                className="text-purple-800 hover:text-purple-900"
+                                className="text-yellow-800 hover:text-yellow-900"
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -3768,7 +3768,7 @@ export default function NaukriProfilePage() {
                             e.target.value,
                           )
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                       />
                     </div>
                   </div>
@@ -3783,7 +3783,7 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateProjects}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
                   </Button>
@@ -3826,7 +3826,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("achievement_title", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
                     <div className="space-y-2">
@@ -3839,7 +3839,7 @@ export default function NaukriProfilePage() {
                         onChange={(e) =>
                           handleFormChange("organization", e.target.value)
                         }
-                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
 
@@ -3861,7 +3861,7 @@ export default function NaukriProfilePage() {
                               });
                             }
                           }}
-                          className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         />
                         <Upload className="w-5 h-5 text-gray-400" />
                       </div>
@@ -3898,7 +3898,7 @@ export default function NaukriProfilePage() {
                           achievement_description: e.target.value,
                         })
                       }
-                      className="border-gray-200 focus:border-purple-500 focus:ring-purple-500 min-h-[100px]"
+                      className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
                     />
                   </div>
                 </div>
@@ -3912,7 +3912,7 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateAchievement}
-                    className="bg-purple-600 hover:bg-purple-700"
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
                   </Button>
