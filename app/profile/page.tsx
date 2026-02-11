@@ -173,6 +173,7 @@ export default function NaukriProfilePage() {
         short_desc: state?.short_desc || "",
         current_company: state?.current_company || "",
         current_position: state?.current_position || "",
+        profile_logo: state?.profile_logo,
       };
 
       // ✅ Create FormData
@@ -184,13 +185,11 @@ export default function NaukriProfilePage() {
         }
       });
 
-      // (Optional) if profile image exists
-      // if (state.profile_image) {
-      //   formData.append("profile_image", state.profile_image);
-      // }
+      
 
       const res = await Models.profile.update(formData, state.userId);
       console.log("res", res);
+      userDetail(state?.userId)
 
       setState({ btnLoading: false, isEditingProfile: false });
     } catch (error) {
@@ -844,8 +843,8 @@ export default function NaukriProfilePage() {
               {/* Profile Image - Enhanced */}
               <div className="relative flex-shrink-0">
                 <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
-                  <Image
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                  <img
+                    src={state.userDetail?.profile_logo_url || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"}
                     alt="Profile"
                     width={128}
                     height={128}
@@ -888,6 +887,8 @@ export default function NaukriProfilePage() {
                               state.userDetail?.current_company || "",
                             current_position:
                               state.userDetail?.current_position || "",
+                            profile_logo: null,
+                            profile_logo_preview: state.userDetail?.profile_logo_url || null,
                           });
                         }}
                       >
@@ -3244,6 +3245,37 @@ export default function NaukriProfilePage() {
 
                 <div className="p-6 space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Profile Photo
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setState({
+                                profile_logo: file,
+                                profile_logo_preview: URL.createObjectURL(file),
+                              });
+                            }
+                          }}
+                          className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
+                        />
+                        <Upload className="w-5 h-5 text-gray-400" />
+                      </div>
+                      {state.profile_logo_preview && (
+                        <div className="mt-3">
+                          <img
+                            src={state.profile_logo_preview}
+                            alt="Profile Preview"
+                            className="w-20 h-20 rounded-full object-cover border border-gray-200"
+                          />
+                        </div>
+                      )}
+                    </div>
                     <div className="space-y-2">
                       <Input
                         title="First Name"
