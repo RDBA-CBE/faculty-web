@@ -100,7 +100,7 @@ export default function JobsPage() {
     location: "",
     categories: [],
     jobTypes: [],
-    experienceLevels: [],
+    experienceLevels: null,
     datePosted: "All",
     salaryRange: [],
     tags: [],
@@ -134,7 +134,7 @@ export default function JobsPage() {
     filters?.categories,
     filters.location,
     filters.jobTypes,
-    filters?.experienceLevels,
+    filters.experienceLevels,
     filters?.datePosted,
     filters.salaryRange,
     filters?.tags,
@@ -304,8 +304,8 @@ export default function JobsPage() {
       if (profile?.id) {
         const formData = new FormData();
 
-        formData.append("job_id", (state?.jobDetail?.id));
-        formData.append("applicant", (profile.id));
+        formData.append("job_id", state?.jobDetail?.id);
+        formData.append("applicant", profile.id);
         formData.append("status", "Applied");
 
         console.log("logged-in formData", [...formData.entries()]);
@@ -390,7 +390,11 @@ export default function JobsPage() {
 
       // API ERROR
       else {
-        Failure(error?.error || "Something went wrong");
+        console.log(error);
+
+        const apiError = error?.data?.error || "Something went wrong";
+
+        Failure(apiError);
 
         setState((prev) => ({
           ...prev,
@@ -422,7 +426,7 @@ export default function JobsPage() {
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0) {
+    if (filters?.experienceLevels) {
       body.experience = filters.experienceLevels;
     }
 
@@ -534,203 +538,175 @@ export default function JobsPage() {
             </button>
 
             {/* Job Header */}
-            <div className="bg-gray-50 rounded-lg px-6 py-1 sticky top-16 ">
-              <div className="flex items-start justify-between mb-6">
-                <div className="bg-[#FBE6DB] text-[#F34F0E] px-3 py-1 rounded-full text-xs font-medium">
-                  {moment(state.jobDetail?.created_at).isValid()
-                    ? moment(state.jobDetail?.created_at).fromNow()
-                    : "Just now"}
-                </div>
-                {/* <button className="p-1" onClick={() => setSelectedJob(null)}>
-                  <X size={25} className=" hover:text-gray-600" />
-                </button> */}
-              </div>
-              <div className="flex items-start gap-4 mb-6 ">
-                {state.jobDetail?.company_logo ? (
-                  <img
-                    src={state.jobDetail?.company_logo}
-                    alt={state.jobDetail?.company}
-                    className="w-10 h-10 rounded-lg"
-                  />
-                ) : (
-                  <div
-                    className={`w-10 h-10 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold text-sm`}
-                  >
-                    {state.jobDetail?.company?.slice(0, 1).toUpperCase()}
-                  </div>
-                )}
-                <div className="flex-1">
-                  {/* <div className="flex items-center gap-2 mb-2">
-                    <Star className="w-5 h-5 text-amber-400 fill-current" />
-                    <span className="text-sm text-gray-600">
-                      {state.jobDetail?.postedDate}
-                    </span>
-                  </div> */}
-                  <div className="flex items-center gap-2 ">
-                    <h1 className="text-3xl font-bold text-gray-900">
-                      {state.jobDetail?.job_title}
+            {/* Job Header Card */}
+            <div className="bg-clr2 rounded-lg   p-6 ">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-start gap-4">
+                  {state?.jobDetail?.company_logo ? (
+                    <img
+                      src={state?.jobDetail?.company_logo}
+                      alt={state?.jobDetail?.company}
+                      className="w-14 h-14  object-cover"
+                    />
+                  ) : (
+                    <div
+                      className={`w-14 h-14 rounded-lg ${getAvatarColor(state?.jobDetail?.company)} flex items-center justify-center text-white font-semibold text-lg`}
+                    >
+                      {state?.jobDetail?.company?.slice(0, 1).toUpperCase()}
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                      {state?.jobDetail?.job_title}
                     </h1>
-                    <Star className="w-6 h-6 text-gray-300 hover:text-amber-400 cursor-pointer mt-1" />
-                  </div>
-                  <p className="text-lg text-gray-600 mb-2">
-                    {state.jobDetail?.company}
-                  </p>
-                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                    <div className="flex items-center gap-1">
-                      <Briefcase className="w-4 h-4 text-[#F2B31D]" />
-                      <span>{state.jobDetail?.experiences} Experiences</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-4 h-4 text-[#F2B31D]" />
-                      <span>{state.jobDetail?.job_type_obj?.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <DollarSign className="w-4 h-4 text-[#F2B31D]" />
-                      <span>{state.jobDetail?.salary_range_obj?.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="w-4 h-4 text-[#F2B31D]" />
-                      <span>
-                        {state.jobDetail?.locations
-                          ?.map((item) => item.city)
-                          .join(", ")}
-                      </span>
-                    </div>
+                    <p className="text-md text-gray-700 mb-2">
+                      {state?.jobDetail?.company}
+                    </p>
                   </div>
                 </div>
-                <div className="flex flex-col items-end gap-4 ">
-                  <div className="flex items-center gap-3 bg-[#F2B31D1A] rounded p-1 rounded-2xl">
-                    <button className="p-2 text-gray-400 hover:text-gray-600">
-                      <Facebook size={20} />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-gray-600">
-                      <Twitter size={20} />
-                    </button>
-                    <button className="p-2 text-gray-400 hover:text-gray-600">
-                      <Linkedin size={20} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-              <div className="justify-end flex w-full">
-                <button
-                  onClick={() => {
-                    setState({ jobID: state.jobDetail?.id });
-                    handleApply();
-                  }}
-                  className="px-20 py-3 bg-[#F2B31D] hover:bg-amber-500 text-black font-bold rounded rounded-3xl "
-                >
-                  Apply Job
+                <button className="p-1" onClick={() => setSelectedJob(null)}>
+                  <X size={25} className=" hover:text-gray-600" />
                 </button>
               </div>
-            </div>
 
-            {/* Job Description */}
-            <div className="bg-gray-50 rounded-lg px-6 ">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Job Description
-              </h2>
-              <p className="text-gray-600 leading-relaxed">
-                {state.jobDetail?.job_description}
-              </p>
-            </div>
-
-            {/* Key Responsibilities */}
-            <div className="bg-gray-50 rounded-lg px-6 ">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Key Responsibilities
-              </h2>
-              <div className="space-y-3">
-                {state.responsibilities?.map((responsibility, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-
-                    <p className="text-gray-600">{responsibility}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Skills */}
-            <div className="bg-gray-50 rounded-lg px-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Skills</h2>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "JavaScript",
-                  "React",
-                  "Node.js",
-                  "Python",
-                  "SQL",
-                  "Git",
-                  "AWS",
-                  "Docker",
-                ].map((skill, index) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 bg-[#F2B31D1A] text-[#F2B31D] rounded-full text-sm"
-                  >
-                    {skill}
+              <div className="mb-3">
+                <p className="text-sm text-gray-500 mb-3">
+                  {capitalizeFLetter(
+                    state?.jobDetail?.locations
+                      ?.map((item) => item.city)
+                      .join(", "),
+                  )}{" "}
+                  • Posted {state?.jobDetail?.postedDate || "2 days ago"}
+                </p>
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <span className="flex items-center gap-1">
+                    <Briefcase className="w-4 h-4" />
+                    {state?.jobDetail?.experiences}
                   </span>
-                ))}
+                  <span className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    {state?.jobDetail?.job_type_obj?.name}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    {selectedJob.salary_range?.includes("$") ? (
+                      <DollarSign className="w-4 h-4" />
+                    ) : (
+                      <IndianRupee className="w-4 h-4" />
+                    )}
+                    {state?.jobDetail?.salary_range_obj?.name}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                <button
+                  onClick={() => {
+                    setState({ jobID: state?.jobDetail?.id });
+                    handleApply();
+                  }}
+                  className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
+                >
+                  Apply Now
+                </button>
+
+                <div className="flex items-center gap-2">
+                  {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
+                  <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                </div>
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg px-6  ">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">
-                Requirements
-              </h2>
-              <div className="space-y-3">
-                {[
-                  "Bachelor's degree in Computer Science or related field",
-                  "3+ years of experience in software development",
-                  "Proficiency in modern programming languages and frameworks",
-                  "Strong problem-solving and analytical skills",
-                  "Excellent communication and teamwork abilities",
-                ].map((responsibility, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                    <p className="text-gray-600">{responsibility}</p>
-                  </div>
-                ))}
+            <div className="bg-clr2 rounded-lg   p-6 ">
+              {/* Job Description */}
+              <div className="border-b  px-2 py-2 pb-5">
+                <h2 className="text-lg font-semibold text-black mb-4">
+                  About the job
+                </h2>
+                <div className="leading-relaxed space-y-4">
+                  <p>
+                    {state?.jobDetail?.job_description}
+                    {/* We are looking for a talented professional to join our
+                        dynamic team. This role offers an excellent opportunity
+                        to work with cutting-edge technologies and contribute to
+                        meaningful projects that impact thousands of users. */}
+                  </p>
+                  {/* <p>
+                        The ideal candidate will have strong technical skills,
+                        excellent communication abilities, and a passion for
+                        innovation. You'll be working in a collaborative
+                        environment where your ideas and contributions are
+                        valued.
+                      </p> */}
+                </div>
+              </div>
+
+              {/* Responsibilities */}
+              <div className="border-b  px-2 py-2 pb-5">
+                <h2 className="text-lg font-semibold text-black mb-4">
+                  Key responsibilities
+                </h2>
+                <ul className="space-y-3">
+                  {state?.responsibilities?.map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+
+                      <span className="">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Requirements */}
+              <div className="border-b  px-2 py-2 pb-5">
+                <h2 className="text-lg font-semibold text-black mb-4">
+                  Requirements
+                </h2>
+                <ul className="space-y-3">
+                  {[
+                    "Bachelor's degree in Computer Science or related field",
+                    "3+ years of experience in software development",
+                    "Proficiency in modern programming languages and frameworks",
+                    "Strong problem-solving and analytical skills",
+                    "Excellent communication and teamwork abilities",
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                      <span className="">{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
 
             {/* Job Details */}
-            <div className="bg-[#F9F9F8] rounded-xl p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
+
+            <div className="bg-clr2 rounded-lg   p-6">
+              <h3 className="text-lg font-semibold text-black mb-4">
                 Job details
               </h3>
-              <div className="space-y-4">
+              <div className="space-y-2">
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
-                    Job type
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {state.jobDetail?.job_type_obj?.name}
+                  <p className="text-md font-medium  pb-1">Job type</p>
+                  <p className="text-md text-black">
+                    {state?.jobDetail?.job_type_obj?.name}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
-                    Experience level
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {state.jobDetail?.experiences}
+                  <p className="text-md font-medium  pb-1">Experience level</p>
+                  <p className="text-md text-black">
+                    {state?.jobDetail?.experiences}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
-                    Salary
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {state.jobDetail?.salary_range_obj?.name}
+                  <p className="text-md font-medium  pb-1">Salary</p>
+                  <p className="text-md text-black">
+                    {state?.jobDetail?.salary_range_obj?.name}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500 mb-1">
-                    Location
-                  </p>
-                  <p className="text-sm text-gray-900">
-                    {state.jobDetail?.locations
+                  <p className="text-md font-medium  pb-1">Location</p>
+                  <p className="text-md text-black">
+                    {state?.jobDetail?.locations
                       ?.map((item) => item.city)
                       .join(", ")}
                   </p>
@@ -738,34 +714,34 @@ export default function JobsPage() {
               </div>
             </div>
 
-            {/* About Company */}
-            <div className="bg-[#F9F9F8] rounded-xl p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                About {state.jobDetail?.company}
+            {/* Company Info */}
+            <div className="bg-clr2 rounded-lg  p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                About {state?.jobDetail?.company}
               </h3>
               <div className="flex items-start gap-3 mb-4">
-                {state.jobDetail?.company_logo ? (
+                {selectedJob.company_logo ? (
                   <img
-                    src={state.jobDetail?.company_logo}
-                    alt={state.jobDetail?.company}
+                    src={selectedJob.company_logo}
+                    alt={selectedJob.company}
                     className="w-12 h-12 rounded-lg object-cover"
                   />
                 ) : (
                   <div
-                    className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.company)} flex items-center justify-center text-white font-semibold`}
+                    className={`w-12 h-12 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold`}
                   >
-                    {state.jobDetail?.company?.slice(0, 1).toUpperCase()}
+                    {state?.jobDetail?.company?.slice(0, 1).toUpperCase()}
                   </div>
                 )}
                 <div>
                   <h4 className="font-medium text-gray-900">
-                    {state.jobDetail?.company}
+                    {state?.jobDetail?.company}
                   </h4>
                   <p className="text-sm text-gray-500">Technology Company</p>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 leading-relaxed">
-                {state.jobDetail?.company_detail}
+              <p className="leading-relaxed">
+                {state?.jobDetail?.company_detail}
               </p>
             </div>
           </div>
@@ -950,7 +926,7 @@ export default function JobsPage() {
                       <button
                         onClick={() => {
                           setState({ jobID: state?.jobDetail?.id });
-                          handleApply();
+                          handleFormSubmit();
                         }}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       >
@@ -1178,7 +1154,7 @@ export default function JobsPage() {
             <div className="flex-grow">
               {/* content input header start */}
               <div className="z-30 bg-white lg:pb-5 self-start">
-                <div className="flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-xl  p-1">
+                <div className="flex flex-col md:flex-row items-center w-full bg-clr2  rounded-xl  p-1">
                   <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
                     <Search color="#F2B31D" size={22} />
                     <input
@@ -1233,6 +1209,12 @@ export default function JobsPage() {
                     <ChipFilters
                       filters={filters}
                       onFilterChange={setFilters}
+                      categoryList={state?.categoryList}
+                      jobTypeList={state?.jobTypeList}
+                      experienceList={state?.experienceList}
+                      datePostedList={state?.datePostedList}
+                      salaryRangeList={state?.salaryRangeList}
+                      tagsList={state?.tagsList}
                     />
                   </div>
 
@@ -1287,7 +1269,7 @@ export default function JobsPage() {
               {state.jobList?.length > 0 ? (
                 <>
                   <div
-                    className="grid grid-cols-1 md:grid grid-cols-2  "
+                    className="grid grid-cols-1 md:grid-cols-2  "
                     style={{
                       gap: "20px",
                     }}
@@ -1426,7 +1408,7 @@ export default function JobsPage() {
                     <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
                       <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
                         <Briefcase className="w-3 h-3" />
-                        <span>{state.jobDetail?.experiences} Experiences</span>
+                        <span>{state.jobDetail?.experiences} </span>
                       </div>
                       <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
                         <Clock className="w-3 h-3" />
@@ -1436,14 +1418,14 @@ export default function JobsPage() {
                         <DollarSign className="w-3 h-3" />
                         <span>{state.jobDetail?.salary_range_obj?.name}</span>
                       </div>
-                      <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                      {/* <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
                         <MapPin className="w-3 h-3" />
                         <span>
                           {state.jobDetail?.locations
                             ?.map((item) => item.city)
                             .join(", ")}
                         </span>
-                      </div>
+                      </div> */}
                     </div>
 
                     <div>

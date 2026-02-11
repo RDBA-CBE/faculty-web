@@ -212,7 +212,7 @@ export default function NaukriProfilePage() {
   const resumeUpdate = async () => {
     try {
       const body = {
-        resume_url: state.resume_url,
+        resume: state.resume_url,
       };
 
       await userResume.validate(body, {
@@ -2950,32 +2950,7 @@ export default function NaukriProfilePage() {
                                     <label className="text-sm font-semibold text-gray-700">
                                       Achievement File (PDF)
                                     </label>
-                                    {/* <div className="flex items-center gap-3">
-                                      <Input
-                                        ref={(ref) => {
-                                          if (
-                                            ref &&
-                                            !state.achievement_file_url
-                                          ) {
-                                            ref.value = "";
-                                          }
-                                        }}
-                                        type="file"
-                                        accept="image/*,application/pdf"
-                                        onChange={(e) => {
-                                          const file = e.target.files?.[0];
-                                          if (!file) return;
-                                          setState({
-                                            ...state,
-                                            achievement_file: file,
-                                            achievement_file_url:
-                                              URL.createObjectURL(file),
-                                          });
-                                        }}
-                                        className="border-gray-200 focus:border-purple-500 focus:ring-purple-500"
-                                      />
-                                      <Upload className="w-5 h-5 text-gray-400" />
-                                    </div> */}
+                                    
 
                                     <div className="flex items-center gap-3">
                                       <Input

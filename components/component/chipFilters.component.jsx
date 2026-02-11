@@ -10,24 +10,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-const FILTER_OPTIONS = {
-  distance: ["Within 25 kilometres", "Within 50 kilometres", "Within 100 kilometres"],
-  jobType: ["Full-time", "Part-time", "Contract", "Freelance", "Internship"],
-  jobLanguage: ["English", "Spanish", "French", "German", "Chinese"],
-  programmingLanguage: ["JavaScript", "Python", "Java", "C++", "React", "Node.js"],
-  educationLevel: ["High School", "Bachelor's", "Master's", "PhD"],
-  datePosted: ["Last 24 hours", "Last 3 days", "Last week", "Last month"]
-};
-
 const ChipFilter = ({ title, options, selected, onSelectionChange, count }) => {
   const selectedCount = selected.length;
-  
+
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          className={`h-12 px-4 rounded-full border-2 transition-all ${
+          className={`h-10 px-3 rounded-full border-2 transition-all ${
             selected.length > 0
               ? "bg-gray-800 text-white border-gray-800"
               : "bg-white text-gray-700 border-gray-200 hover:border-gray-300"
@@ -60,7 +51,9 @@ const ChipFilter = ({ title, options, selected, onSelectionChange, count }) => {
                     if (checked) {
                       onSelectionChange([...selected, option]);
                     } else {
-                      onSelectionChange(selected.filter(item => item !== option));
+                      onSelectionChange(
+                        selected.filter((item) => item !== option),
+                      );
                     }
                   }}
                 />
@@ -79,49 +72,127 @@ const ChipFilter = ({ title, options, selected, onSelectionChange, count }) => {
   );
 };
 
-export default function ChipFilters({ filters, onFilterChange }) {
+const getLabels = (list = []) => list.map((i) => i.label);
+
+const getLabelByValue = (list = [], value) =>
+  list.find((i) => i.value === value)?.label;
+
+const getValueByLabel = (list = [], label) =>
+  list.find((i) => i.label === label)?.value;
+
+export default function ChipFilters({
+  filters,
+  onFilterChange,
+  categoryList,
+  jobTypeList,
+  experienceList,
+  datePostedList,
+  salaryRangeList,
+  tagsList,
+}) {
   return (
     <div className="flex flex-wrap gap-3 mb-6">
+      {/* Job Sectors (same as Filterbar) */}
       <ChipFilter
-        title="Within 25 kilometres"
-        options={FILTER_OPTIONS.distance}
-        selected={filters.distance || []}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, distance: selected })}
+        title="Job Sectors"
+        options={getLabels(categoryList)}
+        selected={(filters.categories || [])
+          .map((v) => getLabelByValue(categoryList, v))
+          .filter(Boolean)}
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            categories: labels
+              .map((l) => getValueByLabel(categoryList, l))
+              .filter(Boolean),
+          })
+        }
       />
-      
+
+      {/* Job Type */}
       <ChipFilter
-        title="Job type"
-        options={FILTER_OPTIONS.jobType}
-        selected={filters.jobTypes || []}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, jobTypes: selected })}
+        title="Job Type"
+        options={getLabels(jobTypeList)}
+        selected={(filters.jobTypes || [])
+          .map((v) => getLabelByValue(jobTypeList, v))
+          .filter(Boolean)}
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            jobTypes: labels
+              .map((l) => getValueByLabel(jobTypeList, l))
+              .filter(Boolean),
+          })
+        }
       />
-      
+
+      {/* Experience Level (radio-like) */}
       <ChipFilter
-        title="Job Language"
-        options={FILTER_OPTIONS.jobLanguage}
-        selected={filters.jobLanguage || []}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, jobLanguage: selected })}
+        title="Experience Level"
+        options={getLabels(experienceList)}
+        selected={
+          filters.experienceLevels
+            ? [getLabelByValue(experienceList, filters.experienceLevels)]
+            : []
+        }
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            experienceLevels:
+              getValueByLabel(experienceList, labels[0]) || null,
+          })
+        }
       />
-      
+
+      {/* Salary Range */}
       <ChipFilter
-        title="Programming language"
-        options={FILTER_OPTIONS.programmingLanguage}
-        selected={filters.programmingLanguage || []}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, programmingLanguage: selected })}
+        title="Salary Range"
+        options={getLabels(salaryRangeList)}
+        selected={(filters.salaryRange || [])
+          .map((v) => getLabelByValue(salaryRangeList, v))
+          .filter(Boolean)}
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            salaryRange: labels
+              .map((l) => getValueByLabel(salaryRangeList, l))
+              .filter(Boolean),
+          })
+        }
       />
-      
+
+      {/* Date Posted (radio-like) */}
       <ChipFilter
-        title="Education level"
-        options={FILTER_OPTIONS.educationLevel}
-        selected={filters.educationLevel || []}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, educationLevel: selected })}
+        title="Date Posted"
+        options={getLabels(datePostedList)}
+        selected={
+          filters.datePosted
+            ? [getLabelByValue(datePostedList, filters.datePosted)]
+            : []
+        }
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            datePosted: getValueByLabel(datePostedList, labels[0]) || null,
+          })
+        }
       />
-      
+
+      {/* Tags */}
       <ChipFilter
-        title="Date posted"
-        options={FILTER_OPTIONS.datePosted}
-        selected={filters.datePosted === "All" ? [] : [filters.datePosted]}
-        onSelectionChange={(selected) => onFilterChange({ ...filters, datePosted: selected[0] || "All" })}
+        title="Tags"
+        options={getLabels(tagsList)}
+        selected={(filters.tags || [])
+          .map((v) => getLabelByValue(tagsList, v))
+          .filter(Boolean)}
+        onSelectionChange={(labels) =>
+          onFilterChange({
+            ...filters,
+            tags: labels
+              .map((l) => getValueByLabel(tagsList, l))
+              .filter(Boolean),
+          })
+        }
       />
     </div>
   );
