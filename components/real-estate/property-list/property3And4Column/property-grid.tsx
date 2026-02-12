@@ -280,7 +280,7 @@ export function PropertyGrid(props: any) {
                   'Lake view',
                 ].map((item) => (
                   <label key={item} className='flex items-center gap-2'>
-                    <Checkbox className='border rounded' />
+                    {/* <Checkbox className='border rounded' /> */}
                     <span>{item}</span>
                   </label>
                 ))}

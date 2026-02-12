@@ -80,16 +80,17 @@ const getLabelByValue = (list = [], value) =>
 const getValueByLabel = (list = [], label) =>
   list.find((i) => i.label === label)?.value;
 
-export default function ChipFilters({
-  filters,
-  onFilterChange,
-  categoryList,
-  jobTypeList,
-  experienceList,
-  datePostedList,
-  salaryRangeList,
-  tagsList,
-}) {
+export default function ChipFilters(props) {
+  const{
+    filters,
+    onFilterChange,
+    categoryList,
+    jobTypeList,
+    experienceList,
+    datePostedList,
+    salaryRangeList,
+    tagsList,
+  }= props;
   return (
     <div className="flex flex-wrap gap-3 mb-6">
       {/* Job Sectors (same as Filterbar) */}

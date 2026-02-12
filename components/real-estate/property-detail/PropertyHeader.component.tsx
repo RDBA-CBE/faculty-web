@@ -52,23 +52,23 @@ export default function PropertyHeader(props: any) {
   const handleWishList = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (token) {
-        if (!data?.user_wishlists) {
-          await Models.wishlist.add_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Added to your wishlist !");
-        } else {
-          await Models.wishlist.remove_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Removed from your wishlist !");
-        }
-      } else {
-        Failure("Please log in to add properties to your wishlist!");
-      }
+      // if (token) {
+      //   if (!data?.user_wishlists) {
+      //     await Models.wishlist.add_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Added to your wishlist !");
+      //   } else {
+      //     await Models.wishlist.remove_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Removed from your wishlist !");
+      //   }
+      // } else {
+      //   Failure("Please log in to add properties to your wishlist!");
+      // }
     } catch (error) {
       console.log("✌️error --->", error);
     }

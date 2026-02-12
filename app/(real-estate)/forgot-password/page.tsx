@@ -38,9 +38,9 @@ const App = () => {
         // password: state.password,
       };
 
-      await Utils.Validation.forgetPassword.validate(body, {
-        abortEarly: false,
-      });
+      // await Utils.Validation.forgetPassword.validate(body, {
+      //   abortEarly: false,
+      // });
 
       const res: any = await Models.auth.forget_password(body);
       console.log("res", res);
@@ -320,7 +320,6 @@ const App = () => {
                     email: "",
                   })
                 }
-                loading={state.loading}
               >
                 Cancel
               </Button>

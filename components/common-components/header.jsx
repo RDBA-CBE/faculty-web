@@ -44,7 +44,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Failure, useSetState } from "@/utils/function.utils";
+import { buildFormData, Failure, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
 import { Input } from "../ui/input";
@@ -119,8 +119,9 @@ const Header = () => {
       };
 
       console.log("body", body);
+      const formData=buildFormData(body)
 
-      const res = await Models.auth.create(body);
+      const res = await Models.auth.create(formData);
       console.log("✌️res --->", res);
       setState({
         isOpenReg: false,

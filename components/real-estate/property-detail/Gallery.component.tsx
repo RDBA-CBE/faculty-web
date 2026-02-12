@@ -68,24 +68,24 @@ export default function Gallery({ data, images, updateList }: GalleryProps) {
 
     try {
       const token = localStorage.getItem("token");
-      if (token) {
-        if (!data?.user_wishlists) {
-          await Models.wishlist.add_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Added to your wishlist !");
-        } else {
-          await Models.wishlist.remove_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Removed from your wishlist !");
-        }
-      } else {
-        console.log("hello");
-        Failure("Please log in to add properties to your wishlist!");
-      }
+      // if (token) {
+      //   if (!data?.user_wishlists) {
+      //     await Models.wishlist.add_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Added to your wishlist !");
+      //   } else {
+      //     await Models.wishlist.remove_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Removed from your wishlist !");
+      //   }
+      // } else {
+      //   console.log("hello");
+      //   Failure("Please log in to add properties to your wishlist!");
+      // }
     } catch (error) {
       console.log("✌️error --->", error);
     }

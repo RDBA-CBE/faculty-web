@@ -212,29 +212,7 @@ export function PropertyCard({
   };
 
   const handleWishList = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token)
-        return Failure('Please log in to add properties to your wishlist!');
-
-      if (!property?.user_wishlists) {
-        await Models.wishlist.add_property({ property_id: property?.id });
-        const updatedLists = list.map((item: Property) =>
-          item.id === property.id ? { ...item, user_wishlists: true } : item
-        );
-        updateList(updatedLists);
-        Success('Added to your wishlist!');
-      } else {
-        await Models.wishlist.remove_property({ property_id: property?.id });
-        const updatedLists = list.map((item: Property) =>
-          item.id === property.id ? { ...item, user_wishlists: false } : item
-        );
-        updateList(updatedLists);
-        Success('Removed from your wishlist!');
-      }
-    } catch (error) {
-      console.log('✌️error --->', error);
-    }
+    
   };
 
   const handleCompareList = () => {

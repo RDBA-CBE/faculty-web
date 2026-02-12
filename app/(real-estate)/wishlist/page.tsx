@@ -27,33 +27,33 @@ const Favorites = () => {
   const [hover, setHover] = useState(false);
 
   useEffect(() => {
-    wishlist();
+    // wishlist();
   }, []);
 
-  const wishlist = async () => {
-    try {
-      setState({ loading: true });
-      const wishlist_id = localStorage.getItem("wishlist_id");
-      const res: any = await Models.wishlist.list(wishlist_id);
-      console.log("✌️res --->", res);
-      setState({
-        properties: res?.properties || [],
-        loading: false,
-      });
-    } catch (error) {
-      console.log("✌️error --->", error);
-      setState({
-        error: "Failed to load wishlist",
-        loading: false,
-      });
-    }
-  };
+  // const wishlist = async () => {
+  //   try {
+  //     setState({ loading: true });
+  //     const wishlist_id = localStorage.getItem("wishlist_id");
+  //     const res: any = await Models.wishlist.list(wishlist_id);
+  //     console.log("✌️res --->", res);
+  //     setState({
+  //       properties: res?.properties || [],
+  //       loading: false,
+  //     });
+  //   } catch (error) {
+  //     console.log("✌️error --->", error);
+  //     setState({
+  //       error: "Failed to load wishlist",
+  //       loading: false,
+  //     });
+  //   }
+  // };
 
   const handleRemoveFromWishlist = async (propertyId: number) => {
     try {
-      await Models.wishlist.remove_property({
-        property_id: propertyId,
-      });
+      // await Models.wishlist.remove_property({
+      //   property_id: propertyId,
+      // });
 
       const updatedProperties = state.properties.filter(
         (property: any) => property.id !== propertyId

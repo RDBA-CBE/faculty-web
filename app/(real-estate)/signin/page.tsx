@@ -50,12 +50,12 @@ const App = () => {
       };
       console.log("✌️body --->", body);
 
-      await Utils.Validation.signup.validate(body, { abortEarly: false });
+      // await Utils.Validation.signup.validate(body, { abortEarly: false });
 
-      const res: any = await Models.auth.singup(body);
-      console.log("✌️res --->", res);
-      Success(res?.message);
-      router.push("/login");
+      // const res: any = await Models.auth.singup(body);
+      // console.log("✌️res --->", res);
+      // Success(res?.message);
+      // router.push("/login");
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -406,7 +406,7 @@ const App = () => {
             <Button
               className="w-full py-6 px-4 rounded-lg font-semibold transition-colors duration-200 bg-emerald-500 text-white hover:bg-emerald-600 shadow-md shadow-emerald-500/30"
               
-              loading={state.loading}
+              // loading={state.loading}
             >
               Continue
             </Button>

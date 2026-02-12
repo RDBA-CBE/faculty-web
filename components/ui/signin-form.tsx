@@ -53,12 +53,12 @@ export default function SignInForm() {
       };
       console.log("✌️body --->", body);
 
-      await Utils.Validation.signup.validate(body, { abortEarly: false });
+      // await Utils.Validation.signup.validate(body, { abortEarly: false });
 
-      const res: any = await Models.auth.singup(body);
-      console.log("✌️res --->", res);
-      Success(res?.message);
-      router.push("/login")
+      // const res: any = await Models.auth.singup(body);
+      // console.log("✌️res --->", res);
+      // Success(res?.message);
+      // router.push("/login")
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -239,7 +239,7 @@ export default function SignInForm() {
               type="button"
               className="w-full bg-red-500 hover:bg-red-600"
               onClick={() => handleSubmit()}
-              loading={state.submitLoading}
+              // loading={state.submitLoading}
             >
               Create account
             </Button>
