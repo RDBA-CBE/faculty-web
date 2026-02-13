@@ -1302,7 +1302,7 @@ export default function JobsPage() {
                     ))}
                   </div>
 
-                  <div className="flex justify-center items-center mt-10">
+                  {state.next && <div className="flex justify-center items-center mt-10">
                     <PaginationCom
                       page={state.page}
                       next={state.next}
@@ -1310,7 +1310,7 @@ export default function JobsPage() {
                       onNext={handleNext}
                       onPrev={handlePrev}
                     />
-                  </div>
+                  </div>}
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 bg-clr1 rounded-2xl border border-slate-100">

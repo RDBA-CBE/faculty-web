@@ -18,7 +18,7 @@ const job = {
       }
 
       if (body.jobTypes) {
-        url += `&job_type=${encodeURIComponent(body.jobTypes)}`;
+        url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
        if (body.experience) {
         url += `&experience=${encodeURIComponent(body.experience)}`;
@@ -29,7 +29,7 @@ const job = {
       }
 
       if (body.salary_range) {
-        url += `&salary_range=${body.salary_range}`;
+        url += `&salary_range_id=${body.salary_range}`;
       }
 
       if (body.tags) {
