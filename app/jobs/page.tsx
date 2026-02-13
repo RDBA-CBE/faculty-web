@@ -346,7 +346,7 @@ export default function JobsPage() {
         }
 
         //  Debug FormData
-        for (const pair of formData.entries()) {
+        for (let pair of formData.entries()) {
           console.log(pair[0], pair[1]);
         }
 
@@ -602,7 +602,7 @@ export default function JobsPage() {
                 <button
                   onClick={() => {
                     setState({ jobID: state?.jobDetail?.id });
-                    handleFormSubmit();
+                    handleApply();
                   }}
                   className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                 >
@@ -939,7 +939,7 @@ export default function JobsPage() {
                       <button
                         onClick={() => {
                           setState({ jobID: state?.jobDetail?.id });
-                          handleFormSubmit();
+                          handleApply();
                         }}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       >
