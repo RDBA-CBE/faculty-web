@@ -141,23 +141,23 @@ export default function PropertyDetailInline(props: PropertyDetailInlineProps) {
   const handleWishList = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (token) {
-        if (!data?.user_wishlists) {
-          await Models.wishlist.add_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Added to your wishlist !");
-        } else {
-          await Models.wishlist.remove_property({
-            property_id: data?.id,
-          });
-          updateList();
-          Success("Removed from your wishlist !");
-        }
-      } else {
-        Failure("Please log in to add properties to your wishlist!");
-      }
+      // if (token) {
+      //   if (!data?.user_wishlists) {
+      //     await Models.wishlist.add_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Added to your wishlist !");
+      //   } else {
+      //     await Models.wishlist.remove_property({
+      //       property_id: data?.id,
+      //     });
+      //     updateList();
+      //     Success("Removed from your wishlist !");
+      //   }
+      // } else {
+      //   Failure("Please log in to add properties to your wishlist!");
+      // }
     } catch (error) {
       console.log("✌️error --->", error);
     }
@@ -217,11 +217,11 @@ export default function PropertyDetailInline(props: PropertyDetailInlineProps) {
   const getDetails = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res: any = await Models.property.details(id);
-      setState({ detail: res, token });
-      if (res?.property_type?.id) {
-        similarProperty(res.property_type.id);
-      }
+      // const res: any = await Models.property.details(id);
+      // setState({ detail: res, token });
+      // if (res?.property_type?.id) {
+      //   similarProperty(res.property_type.id);
+      // }
     } catch (error) {
       console.log("✌️error --->", error);
     }
@@ -229,14 +229,14 @@ export default function PropertyDetailInline(props: PropertyDetailInlineProps) {
 
   const similarProperty = async (id: string) => {
     try {
-      const body = {
-        property_type: id,
-      };
-      const res: any = await Models.property.list(1, body);
-      const filter = res?.results?.filter(
-        (item: any) => Number(item?.id) !== Number(id)
-      );
-      setState({ similarProperty: filter || [] });
+      // const body = {
+      //   property_type: id,
+      // };
+      // const res: any = await Models.property.list(1, body);
+      // const filter = res?.results?.filter(
+      //   (item: any) => Number(item?.id) !== Number(id)
+      // );
+      // setState({ similarProperty: filter || [] });
     } catch (error) {
       console.log("✌️error --->", error);
     }

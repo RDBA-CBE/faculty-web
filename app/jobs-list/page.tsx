@@ -5,9 +5,11 @@ import ChipFilters from "@/components/component/chipFilters.component";
 
 import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
+  buildFormData,
   Failure,
   generateMockJobs,
   getAvatarColor,
+  Success,
   useSetState,
 } from "@/utils/function.utils";
 import {
@@ -216,19 +218,48 @@ export default function JobsPage() {
 
   const handleFormSubmit = async () => {
     try {
-      // await jobApplicationSchema.validate(state, { abortEarly: false });
-      console.log("Form submitted:", state);
-      setShowApplicationModal(false);
-      setState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: "",
-        experience: "",
-        resume: null,
-        congratsOpen: true,
-      });
+      const profile = JSON.parse(localStorage.getItem("user") || "null");
+      //  LOGGED-IN USER (NO RESUME)
+
+      if (profile?.id) {
+        const formData = new FormData();
+
+        formData.append("job_id", state?.jobDetail?.id);
+        formData.append("applicant", profile.id);
+        formData.append("status", "Applied");
+
+        console.log("logged-in formData", [...formData.entries()]);
+
+        const res = await Models.applications.create(formData);
+        console.log("job apply res", res);
+      } else {
+        // await jobApplicationSchema.validate(state, { abortEarly: false });
+        console.log("Form submitted:", state);
+        setShowApplicationModal(false);
+        const body = {
+          first_name: state.firstName,
+          last_name: state.lastName,
+          phone: state.phone,
+          resume: state.resume,
+          email: state.email?.trim(),
+          experience: state.experience,
+        };
+        const formData = buildFormData(body);
+        const res = await Models.applications.create(formData);
+        console.log("✌️res --->", res);
+        Success("Application submitted successfully");
+
+        setState({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          message: "",
+          experience: "",
+          resume: null,
+          congratsOpen: true,
+        });
+      }
     } catch (error) {
       const validationErrors = {};
       error.inner?.forEach((err) => {
@@ -290,7 +321,9 @@ export default function JobsPage() {
                   />
                 ) : (
                   <div
-                    className={`w-10 h-10 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                    className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                      selectedJob.company
+                    )} flex items-center justify-center text-white font-semibold text-sm`}
                   >
                     {selectedJob.company?.slice(0, 1).toUpperCase()}
                   </div>
@@ -558,7 +591,9 @@ export default function JobsPage() {
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-start gap-3">
                         <div
-                          className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+                          className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                            job.company
+                          )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                         >
                           {job.company?.charAt(0).toUpperCase()}
                         </div>
@@ -633,7 +668,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-14 h-14 rounded-lg ${getAvatarColor(state?.jobDetail?.company)} flex items-center justify-center text-white font-semibold text-lg`}
+                            className={`w-14 h-14 rounded-lg ${getAvatarColor(
+                              state?.jobDetail?.company
+                            )} flex items-center justify-center text-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.company
                               ?.slice(0, 1)
@@ -683,8 +720,6 @@ export default function JobsPage() {
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                      
-
                       <button
                         onClick={() => setShowApplicationModal(true)}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
@@ -715,7 +750,7 @@ export default function JobsPage() {
                       <p>
                         The ideal candidate will have strong technical skills,
                         excellent communication abilities, and a passion for
-                        innovation. You'll be working in a collaborative
+                        innovation. You&apos;ll be working in a collaborative
                         environment where your ideas and contributions are
                         valued.
                       </p>
@@ -751,7 +786,7 @@ export default function JobsPage() {
                     </h2>
                     <ul className="space-y-3">
                       {[
-                        "Bachelor's degree in Computer Science or related field",
+                        "Bachelor&apos;s degree in Computer Science or related field",
                         "3+ years of experience in software development",
                         "Proficiency in modern programming languages and frameworks",
                         "Strong problem-solving and analytical skills",
@@ -850,9 +885,13 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-12 h-12 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold`}
+                            className={`w-12 h-12 rounded-lg ${getAvatarColor(
+                              selectedJob.company
+                            )} flex items-center justify-center text-white font-semibold`}
                           >
-                            {state?.jobDetail?.company?.slice(0, 1).toUpperCase()}
+                            {state?.jobDetail?.company
+                              ?.slice(0, 1)
+                              .toUpperCase()}
                           </div>
                         )}
                         <div>
@@ -1078,7 +1117,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-10 h-10 rounded-lg ${getAvatarColor(selectedJob.company)} flex items-center justify-center text-white font-semibold text-sm`}
+                            className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                              selectedJob.company
+                            )} flex items-center justify-center text-white font-semibold text-sm`}
                           >
                             {selectedJob.company?.slice(0, 1).toUpperCase()}
                           </div>
@@ -1433,7 +1474,7 @@ export default function JobsPage() {
                 onClick={() => setState({ congratsOpen: false })}
                 className="w-full max-w-md py-4 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full text-lg transition-colors z-10 shadow-lg"
               >
-                Let's Discover
+                Let&apos;s Discover
               </button>
             </div>
           )}

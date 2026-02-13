@@ -243,43 +243,26 @@ export default function PropertyDetailPage() {
   }, []);
 
   useEffect(() => {
-    getDetails();
+    // getDetails();
     window.scrollTo({
       top: 0,
       behavior: "smooth",
     });
   }, [params]);
 
-  const getDetails = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res: any = await Models.property.details(params?.id);
-      console.log("✌️res --->", res);
-      setState({ detail: res, token });
-      similarProperty(res?.property_type?.id);
-    } catch (error) {
-      console.log("✌️error --->", error);
-    }
-  };
+  // const getDetails = async () => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     const res: any = await Models.property.details(params?.id);
+  //     console.log("✌️res --->", res);
+  //     setState({ detail: res, token });
+  //     similarProperty(res?.property_type?.id);
+  //   } catch (error) {
+  //     console.log("✌️error --->", error);
+  //   }
+  // };
 
-  const similarProperty = async (id) => {
-    try {
-      const body = {
-        property_type: id,
-        is_approved: "Yes",
-      };
-      const res: any = await Models.property.list(1, body);
-      console.log("✌️res --->", res);
-      // const filter = res?.results?.filter((item) => item?.id !== params?.id);
-      const filter = res?.results?.filter(
-        (item) => Number(item?.id) !== Number(params?.id)
-      );
-      console.log("✌️filter --->", filter);
-      setState({ similarProperty: filter });
-    } catch (error) {
-      console.log("✌️error --->", error);
-    }
-  };
+  
 
   const sections = [
     { id: "overview", component: <PropertyDetails data={state.detail} /> },
@@ -330,13 +313,13 @@ export default function PropertyDetailPage() {
       {/* Header + Gallery */}
       <div className="conatiner flex flex-col md:flex-col space-y-6 md:space-y-6">
         <div className="order-2 md:order-1 ">
-          <PropertyHeader data={state.detail} updateList={() => getDetails()} />
+          <PropertyHeader data={state.detail}  />
         </div>
         <div className="order-1 md:order-2">
           <Gallery
             images={state.detail?.images}
             data={state.detail}
-            updateList={() => getDetails()}
+            updateList={() => {}}
           />
         </div>
       </div>

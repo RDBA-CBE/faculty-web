@@ -602,7 +602,7 @@ export default function JobsPage() {
                 <button
                   onClick={() => {
                     setState({ jobID: state?.jobDetail?.id });
-                    handleFormSubmit();
+                    handleApply();
                   }}
                   className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                 >
@@ -939,7 +939,7 @@ export default function JobsPage() {
                       <button
                         onClick={() => {
                           setState({ jobID: state?.jobDetail?.id });
-                          handleFormSubmit();
+                          handleApply();
                         }}
                         className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       >
@@ -1570,7 +1570,7 @@ export default function JobsPage() {
                     <button
                       onClick={() => {
                         setState({ jobID: state.jobDetail?.id });
-                        handleFormSubmit();
+                        handleApply();
                       }}
                       className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                     >
@@ -1707,7 +1707,7 @@ export default function JobsPage() {
               <div className="flex justify-center pt-4">
                 <Button
                   type="button"
-                  onClick={handleFormSubmit}
+                  onClick={handleApply}
                   className="px-12 py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                 >
                   Submit

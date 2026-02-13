@@ -58,7 +58,7 @@ export default function ContactAgentForm({
 
       console.log("body", body);
 
-      const res = await Models.lead.create(body);
+      // const res = await Models.lead.create(body);
       Success("Enquiry sent ! ");
       setState({
         btnLoading: false,
@@ -84,20 +84,20 @@ export default function ContactAgentForm({
 
       const userId = localStorage.getItem("userId");
 
-      const response: any = await Models.user.details(userId);
-      const body = {
-        assigned_to: data?.developer?.id,
-        first_name: response?.first_name,
-        last_name: response?.last_name,
-        phone: response.phone,
-        email: response.email,
-        interested_property: data?.id,
-        lead_source: "website",
-        status: "new",
-        requirements: state.inquiry ? state.inquiry : "New Requirements",
-      };
+      // const response: any = await Models.user.details(userId);
+      // const body = {
+      //   assigned_to: data?.developer?.id,
+      //   first_name: response?.first_name,
+      //   last_name: response?.last_name,
+      //   phone: response.phone,
+      //   email: response.email,
+      //   interested_property: data?.id,
+      //   lead_source: "website",
+      //   status: "new",
+      //   requirements: state.inquiry ? state.inquiry : "New Requirements",
+      // };
 
-      const res = await Models.lead.create(body);
+      // const res = await Models.lead.create(body);
 
       setState({
         btnLoading: false,

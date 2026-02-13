@@ -38,9 +38,9 @@ const App = () => {
         password: state.password,
       };
 
-      await Utils.Validation.signin.validate(body, {
-        abortEarly: false,
-      });
+      // await Utils.Validation.signin.validate(body, {
+      //   abortEarly: false,
+      // });
       const res: any = await Models.auth.login(body);
       Success("Login Successfully");
       localStorage.setItem("token", res?.access);
@@ -384,7 +384,7 @@ const App = () => {
 
               <Button
                 className="w-full py-6 px-4 rounded-lg font-semibold transition-colors duration-200 bg-emerald-500 text-white hover:bg-emerald-600 shadow-md shadow-emerald-500/30"
-                loading={state.loading}
+                // loading={state.loading}
               >
                 Continue
               </Button>

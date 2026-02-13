@@ -38,15 +38,15 @@ const PropertyComparisonGrid = () => {
       const ids = localStorage.getItem("compare");
       const idArray = JSON.parse(ids || "[]");
 
-      const totalList = await Promise.all(
-        idArray.map(async (id: number) => {
-          const response: any = await Models.property.details(id);
-          return response;
-        })
-      );
+      // const totalList = await Promise.all(
+      //   idArray.map(async (id: number) => {
+      //     const response: any = await Models.property.details(id);
+      //     return response;
+      //   })
+      // );
 
       setState({
-        propertyList: totalList,
+        // propertyList: totalList,
         loading: false,
       });
     } catch (error) {

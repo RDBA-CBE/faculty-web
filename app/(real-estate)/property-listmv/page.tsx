@@ -24,68 +24,68 @@ export default function Page() {
 
   useEffect(() => {
     // propertyList();
-    categoryList();
+    // categoryList();
   }, []);
 
-  const propertyList = async (page = 1, append = false) => {
-    try {
-      if (append) {
-        setState({ isLoadingMore: true });
-      } else {
-        setState({ loading: true });
-      }
+  // const propertyList = async (page = 1, append = false) => {
+  //   try {
+  //     if (append) {
+  //       setState({ isLoadingMore: true });
+  //     } else {
+  //       setState({ loading: true });
+  //     }
 
-      const bodys = bodyData(null);
+  //     const bodys = bodyData(null);
 
-      const res: any = await Models.property.list(page, bodys);
+  //     const res: any = await Models.property.list(page, bodys);
 
-      const compareList: string[] = JSON.parse(
-        localStorage.getItem("compare") || "[]"
-      );
+  //     const compareList: string[] = JSON.parse(
+  //       localStorage.getItem("compare") || "[]"
+  //     );
 
-      const resultsWithCompare = res?.results.map((item: any) => ({
-        ...item,
-        is_compare: compareList.includes(item.id),
-      }));
+  //     const resultsWithCompare = res?.results.map((item: any) => ({
+  //       ...item,
+  //       is_compare: compareList.includes(item.id),
+  //     }));
 
-      const minPrice = formatNumber(res?.min_price);
-      const maxPrice = formatNumber(res?.max_price);
+  //     const minPrice = formatNumber(res?.min_price);
+  //     const maxPrice = formatNumber(res?.max_price);
 
-      setState({
-        propertyList: append
-          ? [...state.propertyList, ...resultsWithCompare]
-          : resultsWithCompare,
-        handNext: res?.next,
-        page: page,
-        loading: false,
-        isLoadingMore: false,
-        minPrice,
-        maxPrice,
-      });
-    } catch (error) {
-      setState({
-        loading: false,
-        isLoadingMore: false,
-      });
-      console.log("✌️error --->", error);
-    }
-  };
+  //     setState({
+  //       propertyList: append
+  //         ? [...state.propertyList, ...resultsWithCompare]
+  //         : resultsWithCompare,
+  //       handNext: res?.next,
+  //       page: page,
+  //       loading: false,
+  //       isLoadingMore: false,
+  //       minPrice,
+  //       maxPrice,
+  //     });
+  //   } catch (error) {
+  //     setState({
+  //       loading: false,
+  //       isLoadingMore: false,
+  //     });
+  //     console.log("✌️error --->", error);
+  //   }
+  // };
 
-  const categoryList = async () => {
-    try {
-      const res: any = await Models.category.list(1, {});
-      console.log("✌️res --->", res);
+  // const categoryList = async () => {
+  //   try {
+  //     const res: any = await Models.category.list(1, {});
+  //     console.log("✌️res --->", res);
 
-      const dropdown = Dropdown(res?.results, "name");
-      console.log("✌️droprdown --->", dropdown);
+  //     const dropdown = Dropdown(res?.results, "name");
+  //     console.log("✌️droprdown --->", dropdown);
 
-      setState({
-        categoryList: dropdown,
-      });
-    } catch (error) {
-      console.log("✌️error --->", error);
-    }
-  };
+  //     setState({
+  //       categoryList: dropdown,
+  //     });
+  //   } catch (error) {
+  //     console.log("✌️error --->", error);
+  //   }
+  // };
 
   const filterList = async (page = 1, append = false, data) => {
     try {
@@ -97,30 +97,30 @@ export default function Page() {
 
       const bodys = bodyData(data);
       console.log("✌️bodys --->", bodys);
-      const res: any = await Models.property.list(page, bodys);
+      // const res: any = await Models.property.list(page, bodys);
 
       const compareList: string[] = JSON.parse(
         localStorage.getItem("compare") || "[]"
       );
 
-      const resultsWithCompare = res?.results.map((item: any) => ({
-        ...item,
-        is_compare: compareList.includes(item.id),
-      }));
+      // const resultsWithCompare = res?.results.map((item: any) => ({
+      //   ...item,
+      //   is_compare: compareList.includes(item.id),
+      // }));
 
-      const minPrice = formatNumber(res?.min_price);
-      const maxPrice = formatNumber(res?.max_price);
+      // const minPrice = formatNumber(res?.min_price);
+      // const maxPrice = formatNumber(res?.max_price);
 
       setState({
-        propertyList: append
-          ? [...state.propertyList, ...resultsWithCompare]
-          : resultsWithCompare,
-        handNext: res?.next,
+        // propertyList: append
+        //   ? [...state.propertyList, ...resultsWithCompare]
+        //   : resultsWithCompare,
+        // handNext: res?.next,
         page: page,
         loading: false,
         isLoadingMore: false,
-        minPrice,
-        maxPrice,
+        // minPrice,
+        // maxPrice,
       });
     } catch (error) {
       setState({ loading: false });
@@ -209,8 +209,8 @@ export default function Page() {
         loadMore={(data) => {
           filterList(state.page + 1, true, data);
         }}
-        updateList={(data) => setState({ propertyList: data })}
-        clearFilter={()=>propertyList()}
+        // updateList={(data) => setState({ propertyList: data })}
+        // clearFilter={()=>propertyList()}
       />
     </div>
   );
