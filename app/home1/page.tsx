@@ -9,7 +9,7 @@ import TopCategory from '@/components/common-components/top_category';
 import Banner from '@/components/common-components/home_banner';
 import InstitutionPartners from '@/components/common-components/InstitutionPartners';
 import Testimonials from '@/components/common-components/Testimonials';
-import Footer from '@/components/common-components/Footer';
+import Footer from '@/components/common-components/new_components/Footer';
 import NewHeroSection from '@/components/common-components/new_components/NewHeroSection';
 import TopHiringColleges from '@/components/common-components/new_components/TopHiringColleges';
 import FindYourJob from '@/components/common-components/new_components/FindYourJob';
@@ -40,13 +40,12 @@ export default function Home1Page() {
         <DownloadAppSection />
         <FaqResumeSection />
 
-        <div>
+        {/* <div>
           <Discover />
           <TopCategory />
           <Banner />
-          {/* <InstitutionPartners /> */}
           <Testimonials />
-        </div>
+        </div> */}
         
         <Footer />
       </motion.div>
