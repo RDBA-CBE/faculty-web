@@ -256,11 +256,11 @@ export default function InstitutionPartners() {
             {/* LEFT SECTION: Header + 4 Cards */}
             <div className="flex flex-col gap-10">
               <div className="flex flex-col gap-4 pl-2">
-                <div className="inline-block mb-4">
+                {/* <div className="inline-block mb-4">
                   <span className="bg-gradient-to-r from-[#F2B31D] to-transparent text-black px-6 py-2 rounded-full text-base font-medium">
                     Finding Job
                   </span>
-                </div>
+                </div> */}
 
                 {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
                 <h2 className="section-ti">
@@ -307,8 +307,8 @@ const PartnerCard = (props) => {
         border border-gray-200
         ${
           p.isDark
-            ? "bg-[#1e1e1e] border-gray-700 !text-[#fff]  hover:scale-[1.02] border "
-            : "bg-white border-gray-100 text-[#1a1a1a] hover:border-gray-300 hover:shadow-lg hover:scale-[1.02]"
+            ? "bg-[#1e1e1e] border-gray-800 !text-[#fff]  hover:scale-[1.02] border-1 "
+            : " border-gray-100 text-[#1a1a1a] hover:border-gray-300 hover:shadow-lg hover:scale-[1.02]"
         }
       `}
     >
