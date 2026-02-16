@@ -1,0 +1,126 @@
+import React from "react";
+import Image from "next/image";
+import { Search } from "lucide-react";
+
+const NewHeroSection = () => {
+  return (
+    <section className="relative min-h-[600px] lg:min-h-[600px] flex items-center overflow-hidden">
+      {/* Background Image */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/assets/images/banner_bg.png"
+          alt="Background"
+          fill
+          className="object-cover"
+          priority
+        />
+      </div>
+
+      <div className="section-wid w-full  py-16 lg:py-0 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="space-y-6 lg:space-y-8 flex flex-col justify-center">
+            {/* Heading */}
+            <div className="space-y-5">
+              <h1 className="text-[35px] lg:text-[40px] xl:text-[50px] leading-[50px] lg:leading-[66px] xl:leading-[74px] font-bold text-white">
+                Find Your Dream Job Today!
+              </h1>
+              <p className="text-white max-w-xl text-base lg:text-lg leading-relaxed">
+                Ultrices purus dolor viverra mi laoreet at cursus justo. Ultrices purus diam egestas amet faucibus tempor blandit. Elit velit mauris aliquam est diam. Leo
+              </p>
+            </div>
+
+            {/* Search Form */}
+            <div className="bg-white rounded-[40px] shadow-lg p-6 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center max-w-full lg:max-w-3xl">
+              <input
+                type="text"
+                placeholder="Job Title or College"
+                className="w-full sm:flex-1 px-6 py-4 sm:py-3 focus:outline-none text-base sm:text-base rounded-full sm:rounded-l-full sm:rounded-r-none border-b sm:border-b-0 border-gray-100 placeholder:text-gray-400"
+              />
+              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+              <select className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-b sm:border-b-0 border-gray-100 appearance-none cursor-pointer text-gray-700">
+                <option>Select Location</option>
+              </select>
+              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+              <select className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-b sm:border-b-0 border-gray-100 appearance-none cursor-pointer text-gray-700">
+                <option>Select Category</option>
+              </select>
+
+              <button className="w-full sm:w-auto bg-[#F2B31D] text-black px-8 py-4 sm:py-3 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-base font-semibold whitespace-nowrap">
+                <Search className="w-5 h-5" />
+                Search Job
+              </button>
+            </div>
+
+            {/* Stats */}
+            <div className="flex flex-wrap items-start gap-8 lg:gap-12 pt-2">
+              <div>
+                <div className="text-4xl lg:text-3xl font-bold text-white mb-1">
+                  125K+
+                </div>
+                <div className="text-white text-base">People joined</div>
+              </div>
+
+              <div>
+                <div className="text-4xl lg:text-3xl font-bold text-white mb-1">
+                  9,99%
+                </div>
+                <div className="text-white text-base">
+                  Success Probability
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-2">
+                  <div className="text-4xl lg:text-3xl font-bold text-white">
+                    5.0
+                  </div>
+                  <div className="flex text-xl">
+                    {[...Array(5)].map((_, i) => (
+                      <span key={i} className="text-[#F2B31D]">
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex -space-x-3">
+                  {["image_1", "image_2", "image_3"].map((img, i) => (
+                    <div
+                      key={i}
+                      className="w-12 h-12 rounded-full border-2 border-white overflow-hidden"
+                    >
+                      <Image
+                        src={`/assets/images/${img}.png`}
+                        alt="user"
+                        width={48}
+                        height={48}
+                      />
+                    </div>
+                  ))}
+                  <div className="w-12 h-12 bg-black text-white rounded-full border-2 border-white flex items-center justify-center text-lg font-bold">
+                    +
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Image */}
+          <div className="relative hidden lg:flex justify-end items-end h-full">
+            <div className="relative w-full h-full flex items-end justify-end">
+              <Image
+                src="/assets/images/banner_logo.png"
+                alt="Hero Banner"
+                width={600}
+                height={600}
+                className="object-contain object-bottom w-auto h-[600px] xl:h-[600px]"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default NewHeroSection;
