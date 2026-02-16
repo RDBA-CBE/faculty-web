@@ -4,112 +4,109 @@ import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="relative mt-60">
-      {/* 1. Subscribe Section (The Overlapping Card) */}
-      <div className="container mx-auto px-4 absolute z-10 mb-10">
-        <div className="bg-[#f2a900] rounded-sm flex flex-col md:flex-row items-center justify-between p-8 md:p-12 min-h-[200px] relative overflow-visible -translate-y-1/2">
+    <footer className="relative w-full"> 
+      {/* 1. Subscribe Section - This container centers the narrow yellow card */}
+      <div className="container mx-auto px-4 relative z-20">
+        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-1/2">
           
-          {/* Text Content */}
-          <div className="max-w-md text-black z-10">
-            <h2 className="text-3xl font-bold mb-2">Subscribe Newsletter</h2>
-            <p className="text-sm opacity-90">
-              Lorem ipsum dolor sit amet consectetur. Ultricies ac pellentesque euismod dapibus.
+          {/* Text & Input Content */}
+          <div className="w-full md:w-1/2 text-black z-10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Subscribe Newsletter</h2>
+            <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
+              Lorem ipsum dolor sit amet consectetur. Ultricies ac
             </p>
             
             {/* Input Group */}
-            <div className="mt-6 flex bg-white rounded-full p-1 shadow-md w-full max-w-sm">
+            <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
               <input 
                 type="email" 
                 placeholder="Enter Your Email Address..." 
-                className="flex-grow px-4 py-2 rounded-full outline-none text-gray-700 text-sm"
+                className="flex-grow px-4 py-2 rounded-full outline-none text-gray-500 text-sm bg-transparent"
               />
-              <button className="bg-[#f2a900] hover:bg-black hover:text-white transition-colors text-black font-semibold px-6 py-2 rounded-full text-sm">
+              <button className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm">
                 Subscribe
               </button>
             </div>
           </div>
 
-          {/* Group Image - Absolute Positioned to overlap */}
-          <div className="hidden md:block absolute bottom-0 right-0 w-[45%] h-[130%]">
+          {/* Group Image - Overlapping the top */}
+          <div className="hidden md:block absolute bottom-0 right-4 w-[45%] h-[140%] pointer-events-none">
             <Image 
               src="/assets/images/group.png" 
               alt="Faculty Group" 
               fill
               className="object-contain object-bottom"
+              priority
             />
           </div>
         </div>
       </div>
 
-      {/* 2. Main Footer Links Section */}
+      {/* 2. Main Footer Section - This takes the full screen width */}
       <div 
-        className="bg-[#000040] text-white -mt-24 pt-32 pb-12"
+        className="w-full bg-[#000033] text-white pt-[200px] pb-12"
         style={{ 
-          backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
+          backgroundImage: `url('/footer_bg.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-12">
+        <div className="container mx-auto px-4 lg:px-12">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
             
-            {/* Logo & About */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
+            {/* Logo Column */}
+            <div className="md:col-span-4 space-y-4">
+              <div className="flex items-center gap-3">
                 <div className="bg-white p-1 rounded">
-                   <Image src="/assets/images/Faculty/logo.png" alt="Logo" width={30} height={30} /> 
+                   <Image src="/logo-icon.png" alt="Logo" width={24} height={24} /> 
                 </div>
                 <span className="text-2xl font-bold">Faculty Pro</span>
               </div>
-              <p className="text-sm text-gray-300 leading-relaxed">
+              <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
                 Lorem ipsum dolor sit amet consectetur. Ultricies ac pellentesque euismod 
-                dapibus ullamcorper nec. Velit porttitor proin tincidunt.
+                dapibus ullamcorper nec.
               </p>
             </div>
 
-            {/* Useful Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6 border-l-2 border-[#f2a900] pl-3">Useful links</h3>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-[#f2a900]">About Us</a></li>
-                <li><a href="#" className="hover:text-[#f2a900]">Jobs</a></li>
-                <li><a href="#" className="hover:text-[#f2a900]">Contact Us</a></li>
+            {/* Links Columns */}
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Useful links</h3>
+              <ul className="space-y-3 text-xs text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Jobs</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
               </ul>
             </div>
 
-            {/* Job Categories */}
-            <div className="md:col-span-1">
-              <h3 className="text-lg font-semibold mb-6 border-l-2 border-[#f2a900] pl-3">Job Categories</h3>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm text-gray-300">
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
-                <a href="#" className="hover:text-[#f2a900]">Assistant Professor</a>
+            <div className="md:col-span-4">
+              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Job Categories</h3>
+              <div className="grid grid-cols-2 gap-y-3 text-xs text-gray-400">
+                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
+                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
+                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
+                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
               </div>
             </div>
 
-            {/* Official Links */}
-            <div>
-              <h3 className="text-lg font-semibold mb-6 border-l-2 border-[#f2a900] pl-3">Official links</h3>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li><a href="#" className="hover:text-[#f2a900]">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-[#f2a900]">Terms & Conditions</a></li>
+            <div className="md:col-span-2">
+              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Official links</h3>
+              <ul className="space-y-3 text-xs text-gray-400">
+                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Terms & Conditions</a></li>
               </ul>
             </div>
           </div>
 
-          {/* 3. Bottom Bar */}
-          <div className="mt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          {/* Socials and Copyright */}
+          <div className="mt-8 flex flex-col items-center gap-6">
             <div className="flex gap-4">
               {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" className="p-2 rounded-full border border-white/20 hover:bg-[#f2a900] hover:text-black transition-all">
-                  <Icon size={18} />
+                <a key={i} href="#" className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 hover:bg-white hover:text-[#000033] transition-all">
+                  <Icon size={16} />
                 </a>
               ))}
             </div>
-            <p className="text-sm text-gray-400">
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest">
               Copyright 2026 © Faculty Plus. Concept By Repute
             </p>
           </div>
