@@ -57,6 +57,7 @@ import {
 } from "@/components/ui/select";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
+import { useSearchParams } from "next/navigation";
 
 export default function JobsPage() {
   const [state, setState] = useSetState({
@@ -79,6 +80,8 @@ export default function JobsPage() {
     errors: {},
   });
   const [selectedJob, setSelectedJob] = useState(null);
+  const searchParams = useSearchParams();
+  const jobIdParam = searchParams.get("id");
   const [showJobDetail, setShowJobDetail] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -110,6 +113,18 @@ export default function JobsPage() {
     jobList(1);
   }, []);
 
+  useEffect(() => {
+    if (jobIdParam) {
+      setState({ jobID: jobIdParam });
+      jobDetail(jobIdParam).then((res) => {
+        if (res) {
+          setSelectedJob(res);
+          setShowJobDetail(true);
+        }
+      });
+    }
+  }, [jobIdParam]);
+
   const jobList = async (page) => {
     try {
       setState({ loading: true });
@@ -138,6 +153,7 @@ export default function JobsPage() {
         loading: false,
         jobDetail: res,
       });
+      return res;
     } catch (error) {
       setState({ loading: false });
       Failure("Failed to fetch jobs");
