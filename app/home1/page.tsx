@@ -15,6 +15,10 @@ import TopHiringColleges from '@/components/common-components/new_components/Top
 import FindYourJob from '@/components/common-components/new_components/FindYourJob';
 import WhatCanIDo from '@/components/common-components/new_components/WhatCanIDo';
 import StatsSection from '@/components/common-components/new_components/StatsSection';
+import DownloadAppSection from '@/components/common-components/new_components/DownloadApp';
+import FaqResumeSection from '@/components/common-components/new_components/FaqSection';
+
+
 
 // ---------------- PAGE ----------------
 export default function Home1Page() {
@@ -33,6 +37,8 @@ export default function Home1Page() {
         <WhatCanIDo />
         <StatsSection />
         <InstitutionPartners />
+        <DownloadAppSection />
+        <FaqResumeSection />
 
         <div>
           <Discover />
