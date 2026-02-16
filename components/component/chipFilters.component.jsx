@@ -94,7 +94,7 @@ export default function ChipFilters(props) {
   return (
     <div className="flex flex-wrap gap-3 mb-6">
       {/* Job Sectors (same as Filterbar) */}
-      <ChipFilter
+      {/* <ChipFilter
         title="Job Sectors"
         options={getLabels(categoryList)}
         selected={(filters.categories || [])
@@ -108,10 +108,10 @@ export default function ChipFilters(props) {
               .filter(Boolean),
           })
         }
-      />
+      /> */}
 
       {/* Job Type */}
-      <ChipFilter
+      {/* <ChipFilter
         title="Job Type"
         options={getLabels(jobTypeList)}
         selected={(filters.jobTypes || [])
@@ -125,7 +125,7 @@ export default function ChipFilters(props) {
               .filter(Boolean),
           })
         }
-      />
+      /> */}
 
       {/* Experience Level (radio-like) */}
       <ChipFilter
@@ -180,7 +180,7 @@ export default function ChipFilters(props) {
       />
 
       {/* Tags */}
-      <ChipFilter
+      {/* <ChipFilter
         title="Tags"
         options={getLabels(tagsList)}
         selected={(filters.tags || [])
@@ -194,7 +194,7 @@ export default function ChipFilters(props) {
               .filter(Boolean),
           })
         }
-      />
+      /> */}
     </div>
   );
 }

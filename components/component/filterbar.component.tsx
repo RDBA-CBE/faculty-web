@@ -154,7 +154,7 @@ const Filterbar: React.FC<SidebarProps> = ({
     <aside className="w-full h-full">
       <div className="lg:p-[19px] lg:py-[10px]">
         {/* Job Sectors */}
-        <FilterSection
+        {/* <FilterSection
           title="Job Sectors"
           items={categoryList ?? []}
           // counts={CATEGORIES.map((c) => c.count)}
@@ -171,9 +171,12 @@ const Filterbar: React.FC<SidebarProps> = ({
           <button className="mt-6 w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-lg text-sm transition-colors mb-4">
             Show More
           </button>
-        )}
+        )} */}
+
+
+
         {/* Job Type */}
-        <FilterSection
+        {/* <FilterSection
           title="Job Type"
           items={jobTypeList ?? []}
           selected={filters.jobTypes}
@@ -183,7 +186,7 @@ const Filterbar: React.FC<SidebarProps> = ({
               jobTypes: toggleItem(filters.jobTypes, value),
             })
           }
-        />
+        /> */}
 
        
 
@@ -230,7 +233,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
 
         {/* Tags */}
-        <div>
+        {/* <div>
           <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">
             Tags
           </h3>
@@ -254,7 +257,7 @@ const Filterbar: React.FC<SidebarProps> = ({
               </button>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </aside>
   );

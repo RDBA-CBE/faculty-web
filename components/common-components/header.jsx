@@ -44,7 +44,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { buildFormData, Failure, useSetState } from "@/utils/function.utils";
+import { buildFormData, Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
 import { Input } from "../ui/input";
@@ -160,6 +160,7 @@ const Header = () => {
       localStorage.setItem("user", JSON.stringify(res.user));
 
       setState({ token: res.access, errors: {}, isOpenLogin: false });
+      Success("Login Successfully!")
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
