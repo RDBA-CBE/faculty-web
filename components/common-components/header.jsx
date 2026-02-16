@@ -23,6 +23,7 @@ import {
   LogIn,
   LogOut,
   MenuIcon,
+  MoveRight,
   Settings,
   User,
   User2,
@@ -119,7 +120,7 @@ const Header = () => {
       };
 
       console.log("body", body);
-      const formData=buildFormData(body)
+      const formData = buildFormData(body);
 
       const res = await Models.auth.create(formData);
       console.log("✌️res --->", res);
@@ -215,24 +216,22 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={`shadow-sm sticky top-0 z-[50] ${
-          isHomePage ? "bg-white" : "bg-white"
+        className={` sticky top-0 z-[50] ${
+          isHomePage ? "bg-[#24266e] text-white" : "bg-white"
         }`}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <div className="flex items-center flex-shrink-0">
-              <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-[#F2B31D] rounded-md flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">📚</span>
-                </div>
-                <span
-                  className={`font-semibold text-lg ${
-                    isHomePage ? "text-gray-900" : "text-gray-900"
-                  }`}
-                >
-                  Faculty Plus
+              <Link href="/" className="flex items-center space-x-3">
+                <img
+                  src="/assets/images/Faculty/logo.png"
+                  alt="Logo"
+                  className="w-10 h-10 object-contain"
+                />
+                <span className="font-bold text-2xl tracking-tight text-white">
+                  Faculty Pro
                 </span>
               </Link>
             </div>
@@ -252,8 +251,8 @@ const Header = () => {
                         isActive
                           ? "text-[#F2B31D]"
                           : isHomePage
-                            ? "text-gray-700 hover:text-[#F2B31D]"
-                            : "text-gray-700 hover:text-[#F2B31D]"
+                          ? "text-white hover:text-[#F2B31D]"
+                          : "text-white hover:text-[#F2B31D]"
                       }`}
                     >
                       {menu.title}
@@ -300,17 +299,16 @@ const Header = () => {
                   <Button
                     onClick={() => setState({ isOpenLogin: true })}
                     variant="ghost"
-                    className={`hover:text-[#F2B31D] hover:bg-transparent ${
-                      isHomePage ? "text-gray-700" : "text-gray-700"
-                    }`}
+                    className="text-white text-sm font-bold hover:text-[#F2B31D] transition-colors"
                   >
                     Login
                   </Button>
                   <Button
                     onClick={() => setState({ isOpenReg: true })}
-                    className="bg-[#F2B31D] hover:bg-[#E5A01A] text-white"
+                    className="bg-[#f2b31d] hover:bg-[#d9a016] text-[#1a1a5e] px-8 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-transform active:scale-95 shadow-md"
                   >
-                    Sign Up
+                    Register
+                    <MoveRight size={16} />
                   </Button>
                 </div>
               )}
