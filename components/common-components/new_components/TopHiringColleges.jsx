@@ -14,28 +14,28 @@ const colleges = [
     id: 1,
     name: "Kumaraguru College of Technology",
     location: "Coimbatore",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/fc/Kumaraguru_College_of_Technology_logo.png/220px-Kumaraguru_College_of_Technology_logo.png",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
   },
   {
     id: 2,
     name: "karpagam College of Engineering",
     location: "Coimbatore",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxVLqGz8vYqKqZ8fQqYqKqZ8fQqYqKqZ8fQqYqKqZ8fQ",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
   },
   {
     id: 3,
     name: "PSG College of Technology",
     location: "Coimbatore",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/PSG_College_of_Technology_logo.png/220px-PSG_College_of_Technology_logo.png",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
   },
   {
     id: 4,
     name: "Sri Kirishna Institutions",
     location: "Coimbatore",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxVLqGz8vYqKqZ8fQqYqKqZ8fQqYqKqZ8fQqYqKqZ8fQ",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
   },
 ];
@@ -126,7 +126,7 @@ const TopHiringColleges = () => {
           </div>
 
           {/* Right CTA Card */}
-          <div className="lg:col-span-3 relative h-[320px] ">
+          <div className="lg:col-span-3 relative h-[380px] ">
             <div className="absolute inset-0 z-0  overflow-hidden">
               <Image
                 src="/assets/images/Faculty/faculty_pro_bg.png"
@@ -141,7 +141,7 @@ const TopHiringColleges = () => {
                 <div className="mb-4 flex items-center justify-center gap-2 py-1 pt-3">
                   <div className="w-10 h-10 flex items-center justify-center">
                     <Image
-                      src="/assets/images/Faculty/logo.png"
+                      src="/assets/images/Faculty/favicon.png"
                       alt="Logo"
                       className="object-contain"
                       priority
