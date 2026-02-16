@@ -14,40 +14,36 @@ const colleges = [
     id: 1,
     name: "Kumaraguru College of Technology",
     location: "Coimbatore",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/fc/Kumaraguru_College_of_Technology_logo.png/220px-Kumaraguru_College_of_Technology_logo.png",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
-    bgColor: "#0a1551",
   },
   {
     id: 2,
     name: "karpagam College of Engineering",
     location: "Coimbatore",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxVLqGz8vYqKqZ8fQqYqKqZ8fQqYqKqZ8fQqYqKqZ8fQ",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
-    bgColor: "#ffffff",
   },
   {
     id: 3,
     name: "PSG College of Technology",
     location: "Coimbatore",
-    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/PSG_College_of_Technology_logo.png/220px-PSG_College_of_Technology_logo.png",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
-    bgColor: "#ffffff",
   },
   {
     id: 4,
     name: "Sri Kirishna Institutions",
     location: "Coimbatore",
-    logo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxVLqGz8vYqKqZ8fQqYqKqZ8fQqYqKqZ8fQqYqKqZ8fQ",
+    logo: "/assets/images/Faculty/favicon.png",
     openings: 10,
-    bgColor: "#ffffff",
   },
 ];
 
 const TopHiringColleges = () => {
   return (
     <section className="py-12 lg:py-20 bg-gray-50">
-      <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
+      <div className="section-wid w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
           {/* Left Content */}
           <div className="lg:col-span-9">
@@ -95,8 +91,7 @@ const TopHiringColleges = () => {
               {colleges.map((college) => (
                 <SwiperSlide key={college.id}>
                   <div
-                    className=" py-6 px-3 flex flex-col items-center text-center h-[240px] justify-between border border-gray-200"
-                    style={{ backgroundColor: college.bgColor }}
+                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-gray-200 bg-white hover:bg-[#0a1551] transition-all duration-300"
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100">
                       <img
@@ -108,31 +103,19 @@ const TopHiringColleges = () => {
 
                     <div className="flex-1 flex flex-col justify-center px-2">
                       <h3
-                        className={`text-sm font-semibold mb-1 leading-tight line-clamp-2 ${
-                          college.bgColor === "#0a1551"
-                            ? "text-white"
-                            : "text-black"
-                        }`}
+                        className="sub-ti font-semibold mb-1 leading-tight line-clamp-2 text-black group-hover:text-white transition-colors"
                       >
                         {college.name}
                       </h3>
                       <p
-                        className={`text-xs ${
-                          college.bgColor === "#0a1551"
-                            ? "text-white/70"
-                            : "text-gray-500"
-                        }`}
+                        className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors"
                       >
                         {college.location}
                       </p>
                     </div>
 
                     <button
-                      className={`px-6 py-2 rounded-full text-sm font-medium transition ${
-                        college.bgColor === "#0a1551"
-                          ? "bg-[#F2B31D] text-black hover:bg-[#e0a519]"
-                          : "bg-[#0a1551] text-white hover:bg-[#080f3d]"
-                      }`}
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                     >
                       {college.openings} Openings
                     </button>
@@ -143,7 +126,7 @@ const TopHiringColleges = () => {
           </div>
 
           {/* Right CTA Card */}
-          <div className="lg:col-span-3 relative h-[320px] ">
+          <div className="lg:col-span-3 relative h-[380px] ">
             <div className="absolute inset-0 z-0  overflow-hidden">
               <Image
                 src="/assets/images/Faculty/faculty_pro_bg.png"
@@ -158,7 +141,7 @@ const TopHiringColleges = () => {
                 <div className="mb-4 flex items-center justify-center gap-2 py-1 pt-3">
                   <div className="w-10 h-10 flex items-center justify-center">
                     <Image
-                      src="/assets/images/Faculty/logo.png"
+                      src="/assets/images/Faculty/favicon.png"
                       alt="Logo"
                       className="object-contain"
                       priority

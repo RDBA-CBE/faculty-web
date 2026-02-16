@@ -6,11 +6,11 @@ import { Check, Plus } from "lucide-react";
 
 const WhatCanIDo = () => {
   return (
-    <section className="py-12 lg:py-16 ">
+    <section className="pb-12 pt-8 lg:pb-16 pt-12 ">
       <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
-          <div className="lg:col-span-9">
+          <div className="lg:col-span-9 ">
             <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
               What can I do With Faculty Pro?
             </h2>
@@ -19,7 +19,7 @@ const WhatCanIDo = () => {
               scelerisque mi varius tellus feugiat.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
               {/* Image */}
               <div className="rounded-lg overflow-hidden">
                 <Image
@@ -32,15 +32,15 @@ const WhatCanIDo = () => {
               </div>
 
               {/* Features */}
-              <div className="space-y-8">
+              <div className="space-y-10">
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 mt-1">
                     <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
                       <Check className="w-5 h-5 text-black" strokeWidth={3} />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-black mb-1">
+                    <h3 className="sub-ti font-bold text-black mb-1">
                       Find and Apply for Faculty Jobs
                     </h3>
                     <p className="text-gray-600 text-md">
@@ -50,13 +50,13 @@ const WhatCanIDo = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 mt-1">
                     <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
                       <Check className="w-5 h-5 text-black" strokeWidth={3} />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-black mb-1">
+                    <h3 className="sub-ti font-bold text-black mb-1">
                       Hire Qualified Teaching Professionals Easily
                     </h3>
                     <p className="text-gray-600 text-md">
@@ -66,13 +66,13 @@ const WhatCanIDo = () => {
                 </div>
 
                 <div className="flex gap-3">
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 mt-1">
                     <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
                       <Check className="w-5 h-5 text-black" strokeWidth={3} />
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-black mb-1">
+                    <h3 className="sub-ti font-bold text-black mb-1">
                       Manage Applications in One Platform
                     </h3>
                     <p className="text-gray-600 text-md">
@@ -87,14 +87,14 @@ const WhatCanIDo = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-4">
             {/* Jobs By Location */}
-            <div className="bg-[#0a1551] border border-[#0a1551]">
+            <div className="bg-[#0a1551] border ">
               <div className="py-3 px-4">
-                <h3 className="text-xl font-bold text-white">
-                  Jobs By Location
+                <h3 className="text-2xl font-bold text-white">
+                  Jobs By Colleges
                 </h3>
               </div>
 
-              <div className="bg-white px-6 pb-6 pt-4">
+              <div className="bg-white px-6 pb-6 pt-4 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className=" mb-6">
                   {[
                     { name: "Kumaraguru College of Technology", jobs: 20 },
@@ -108,7 +108,7 @@ const WhatCanIDo = () => {
                     >
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex-shrink-0"></div>
                       <div className="flex-1">
-                        <h4 className="text-sm font-semibold text-gray-800">
+                        <h4 className="text-md font-semibold text-gray-800">
                           {location.name}
                         </h4>
                         <p className="text-sm text-gray-500">

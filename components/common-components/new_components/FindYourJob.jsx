@@ -91,12 +91,12 @@ const categories = [
 const FindYourJob = () => {
   return (
     <section className="py-12 lg:py-16 ">
-      <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
+      <div className="section-wid w-full ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-12">
               <h2 className="text-3xl lg:text-4xl font-bold text-black">
                 Find Your Job
               </h2>
@@ -136,7 +136,12 @@ const FindYourJob = () => {
               {jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="  p-5 border border-gray-200 hover:shadow-lg transition"
+                  className="p-5 border border-gray-200 
+             transition-all duration-300
+             hover:bg-white
+             hover:border-none
+             hover:-translate-y-1
+             hover:shadow-2xl hover:shadow-gray-300"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-start gap-3">
@@ -150,7 +155,7 @@ const FindYourJob = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="text-base font-semibold text-black mb-0.5">
+                        <h3 className="sub-ti font-semibold text-black mb-0.5">
                           {job.title}
                         </h3>
                         <p className="text-sm text-gray-600">{job.college}</p>
@@ -185,33 +190,41 @@ const FindYourJob = () => {
             </div>
 
             {/* Pagination */}
-            <div className="flex items-center justify-center gap-1 ">
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
-                <ChevronLeft className="w-4 h-4" />
+            <div className="flex items-center justify-center gap-2 py-8">
+              {/* Left Arrow */}
+              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 text-gray-600 hover:bg-gray-100 transition">
+                ‹
               </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                1
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                2
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                3
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full bg-[#0a1551] text-white text-sm">
-                4
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                5
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                6
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 text-sm">
-                7
-              </button>
-              <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition">
-                <ChevronRight className="w-4 h-4" />
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm border border-gray-200">
+                {["1", "2", "3"].map((page) => (
+                  <button
+                    key={page}
+                    className="h-8 w-8 rounded-full text-sm text-gray-500 hover:bg-gray-100 transition"
+                  >
+                    {page}
+                  </button>
+                ))}
+
+                {/* Active Page */}
+                <button className="h-8 w-8 rounded-full bg-[#050A4E] text-white text-sm font-medium">
+                  4
+                </button>
+
+                {["5", "6", "7"].map((page) => (
+                  <button
+                    key={page}
+                    className="h-8 w-8 rounded-full text-sm text-gray-500 hover:bg-gray-100 transition"
+                  >
+                    {page}
+                  </button>
+                ))}
+              </div>
+
+              {/* Right Arrow */}
+              <button className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 text-gray-600 hover:bg-gray-100 transition">
+                ›
               </button>
             </div>
           </div>
@@ -219,9 +232,9 @@ const FindYourJob = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-4">
             {/* Job Spotlight */}
-            <div className="bg-[#0a1551]  border border-[#0a1551]">
-              <div className="flex items-center justify-between py-3 px-4">
-                <h3 className="text-xl font-bold text-white">Job spotlight</h3>
+            <div className=" border ">
+              <div className="bg-[#0a1551] flex items-center justify-between py-3 px-4">
+                <h3 className="text-2xl font-bold text-white">Job spotlight</h3>
                 <div className="flex gap-2">
                   <button className="swiper-spotlight-prev w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
                     <ChevronLeft className="w-5 h-5 text-white" />
@@ -242,7 +255,7 @@ const FindYourJob = () => {
                 className="job-spotlight-swiper"
               >
                 <SwiperSlide>
-                  <div className="bg-white px-6 pb-6 pt-5">
+                  <div className="bg-white px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                     <div className="mb-4 rounded-lg overflow-hidden">
                       <Image
                         src="/assets/images/Faculty/spotlightImage.png"
@@ -253,7 +266,7 @@ const FindYourJob = () => {
                       />
                     </div>
 
-                    <h4 className="text-xl font-bold text-black mb-2">
+                    <h4 className="sub-ti font-bold text-black mb-2">
                       Assistant Professor
                     </h4>
                     <p className="text-base text-gray-600 mb-4">
@@ -287,33 +300,39 @@ const FindYourJob = () => {
             </div>
 
             {/* Jobs By Category */}
-            <div className="bg-[#0a1551] border border-[#0a1551]">
+            <div className="bg-[#0a1551] border ">
               <div className="py-3 px-4">
-                <h3 className="text-xl font-bold text-white">Jobs By Category</h3>
+                <h3 className="text-2xl font-bold text-white">
+                  Jobs By Category
+                </h3>
               </div>
 
-              <div className="bg-white px-6 pb-6 pt-5">
+              <div className="bg-white px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className="space-y-3 mb-6">
                   {[
-                    { title: 'Assistant Professor', count: 20 },
-                    { title: 'Research Associate', count: 14 },
-                    { title: 'Academic Coordinator', count: 52 },
-                    { title: 'Lab Instructor', count: 33 },
-                    { title: 'Associate Professor', count: 14 },
-                    { title: 'Academic Coordinator', count: 52 },
-                    { title: 'Lab Instructor', count: 33 },
+                    { title: "Assistant Professor", count: 20 },
+                    { title: "Research Associate", count: 14 },
+                    { title: "Academic Coordinator", count: 52 },
+                    { title: "Lab Instructor", count: 33 },
+                    { title: "Associate Professor", count: 14 },
+                    { title: "Academic Coordinator", count: 52 },
+                    { title: "Lab Instructor", count: 33 },
                   ].map((category, index) => (
-                    <div key={index} className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition">
+                    <div
+                      key={index}
+                      className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
+                    >
                       <ChevronRight className="w-4 h-4" />
-                      <span className="text-base">{category.title} ({category.count})</span>
+                      <span className="text-base">
+                        {category.title} ({category.count})
+                      </span>
                     </div>
                   ))}
                 </div>
 
                 <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition">
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-                  <Plus className="w-4 h-4" />
-
+                    <Plus className="w-4 h-4" />
                   </div>
                   <span className="text-md">View All Category</span>
                 </button>
@@ -321,8 +340,6 @@ const FindYourJob = () => {
             </div>
           </div>
         </div>
-
-       
       </div>
     </section>
   );

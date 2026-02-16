@@ -19,9 +19,11 @@ interface JobCardProps {
     salary_range_obj: any;
     company: string;
     locations: any;
-    experiences: string;
+    experiences: any;
     created_at: string;
     company_logo: string | null;
+    college: any;
+    job_description:any;
   };
   onClick?: () => void;
 }
@@ -42,24 +44,24 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-start gap-3">
-          {job?.company_logo ? (
+          {job?.college?.college_logo ? (
             <img
-              src={job?.company_logo}
+              src={job?.college?.college_logo}
               alt="company image"
               className="w-10 h-10  object-cover"
             />
           ) : (
             <div
-              className={`w-10 h-10 rounded-lg ${getAvatarColor(job.company)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+              className={`w-10 h-10 rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
             >
-              {job.company?.charAt(0).toUpperCase()}
+              {job?.college?.name?.charAt(0).toUpperCase()}
             </div>
           )}
           <div className="min-w-0 flex-1">
             <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1 group-hover:text-[#000] transition-colors">
               {job.job_title}
             </h3>
-            <p className="text-gray-600 font-medium">{job.company}</p>
+            <p className="text-gray-600 font-medium">{job?.college?.name}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -72,7 +74,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
         <div className="flex items-center gap-2">
           <Briefcase className="w-3.5 h-3.5" />
-          <span className="text-sm">{job.experiences}</span>
+          <span className="text-sm">{job.experiences?.name}</span>
         </div>
         <div className="w-px h-4 bg-gray-300"></div>
         <div className="flex items-center gap-2">
@@ -91,8 +93,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
 
       {/* Description */}
       <p className=" text-gray-600 mb-4 line-clamp-2">
-        Looking for a skilled professional to join our team. Great opportunity
-        for career growth and development in a dynamic work environment.
+       {job?.job_description || "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."} 
       </p>
 
       {/* Footer */}

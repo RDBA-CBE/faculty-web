@@ -35,24 +35,24 @@ const FaqResumeSection = () => {
   const [active, setActive] = useState("01");
 
   return (
-    <section className="w-full  py-20 px-6 lg:px-16">
-      <div className="max-w-7xl mx-auto grid lg:grid-cols-3 gap-12">
+    <section className="section-wid py-20 ">
+      <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-4xl font-bold text-gray-900 mb-3">
+          <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
             Frequently Asked Questions
           </h2>
           <p className="text-gray-600 mb-10">
             There are many variations of passages of Lorem Ipsum available.
           </p>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             {faqData.map((item) => (
               <div
                 key={item.id}
-                className={`rounded-2xl p-6 transition ${
+                className={` p-6 transition ${
                   active === item.id
-                    ? "bg-white shadow-md"
+                    ? "rounded-2xl bg-[#01014B0D] shadow-md"
                     : "border-b border-gray-300"
                 }`}
               >
@@ -64,7 +64,7 @@ const FaqResumeSection = () => {
                     <span className="text-2xl font-bold text-black">
                       {item.id}
                     </span>
-                    <h4 className="font-semibold text-gray-900 text-lg">
+                    <h4 className="sub-ti font-bold">
                       {item.question}
                     </h4>
                   </div>
@@ -93,8 +93,11 @@ const FaqResumeSection = () => {
           className="relative rounded-xl overflow-hidden min-h-[650px]"
           style={{
             backgroundImage: "url('/assets/images/Faculty/resume_bg.png')",
-            backgroundSize: "contain",
+            backgroundSize: "cover",
             backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            width:"100%",
+            height:"100%",
           }}
         >
           {/* Dark Overlay */}

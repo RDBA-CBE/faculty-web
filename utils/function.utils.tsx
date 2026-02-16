@@ -118,6 +118,23 @@ export const convertUrlToFile = async (url: any, filename: any) => {
   return new File([blob], filename, { type: blob.type });
 };
 
+export const buildResumeFile = async (url: any, filename: any) => {
+  if (!url) return null;
+
+  const response = await fetch(url);
+  const blob = await response.blob();
+
+  return new File(
+    [blob],
+    `${filename}.pdf`,
+    {
+      type: blob.type,
+      lastModified: Date.now(),
+    }
+  );
+};
+
+
 export const isValidImageUrl = (url: string) => {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
   return imageExtensions.some((ext) => url?.toLowerCase().endsWith(ext));

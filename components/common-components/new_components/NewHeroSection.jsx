@@ -16,7 +16,7 @@ const NewHeroSection = () => {
         />
       </div>
 
-      <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0 py-16 lg:py-0 relative z-10">
+      <div className="section-wid w-full  py-16 lg:py-0 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-6 lg:space-y-8 flex flex-col justify-center">
