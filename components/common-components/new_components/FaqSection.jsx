@@ -102,7 +102,7 @@ const FaqResumeSection = () => {
         >
           {/* Dark Overlay */}
 
-          <div className="relative p-8 text-white">
+          {/* <div className="relative p-8 text-white">
             <h3 className="text-2xl font-bold mb-2">Drop Your Resume Here</h3>
             <p className="text-gray-300 mb-8 text-sm">
               Submit your resume and grow with us
@@ -152,7 +152,7 @@ const FaqResumeSection = () => {
                 Send application
               </button>
             </form>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

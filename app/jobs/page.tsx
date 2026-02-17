@@ -67,8 +67,13 @@ import PaginationCom from "@/components/component/PaginationCom";
 import CustomSelect from "@/components/common-components/dropdown";
 import moment from "moment";
 import { Success } from "@/components/common-components/toast";
+import { useSearchParams } from "next/navigation";
 
 export default function JobsPage() {
+  const searchParams = useSearchParams();
+  const jobIdParam = searchParams.get("id");
+  const searchParam = searchParams.get("search");
+
   const [state, setState] = useSetState({
     firstName: "",
     lastName: "",
@@ -83,7 +88,8 @@ export default function JobsPage() {
     jobList: [],
     next: null,
     prev: null,
-    search: "",
+    // search: "",
+    search: searchParam || "",
     sortBy: "",
     sortOrder: "",
     errors: {},
@@ -129,6 +135,13 @@ export default function JobsPage() {
     salaryRangeList();
     tagsList();
   }, []);
+
+  useEffect(() => {
+    const query = searchParam || "";
+    if (query !== state.search) {
+      setState({ search: query });
+    }
+  }, [searchParam]);
 
   useEffect(() => {
     jobList(1);
@@ -278,11 +291,24 @@ export default function JobsPage() {
         jobDetail: res,
         responsibilities: responsibilities,
       });
+      return res;
     } catch (error) {
       setState({ loading: false });
       Failure("Failed to fetch jobs");
     }
   };
+
+  useEffect(() => {
+    if (jobIdParam) {
+      setState({ jobID: jobIdParam });
+      jobDetail(jobIdParam).then((res) => {
+        if (res) {
+          setSelectedJob(res);
+          setShowJobDetail(true);
+        }
+      });
+    }
+  }, [jobIdParam]);
 
   const handleApply = () => {
     const profile = JSON.parse(localStorage.getItem("user") || "null");
