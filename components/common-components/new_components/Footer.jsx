@@ -107,7 +107,7 @@ const Footer = () => {
               ))}
             </div>
             <p className="text-[10px] text-gray-400  tracking-widest">
-              Copyright 2026 © Faculty Plus. Concept By <a href="http://irepute.in/" target='_blank' className='text-underline'>repute</a>
+              Copyright 2026 © Faculty Plus. Concept by <a href="http://irepute.in/" target='_blank' className='text-underline'>repute</a>
             </p>
           </div>
         </div>
