@@ -1342,6 +1342,19 @@ export default function JobsPage() {
                 </div>
                 {/* content input header end */}
 
+                <ChipFilters
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  categoryList={state?.categoryList}
+                  jobTypeList={state?.jobTypeList}
+                  experienceList={state?.experienceList}
+                  datePostedList={state?.datePostedList}
+                  salaryRangeList={state?.salaryRangeList}
+                  tagsList={state?.tagsList}
+                  collegeList={state?.collgeList}
+                  locationList={state?.locationList}
+                />
+
                 {/* content body job list */}
 
                 {state.loading ? (
