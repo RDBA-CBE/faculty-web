@@ -672,7 +672,7 @@ export default function JobsPage() {
 
                   <div className="flex items-center gap-2">
                     {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
-                    <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                    {/* <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
                   </div>
                 </div>
               </div>
@@ -888,7 +888,7 @@ export default function JobsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           {/* <Bookmark className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
-                          <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+                          {/* <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
                         </div>
                       </div>
 
@@ -1024,7 +1024,7 @@ export default function JobsPage() {
 
                         <div className="flex items-center gap-2">
                           {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
-                          <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                          {/* <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
                         </div>
                       </div>
                     </div>
@@ -1296,19 +1296,6 @@ export default function JobsPage() {
                   </div>
 
                   <div className="py-4 lg:hidden flex items-center justify-between">
-                    <div className="hidden md:block lg:hidden flex-1">
-                      <ChipFilters
-                        filters={filters}
-                        onFilterChange={setFilters}
-                        categoryList={state?.categoryList}
-                        jobTypeList={state?.jobTypeList}
-                        experienceList={state?.experienceList}
-                        datePostedList={state?.datePostedList}
-                        salaryRangeList={state?.salaryRangeList}
-                        tagsList={state?.tagsList}
-                      />
-                    </div>
-
                     <div className="md:hidden">
                       <Sheet
                         open={isMobileFilterOpen}
