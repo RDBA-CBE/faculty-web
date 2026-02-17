@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import React from "react";
+import { RWebShare } from "react-web-share";
 
 interface JobCardProps {
   job: {
@@ -23,7 +24,7 @@ interface JobCardProps {
     created_at: string;
     company_logo: string | null;
     college: any;
-    job_description:any;
+    job_description: any;
   };
   onClick?: () => void;
 }
@@ -66,7 +67,16 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         </div>
         <div className="flex items-center gap-2">
           {/* <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
-          {/* <Share2 className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
+          {/* <RWebShare
+            data={{
+              title: "Faculty Plus",
+              text: "Check this out!",
+              url: window.location.href,
+            }}
+            onClick={() => console.log("shared successfully!")}
+          >
+            <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+          </RWebShare> */}
         </div>
       </div>
 
@@ -93,7 +103,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
 
       {/* Description */}
       <p className=" text-gray-600 mb-4 line-clamp-2">
-       {job?.job_description || "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."} 
+        {job?.job_description ||
+          "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
       </p>
 
       {/* Footer */}

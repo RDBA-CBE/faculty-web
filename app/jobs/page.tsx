@@ -70,6 +70,8 @@ import { Success } from "@/components/common-components/toast";
 import { useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
 
+import { RWebShare } from "react-web-share";
+
 export default function JobsPage() {
   const searchParams = useSearchParams();
   const jobIdParam = searchParams.get("id");
@@ -672,7 +674,16 @@ export default function JobsPage() {
 
                   <div className="flex items-center gap-2">
                     {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
-                    {/* <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
+                    <RWebShare
+                      data={{
+                        title: "Faculty Plus",
+                        text: "Check this out!",
+                        url: window.location.href,
+                      }}
+                      onClick={() => console.log("shared successfully!")}
+                    >
+                      <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                    </RWebShare>
                   </div>
                 </div>
               </div>
@@ -894,7 +905,16 @@ export default function JobsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           {/* <Bookmark className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
-                          {/* <Share2 className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
+                          <RWebShare
+                            data={{
+                              title: "Faculty Plus",
+                              text: "Check this out!",
+                              url: window.location.href,
+                            }}
+                            onClick={() => console.log("shared successfully!")}
+                          >
+                            <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                          </RWebShare>
                         </div>
                       </div>
 
@@ -903,17 +923,27 @@ export default function JobsPage() {
                         className={`flex items-center gap-3 text-xs mb-2 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
                       >
                         <div className="flex items-center gap-1">
-                          <Briefcase className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
-                          <span className={`${selectedJob?.id === job.id && "text-white"}`}>{job.experiences?.name}</span>
+                          <Briefcase
+                            className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                          />
+                          <span
+                            className={`${selectedJob?.id === job.id && "text-white"}`}
+                          >
+                            {job.experiences?.name}
+                          </span>
                         </div>
                         <div
                           className={`w-px h-3 ${selectedJob?.id === job.id ? "bg-gray-600" : "bg-gray-300"}`}
                         ></div>
                         <div className="flex items-center gap-1">
                           {job.salary_range_obj?.name?.includes("$") ? (
-                            <DollarSign className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
+                            <DollarSign
+                              className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                            />
                           ) : (
-                            <IndianRupee className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
+                            <IndianRupee
+                              className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                            />
                           )}
                           <span
                             className={`font-semibold ${selectedJob?.id === job.id ? "text-white" : "text-gray-900"}`}
@@ -927,8 +957,12 @@ export default function JobsPage() {
                       <div
                         className={`flex items-center gap-1 text-xs mb-3 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
                       >
-                        <MapPin className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
-                        <span className={`${selectedJob?.id === job.id && "text-white"}`}>
+                        <MapPin
+                          className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                        />
+                        <span
+                          className={`${selectedJob?.id === job.id && "text-white"}`}
+                        >
                           {job.locations?.map((item) => item.city).join(", ")}
                         </span>
                       </div>
@@ -943,8 +977,12 @@ export default function JobsPage() {
                         <div
                           className={`flex items-center gap-1 text-xs ${selectedJob?.id === job.id ? "text-white" : "text-gray-500"}`}
                         >
-                          <Clock className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
-                          <span className={`${selectedJob?.id === job.id && "text-white"}`}>
+                          <Clock
+                            className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                          />
+                          <span
+                            className={`${selectedJob?.id === job.id && "text-white"}`}
+                          >
                             {moment(job.created_at).isValid() &&
                             moment(job.created_at).year() > 1900
                               ? moment(job.created_at).fromNow()
@@ -1042,7 +1080,16 @@ export default function JobsPage() {
 
                         <div className="flex items-center gap-2">
                           {/* <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
-                          {/* <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" /> */}
+                          <RWebShare
+                            data={{
+                              title: "Faculty Plus",
+                              text: "Check this out!",
+                              url: window.location.href,
+                            }}
+                            onClick={() => console.log("shared successfully!")}
+                          >
+                            <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                          </RWebShare>
                         </div>
                       </div>
                     </div>
