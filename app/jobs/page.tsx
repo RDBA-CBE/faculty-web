@@ -36,6 +36,7 @@ import {
   Bookmark,
   Share2,
   IndianRupee,
+  Loader,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -63,7 +64,6 @@ import {
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
 import PaginationCom from "@/components/component/PaginationCom";
-import page from "../(real-estate)/test/page";
 import CustomSelect from "@/components/common-components/dropdown";
 import moment from "moment";
 import { Success } from "@/components/common-components/toast";
@@ -309,7 +309,7 @@ export default function JobsPage() {
         experience: res.experience,
       });
       setShowApplicationModal(true);
-      handleFormSubmit()
+      handleFormSubmit();
     } catch (error) {
       console.log("error", error);
 
@@ -365,7 +365,7 @@ export default function JobsPage() {
       }
 
       //  Debug FormData
-      for (let pair of formData.entries()) {
+      for (const pair of formData.entries()) {
         console.log(pair[0], pair[1]);
       }
 
@@ -526,11 +526,11 @@ export default function JobsPage() {
 
   return (
     <div className=" bg-clr1">
-      <div className="bg-black py-4 px-4 ">
+      {/* <div className="bg-[#24266e] py-4 px-4 ">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="sub-ti !text-white ">Jobs</h1>
         </div>
-      </div>
+      </div> */}
 
       <main className="section-wid py-8 lg:py-12">
         {isTabScreen && selectedJob ? (
@@ -569,7 +569,9 @@ export default function JobsPage() {
                     />
                   ) : (
                     <div
-                      className={`w-14 h-14 rounded-lg ${getAvatarColor(state?.jobDetail?.college?.name)} flex items-center justify-center text-white font-semibold text-lg`}
+                      className={`w-14 h-14 rounded-lg ${getAvatarColor(
+                        state?.jobDetail?.college?.name
+                      )} flex items-center justify-center text-white font-semibold text-lg`}
                     >
                       {state?.jobDetail?.college?.name
                         ?.slice(0, 1)
@@ -595,7 +597,7 @@ export default function JobsPage() {
                   {capitalizeFLetter(
                     state?.jobDetail?.locations
                       ?.map((item) => item.city)
-                      .join(", "),
+                      .join(", ")
                   )}{" "}
                   • Posted {state?.jobDetail?.postedDate || "2 days ago"}
                 </p>
@@ -764,7 +766,9 @@ export default function JobsPage() {
                   />
                 ) : (
                   <div
-                    className={`w-12 h-12 rounded-lg ${getAvatarColor(selectedJob.college?.name)} flex items-center justify-center text-white font-semibold`}
+                    className={`w-12 h-12 rounded-lg ${getAvatarColor(
+                      selectedJob.college?.name
+                    )} flex items-center justify-center text-white font-semibold`}
                   >
                     {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
                   </div>
@@ -821,7 +825,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-10 h-10 rounded-lg ${getAvatarColor(job.college?.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+                            className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                              job.college?.name
+                            )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                           >
                             {job.college?.name?.slice(0, 1).toUpperCase()}
                           </div>
@@ -905,7 +911,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-14 h-14 rounded-lg ${getAvatarColor(state?.jobDetail?.college?.name)} flex items-center justify-center text-white font-semibold text-lg`}
+                            className={`w-14 h-14 rounded-lg ${getAvatarColor(
+                              state?.jobDetail?.college?.name
+                            )} flex items-center justify-center text-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.college?.name
                               ?.slice(0, 1)
@@ -934,7 +942,7 @@ export default function JobsPage() {
                         {capitalizeFLetter(
                           state?.jobDetail?.locations
                             ?.map((item) => item.city)
-                            .join(", "),
+                            .join(", ")
                         )}{" "}
                         • Posted {state?.jobDetail?.postedDate || "2 days ago"}
                       </p>
@@ -1106,7 +1114,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-12 h-12 rounded-lg ${getAvatarColor(selectedJob.college?.name)} flex items-center justify-center text-white font-semibold`}
+                            className={`w-12 h-12 rounded-lg ${getAvatarColor(
+                              selectedJob.college?.name
+                            )} flex items-center justify-center text-white font-semibold`}
                           >
                             {selectedJob.college?.name
                               ?.slice(0, 1)
@@ -1291,7 +1301,11 @@ export default function JobsPage() {
 
               {/* content body job list */}
 
-              {state.jobList?.length > 0 ? (
+              {state.loading ? (
+                <div className="flex items-center justify-center h-[100vh] ">
+                  <Loader className="animate-spin h-10 w-10 text-[#24266e]" />
+                </div>
+              ) : state.jobList?.length > 0 ? (
                 <>
                   <div
                     className="grid grid-cols-1 md:grid-cols-2  "
@@ -1339,7 +1353,7 @@ export default function JobsPage() {
                     </div>
                   )}
                 </>
-              ) : (
+              ) : !state.loading && state.jobList?.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 bg-clr1 rounded-2xl border border-slate-100">
                   <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                     <svg
@@ -1381,6 +1395,10 @@ export default function JobsPage() {
                     Clear all filters
                   </button>
                 </div>
+              ) : (
+                <div className="flex items-center justify-center h-[100vh] ">
+                  <Loader className="animate-spin h-10 w-10 text-[#24266e]" />
+                </div>
               )}
             </div>
           </div>
@@ -1406,7 +1424,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-10 h-10 rounded-lg ${getAvatarColor(state.jobDetail?.college?.name)} flex items-center justify-center text-white font-semibold text-sm`}
+                            className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                              state.jobDetail?.college?.name
+                            )} flex items-center justify-center text-white font-semibold text-sm`}
                           >
                             {state.jobDetail?.college?.name
                               ?.slice(0, 1)
@@ -1481,7 +1501,7 @@ export default function JobsPage() {
                                   {responsibility}
                                 </p>
                               </div>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
@@ -1504,7 +1524,7 @@ export default function JobsPage() {
                                   {requirements}
                                 </p>
                               </div>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
@@ -1583,7 +1603,9 @@ export default function JobsPage() {
                           />
                         ) : (
                           <div
-                            className={`w-12 h-12 rounded-lg ${getAvatarColor(state.jobDetail?.college?.name)} flex items-center justify-center text-white font-semibold`}
+                            className={`w-12 h-12 rounded-lg ${getAvatarColor(
+                              state.jobDetail?.college?.name
+                            )} flex items-center justify-center text-white font-semibold`}
                           >
                             {state.jobDetail?.college?.name
                               ?.slice(0, 1)

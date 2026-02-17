@@ -191,14 +191,14 @@ const Header = () => {
       title: "Jobs",
       url: "/jobs",
     },
-    {
-      title: "About Us",
-      url: "/about",
-    },
-    {
-      title: "Contact Us",
-      url: "/contact",
-    },
+    // {
+    //   title: "About Us",
+    //   url: "/about",
+    // },
+    // {
+    //   title: "Contact Us",
+    //   url: "/contact",
+    // },
   ];
 
   const handleFormChange = (field, value) => {
@@ -217,9 +217,7 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={` sticky top-0 z-[50] ${
-          isHomePage ? "bg-[#24266e] text-white" : "bg-white"
-        }`}
+        className={` sticky top-0 z-[50] bg-[#24266e] text-white `}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
