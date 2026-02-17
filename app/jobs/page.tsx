@@ -637,7 +637,7 @@ export default function JobsPage() {
                         ?.map((item) => item.city)
                         .join(", "),
                     )}{" "}
-                    • Posted {state?.jobDetail?.postedDate || "2 days ago"}
+                    {/* • Posted {state?.jobDetail?.postedDate || "2 days ago"} */}
                   </p>
                   <div className="flex items-center gap-4 text-sm text-gray-600">
                     <span className="flex items-center gap-1">
@@ -988,8 +988,8 @@ export default function JobsPage() {
                               ?.map((item) => item.city)
                               .join(", "),
                           )}{" "}
-                          • Posted{" "}
-                          {state?.jobDetail?.postedDate || "2 days ago"}
+                          {/* • Posted{" "}
+                          {state?.jobDetail?.postedDate || "2 days ago"} */}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-600">
                           <span className="flex items-center gap-1">
