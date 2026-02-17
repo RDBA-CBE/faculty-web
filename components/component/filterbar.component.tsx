@@ -16,7 +16,7 @@ interface SidebarProps {
   filters: {
     categories: any[];
     jobTypes: any[];
-    experienceLevels: any[];
+    experienceLevels: any;
     datePosted: any;
     salaryRange: any[];
     tags: any[];
@@ -72,10 +72,10 @@ const FilterSection: React.FC<{
 
 const FilterSectionRadio: React.FC<{
   title: string;
-  items: { value: number; label: string }[];
+  items: { value: number | string; label: string }[];
   selected: any;
   name: string;
-  onChange: (value: number | null) => void;
+  onChange: (value: number | string | null) => void;
 }> = ({ title, items, selected, name, onChange }) => (
   <div>
     <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
@@ -153,8 +153,30 @@ const Filterbar: React.FC<SidebarProps> = ({
       : [...list, item];
   };
 
+  const handleClearFilters = () => {
+    onFilterChange({
+      ...filters,
+      categories: [],
+      jobTypes: [],
+      experienceLevels: null,
+      datePosted: null,
+      salaryRange: [],
+      tags: [],
+      colleges: [],
+    });
+  };
+
   return (
     <aside className="w-full h-full">
+      <div className="flex justify-between items-center px-4 mt-4">
+        <div className="font-bold">Filter</div>
+        <button
+          onClick={handleClearFilters}
+          className="text-sm font-medium text-red-600 hover:text-red-800"
+        >
+          Clear All
+        </button>
+      </div>
       <div className="lg:p-[19px] lg:py-[10px]">
         {/* Job Sectors */}
         {/* <FilterSection

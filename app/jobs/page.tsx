@@ -702,7 +702,7 @@ export default function JobsPage() {
                 </div>
 
                 {/* Responsibilities */}
-                <div className="border-b  px-2 py-2 pb-5">
+                {state?.responsibilities && <div className="border-b  px-2 py-2 pb-5">
                   <h2 className="text-lg font-semibold text-black mb-4">
                     Key responsibilities
                   </h2>
@@ -715,7 +715,7 @@ export default function JobsPage() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </div>}
 
                 {/* Requirements */}
                 {state?.jobDetail?.requirements && (
@@ -1053,7 +1053,7 @@ export default function JobsPage() {
                     </div>
 
                     {/* Responsibilities */}
-                    <div className="border-b  px-2 py-2 pb-5">
+                    {state?.responsibilities && <div className="border-b  px-2 py-2 pb-5">
                       <h2 className="text-lg font-semibold text-black mb-4">
                         Key responsibilities
                       </h2>
@@ -1066,7 +1066,7 @@ export default function JobsPage() {
                           </li>
                         ))}
                       </ul>
-                    </div>
+                    </div>}
 
                     {/* Requirements */}
                     {state?.jobDetail?.requirements && (
