@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="relative w-full"> 
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
-      <div className="container mx-auto px-4 relative z-20">
+      <div className="container mx-auto  relative z-20">
         <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-1/2">
           
           {/* Text & Input Content */}
@@ -46,23 +46,23 @@ const Footer = () => {
       <div 
         className="w-full bg-[#000033] text-white pt-[200px] pb-12"
         style={{ 
-          backgroundImage: `url('/footer_bg.png')`,
+          // backgroundImage: `url('/assets/images/Faculty/Logo.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}
       >
-        <div className="container mx-auto px-4 lg:px-12">
+        <div className="section-wid ">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
             
             {/* Logo Column */}
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="bg-white p-1 rounded">
-                   <Image src="/logo-icon.png" alt="Logo" width={24} height={24} /> 
+                <div className=" p-1 rounded">
+                   <Image src="/assets/images/Faculty/Logo.png" alt="Logo" width={30} height={30} /> 
                 </div>
-                <span className="text-2xl font-bold">Faculty Pro</span>
+                <span className="text-2xl font-bold text-[#fff]">Faculty Pro</span>
               </div>
-              <p className="text-xs text-gray-400 leading-relaxed max-w-sm">
+              <p className="text-md text-white leading-relaxed max-w-sm">
                 Lorem ipsum dolor sit amet consectetur. Ultricies ac pellentesque euismod 
                 dapibus ullamcorper nec.
               </p>
@@ -70,29 +70,29 @@ const Footer = () => {
 
             {/* Links Columns */}
             <div className="md:col-span-2">
-              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Useful links</h3>
+              <h3 className="text-lg font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider text-[#fff]">Useful links</h3>
               <ul className="space-y-3 text-xs text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Jobs</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" className="text-white hover:text-gray-400 transition-colors">About Us</a></li>
+                <li><a href="#" className="text-white hover:text-gray-400 transition-colors">Jobs</a></li>
+                <li><a href="#" className="text-white hover:text-gray-400 transition-colors">Contact Us</a></li>
               </ul>
             </div>
 
             <div className="md:col-span-4">
-              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Job Categories</h3>
-              <div className="grid grid-cols-2 gap-y-3 text-xs text-gray-400">
-                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
-                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
-                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
-                <a href="#" className="hover:text-white transition-colors">Assistant Professor</a>
+              <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Job Categories</h3>
+              <div className="grid grid-cols-2 gap-y-3 text-md text-gray-400">
+                <a href="#" className="text-white hover:text-gray-400 transition-colors">Assistant Professor</a>
+                <a href="#" className="text-white hover:text-gray-400 transition-colors">Assistant Professor</a>
+                <a href="#" className="text-white hover:text-gray-400 transition-colors">Assistant Professor</a>
+                <a href="#" className="text-white hover:text-gray-400 transition-colors">Assistant Professor</a>
               </div>
             </div>
 
             <div className="md:col-span-2">
-              <h3 className="text-sm font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Official links</h3>
-              <ul className="space-y-3 text-xs text-gray-400">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms & Conditions</a></li>
+              <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">Official links</h3>
+              <ul className="space-y-3 text-md text-gray-400">
+                <li><a href="#" className="text-white hover:text-gray-400 transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-white hover:text-gray-400 transition-colors">Terms & Conditions</a></li>
               </ul>
             </div>
           </div>
@@ -101,13 +101,13 @@ const Footer = () => {
           <div className="mt-8 flex flex-col items-center gap-6">
             <div className="flex gap-4">
               {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
-                <a key={i} href="#" className="w-9 h-9 flex items-center justify-center rounded-full border border-white/20 hover:bg-white hover:text-[#000033] transition-all">
-                  <Icon size={16} />
+                <a key={i} href="#" className="w-12 h-12 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all">
+                  <Icon size={20} />
                 </a>
               ))}
             </div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest">
-              Copyright 2026 © Faculty Plus. Concept By Repute
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+              Copyright 2026 © Faculty Plus. Concept By <a href="http://irepute.in/" target='_blank' className='text-underline'>Repute</a>
             </p>
           </div>
         </div>
