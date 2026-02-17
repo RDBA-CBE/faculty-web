@@ -119,7 +119,7 @@ const PartnerCard = (props) => {
       key={p.id}
       className={`
         flex flex-col items-center justify-center p-6 rounded-[24px] transition-all duration-300
-        min-h-[220px] border cursor-pointer group relative overflow-hidden
+        min-h-[220px] border  group relative overflow-hidden
         border border-gray-200 hover:bg-[#0a1551]
         ${
           p.isDark

@@ -101,6 +101,7 @@ export default function JobsPage() {
     tags: [],
     experience: "",
     jobID: null,
+    colleges: [],
   });
 
   useEffect(() => {
@@ -338,7 +339,7 @@ export default function JobsPage() {
                 ) : (
                   <div
                     className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                      selectedJob.company
+                      selectedJob.company,
                     )} flex items-center justify-center text-white font-semibold text-sm`}
                   >
                     {selectedJob.company?.slice(0, 1).toUpperCase()}
@@ -608,7 +609,7 @@ export default function JobsPage() {
                       <div className="flex items-start gap-3">
                         <div
                           className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                            job.company
+                            job.company,
                           )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                         >
                           {job.company?.charAt(0).toUpperCase()}
@@ -685,7 +686,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.company
+                              state?.jobDetail?.company,
                             )} flex items-center justify-center text-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.company
@@ -902,7 +903,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                              selectedJob.company
+                              selectedJob.company,
                             )} flex items-center justify-center text-white font-semibold`}
                           >
                             {state?.jobDetail?.company
@@ -1134,7 +1135,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                              selectedJob.company
+                              selectedJob.company,
                             )} flex items-center justify-center text-white font-semibold text-sm`}
                           >
                             {selectedJob.company?.slice(0, 1).toUpperCase()}
