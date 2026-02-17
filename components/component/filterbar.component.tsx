@@ -20,6 +20,7 @@ interface SidebarProps {
     datePosted: any;
     salaryRange: any[];
     tags: any[];
+    colleges: any[];
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -29,6 +30,7 @@ interface SidebarProps {
   datePostedList?: any[];
   salaryRangeList?: any[];
   tagsList?: any[];
+  collegeList?: any[];  
 }
 
 const FilterSection: React.FC<{
@@ -140,9 +142,10 @@ const Filterbar: React.FC<SidebarProps> = ({
   locationList,
   jobTypeList,
   experienceList,
+  collegeList,
   datePostedList,
   salaryRangeList,
-  tagsList
+  tagsList,
 }) => {
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
@@ -173,8 +176,6 @@ const Filterbar: React.FC<SidebarProps> = ({
           </button>
         )} */}
 
-
-
         {/* Job Type */}
         {/* <FilterSection
           title="Job Type"
@@ -188,9 +189,19 @@ const Filterbar: React.FC<SidebarProps> = ({
           }
         /> */}
 
-       
+        {/* <FilterSection
+          title="Choose Collges"
+          items={collegeList ?? []}
+          selected={filters.colleges}
+          onToggle={(value) =>
+            onFilterChange({
+              ...filters,
+              colleges: toggleItem(filters.colleges, value),
+            })
+          }
+        /> */}
 
-         <FilterSectionRadio
+        <FilterSectionRadio
           title="Experience Level"
           items={experienceList ?? []}
           name="experienceLevel"
@@ -215,7 +226,7 @@ const Filterbar: React.FC<SidebarProps> = ({
           }
         />
 
-         {/* Experience Level */}
+        {/* Experience Level */}
         <FilterSectionRadio
           title="Date Posted"
           items={datePostedList ?? []}
@@ -228,9 +239,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             })
           }
         />
-
-    
-
 
         {/* Tags */}
         {/* <div>

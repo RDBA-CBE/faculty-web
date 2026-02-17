@@ -10,13 +10,13 @@ import Banner from '@/components/common-components/home_banner';
 import InstitutionPartners from '@/components/common-components/InstitutionPartners';
 import Testimonials from '@/components/common-components/Testimonials';
 import Footer from '@/components/common-components/new_components/Footer';
-import NewHeroSection from '@/components/common-components/new_components/NewHeroSection';
 import TopHiringColleges from '@/components/common-components/new_components/TopHiringColleges';
 import WhatCanIDo from '@/components/common-components/new_components/WhatCanIDo';
 import StatsSection from '@/components/common-components/new_components/StatsSection';
 import DownloadAppSection from '@/components/common-components/new_components/DownloadApp';
 import FaqResumeSection from '@/components/common-components/new_components/FaqSection';
 import FindYourJob from '@/components/common-components/new_components/FindYourJob';
+import NewHeroSection from '@/components/common-components/new_components/NewHeroSection';
 
 
 

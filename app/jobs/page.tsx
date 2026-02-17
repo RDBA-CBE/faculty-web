@@ -115,6 +115,7 @@ export default function JobsPage() {
     tags: [],
     experience: "",
     jobID: null,
+    colleges:[]
   });
 
   const debouncedSearch = useDebounce(state.search, 500);
@@ -134,6 +135,7 @@ export default function JobsPage() {
     DatePosted();
     salaryRangeList();
     tagsList();
+    collegeList()
   }, []);
 
   useEffect(() => {
@@ -194,17 +196,24 @@ export default function JobsPage() {
 
   const experienceList = async () => {
     try {
-      const experienceList = [
-        { value: "fresher", label: "Fresher" },
-        { value: "0 – 1 Year", label: "0 – 1 Year" },
-        { value: "1 – 3 Years", label: "1 – 3 Years" },
-        { value: "3 – 5 Years", label: "3 – 5 Years" },
-        { value: "5 – 10 Years", label: "5 – 10 Years" },
-        { value: "10+ Years", label: "10+ Years" },
-      ];
+      const res: any = await Models.masterExperience.list();
+      const dropdown = Dropdown(res?.results, "name");
 
       setState({
-        experienceList: experienceList,
+        experienceList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const collegeList = async () => {
+    try {
+      const res: any = await Models.colleges.list();
+      const dropdown = Dropdown(res?.results, "name");
+
+      setState({
+        collgeList: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -833,7 +842,11 @@ export default function JobsPage() {
                 {state.jobList?.map((job) => (
                   <div
                     key={job.id}
-                    onClick={() => setSelectedJob(job)}
+                    onClick={() => {
+                      setSelectedJob(job);
+                      setState({ jobID: job.id });
+                      jobDetail(job.id);
+                    }}
                     className={`cursor-pointer p-4 rounded-lg  transition-all hover:shadow-lg ${
                       selectedJob?.id === job.id
                         ? "border border-amber-400 bg-clr1 shadow-md"
@@ -1189,6 +1202,7 @@ export default function JobsPage() {
                 locationList={state?.locationList}
                 jobTypeList={state?.jobTypeList}
                 experienceList={state?.experienceList}
+                collegeList={state?.collgeList}
                 datePostedList={state?.datePostedList}
                 salaryRangeList={state?.salaryRangeList}
                 tagsList={state?.tagsList}
@@ -1205,6 +1219,7 @@ export default function JobsPage() {
                   locationList={state?.locationList}
                   jobTypeList={state?.jobTypeList}
                   experienceList={state?.experienceList}
+                  collegeList={state?.collgeList}
                   datePostedList={state?.datePostedList}
                   salaryRangeList={state?.salaryRangeList}
                   tagsList={state?.tagsList}

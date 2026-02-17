@@ -3,8 +3,11 @@
 import React from "react";
 import Image from "next/image";
 import { Check, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const WhatCanIDo = () => {
+
+  const router = useRouter();
   return (
     <section className="pb-12 pt-8 lg:pb-16 pt-12 ">
       <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
@@ -105,8 +108,9 @@ const WhatCanIDo = () => {
                     <div
                       key={index}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
+                      onClick={() => router.push(`/jobs`)}
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex-shrink-0"></div>
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex-shrink-0" ></div>
                       <div className="flex-1">
                         <h4 className="text-md font-semibold text-gray-800">
                           {location.name}
@@ -119,8 +123,8 @@ const WhatCanIDo = () => {
                   ))}
                 </div>
 
-                <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition">
-                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
+                <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition" onClick={() => router.push(`/jobs`)}>
+                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center" >
                     <Plus className="w-4 h-4" />
                   </div>
                   <span className="text-md">View All Job</span>

@@ -14,6 +14,8 @@ import experience from "@/models/experience.models";
 import education from "@/models/education.models ";
 import projects from "@/models/projects.models";
 import achievements from "@/models/achievements.models";
+import masterExperience from "@/models/master_experience";
+import colleges from "@/models/college.models";
 
 
 
@@ -31,7 +33,9 @@ export const Models = {
   experience,
   education,
   projects,
-  achievements
+  achievements,
+  masterExperience,
+  colleges
   
   
 };

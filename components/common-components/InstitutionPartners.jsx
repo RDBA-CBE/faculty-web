@@ -18,42 +18,42 @@ const PARTNERS = [
   {
     id: "1", // Purple Hex Arrow
     name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/logo-removebg-preview.png",
+    logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "2", // Saturn
     name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/logo-removebg-preview.png",
+    logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "3", // Blue Plane
     name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/logo-removebg-preview.png",
+     logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "4", // Orange Hex
     name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/logo-removebg-preview.png",
+    logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "5", // Dark Card / Lightning
     name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/logo-removebg-preview.png",
+     logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "6", // Blue Swirl
     name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/logo-removebg-preview.png",
+     logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "7", // Green Segmented
     name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/logo-removebg-preview.png",
+    logo: "/assets/images/Faculty/favicon.png",
   },
   {
     id: "8", // Blue Tech Nodes
     name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/logo-removebg-preview.png",
+    logo: "/assets/images/Faculty/favicon.png",
   },
 ];
 
@@ -129,7 +129,7 @@ const PartnerCard = (props) => {
       `}
     >
       <div className="mb-4 transform transition-transform duration-500 group-hover:scale-110">
-        <img src={p.logo} alt="" />
+        <img src={p.logo} alt="" className="w-20" />
       </div>
       <h3
         className={`text-center sub-ti px-1 leading-tight group-hover:text-white transition-colors ${

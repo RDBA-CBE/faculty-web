@@ -7,7 +7,7 @@ const Footer = () => {
     <footer className="relative w-full"> 
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
       <div className="container mx-auto  relative z-20">
-        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-1/2">
+        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-[30%]">
           
           {/* Text & Input Content */}
           <div className="w-full md:w-1/2 text-black z-10">
@@ -44,9 +44,9 @@ const Footer = () => {
 
       {/* 2. Main Footer Section - This takes the full screen width */}
       <div 
-        className="w-full bg-[#000033] text-white pt-[200px] pb-12"
+        className="w-full bg-[#000033] text-white pt-[180px] pb-12 mt-[-10px]"
         style={{ 
-          // backgroundImage: `url('/assets/images/Faculty/Logo.png')`,
+          backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}

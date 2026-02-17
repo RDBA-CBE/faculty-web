@@ -1,8 +1,57 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Dropdown, useSetState } from "@/utils/function.utils";
+import Models from "@/imports/models.import";
+import CustomSelect from "../dropdown";
 
 const NewHeroSection = () => {
+  const router = useRouter();
+  const [state, setState] = useSetState({
+    search: "",
+    location: "",
+    colleges: [],
+    locationList: [],
+  });
+
+  useEffect(() => {
+    locationList();
+    collegeList();
+  }, []);
+
+  const locationList = async () => {
+    try {
+      const res: any = await Models.location.list();
+      const dropdown: any = Dropdown(res?.results, "city");
+      setState({
+        locationList: dropdown,
+      });
+    } catch (error) {
+      console.log("error fetching locations", error);
+    }
+  };
+
+  const collegeList = async () => {
+    try {
+      const res: any = await Models.colleges.list();
+      const dropdown = Dropdown(res?.results, "name");
+
+      setState({
+        collgeList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (state.search) params.append("search", state.search);
+    if (state.location) params.append("location", state.location);
+    router.push(`/jobs?${params.toString()}`);
+  };
+
   return (
     <section className="relative min-h-[600px] lg:min-h-[600px] flex items-center overflow-hidden">
       {/* Background Image */}
@@ -26,7 +75,9 @@ const NewHeroSection = () => {
                 Find Your Dream Job Today!
               </h1>
               <p className="text-white max-w-xl text-base lg:text-lg leading-relaxed">
-                Ultrices purus dolor viverra mi laoreet at cursus justo. Ultrices purus diam egestas amet faucibus tempor blandit. Elit velit mauris aliquam est diam. Leo
+                Ultrices purus dolor viverra mi laoreet at cursus justo.
+                Ultrices purus diam egestas amet faucibus tempor blandit. Elit
+                velit mauris aliquam est diam. Leo
               </p>
             </div>
 
@@ -36,17 +87,45 @@ const NewHeroSection = () => {
                 type="text"
                 placeholder="Job Title or College"
                 className="w-full sm:flex-1 px-6 py-4 sm:py-3 focus:outline-none text-base sm:text-base rounded-full sm:rounded-l-full sm:rounded-r-none border-b sm:border-b-0 border-gray-100 placeholder:text-gray-400"
+                value={state.search}
+                onChange={(e) => setState({ search: e.target.value })}
               />
               <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-              <select className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-b sm:border-b-0 border-gray-100 appearance-none cursor-pointer text-gray-700">
-                <option>Select Location</option>
-              </select>
-              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-              <select className="w-full sm:w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-b sm:border-b-0 border-gray-100 appearance-none cursor-pointer text-gray-700">
-                <option>Select Category</option>
-              </select>
+              <div>
+                <CustomSelect
+                  className="w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
+                  placeholder="Select Location"
+                  options={state.locationList}
+                  value={state?.location || ""}
+                  onChange={(selected) =>
+                    setState({
+                      ...state,
+                      location: selected ? selected.value : "",
+                    })
+                  }
+                />
+              </div>
 
-              <button className="w-full sm:w-auto bg-[#F2B31D] text-black px-8 py-4 sm:py-3 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-base font-semibold whitespace-nowrap">
+              {/* <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+             <div>
+                <CustomSelect
+                  className="w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
+                  placeholder="Select Colleges"
+                  options={state.collgeList}
+                  value={state?.colleges || ""}
+                  onChange={(selected) =>
+                    setState({
+                      ...state,
+                      colleges: selected ? selected.value : "",
+                    })
+                  }
+                />
+              </div> */}
+
+              <button
+                className="w-full sm:w-auto bg-[#F2B31D] text-black px-8 py-4 sm:py-3 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-base font-semibold whitespace-nowrap"
+                onClick={handleSearch}
+              >
                 <Search className="w-5 h-5" />
                 Search Job
               </button>
@@ -65,9 +144,7 @@ const NewHeroSection = () => {
                 <div className="text-4xl lg:text-3xl font-bold text-white mb-1">
                   9,99%
                 </div>
-                <div className="text-white text-base">
-                  Success Probability
-                </div>
+                <div className="text-white text-base">Success Probability</div>
               </div>
 
               <div className="flex flex-col gap-2">

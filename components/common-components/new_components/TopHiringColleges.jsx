@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { useRouter } from "next/navigation";
 
 const colleges = [
   {
@@ -41,6 +42,7 @@ const colleges = [
 ];
 
 const TopHiringColleges = () => {
+  const router = useRouter();
   return (
     <section className="py-12 lg:py-20 bg-gray-50">
       <div className="section-wid w-full">
@@ -92,6 +94,7 @@ const TopHiringColleges = () => {
                 <SwiperSlide key={college.id}>
                   <div
                     className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-gray-200 bg-white hover:bg-[#0a1551] transition-all duration-300"
+                    onClick={() => router.push(`/jobs`)}
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100">
                       <img
@@ -161,7 +164,7 @@ const TopHiringColleges = () => {
                 </h4>
                 <p className="text-sm mb-4 py-4 text-white">Add Resume Now!</p>
 
-                <button className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition">
+                <button className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"  onClick={() => router.push(`/profile`)}>
                   Add your Resume
                 </button>
               </div>
