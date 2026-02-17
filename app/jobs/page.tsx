@@ -665,7 +665,7 @@ export default function JobsPage() {
                       setState({ jobID: state?.jobDetail?.id });
                       handleApply();
                     }}
-                    className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
+                    className="bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-white hover:text-white"
                   >
                     Apply Now
                   </button>
@@ -702,20 +702,22 @@ export default function JobsPage() {
                 </div>
 
                 {/* Responsibilities */}
-                {state?.responsibilities && <div className="border-b  px-2 py-2 pb-5">
-                  <h2 className="text-lg font-semibold text-black mb-4">
-                    Key responsibilities
-                  </h2>
-                  <ul className="space-y-3">
-                    {state?.responsibilities?.map((item, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                {state?.responsibilities && (
+                  <div className="border-b  px-2 py-2 pb-5">
+                    <h2 className="text-lg font-semibold text-black mb-4">
+                      Key responsibilities
+                    </h2>
+                    <ul className="space-y-3">
+                      {state?.responsibilities?.map((item, index) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                        <span className="">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>}
+                          <span className="">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
                 {/* Requirements */}
                 {state?.jobDetail?.requirements && (
@@ -854,7 +856,7 @@ export default function JobsPage() {
                       }}
                       className={`cursor-pointer p-4 rounded-lg  transition-all hover:shadow-lg ${
                         selectedJob?.id === job.id
-                          ? "border border-amber-400 bg-clr1 shadow-md"
+                          ? "border  bg-[#24266e] shadow-md text-white"
                           : "hover:border hover:border-gray-300 bg-clr2"
                       }`}
                     >
@@ -878,10 +880,14 @@ export default function JobsPage() {
                           )}
 
                           <div className="min-w-0 flex-1">
-                            <h3 className="font-semibold text-gray-900 leading-tight mb-1">
+                            <h3
+                              className={`font-semibold  leading-tight mb-1 ${selectedJob?.id === job.id ? "text-white" : "text-gray-900"}`}
+                            >
                               {job.job_title}
                             </h3>
-                            <p className="text-gray-600 text-sm font-medium">
+                            <p
+                              className={`${selectedJob?.id === job.id ? "text-gray-200" : "text-gray-600"} text-sm font-medium`}
+                            >
                               {job.college?.name}
                             </p>
                           </div>
@@ -893,40 +899,52 @@ export default function JobsPage() {
                       </div>
 
                       {/* Experience and Salary */}
-                      <div className="flex items-center gap-3 text-xs text-gray-600 mb-2">
+                      <div
+                        className={`flex items-center gap-3 text-xs mb-2 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
+                      >
                         <div className="flex items-center gap-1">
-                          <Briefcase className="w-3 h-3" />
-                          <span>{job.experiences?.name}</span>
+                          <Briefcase className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
+                          <span className={`${selectedJob?.id === job.id && "text-white"}`}>{job.experiences?.name}</span>
                         </div>
-                        <div className="w-px h-3 bg-gray-300"></div>
+                        <div
+                          className={`w-px h-3 ${selectedJob?.id === job.id ? "bg-gray-600" : "bg-gray-300"}`}
+                        ></div>
                         <div className="flex items-center gap-1">
                           {job.salary_range_obj?.name?.includes("$") ? (
-                            <DollarSign className="w-3 h-3" />
+                            <DollarSign className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
                           ) : (
-                            <IndianRupee className="w-3 h-3" />
+                            <IndianRupee className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
                           )}
-                          <span className="font-semibold text-gray-900">
+                          <span
+                            className={`font-semibold ${selectedJob?.id === job.id ? "text-white" : "text-gray-900"}`}
+                          >
                             {job?.salary_range_obj?.name}
                           </span>
                         </div>
                       </div>
 
                       {/* Location */}
-                      <div className="flex items-center gap-1 text-xs text-gray-600 mb-3">
-                        <MapPin className="w-3 h-3" />
-                        <span>
+                      <div
+                        className={`flex items-center gap-1 text-xs mb-3 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
+                      >
+                        <MapPin className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
+                        <span className={`${selectedJob?.id === job.id && "text-white"}`}>
                           {job.locations?.map((item) => item.city).join(", ")}
                         </span>
                       </div>
 
                       {/* Footer */}
-                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div
+                        className={`flex items-center justify-between pt-3 border-t ${selectedJob?.id === job.id ? "border-gray-400" : "border-gray-300"}`}
+                      >
                         {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          <span>
+                        <div
+                          className={`flex items-center gap-1 text-xs ${selectedJob?.id === job.id ? "text-white" : "text-gray-500"}`}
+                        >
+                          <Clock className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`} />
+                          <span className={`${selectedJob?.id === job.id && "text-white"}`}>
                             {moment(job.created_at).isValid() &&
                             moment(job.created_at).year() > 1900
                               ? moment(job.created_at).fromNow()
@@ -1017,7 +1035,7 @@ export default function JobsPage() {
                             setState({ jobID: state?.jobDetail?.id });
                             handleApply();
                           }}
-                          className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
+                          className="bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-white hover:text-white"
                         >
                           Apply Now
                         </button>
@@ -1053,20 +1071,22 @@ export default function JobsPage() {
                     </div>
 
                     {/* Responsibilities */}
-                    {state?.responsibilities && <div className="border-b  px-2 py-2 pb-5">
-                      <h2 className="text-lg font-semibold text-black mb-4">
-                        Key responsibilities
-                      </h2>
-                      <ul className="space-y-3">
-                        {state?.responsibilities?.map((item, index) => (
-                          <li key={index} className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                    {state?.responsibilities && (
+                      <div className="border-b  px-2 py-2 pb-5">
+                        <h2 className="text-lg font-semibold text-black mb-4">
+                          Key responsibilities
+                        </h2>
+                        <ul className="space-y-3">
+                          {state?.responsibilities?.map((item, index) => (
+                            <li key={index} className="flex items-start gap-3">
+                              <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                            <span className="">{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>}
+                              <span className="">{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                     {/* Requirements */}
                     {state?.jobDetail?.requirements && (
