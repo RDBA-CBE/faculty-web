@@ -76,6 +76,7 @@ export default function JobsPage() {
   const searchParams = useSearchParams();
   const jobIdParam = searchParams.get("id");
   const searchParam = searchParams.get("search");
+  const locationParam = searchParams.get("location");
 
   const [state, setState] = useSetState({
     firstName: "",
@@ -93,6 +94,7 @@ export default function JobsPage() {
     prev: null,
     // search: "",
     search: searchParam || "",
+    location: locationParam || null,
     sortBy: "",
     sortOrder: "",
     errors: {},
@@ -109,7 +111,7 @@ export default function JobsPage() {
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
   const [filters, setFilters] = useState({
     searchQuery: "",
-    location: "",
+    location: locationParam || "",
     categories: [],
     jobTypes: [],
     experienceLevels: null,
@@ -147,6 +149,13 @@ export default function JobsPage() {
       setState({ search: query });
     }
   }, [searchParam]);
+
+  useEffect(() => {
+    const locationQuery = locationParam || "";
+    if (locationQuery !== filters.location) {
+      setFilters((prevFilters) => ({ ...prevFilters, location: locationQuery }));
+    }
+  }, [locationParam]);
 
   useEffect(() => {
     jobList(1);
@@ -560,6 +569,23 @@ export default function JobsPage() {
         [field]: "",
       },
     });
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      searchQuery: "",
+      location: "",
+      categories: [],
+      jobTypes: [],
+      experienceLevels: null,
+      datePosted: "All",
+      salaryRange: [],
+      tags: [],
+      experience: "",
+      jobID: null,
+      colleges: [],
+    });
+    setState({ search: "" });
   };
 
   return (
@@ -1514,6 +1540,7 @@ export default function JobsPage() {
                       //   })
                       // }
                       className="mt-6 text-amber-600 font-bold hover:underline"
+                      onClick={handleClearFilters}
                     >
                       Clear all filters
                     </button>

@@ -100,18 +100,22 @@ const Header = () => {
       console.log("hello");
       console.log(state.first_name);
 
-      setState({ btnLoading: true });
+      setState({ btnLoading: true, errors: {} });
 
       const validateBody = {
         first_name: state.first_name,
         last_name: state.last_name,
 
-        email: state.email.trim(),
+        email: state.email?.trim(),
         password: state.password,
         password_confirm: state.confirmPassword,
       };
 
       await Validation.register.validate(validateBody, { abortEarly: false });
+
+      if (!state.terms) {
+        throw { isTerms: true };
+      }
 
       const body = {
         username: state.first_name + " " + state.last_name,
@@ -128,17 +132,27 @@ const Header = () => {
         isOpenReg: false,
         // isOpenEmailVerify: true,
         errors: {},
-        isOpenLogin: false,
+        isOpenLogin: true,
+        btnLoading: false,
       });
+
+      Success("Registration Successfully, Please login to continue")
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
         error.inner.forEach((err) => {
           validationErrors[err.path] = err?.message;
         });
+
+        if (!state.terms) {
+          validationErrors.terms = "Please accept terms and conditions";
+        }
+
         console.log("✌️validationErrors --->", validationErrors);
 
         setState({ errors: validationErrors, btnLoading: false });
+      } else if (error.isTerms) {
+        setState({ errors: { terms: "Please accept terms and conditions" }, btnLoading: false });
       } else {
         Failure(error?.error);
         setState({ btnLoading: false });
@@ -550,7 +564,7 @@ const Header = () => {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <Input
-                  placeholder="First Name"
+                  placeholder="First Name *"
                   value={state.first_name || ""}
                   onChange={(e) =>
                     handleFormChange("first_name", e.target.value)
@@ -560,7 +574,7 @@ const Header = () => {
                   error={state.errors?.first_name}
                 />
                 <Input
-                  placeholder="Last Name"
+                  placeholder="Last Name *"
                   value={state.last_name || ""}
                   onChange={(e) =>
                     handleFormChange("last_name", e.target.value)
@@ -573,7 +587,7 @@ const Header = () => {
 
               <Input
                 type="email"
-                placeholder="Email address"
+                placeholder="Email address *"
                 value={state.email || ""}
                 onChange={(e) => handleFormChange("email", e.target.value)}
                 required
@@ -583,7 +597,7 @@ const Header = () => {
 
               <Input
                 type="password"
-                placeholder="Password"
+                placeholder="Password *"
                 value={state.password || ""}
                 onChange={(e) => handleFormChange("password", e.target.value)}
                 required
@@ -593,25 +607,34 @@ const Header = () => {
 
               <Input
                 type="password"
-                placeholder="Confirm Password"
+                placeholder="Confirm Password *"
                 value={state.confirmPassword || ""}
                 onChange={(e) =>
                   handleFormChange("confirmPassword", e.target.value)
                 }
                 required
                 bg="ffffff"
-                error={state.errors?.confirmPassword}
+                error={state.errors?.password_confirm}
               />
             </div>
 
-            <div className="flex items-center">
-              <input type="checkbox" className="mr-2" />
-              <span className="text-gray-600 text-sm">
-                I've read and agree with your{" "}
-                <button className="text-amber-500 hover:text-amber-600">
-                  Terms of Services
-                </button>
-              </span>
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  className="mr-2"
+                  checked={state.terms || false}
+                  onChange={(e) => handleFormChange("terms", e.target.checked)}
+                />
+                <span className="text-gray-600 text-sm">
+                  I've read and agree with your{" "}
+                  <button className="text-amber-500 hover:text-amber-600">
+                    Terms of Services
+                  </button>
+                  <span className="text-red-500"> *</span>
+                </span>
+              </div>
+              {state.errors?.terms && <span className="text-red-500 text-xs mt-1">{state.errors.terms}</span>}
             </div>
 
             <Button
