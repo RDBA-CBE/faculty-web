@@ -41,7 +41,7 @@ const auth = {
 
   change_password: (body: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `register/`;
+      let url = `auth/change-password/`;
       instance()
         .post(url, body)
         .then((res) => {
@@ -60,9 +60,47 @@ const auth = {
 
   forget_password: (body: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `register/`;
+      let url = `auth/forgot-password/`;
       instance()
         .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response?.data);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  reset_password: (body: any, uid: any, token: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `auth/reset-password/${uid}/${token}/`;
+      instance()
+        .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response?.data);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  verify_email: ( token: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `auth/verify-email?token=${token}/`;
+      instance()
+        .get(url, {})
         .then((res) => {
           resolve(res.data);
         })

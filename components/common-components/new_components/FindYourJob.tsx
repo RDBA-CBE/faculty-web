@@ -14,6 +14,9 @@ import {
   Plus,
   Check,
   Loader2,
+  Share,
+  Share2,
+  Clock,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -29,6 +32,7 @@ import Models from "@/imports/models.import";
 import moment from "moment";
 import CustomSelect from "../dropdown";
 import useDebounce from "../useDebounce";
+import { RWebShare } from "react-web-share";
 
 const categories = [
   { name: "Assistant Professor", count: 20 },
@@ -200,10 +204,10 @@ const FindYourJob = () => {
              hover:bg-white
              hover:border-none
              hover:-translate-y-1
-             hover:shadow-2xl hover:shadow-gray-300"
+             hover:shadow-2xl hover:shadow-gray-300 h-full"
                   >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-start gap-3">
+                    <div className="flex items-start justify-between mb-3 h-full">
+                      <div className="flex items-start gap-3 h-full">
                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100 overflow-hidden">
                           {job?.college?.college_logo ? (
                             <Image
@@ -244,22 +248,40 @@ const FindYourJob = () => {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-center justify-between w-100">
                             <button
                               onClick={() => router.push(`/jobs?id=${job.id}`)}
                               className="border border-[#0a1551] text-[#0a1551] px-5 py-1.5 rounded-full text-sm font-medium hover:bg-[#0a1551] hover:text-white transition"
                             >
                               View Job
                             </button>
-                            <span className="text-xs text-gray-400">
-                              {job.postedTime}
-                            </span>
                           </div>
                         </div>
                       </div>
-                      {/* <button className="text-gray-300 hover:text-red-500 transition">
-                      <Heart className="w-5 h-5" />
-                    </button> */}
+                      <div className="flex flex-col items-end justify-between h-full">
+                        <RWebShare
+                          data={{
+                            title: "Faculty Plus",
+                            text: "Check this out!",
+                            url: window.location.href,
+                          }}
+                          onClick={() => console.log("shared successfully!")}
+                        >
+                          <button className="text-gray-800 hover:text-black transition">
+                            <Share2 className="w-5 h-5" />
+                          </button>
+                        </RWebShare>
+
+                        <div className="flex items-center justify-end text-end gap-1 text-xs text-gray-500">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {moment(job.created_at).isValid() &&
+                            moment(job.created_at).year() > 1900
+                              ? moment(job.created_at).fromNow()
+                              : "Just now"}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -420,9 +442,7 @@ const FindYourJob = () => {
                       className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
                     >
                       <ChevronRight className="w-4 h-4" />
-                      <span className="text-base">
-                        {category.name}
-                      </span>
+                      <span className="text-base">{category.name}</span>
                     </div>
                   ))}
                 </div>

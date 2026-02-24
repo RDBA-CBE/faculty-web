@@ -20,6 +20,7 @@ import {
   GitCompareArrowsIcon,
   Heart,
   Loader,
+  Lock,
   LogIn,
   LogOut,
   MenuIcon,
@@ -91,6 +92,18 @@ const Header = () => {
     };
   }, [setState]);
 
+  useEffect(() => {
+    const handleOpenLoginModal = () => {
+      setState({ isOpenLogin: true });
+    };
+
+    window.addEventListener("openLoginModal", handleOpenLoginModal);
+
+    return () => {
+      window.removeEventListener("openLoginModal", handleOpenLoginModal);
+    };
+  }, [setState]);
+
   const handleLogout = async () => {
     try {
       setState({ logoutLoading: true });
@@ -148,7 +161,7 @@ const Header = () => {
         btnLoading: false,
       });
 
-      Success("Registration Successfully, Please login to continue")
+      Success("Registration completed Successfully, Please login to continue")
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -307,6 +320,11 @@ const Header = () => {
                     <DropdownMenuItem onClick={() => router.push("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => router.push("/change-password")}>
+                      <Lock className="mr-2 h-4 w-4" />
+                      <span>Change password</span>
                     </DropdownMenuItem>
 
                     <DropdownMenuSeparator />
@@ -468,11 +486,10 @@ const Header = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center">
-                <input type="checkbox" className="mr-2" />
-                <span className="text-gray-600">Remember Me</span>
-              </label>
-              <button className="text-amber-500 hover:text-amber-600 text-sm">
+              
+              <button className="text-amber-500 hover:text-amber-600 text-sm" onClick={()=>{router.push(`/forget-password`)
+                setState({isOpenLogin: false})
+              }}>
                 Forget password?
               </button>
             </div>
@@ -488,19 +505,8 @@ const Header = () => {
 
             <div className="text-center text-gray-500 my-4">or</div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="outline"
-                className="flex items-center justify-center gap-2 py-3"
-              >
-                <svg className="w-5 h-5 text-blue-600" viewBox="0 0 24 24">
-                  <path
-                    fill="currentColor"
-                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-                  />
-                </svg>
-                Sign in with Facebook
-              </Button>
+            <div className="grid grid-cols-1 justify-center gap-3">
+              
               <Button
                 variant="outline"
                 className="flex items-center justify-center gap-2 py-3"
