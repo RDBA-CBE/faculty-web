@@ -98,7 +98,7 @@ const auth = {
 
   verify_email: ( token: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `auth/verify-email?token=${token}/`;
+      let url = `auth/verify-email?token=${token}`;
       instance()
         .get(url, {})
         .then((res) => {
