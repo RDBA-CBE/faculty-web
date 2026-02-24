@@ -1,7 +1,6 @@
 "use client";
 
 import Filterbar from "@/components/component/filterbar.component";
-import ChipFilters from "@/components/component/chipFilters.component";
 import useDebounce from "@/components/common-components/useDebounce";
 
 import { MOCK_JOBS } from "@/utils/constant.utils";
@@ -71,12 +70,14 @@ import { useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
 
 import { RWebShare } from "react-web-share";
+import ChipFilters from "@/components/component/chipFilters.component";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
   const jobIdParam = searchParams.get("id");
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
+  const collegeParam = searchParams.get("college");
 
   const [state, setState] = useSetState({
     firstName: "",
@@ -111,7 +112,7 @@ export default function JobsPage() {
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
   const [filters, setFilters] = useState({
     searchQuery: "",
-    location: locationParam || "",
+    location: locationParam ? parseInt(locationParam, 10) : null,
     categories: [],
     jobTypes: [],
     experienceLevels: null,
@@ -120,7 +121,7 @@ export default function JobsPage() {
     tags: [],
     experience: "",
     jobID: null,
-    colleges: [],
+    colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
   });
 
   const debouncedSearch = useDebounce(state.search, 500);
@@ -151,11 +152,27 @@ export default function JobsPage() {
   }, [searchParam]);
 
   useEffect(() => {
-    const locationQuery = locationParam || "";
+    const locationQuery = locationParam ? parseInt(locationParam, 10) : null;
     if (locationQuery !== filters.location) {
-      setFilters((prevFilters) => ({ ...prevFilters, location: locationQuery }));
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        location: isNaN(locationQuery) ? null : locationQuery,
+      }));
     }
   }, [locationParam]);
+
+  useEffect(() => {
+    const collegeQuery = collegeParam ? [parseInt(collegeParam, 10)] : [];
+    if (
+      filters.colleges.length !== collegeQuery.length ||
+      (collegeQuery.length > 0 && filters.colleges[0] !== collegeQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        colleges: collegeQuery,
+      }));
+    }
+  }, [collegeParam]);
 
   useEffect(() => {
     jobList(1);
@@ -168,6 +185,7 @@ export default function JobsPage() {
     filters?.datePosted,
     filters.salaryRange,
     filters?.tags,
+    filters?.colleges
   ]);
 
   const categoryList = async () => {
@@ -221,11 +239,11 @@ export default function JobsPage() {
 
   const collegeList = async () => {
     try {
-      const res: any = await Models.colleges.list();
-      const dropdown = Dropdown(res?.results, "name");
+      const res: any = await Models.colleges.collegeList();
+      const dropdown = Dropdown(res?.results, "college_name");
 
       setState({
-        collgeList: dropdown,
+        collegeList: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -500,6 +518,10 @@ export default function JobsPage() {
       body.salary_range = filters.salaryRange;
     }
 
+    if (filters?.colleges?.length > 0) {
+      body.colleges = filters.colleges;
+    }
+
     if (filters?.tags?.length > 0) {
       body.tags = filters.tags?.map((tag) => tag.value).join(",");
     }
@@ -574,7 +596,7 @@ export default function JobsPage() {
   const handleClearFilters = () => {
     setFilters({
       searchQuery: "",
-      location: "",
+      location: null,
       categories: [],
       jobTypes: [],
       experienceLevels: null,
@@ -890,6 +912,7 @@ export default function JobsPage() {
                         setSelectedJob(job);
                         setState({ jobID: job.id });
                         jobDetail(job.id);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
                       }}
                       className={`cursor-pointer p-4 rounded-lg  transition-all hover:shadow-lg ${
                         selectedJob?.id === job.id
@@ -1310,7 +1333,7 @@ export default function JobsPage() {
                   locationList={state?.locationList}
                   jobTypeList={state?.jobTypeList}
                   experienceList={state?.experienceList}
-                  collegeList={state?.collgeList}
+                  collegeList={state?.collegeList}
                   datePostedList={state?.datePostedList}
                   salaryRangeList={state?.salaryRangeList}
                   tagsList={state?.tagsList}
@@ -1327,7 +1350,7 @@ export default function JobsPage() {
                     locationList={state?.locationList}
                     jobTypeList={state?.jobTypeList}
                     experienceList={state?.experienceList}
-                    collegeList={state?.collgeList}
+                    collegeList={state?.collegeList}
                     datePostedList={state?.datePostedList}
                     salaryRangeList={state?.salaryRangeList}
                     tagsList={state?.tagsList}
@@ -1358,11 +1381,11 @@ export default function JobsPage() {
 
                         <CustomSelect
                           options={state.locationList}
-                          value={filters?.location || ""}
+                          value={filters.location}
                           onChange={(selected) =>
                             setFilters({
                               ...filters,
-                              location: selected ? selected.value : "",
+                              location: selected ? selected.value : null,
                             })
                           }
                           placeholder="Location"
@@ -1426,14 +1449,15 @@ export default function JobsPage() {
                               datePostedList={state?.datePostedList}
                               salaryRangeList={state?.salaryRangeList}
                               tagsList={state?.tagsList}
+                              collegeList={state?.collegeList}
                             />
                           </div>
                         </SheetContent>
                       </Sheet>
                     </div>
                   </div>
-                </div>
-                {/* content input header end */}
+
+                 
 
                 <ChipFilters
                   filters={filters}
@@ -1444,11 +1468,14 @@ export default function JobsPage() {
                   datePostedList={state?.datePostedList}
                   salaryRangeList={state?.salaryRangeList}
                   tagsList={state?.tagsList}
-                  collegeList={state?.collgeList}
+                  collegeList={state?.collegeList}
                   locationList={state?.locationList}
                 />
 
                 {/* content body job list */}
+                </div>
+                
+                
 
                 {state.loading ? (
                   <div className="flex items-center justify-center h-[100vh] ">
@@ -1481,6 +1508,7 @@ export default function JobsPage() {
                               setState({ jobID: job.id });
                               jobDetail(job.id);
                               if (isDesktopScreen) setShowJobDetail(true);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
                             }
                           }}
                           className="cursor-pointer transition-transform hover:scale-10"

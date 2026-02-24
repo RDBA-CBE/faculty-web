@@ -24,6 +24,10 @@ const job = {
         url += `&experience=${encodeURIComponent(body.experience)}`;
       }
 
+       if (body.colleges) {
+        url += `&college=${encodeURIComponent(body.colleges)}`;
+      }
+
       if (body.created_by) {
         url += `&created_by=${body.created_by}`;
       }

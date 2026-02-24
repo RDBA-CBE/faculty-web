@@ -22,7 +22,7 @@ const auth = {
 
   create: (body: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `users/`;
+      let url = `users/signin/`;
       instance()
         .post(url, body)
         .then((res) => {

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Poppins, Roboto } from "next/font/google";
 import Providers from "./providers";
+import ScrollToTop from "../ScrollToTop";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${poppins.variable} ${roboto.variable}`}>
       <body className="font-sans antialiased bg-white">
-        <Providers>{children}</Providers>
+        <Providers>
+          <ScrollToTop />
+          {children}
+        </Providers>
       </body>
     </html>
   );

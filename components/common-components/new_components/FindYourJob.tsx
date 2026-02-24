@@ -19,13 +19,16 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import { Dropdown, Failure, getAvatarColor, useSetState } from "@/utils/function.utils";
+import {
+  Dropdown,
+  Failure,
+  getAvatarColor,
+  useSetState,
+} from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import moment from "moment";
 import CustomSelect from "../dropdown";
 import useDebounce from "../useDebounce";
-
-
 
 const categories = [
   { name: "Assistant Professor", count: 20 },
@@ -38,7 +41,6 @@ const categories = [
 ];
 
 const FindYourJob = () => {
-
   const router = useRouter();
   const [state, setState] = useSetState({
     count: 0,
@@ -48,23 +50,19 @@ const FindYourJob = () => {
     search: "",
     location: "",
     locationList: [],
-
-  })
+    collegesList: [],
+  });
 
   const debouncedSearch = useDebounce(state.search, 500);
 
+  useEffect(() => {
+    locationList();
+    jobList(1);
+  }, [debouncedSearch, state.location]);
 
   useEffect(() => {
-    locationList()
-    jobList(1)
-  }, [
-    debouncedSearch,
-    state.location,
-  ])
-
-  useEffect(() => {
-    jobList(state.page)
-  }, [state.page])
+    jobList(state.page);
+  }, [state.page]);
 
   const locationList = async () => {
     try {
@@ -77,7 +75,6 @@ const FindYourJob = () => {
       console.log("✌️error --->", error);
     }
   };
-
 
   const jobList: any = async (page = 1) => {
     try {
@@ -121,8 +118,6 @@ const FindYourJob = () => {
     //   .format("YYYY-MM-DD");
     // body.date_posted_before = moment().format("YYYY-MM-DD");
 
-
-
     return body;
   };
 
@@ -138,8 +133,6 @@ const FindYourJob = () => {
     }
     return pages;
   };
-
-
 
   return (
     <section className="py-12 lg:py-16 ">
@@ -179,7 +172,6 @@ const FindYourJob = () => {
                         location: selected ? selected.value : "",
                       })
                     }
-
                   />
                 </div>
                 <div className="w-px h-6 bg-gray-200"></div>
@@ -213,24 +205,29 @@ const FindYourJob = () => {
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-start gap-3">
                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100 overflow-hidden">
-                          {job?.college?.college_logo ? <Image
-                            src={job?.college?.college_logo}
-                            alt={job?.college?.name}
-                            width={50}
-                            height={50}
-                            className="object-contain"
-                          />
-                            : <div
+                          {job?.college?.college_logo ? (
+                            <Image
+                              src={job?.college?.college_logo}
+                              alt={job?.college?.name}
+                              width={50}
+                              height={50}
+                              className="object-contain"
+                            />
+                          ) : (
+                            <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                             >
                               {job?.college?.name?.charAt(0).toUpperCase()}
-                            </div>}
+                            </div>
+                          )}
                         </div>
                         <div>
                           <h3 className="sub-ti font-semibold text-black mb-0.5">
                             {job.job_title}
                           </h3>
-                          <p className="text-sm text-gray-600">{job.college?.name}</p>
+                          <p className="text-sm text-gray-600">
+                            {job.college?.name}
+                          </p>
 
                           <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4">
                             <div className="flex items-center gap-1.5">
@@ -239,7 +236,11 @@ const FindYourJob = () => {
                             </div>
                             <div className="flex items-center gap-1.5">
                               <MapPin className="w-3.5 h-3.5 text-gray-500" />
-                              <span>{job.locations?.map((item) => item.city).join(", ")}</span>
+                              <span>
+                                {job.locations
+                                  ?.map((item) => item.city)
+                                  .join(", ")}
+                              </span>
                             </div>
                           </div>
 
@@ -260,10 +261,6 @@ const FindYourJob = () => {
                       <Heart className="w-5 h-5" />
                     </button> */}
                     </div>
-
-
-
-
                   </div>
                 ))}
               </div>
@@ -271,54 +268,53 @@ const FindYourJob = () => {
 
             {/* Pagination */}
 
-           {state.next && <div className="flex items-center justify-center gap-2 py-8">
-
-              {/* Left Arrow */}
-              <button
-                disabled={!state.prev}
-                onClick={() =>
-                  setState((prev) => ({ ...prev, page: prev.page - 1 }))
-                }
-                className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
+            {state.next && (
+              <div className="flex items-center justify-center gap-2 py-8">
+                {/* Left Arrow */}
+                <button
+                  disabled={!state.prev}
+                  onClick={() =>
+                    setState((prev) => ({ ...prev, page: prev.page - 1 }))
+                  }
+                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
       ${!state.prev ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"} 
       transition`}
-              >
-                ‹
-              </button>
+                >
+                  ‹
+                </button>
 
-              {/* Page Numbers */}
-              <div className="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm border border-gray-200">
-                {getVisiblePages().map((page) => (
-                  <button
-                    key={page}
-                    onClick={() =>
-                      setState((prev) => ({ ...prev, page }))
-                    }
-                    className={`h-8 w-8 rounded-full text-sm transition
-          ${state.page === page
-                        ? "bg-[#050A4E] text-white font-medium"
-                        : "text-gray-500 hover:bg-gray-100"
-                      }`}
-                  >
-                    {page}
-                  </button>
-                ))}
-              </div>
+                {/* Page Numbers */}
+                <div className="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm border border-gray-200">
+                  {getVisiblePages().map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => setState((prev) => ({ ...prev, page }))}
+                      className={`h-8 w-8 rounded-full text-sm transition
+          ${
+            state.page === page
+              ? "bg-[#050A4E] text-white font-medium"
+              : "text-gray-500 hover:bg-gray-100"
+          }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
+                </div>
 
-              {/* Right Arrow */}
-              <button
-                disabled={!state.next}
-                onClick={() =>
-                  setState((prev) => ({ ...prev, page: prev.page + 1 }))
-                }
-                className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
+                {/* Right Arrow */}
+                <button
+                  disabled={!state.next}
+                  onClick={() =>
+                    setState((prev) => ({ ...prev, page: prev.page + 1 }))
+                  }
+                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
       ${!state.next ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"} 
       transition`}
-              >
-                ›
-              </button>
-            </div>}
-
+                >
+                  ›
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Right Sidebar */}
@@ -359,7 +355,7 @@ const FindYourJob = () => {
                         ) : (
                           <div
                             className={`w-full h-full ${getAvatarColor(
-                              job?.college?.name
+                              job?.college?.name,
                             )} flex items-center justify-center text-white font-bold text-4xl`}
                           >
                             {job?.college?.name?.charAt(0).toUpperCase()}
@@ -413,24 +409,19 @@ const FindYourJob = () => {
 
               <div className="bg-white px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className="space-y-3 mb-6">
-                  {[
-                    { title: "Hostel Warden", count: 20 },
-                    { title: "Placement Officer", count: 14 },
-                    { title: "Lab assistant", count: 52 },
-                    { title: "Research Associate", count: 33 },
-                    { title: "Associate Professor", count: 14 },
-                    { title: "Academic Coordinator", count: 52 },
-                    { title: "Lab Instructor", count: 33 },
-                  ].map((category, index) => (
+                  {categories.map((category, index) => (
                     <div
                       key={index}
-                      onClick={() => router.push(`/jobs?search=${encodeURIComponent(category.title)}`)}
+                      onClick={() =>
+                        router.push(
+                          `/jobs?search=${encodeURIComponent(category.name)}`,
+                        )
+                      }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
                     >
                       <ChevronRight className="w-4 h-4" />
                       <span className="text-base">
-                        {category.title} 
-                        {/* ({category.count}) */}
+                        {category.name}
                       </span>
                     </div>
                   ))}

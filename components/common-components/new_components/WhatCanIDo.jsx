@@ -1,13 +1,42 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useSetState } from "@/utils/function.utils";
+import Models from "@/imports/models.import";
 
 const WhatCanIDo = () => {
-
   const router = useRouter();
+
+  const [state, setState] = useSetState({
+    // Profile Data
+    loading: false,
+    collegesList: [],
+  });
+
+  useEffect(() => {
+    collegeList();
+  }, []);
+
+  const collegeList = async () => {
+    try {
+      setState({ loading: true });
+      const res = await Models.colleges.collegeList();
+
+      setState({
+        loading: false,
+        collegesList: res?.results,
+      });
+    } catch (error) {
+      setState({ loading: false });
+      // Failure("Failed to fetch jobs");
+    }
+  };
+
+  console.log("collegesList", state?.collegesList);
+  
   return (
     <section className="pb-12 pt-8 lg:pb-16 pt-12 ">
       <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
@@ -99,32 +128,32 @@ const WhatCanIDo = () => {
 
               <div className="bg-white px-6 pb-6 pt-4 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className=" mb-6">
-                  {[
-                    { name: "Kumaraguru College of Technology", jobs: 20 },
-                    { name: "karpagam College of Engineering", jobs: 22 },
-                    { name: "PSG College of Technology", jobs: 18 },
-                    { name: "Sri Kirishna Institutions", jobs: 34 },
-                  ].map((location, index) => (
+                  {state?.collegesList?.map((college, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
-                      onClick={() => router.push(`/jobs`)}
+                      onClick={() => router.push(`/jobs?college=${college.id}`)}
                     >
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-blue-500 flex-shrink-0" ></div>
+                      <div className="w-8 h-8 rounded-full  flex-shrink-0">
+                        <img className="rounded-full" src={college.college_logo} alt={college.college_name} />
+                      </div>
                       <div className="flex-1">
                         <h4 className="text-md font-semibold text-gray-800">
-                          {location.name}
+                          {college.college_name}
                         </h4>
                         <p className="text-sm text-gray-500">
-                          {location.jobs} Jobs
+                          {college.total_jobs} Jobs
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition" onClick={() => router.push(`/jobs`)}>
-                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center" >
+                <button
+                  className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition"
+                  onClick={() => router.push(`/jobs`)}
+                >
+                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
                     <Plus className="w-4 h-4" />
                   </div>
                   <span className="text-md">View All Job</span>

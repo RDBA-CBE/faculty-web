@@ -211,8 +211,8 @@ const Filterbar: React.FC<SidebarProps> = ({
           }
         /> */}
 
-        {/* <FilterSection
-          title="Choose Collges"
+        <FilterSection
+          title="Choose Colleges"
           items={collegeList ?? []}
           selected={filters.colleges}
           onToggle={(value) =>
@@ -221,7 +221,7 @@ const Filterbar: React.FC<SidebarProps> = ({
               colleges: toggleItem(filters.colleges, value),
             })
           }
-        /> */}
+        />
 
         <FilterSectionRadio
           title="Experience Level"

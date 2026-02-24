@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
@@ -9,6 +9,8 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useRouter } from "next/navigation";
+import { useSetState } from "@/utils/function.utils";
+import Models from "@/imports/models.import";
 
 const colleges = [
   {
@@ -43,6 +45,40 @@ const colleges = [
 
 const TopHiringColleges = () => {
   const router = useRouter();
+
+  const [state, setState] = useSetState({
+    // Profile Data
+    loading: false,
+    collegesList: [],
+    token: null,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setState({ token });
+  }, []);
+
+  useEffect(() => {
+    collgeList();
+  }, []);
+
+  const collgeList = async () => {
+    try {
+      setState({ loading: true });
+      const res = await Models.colleges.collegeList();
+
+      setState({
+        loading: false,
+        collegesList: res?.results,
+      });
+    } catch (error) {
+      setState({ loading: false });
+      // Failure("Failed to fetch jobs");
+    }
+  };
+
+  console.log("collegeList", state?.collegeList);
+
   return (
     <section className="py-12 lg:py-20 bg-gray-50">
       <div className="section-wid w-full">
@@ -90,37 +126,31 @@ const TopHiringColleges = () => {
               }}
               className="colleges-swiper"
             >
-              {colleges.map((college) => (
+              {state?.collegesList.map((college) => (
                 <SwiperSlide key={college.id}>
                   <div
                     className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-gray-200 bg-white hover:bg-[#0a1551] transition-all duration-300"
-                    onClick={() => router.push(`/jobs`)}
+                    onClick={() => router.push(`/jobs?college=${college.id}`)}
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100">
                       <img
-                        src={college.logo}
-                        alt={college.name}
+                        src={college.college_logo}
+                        alt={college.college_name}
                         className="w-14 h-14 object-contain"
                       />
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center px-2">
-                      <h3
-                        className="sub-ti font-semibold mb-1 leading-tight line-clamp-2 text-black group-hover:text-white transition-colors"
-                      >
-                        {college.name}
+                      <h3 className="sub-ti font-semibold mb-1 leading-tight line-clamp-2 text-black group-hover:text-white transition-colors">
+                        {college.college_name}
                       </h3>
-                      <p
-                        className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors"
-                      >
-                        {college.location}
+                      <p className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors">
+                        {college.college_address}
                       </p>
                     </div>
 
-                    <button
-                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
-                    >
-                      {college.openings} Openings
+                    <button className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black">
+                      {college.total_jobs} Openings
                     </button>
                   </div>
                 </SwiperSlide>
@@ -164,9 +194,23 @@ const TopHiringColleges = () => {
                 </h4>
                 <p className="text-sm mb-4 py-4 text-white">Add Resume Now!</p>
 
-                <button className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"  onClick={() => router.push(`/profile`)}>
-                  Add your Resume
-                </button>
+                {state?.token ? (
+                  <button
+                    className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
+                    onClick={() => router.push(`/profile`)}
+                  >
+                    Add your Resume
+                  </button>
+                ) : (
+                  <button
+                    className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
+                    onClick={() =>
+                      window.dispatchEvent(new CustomEvent("openRegisterModal"))
+                    }
+                  >
+                    Register
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -79,6 +79,18 @@ const Header = () => {
     setState({ token });
   }, []);
 
+  useEffect(() => {
+    const handleOpenRegisterModal = () => {
+      setState({ isOpenReg: true });
+    };
+
+    window.addEventListener("openRegisterModal", handleOpenRegisterModal);
+
+    return () => {
+      window.removeEventListener("openRegisterModal", handleOpenRegisterModal);
+    };
+  }, [setState]);
+
   const handleLogout = async () => {
     try {
       setState({ logoutLoading: true });

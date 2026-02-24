@@ -42,7 +42,7 @@ const ChipFilters = ({
   // Location
   if (filters.location) {
     activeFilters.push({
-      label: `Location: ${filters.location}`,
+      label: findLabel(locationList, filters.location),
       onRemove: () => onFilterChange({ ...filters, location: "" }),
     });
   }
@@ -97,6 +97,19 @@ const ChipFilters = ({
         onFilterChange({
           ...filters,
           salaryRange: filters.salaryRange.filter((v) => v !== value),
+        });
+      },
+    });
+  });
+
+  // Colleges
+  filters.colleges?.forEach((value) => {
+    activeFilters.push({
+      label: findLabel(collegeList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          colleges: filters.colleges.filter((v) => v !== value),
         });
       },
     });

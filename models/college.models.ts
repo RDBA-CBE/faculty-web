@@ -99,6 +99,45 @@ const colleges = {
         });
     });
   },
+
+  collegeList  : () => {
+    return new Promise((resolve, reject) => {
+      const url = `colleges/colleges-list/`;
+
+      axiosWithoutToken()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+  },
+
+
+  dashboard  : () => {
+    return new Promise((resolve, reject) => {
+      const url = `dashboard/`;
+
+      axiosWithoutToken()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+  },
 };
 
 export default colleges;
