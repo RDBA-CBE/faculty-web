@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { Failure, useSetState } from "@/utils/function.utils";
+import { Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { useRouter } from "next/navigation";
 
@@ -14,6 +14,7 @@ const Footer = () => {
     jobList: [],
     next: null,
     prev: null,
+    email: "",
   });
   useEffect(() => {
     jobList(1);
@@ -42,7 +43,28 @@ const Footer = () => {
     }
   };
 
-  console.log("jobList", state?.jobList);
+  const handleSubscribe = async () => {
+    console.log("✌️state?.emai --->", state?.email);
+
+    if (!state?.email) {
+      Failure("Please enter your email address");
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(state.email)) {
+      Failure("Please enter a valid email address");
+      return;
+    }
+
+    const body = {
+      email: state.email,
+    };
+
+    const res = await Models.auth.news_letter(body);
+    console.log("✌️res --->", res);
+    Success("Subscribed successfully! Thank you for joining our newsletter.");
+  };
 
   return (
     <footer className="relative w-full">
@@ -61,11 +83,16 @@ const Footer = () => {
             {/* Input Group */}
             <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
               <input
+                value={state.email}
+                onChange={(e) => setState({ email: e.target.value })}
                 type="email"
                 placeholder="Enter Your Email Address..."
                 className="flex-grow px-4 py-2 rounded-full outline-none text-gray-500 text-sm bg-transparent"
               />
-              <button className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm">
+              <button
+                onClick={() => handleSubscribe()}
+                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm"
+              >
                 Subscribe
               </button>
             </div>
