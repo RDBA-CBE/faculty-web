@@ -1437,14 +1437,14 @@ export default function NaukriProfilePage() {
                               >
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/10 to-orange-500/10 rounded-3xl blur-sm"></div>
                                 <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-4">
+                                  {/* <div className="flex items-center gap-3 mb-4">
                                     <div className="w-8 h-8 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center">
                                       <Edit3 className="w-4 h-4 text-white" />
                                     </div>
                                     <h4 className="text-lg font-bold text-gray-900">
                                       Edit Resume Headline
                                     </h4>
-                                  </div>
+                                  </div> */}
 
                                   <Textarea
                                     placeholder="Write a compelling headline that summarizes your professional experience and key skills..."
