@@ -66,6 +66,8 @@ const Footer = () => {
     Success("Subscribed successfully! Thank you for joining our newsletter.");
   };
 
+  
+
   return (
     <footer className="relative w-full">
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
@@ -83,9 +85,9 @@ const Footer = () => {
             {/* Input Group */}
             <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
               <input
-                value={state.email}
-                onChange={(e) => setState({ email: e.target.value })}
                 type="email"
+                value={state?.email}
+                onChange={(e) => setState({ email: e.target.value })}
                 placeholder="Enter Your Email Address..."
                 className="flex-grow px-4 py-2 rounded-full outline-none text-gray-500 text-sm bg-transparent"
               />

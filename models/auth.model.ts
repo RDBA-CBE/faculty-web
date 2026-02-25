@@ -235,9 +235,9 @@ const auth = {
     return promise;
   },
 
-  news_letter: (body: any) => {
+  newsletter:  (body = {} as any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `/news_letter`;
+      let url = `newsletter/`;
       instance()
         .post(url, body)
         .then((res) => {
@@ -245,7 +245,7 @@ const auth = {
         })
         .catch((error) => {
           if (error.response) {
-            reject(error.response?.data);
+            reject(error);
           } else {
             reject(error);
           }
