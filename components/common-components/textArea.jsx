@@ -28,7 +28,7 @@ export default function TextArea(props) {
     name,
     required,
     className,
-    disabled
+    disabled,
   } = props;
   return (
     <div className="w-full space-y-2">
@@ -44,8 +44,11 @@ export default function TextArea(props) {
         value={value}
         onChange={onChange}
         className={cn(
-          "flex h-30 w-full rounded-md bg-background px-3 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground border-none focus:outline-none focus:ring-0 disabled:cursor-not-allowed disabled:opacity-50",
-          className
+          "flex w-full rounded-md border  px-3 pr-10 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none  disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+          className,
+          error
+            ? "border-red-500 focus-visible:ring-red-500"
+            : "border-input focus-visible:ring-ring"
         )}
         disabled={disabled}
       />

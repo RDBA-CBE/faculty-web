@@ -53,6 +53,7 @@ import { log } from "console";
 import { DatePicker } from "@/components/common-components/datePicker";
 import { start } from "repl";
 import Footer from "@/components/common-components/new_components/Footer";
+import TextArea from "@/components/common-components/textArea";
 
 export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
@@ -151,8 +152,6 @@ export default function NaukriProfilePage() {
     }
   };
 
-  console.log("userDetail", state.userDetail);
-
   const profileUpdate = async () => {
     try {
       setState({ btnLoading: true });
@@ -192,6 +191,7 @@ export default function NaukriProfilePage() {
       userDetail(state?.userId);
 
       setState({ btnLoading: false, isEditingProfile: false });
+      Success("Profile updated successfully");
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -714,17 +714,15 @@ export default function NaukriProfilePage() {
 
   const experienceList = async () => {
     try {
-      const experienceList = [
-        { value: "fresher", label: "Fresher" },
-        { value: "0 – 1 Year", label: "0 – 1 Year" },
-        { value: "1 – 3 Years", label: "1 – 3 Years" },
-        { value: "3 – 5 Years", label: "3 – 5 Years" },
-        { value: "5 – 10 Years", label: "5 – 10 Years" },
-        { value: "10+ Years", label: "10+ Years" },
-      ];
+      const res: any = await Models.masterExperience.list();
+
+      const dropdown = res?.results?.map((item: any) => ({
+        value: item.name,
+        label: item.name,
+      }));
 
       setState({
-        experienceList: experienceList,
+        experienceList: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -3317,18 +3315,44 @@ export default function NaukriProfilePage() {
                           error={state?.errors?.last_name}
                         />
                       </div>
+                      <div className="space-y-2">
+                        <Input
+                          title="Email"
+                          required
+                          value={state.email}
+                          onChange={(e) =>
+                            handleFormChange("email", e.target.value)
+                          }
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                          error={state?.errors?.email}
+                        />
+                      </div>
 
                       <div className="space-y-2">
                         <Input
-                          title="Short Description"
-                          value={state.short_desc}
+                          title="Phone"
+                          required
+                          value={state.phone}
                           onChange={(e) =>
-                            handleFormChange("short_desc", e.target.value)
+                            handleFormChange("phone", e.target.value)
                           }
+                          error={state?.errors?.phone}
                           className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         />
                       </div>
 
+                      <div className="space-y-2">
+                        <Input
+                          title="Gender"
+                          required
+                          value={state.gender}
+                          onChange={(e) =>
+                            handleFormChange("gender", e.target.value)
+                          }
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                          error={state?.errors?.gender}
+                        />
+                      </div>
                       <div className="space-y-2">
                         <CustomSelect
                           title="Experience"
@@ -3360,7 +3384,7 @@ export default function NaukriProfilePage() {
 
                       <div className="space-y-2">
                         <Input
-                          title=" Current Position"
+                          title="Current Position"
                           value={state.current_position}
                           onChange={(e) =>
                             handleFormChange("current_position", e.target.value)
@@ -3383,40 +3407,13 @@ export default function NaukriProfilePage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Input
-                          title="Phone"
-                          required
-                          value={state.phone}
+                        <TextArea
+                          title="Short Description"
+                          value={state.short_desc}
                           onChange={(e) =>
-                            handleFormChange("phone", e.target.value)
-                          }
-                          error={state?.errors?.phone}
-                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Email"
-                          required
-                          value={state.email}
-                          onChange={(e) =>
-                            handleFormChange("email", e.target.value)
+                            handleFormChange("short_desc", e.target.value)
                           }
                           className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
-                          error={state?.errors?.email}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Input
-                          title="Gender"
-                          required
-                          value={state.gender}
-                          onChange={(e) =>
-                            handleFormChange("gender", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
-                          error={state?.errors?.gender}
                         />
                       </div>
                     </div>
