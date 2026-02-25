@@ -126,7 +126,7 @@ export default function NaukriProfilePage() {
       {
         threshold: 0.3,
         rootMargin: "-20% 0px -70% 0px",
-      },
+      }
     );
 
     sections.forEach((section) => {
@@ -670,7 +670,7 @@ export default function NaukriProfilePage() {
 
       const res = await Models.achievements.update(
         formData,
-        state.achievement_id,
+        state.achievement_id
       );
       console.log("res", res);
 
@@ -821,7 +821,7 @@ export default function NaukriProfilePage() {
   const handleRemoveTechnology = (techToRemove: string) => {
     setState({
       technologies: state.technologies.filter(
-        (tech: string) => tech !== techToRemove,
+        (tech: string) => tech !== techToRemove
       ),
     });
   };
@@ -860,7 +860,10 @@ export default function NaukriProfilePage() {
                     <div className="text-center sm:text-left">
                       <div className="flex items-center gap-2 justify-center sm:justify-start">
                         <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                          {state.userDetail?.username}
+                          {state.userDetail?.first_name &&
+                          state.userDetail?.last_name
+                            ? `${state.userDetail.first_name} ${state.userDetail.last_name}`
+                            : state.userDetail?.username || ""}
                         </h1>
                         <Button
                           variant="ghost"
@@ -1494,7 +1497,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "skill",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -1707,7 +1710,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "company",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -1723,7 +1726,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "designation",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -1767,7 +1770,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "job_description",
-                                          e.target.value,
+                                          e.target.value
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
@@ -1847,12 +1850,12 @@ export default function NaukriProfilePage() {
                                               <span className="ml-1">
                                                 {DateFormat(
                                                   emp.start_date,
-                                                  "date",
+                                                  "date"
                                                 )}{" "}
                                                 to{" "}
                                                 {DateFormat(
                                                   emp.end_date,
-                                                  "date",
+                                                  "date"
                                                 )}
                                               </span>
                                               {/* <span className="ml-1">
@@ -1983,7 +1986,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -2120,7 +2123,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "institution",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2136,7 +2139,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "degree",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2152,7 +2155,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "field",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2168,7 +2171,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "cgpa",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2184,7 +2187,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "start_year",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2200,7 +2203,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "end_year",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2361,7 +2364,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -2501,7 +2504,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_title",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2517,7 +2520,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "duration",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2533,7 +2536,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "status",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2549,7 +2552,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_link",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2566,7 +2569,7 @@ export default function NaukriProfilePage() {
                                           onChange={(e) =>
                                             handleFormChange(
                                               "technology",
-                                              e.target.value,
+                                              e.target.value
                                             )
                                           }
                                           onKeyDown={(e) => {
@@ -2603,7 +2606,7 @@ export default function NaukriProfilePage() {
                                                 <X className="w-3 h-3" />
                                               </button>
                                             </div>
-                                          ),
+                                          )
                                         )}
                                       </div>
                                     </div>
@@ -2619,7 +2622,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "project_description",
-                                          e.target.value,
+                                          e.target.value
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
@@ -2764,7 +2767,7 @@ export default function NaukriProfilePage() {
                                                     >
                                                       {tech}
                                                     </span>
-                                                  ),
+                                                  )
                                                 )}
                                               </div>
                                             </div>
@@ -2817,7 +2820,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -2956,7 +2959,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "achievement_title",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -2972,7 +2975,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "organization",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
@@ -3114,7 +3117,7 @@ export default function NaukriProfilePage() {
                                               size="sm"
                                               onClick={() =>
                                                 deleteAchievement(
-                                                  achievement.id,
+                                                  achievement.id
                                                 )
                                               }
                                               className="hover:bg-red-50 border-red-200 group/btn"
@@ -3186,7 +3189,7 @@ export default function NaukriProfilePage() {
                                     </div>
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -3793,7 +3796,7 @@ export default function NaukriProfilePage() {
                                   <X className="w-3 h-3" />
                                 </button>
                               </div>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
@@ -3807,7 +3810,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "project_description",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
@@ -3868,7 +3871,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "achievement_title",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"

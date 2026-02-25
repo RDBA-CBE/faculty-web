@@ -6,7 +6,7 @@ import Models from "@/imports/models.import";
 import { useRouter } from "next/navigation";
 
 const Footer = () => {
-   const router = useRouter();
+  const router = useRouter();
   const [state, setState] = useSetState({
     count: 0,
     jobList: [],
@@ -151,10 +151,13 @@ const Footer = () => {
               <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
                 Job Categories
               </h3>
-              <div className="grid grid-cols-2  gap-y-2 text-md text-gray-400" style={{rowGap:"10px"}}>
-                {state?.jobList?.slice(0,4).map((item) => (
+              <div
+                className="grid grid-cols-2  gap-y-2 text-md text-gray-400"
+                style={{ rowGap: "10px" }}
+              >
+                {state?.jobList?.slice(0, 4)?.map((item, index) => (
                   <p
-                 
+                    key={index}
                     onClick={() => router.push(`/jobs?id=${item.id}`)}
                     className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                   >
