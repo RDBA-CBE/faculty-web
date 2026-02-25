@@ -228,7 +228,10 @@ export default function JobsPage() {
   const experienceList = async () => {
     try {
       const res: any = await Models.masterExperience.list();
-      const dropdown = Dropdown(res?.results, "name");
+      const dropdown = res?.results?.map((item: any) => ({
+        value: item.name,
+        label: item.name,
+      }));
 
       setState({
         experienceList: dropdown,
@@ -510,12 +513,10 @@ export default function JobsPage() {
         });
 
         console.log("validationErrors", validationErrors);
-
-        setState((prev) => ({
-          ...prev,
+        setState({
           errors: validationErrors,
           btnLoading: false,
-        }));
+        });
       }
 
       // API ERROR
@@ -534,6 +535,7 @@ export default function JobsPage() {
       }
     }
   };
+  console.log("state.errors --->", state.errors);
 
   const bodyData = () => {
     const body: any = {};
@@ -667,6 +669,8 @@ export default function JobsPage() {
         </div>
       </div> */}
 
+
+
         <main className="section-wid py-8 lg:py-12">
           {isTabScreen && selectedJob ? (
             <div
@@ -705,7 +709,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                          state?.jobDetail?.college?.name,
+                          state?.jobDetail?.college?.name
                         )} flex items-center justify-center text-white font-semibold text-lg`}
                       >
                         {state?.jobDetail?.college?.name
@@ -732,7 +736,7 @@ export default function JobsPage() {
                     {capitalizeFLetter(
                       state?.jobDetail?.locations
                         ?.map((item) => item.city)
-                        .join(", "),
+                        .join(", ")
                     )}{" "}
                     {/* • Posted {state?.jobDetail?.postedDate || "2 days ago"} */}
                   </p>
@@ -937,7 +941,7 @@ export default function JobsPage() {
                   ) : (
                     <div
                       className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                        selectedJob.college?.name,
+                        selectedJob.college?.name
                       )} flex items-center justify-center text-white font-semibold`}
                     >
                       {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
@@ -1001,7 +1005,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                job.college?.name,
+                                job.college?.name
                               )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                             >
                               {job.college?.name?.slice(0, 1).toUpperCase()}
@@ -1010,12 +1014,20 @@ export default function JobsPage() {
 
                           <div className="min-w-0 flex-1">
                             <h3
-                              className={`font-semibold  leading-tight mb-1 ${selectedJob?.id === job.id ? "text-white" : "text-gray-900"}`}
+                              className={`font-semibold  leading-tight mb-1 ${
+                                selectedJob?.id === job.id
+                                  ? "text-white"
+                                  : "text-gray-900"
+                              }`}
                             >
                               {job.job_title}
                             </h3>
                             <p
-                              className={`${selectedJob?.id === job.id ? "text-gray-200" : "text-gray-600"} text-sm font-medium`}
+                              className={`${
+                                selectedJob?.id === job.id
+                                  ? "text-gray-200"
+                                  : "text-gray-600"
+                              } text-sm font-medium`}
                             >
                               {job.college?.name}
                             </p>
@@ -1060,33 +1072,53 @@ export default function JobsPage() {
 
                       {/* Experience and Salary */}
                       <div
-                        className={`flex items-center gap-3 text-xs mb-2 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
+                        className={`flex items-center gap-3 text-xs mb-2 ${
+                          selectedJob?.id === job.id
+                            ? "text-white"
+                            : "text-gray-600"
+                        }`}
                       >
                         <div className="flex items-center gap-1">
                           <Briefcase
-                            className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                            className={`${
+                              selectedJob?.id === job.id && "text-white"
+                            } w-3 h-3`}
                           />
                           <span
-                            className={`${selectedJob?.id === job.id && "text-white"}`}
+                            className={`${
+                              selectedJob?.id === job.id && "text-white"
+                            }`}
                           >
                             {job.experiences?.name}
                           </span>
                         </div>
                         <div
-                          className={`w-px h-3 ${selectedJob?.id === job.id ? "bg-gray-600" : "bg-gray-300"}`}
+                          className={`w-px h-3 ${
+                            selectedJob?.id === job.id
+                              ? "bg-gray-600"
+                              : "bg-gray-300"
+                          }`}
                         ></div>
                         <div className="flex items-center gap-1">
                           {job.salary_range_obj?.name?.includes("$") ? (
                             <DollarSign
-                              className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                              className={`${
+                                selectedJob?.id === job.id && "text-white"
+                              } w-3 h-3`}
                             />
                           ) : (
                             <IndianRupee
-                              className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                              className={`${
+                                selectedJob?.id === job.id && "text-white"
+                              } w-3 h-3`}
                             />
                           )}
                           <span
-                            className={`font-semibold ${selectedJob?.id === job.id ? "text-white" : "text-gray-900"}`}
+                            className={`font-semibold ${
+                              selectedJob?.id === job.id
+                                ? "text-white"
+                                : "text-gray-900"
+                            }`}
                           >
                             {job?.salary_range_obj?.name}
                           </span>
@@ -1095,13 +1127,21 @@ export default function JobsPage() {
 
                       {/* Location */}
                       <div
-                        className={`flex items-center gap-1 text-xs mb-3 ${selectedJob?.id === job.id ? "text-white" : "text-gray-600"}`}
+                        className={`flex items-center gap-1 text-xs mb-3 ${
+                          selectedJob?.id === job.id
+                            ? "text-white"
+                            : "text-gray-600"
+                        }`}
                       >
                         <MapPin
-                          className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                          className={`${
+                            selectedJob?.id === job.id && "text-white"
+                          } w-3 h-3`}
                         />
                         <span
-                          className={`${selectedJob?.id === job.id && "text-white"}`}
+                          className={`${
+                            selectedJob?.id === job.id && "text-white"
+                          }`}
                         >
                           {job.locations?.map((item) => item.city).join(", ")}
                         </span>
@@ -1109,19 +1149,31 @@ export default function JobsPage() {
 
                       {/* Footer */}
                       <div
-                        className={`flex items-center justify-between pt-3 border-t ${selectedJob?.id === job.id ? "border-gray-400" : "border-gray-300"}`}
+                        className={`flex items-center justify-between pt-3 border-t ${
+                          selectedJob?.id === job.id
+                            ? "border-gray-400"
+                            : "border-gray-300"
+                        }`}
                       >
                         {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
                         <div
-                          className={`flex items-center gap-1 text-xs ${selectedJob?.id === job.id ? "text-white" : "text-gray-500"}`}
+                          className={`flex items-center gap-1 text-xs ${
+                            selectedJob?.id === job.id
+                              ? "text-white"
+                              : "text-gray-500"
+                          }`}
                         >
                           <Clock
-                            className={`${selectedJob?.id === job.id && "text-white"} w-3 h-3`}
+                            className={`${
+                              selectedJob?.id === job.id && "text-white"
+                            } w-3 h-3`}
                           />
                           <span
-                            className={`${selectedJob?.id === job.id && "text-white"}`}
+                            className={`${
+                              selectedJob?.id === job.id && "text-white"
+                            }`}
                           >
                             {moment(job.created_at).isValid() &&
                             moment(job.created_at).year() > 1900
@@ -1152,7 +1204,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                                state?.jobDetail?.college?.name,
+                                state?.jobDetail?.college?.name
                               )} flex items-center justify-center text-white font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
@@ -1182,7 +1234,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", "),
+                              .join(", ")
                           )}{" "}
                           {/* • Posted{" "}
                           {state?.jobDetail?.postedDate || "2 days ago"} */}
@@ -1315,7 +1367,7 @@ export default function JobsPage() {
                                 <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
                                 <span className="">{item}</span>
                               </li>
-                            ),
+                            )
                           )}
                         </ul>
                       </div>
@@ -1398,7 +1450,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                selectedJob.college?.name,
+                                selectedJob.college?.name
                               )} flex items-center justify-center text-white font-semibold`}
                             >
                               {selectedJob.college?.name
@@ -1595,7 +1647,7 @@ export default function JobsPage() {
                 ) : state.jobList?.length > 0 ? (
                   <>
                     <div
-                      className="grid grid-cols-1 md:grid-cols-2  "
+                      className="grid grid-cols-1 md:grid-cols-2 mt-5 "
                       style={{
                         gap: "20px",
                       }}
@@ -1717,7 +1769,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                state.jobDetail?.college?.name,
+                                state.jobDetail?.college?.name
                               )} flex items-center justify-center text-white font-semibold text-sm`}
                             >
                               {state.jobDetail?.college?.name
@@ -1737,7 +1789,7 @@ export default function JobsPage() {
                               <span className="text-sm text-gray-600">
                                 {moment(state.jobDetail?.created_at).isValid()
                                   ? moment(
-                                      state.jobDetail?.created_at,
+                                      state.jobDetail?.created_at
                                     ).fromNow()
                                   : "Just now"}
                               </span>
@@ -1795,7 +1847,7 @@ export default function JobsPage() {
                                     {responsibility}
                                   </p>
                                 </div>
-                              ),
+                              )
                             )}
                           </div>
                         </div>
@@ -1818,7 +1870,7 @@ export default function JobsPage() {
                                     {requirements}
                                   </p>
                                 </div>
-                              ),
+                              )
                             )}
                           </div>
                         </div>
@@ -1898,7 +1950,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                state.jobDetail?.college?.name,
+                                state.jobDetail?.college?.name
                               )} flex items-center justify-center text-white font-semibold`}
                             >
                               {state.jobDetail?.college?.name
