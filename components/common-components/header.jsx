@@ -157,11 +157,11 @@ const Header = () => {
         isOpenReg: false,
         // isOpenEmailVerify: true,
         errors: {},
-        isOpenLogin: true,
+        // isOpenLogin: true,
         btnLoading: false,
       });
 
-      Success("Registration completed Successfully, Please login to continue")
+      Success("Registration completed Successfully, Please check you email to verify your account and login to continue")
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -667,7 +667,7 @@ const Header = () => {
             </Button>
 
             <div className="text-center text-gray-500 my-4">or</div>
-
+{/* 
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
@@ -705,7 +705,7 @@ const Header = () => {
                 </svg>
                 Sign up with Google
               </Button>
-            </div>
+            </div> */}
 
             <div className="text-center mt-6">
               <button className="text-gray-500 text-sm hover:text-gray-700">
@@ -880,7 +880,7 @@ const Header = () => {
 
             <div className="text-center text-gray-500 my-4">or</div>
 
-            <div className="grid grid-cols-2 gap-3">
+            {/* <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
                 className="flex items-center justify-center gap-2 py-3"
@@ -917,7 +917,7 @@ const Header = () => {
                 </svg>
                 Sign in with Google
               </Button>
-            </div>
+            </div> */}
 
             <div className="text-center mt-6">
               <button className="text-gray-500 text-sm hover:text-gray-700">

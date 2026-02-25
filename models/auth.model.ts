@@ -77,9 +77,9 @@ const auth = {
     return promise;
   },
 
-  reset_password: (body: any, uid: any, token: any) => {
+  reset_password: (body: any,token: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `auth/reset-password/${uid}/${token}/`;
+      let url = `auth/reset-password/`;
       instance()
         .post(url, body)
         .then((res) => {

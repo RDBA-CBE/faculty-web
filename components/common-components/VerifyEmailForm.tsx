@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader } from "lucide-react";
+import { Loader, CheckCircle } from "lucide-react";
 import Models from "@/imports/models.import";
 import { Failure, Success } from "./toast";
 
@@ -20,6 +20,7 @@ const VerifyEmailForm = () => {
 
   const token = searchParams.get("token"); // ✅ fetch token directly
   const [loading, setLoading] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const handleVerify = async () => {
     if (!token) {
@@ -31,10 +32,11 @@ const VerifyEmailForm = () => {
       setLoading(true);
 
       // If backend only needs token
-      const res:any = await Models.auth.verify_email(token);
+      const res: any = await Models.auth.verify_email(token);
 
       Success(res?.message || "Email verified successfully.");
-      router.push("/login");
+      setIsVerified(true);
+
     } catch (error: any) {
       console.error("Verification error:", error);
       Failure(error?.detail || "Verification failed.");
@@ -43,24 +45,45 @@ const VerifyEmailForm = () => {
     }
   };
 
+  const handleLogin = () => {
+    window.dispatchEvent(new CustomEvent("openLoginModal"));
+    router.push("/");
+  };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-clr1">
       <Card className="md:w-[400px] w-[320px] p-6">
-        <CardHeader className="p-0 mb-4">
-          <CardTitle className="text-2xl">Verify Email</CardTitle>
-          <CardDescription>
-            Click the button below to verify your email address.
+        <CardHeader className="p-0 mb-4 flex flex-col items-center text-center">
+          {isVerified && (
+            <CheckCircle className="w-16 h-16 text-green-500 mb-4" />
+          )}
+          <CardTitle className="text-2xl">
+            {isVerified ? "Verification Successful" : "Verify Email"}
+          </CardTitle>
+          <CardDescription className="text-center">
+            {isVerified
+              ? "Your email has been successfully verified."
+              : "Click the button below to verify your email address."}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="p-0">
-          <Button
-            onClick={handleVerify}
-            className="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold"
-            disabled={loading}
-          >
-            {loading ? <Loader className="animate-spin" /> : "Verify Email"}
-          </Button>
+          {isVerified ? (
+            <Button
+              onClick={handleLogin}
+              className="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold"
+            >
+              Login to Continue
+            </Button>
+          ) : (
+            <Button
+              onClick={handleVerify}
+              className="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold"
+              disabled={loading}
+            >
+              {loading ? <Loader className="animate-spin" /> : "Verify Email"}
+            </Button>
+          )}
         </CardContent>
       </Card>
     </div>
