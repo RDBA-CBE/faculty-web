@@ -66,8 +66,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {/* <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
-          <RWebShare
+          <Bookmark className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+          {/* <RWebShare
             data={{
               title: "Faculty Plus",
               text: "Check this out!",
@@ -76,7 +76,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
             onClick={() => console.log("shared successfully!")}
           >
             <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
-          </RWebShare>
+          </RWebShare> */}
         </div>
       </div>
 

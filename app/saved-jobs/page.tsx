@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useSetState, Failure } from "@/utils/function.utils";
+import { useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
 import { Loader, ArrowLeft } from "lucide-react";
@@ -11,6 +11,7 @@ import Footer from "@/components/common-components/new_components/Footer";
 
 export default function SavedJobsPage() {
   const router = useRouter();
+
   const [state, setState] = useSetState({
     loading: false,
     jobList: [],
@@ -18,32 +19,50 @@ export default function SavedJobsPage() {
     count: 0,
     next: null,
     prev: null,
+    userId: null,
   });
 
+  /**
+   * Load user from localStorage ONCE
+   */
   useEffect(() => {
-    getSavedJobs(1);
+    const profile = JSON.parse(localStorage.getItem("user") || "null");
+    if (profile?.id) {
+      setState({ userId: profile.id });
+    }
   }, []);
+
+  /**
+   * Fetch saved jobs only AFTER userId is available
+   */
+  useEffect(() => {
+    if (state.userId) {
+      getSavedJobs(1);
+    }
+  }, [state.userId]);
 
   const getSavedJobs = async (page = 1) => {
     try {
       setState({ loading: true });
-      // Assuming Models.savedJobs.list exists. Adjust if the model name is different (e.g. Models.job.savedList)
-      const res = await Models.savedJobs.list(page);
-      
+
+      const res:any = await Models.save.list(page, state.userId);
+
       setState({
         loading: false,
         jobList: res?.results || [],
         count: res?.count || 0,
-        next: res?.next,
-        prev: res?.previous,
-        page: page,
+        next: res?.next ?? null,
+        prev: res?.previous ?? null,
+        page,
       });
     } catch (error) {
-      setState({ loading: false });
       console.error("Error fetching saved jobs:", error);
-      // Failure("Failed to fetch saved jobs");
+      setState({ loading: false });
     }
   };
+
+  console.log("jobList", state?.jobList);
+  
 
   const handleNext = () => {
     if (state.next) {
@@ -59,6 +78,7 @@ export default function SavedJobsPage() {
 
   return (
     <div className="bg-clr1 min-h-screen flex flex-col">
+      {/* HEADER */}
       <div className="bg-black py-6 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="section-ti !text-white">Saved Jobs</h1>
@@ -66,6 +86,7 @@ export default function SavedJobsPage() {
       </div>
 
       <main className="section-wid py-8 lg:py-12 flex-grow w-full">
+        {/* BACK BUTTON */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -74,28 +95,34 @@ export default function SavedJobsPage() {
           <span className="font-medium">Back</span>
         </button>
 
+        {/* LOADING */}
         {state.loading ? (
           <div className="flex items-center justify-center h-[50vh]">
             <Loader className="animate-spin h-10 w-10 text-[#24266e]" />
           </div>
-        ) : state.jobList?.length > 0 ? (
+        ) : state.jobList.length > 0 ? (
           <>
+            {/* JOB LIST */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {state.jobList.map((item) => {
-                // Handle if the API returns the job nested in a 'job' property or directly
-                const jobData = item.job || item;
+              {state.jobList?.map((item: any) => {
+                const jobData = item?.job || item;
+                if (!jobData?.id) return null;
+
                 return (
                   <div
                     key={item.id || jobData.id}
                     className="cursor-pointer transition-transform hover:scale-105"
-                    onClick={() => router.push(`/jobs?id=${jobData.id}`)}
+                    onClick={() =>
+                      router.push(`/jobs?id=${jobData.id}`)
+                    }
                   >
-                    <JobCard job={jobData} />
+                    <JobCard job={jobData?.job_id} />
                   </div>
                 );
               })}
             </div>
 
+            {/* PAGINATION */}
             {(state.next || state.prev) && (
               <div className="flex justify-center items-center mt-10">
                 <PaginationCom
@@ -109,18 +136,41 @@ export default function SavedJobsPage() {
             )}
           </>
         ) : (
+          /* EMPTY STATE */
           <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-slate-100">
             <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-10 h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              <svg
+                className="w-10 h-10 text-slate-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">No saved jobs found</h3>
-            <p className="text-slate-500 text-sm">Jobs you save will appear here.</p>
-            <button onClick={() => router.push('/jobs')} className="mt-6 text-amber-600 font-bold hover:underline">Browse Jobs</button>
+
+            <h3 className="text-lg font-bold text-slate-900 mb-1">
+              No saved jobs found
+            </h3>
+            <p className="text-slate-500 text-sm">
+              Jobs you save will appear here.
+            </p>
+
+            <button
+              onClick={() => router.push("/jobs")}
+              className="mt-6 text-amber-600 font-bold hover:underline"
+            >
+              Browse Jobs
+            </button>
           </div>
         )}
       </main>
+
       <Footer />
     </div>
   );

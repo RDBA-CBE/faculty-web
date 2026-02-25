@@ -17,6 +17,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
   ArrowRight,
+  Bookmark,
+  BookMarked,
   GitCompareArrowsIcon,
   Heart,
   Loader,
@@ -320,6 +322,11 @@ const Header = () => {
                     <DropdownMenuItem onClick={() => router.push("/profile")}>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+
+                    <DropdownMenuItem onClick={() => router.push("/saved-jobs")}>
+                      <Bookmark className="mr-2 h-4 w-4" />
+                      <span>Saved Jobs</span>
                     </DropdownMenuItem>
 
                     <DropdownMenuItem onClick={() => router.push("/change-password")}>

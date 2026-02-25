@@ -1,7 +1,27 @@
 import instance from "@/utils/axios.utils";
 
 const save = {
-   create: (data: any) => {
+  list: (page, id) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `savelists/user/${id}/?page=${page}`;
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `savelists/`;
       instance()
@@ -22,7 +42,7 @@ const save = {
 
   update: (data: any, id: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `savelists/${id}/`;
+      let url = `savelists/user/${id}/`;
       instance()
         .patch(url, data)
         .then((res) => {
@@ -41,7 +61,7 @@ const save = {
 
   delete: (id) => {
     return new Promise((resolve, reject) => {
-      const url = `savelists/${id}/`; // id = userId
+      const url = `savelists/user/${id}/`; // id = userId
 
       instance()
         .delete(url) // <-- body goes here
