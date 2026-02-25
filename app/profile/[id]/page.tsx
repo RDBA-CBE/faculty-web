@@ -31,6 +31,7 @@ import {
   Trash,
   PlusIcon,
   File,
+  Book,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -74,6 +75,7 @@ export default function NaukriProfilePage() {
       employment: true,
       education: true,
       projects: true,
+      publications: true,
       achievements: true,
     },
   });
@@ -434,6 +436,8 @@ export default function NaukriProfilePage() {
         duration: state.duration,
         status: state.status,
         project_link: state.project_link,
+        funded: state.funded,
+        funding_details: state.funded ? state.funding_details : "",
       };
       console.log("body", body);
 
@@ -461,6 +465,8 @@ export default function NaukriProfilePage() {
         duration: state.duration,
         status: state.status,
         project_link: state.project_link,
+        funded: state.funded,
+        funding_details: state.funded ? state.funding_details : "",
       };
       console.log("body", body);
 
@@ -482,6 +488,69 @@ export default function NaukriProfilePage() {
       userDetail(state.userId);
     } catch (error) {
       Failure(error?.error || "Failed to delete project");
+    }
+  };
+
+  const addPublication = async () => {
+    try {
+      setState({
+        isCreatePublication: false,
+      });
+
+      const body = {
+        user_id: state.userId,
+        publication_title: state.publication_title,
+        publication_description: state.publication_description,
+        publication_journal: state.publication_journal,
+        publication_volume: state.publication_volume,
+        publication_issue: state.publication_issue,
+        publication_year: state.publication_year,
+      };
+
+      const res = await Models.publications.create(body);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const updatePublication = async () => {
+    try {
+      setState({
+        isEditingPublication: false,
+      });
+
+      const body = {
+        publication_id: state.publication_id,
+        publication_title: state.publication_title,
+        publication_description: state.publication_description,
+        publication_journal: state.publication_journal,
+        publication_volume: state.publication_volume,
+        publication_issue: state.publication_issue,
+        publication_year: state.publication_year,
+      };
+
+      const res = await Models.publications.update(body, state.publication_id);
+      console.log("res", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Something went wrong");
+    } finally {
+      setState({ btnLoading: false });
+    }
+  };
+
+  const deletePublication = async (publicationId) => {
+    try {
+      const res = await Models.publications.delete(publicationId);
+
+      console.log("deleted publication", res);
+      userDetail(state.userId);
+    } catch (error) {
+      Failure(error?.error || "Failed to delete publication");
     }
   };
 
@@ -645,6 +714,7 @@ export default function NaukriProfilePage() {
     { id: "employment", label: "Experience", icon: Briefcase },
     { id: "education", label: "Education", icon: GraduationCap },
     { id: "projects", label: "Projects", icon: FolderOpen },
+    { id: "publications", label: "Publications", icon: Book },
     { id: "achievements", label: "Awards", icon: Award },
   ];
 
@@ -1570,6 +1640,16 @@ export default function NaukriProfilePage() {
                                       <p className="text-gray-700 leading-relaxed text-sm">
                                         {project.project_description}
                                       </p>
+                                      {project.funding_details && (
+                                        <div className="mt-4">
+                                          <h5 className="text-sm font-semibold text-gray-700 mb-1">
+                                            Funding Details
+                                          </h5>
+                                          <p className="text-gray-700 leading-relaxed text-sm">
+                                            {project.funding_details}
+                                          </p>
+                                        </div>
+                                      )}
                                     </div>
 
                                     {/* Technologies */}
@@ -1624,6 +1704,174 @@ export default function NaukriProfilePage() {
                             <p className="text-gray-500 mb-6">
                               Showcase your work by adding your projects and
                               achievements
+                            </p>
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </CardContent>
+              </Card>
+
+              {/* Publications Section */}
+              <Card
+                id="publications-section"
+                className="bg-gradient-to-br from-white via-[#f2b31d]/10 to-orange-50/30 border-0 overflow-hidden relative"
+              >
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#f2b31d]/20 to-orange-400/20 rounded-full blur-2xl"></div>
+
+                <CardContent className="relative p-4 md:p-6">
+                  <div
+                    className="flex items-center justify-between mb-3 cursor-pointer"
+                    onClick={() => toggleSection("publications")}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                        <Book className="w-4 h-4 text-white transform -rotate-3" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 via-[#f2b31d] to-orange-800 bg-clip-text text-transparent">
+                          Publications
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          Your research and publications
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {state.expandedSections.publications ? (
+                        <ChevronUp className="w-5 h-5 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-gray-500" />
+                      )}
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {state.expandedSections.publications && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {/* Publications List */}
+                        <div className="space-y-4">
+                          {state.userDetail?.publications?.map((pub, index) => (
+                            <motion.div
+                              key={pub.id}
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: index * 0.1 }}
+                              className="relative group"
+                            >
+                              <div className="absolute inset-0 bg-gradient-to-r from-[#f2b31d]/5 to-orange-500/5 rounded-3xl blur-sm group-hover:from-[#f2b31d]/10 group-hover:to-orange-500/10 transition-all duration-300"></div>
+                              <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                <div className="flex items-start gap-3">
+                                  {/* Publication Icon */}
+                                  <div className="flex-shrink-0 pt-1">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-[#f2b31d] to-orange-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                      <span className="text-white font-bold text-md">
+                                        {pub.publication_title
+                                          .charAt(0)
+                                          .toUpperCase()}
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Publication Details */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between md:mb-1">
+                                      <div className="flex-1">
+                                        <div className="flex items-center gap-2">
+                                          <h4 className="text-lg font-bold text-gray-900 group-hover:text-[#b38315] transition-colors">
+                                            {pub.publication_title}
+                                          </h4>
+                                        </div>
+                                        <div className="text-sm text-gray-600 mb-2">
+                                          <span className="font-medium">
+                                            {pub.publication_journal}
+                                          </span>
+                                          <span className="ml-2">
+                                            | Year: {pub.publication_year}
+                                          </span>
+                                        </div>
+                                        <div className="text-sm text-gray-600 mb-2">
+                                          Vol: {pub.publication_volume}
+                                        </div>
+                                        <div className="text-sm text-gray-600 mb-2">
+                                          Issue: {pub.publication_issue}
+                                        </div>
+                                      </div>
+
+                                      {/* Desktop Action Buttons - Top Right */}
+                                      <div className="hidden md:flex gap-2">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="hover:bg-[#f2b31d]/10 border-[#f2b31d]/30 group/btn"
+                                          onClick={() => {
+                                            setState({
+                                              isEditingPublication: true,
+                                              publication_title:
+                                                pub.publication_title,
+                                              publication_description:
+                                                pub.publication_description,
+                                              publication_journal:
+                                                pub.publication_journal,
+                                              publication_volume:
+                                                pub.publication_volume,
+                                              publication_issue:
+                                                pub.publication_issue,
+                                              publication_year:
+                                                pub.publication_year,
+                                              publication_id: pub.id,
+                                            });
+                                          }}
+                                        >
+                                          <Edit className="w-4 h-4 text-[#f2b31d] group-hover/btn:scale-110 transition-transform" />
+                                        </Button>
+                                      </div>
+                                    </div>
+
+                                    {/* Publication Description */}
+                                    <div className="bg-gradient-to-r from-gray-50 to-[#f2b31d]/10 rounded-2xl p-4 border border-gray-100 mb-4">
+                                      <p className="text-gray-700 leading-relaxed text-sm">
+                                        {pub.publication_description}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Timeline Connector */}
+                                {index <
+                                  state.userDetail?.publications?.length -
+                                    1 && (
+                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#f2b31d]/50 to-transparent"></div>
+                                )}
+                              </div>
+                            </motion.div>
+                          ))}
+                        </div>
+
+                        {/* Empty State */}
+                        {(state.userDetail?.publications?.length === 0 ||
+                          !state.userDetail?.publications) && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="text-center py-12"
+                          >
+                            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                              <Book className="w-12 h-12 text-[#f2b31d]/60" />
+                            </div>
+                            <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                              No Publications Added
+                            </h4>
+                            <p className="text-gray-500 mb-6">
+                              Showcase your research work by adding your
+                              publications
                             </p>
                           </motion.div>
                         )}
@@ -2288,6 +2536,85 @@ export default function NaukriProfilePage() {
                         className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                       />
                     </div>
+                    <div className="space-y-2 flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="funded-edit"
+                        className="h-4 w-4 rounded border-gray-300 text-[#f2b31d] focus:ring-[#f2b31d]"
+                        checked={state.funded}
+                        onChange={(e) =>
+                          handleFormChange("funded", e.target.checked)
+                        }
+                      />
+                      <label
+                        htmlFor="funded-edit"
+                        className="text-sm font-semibold text-gray-700"
+                      >
+                        Is this project funded?
+                      </label>
+                    </div>
+                    {state.funded && (
+                      <div className="space-y-2 md:col-span-2">
+                        <label className="text-sm font-semibold text-gray-700">
+                          Funding Details
+                        </label>
+                        <Textarea
+                          placeholder="Enter funding details..."
+                          value={state.funding_details || ""}
+                          onChange={(e) =>
+                            handleFormChange("funding_details", e.target.value)
+                          }
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
+                        />
+                      </div>
+                    )}
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Technologies
+                      </label>
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="e.g., React.js"
+                          value={state.technology || ""}
+                          onChange={(e) =>
+                            handleFormChange("technology", e.target.value)
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              // handleAddTechnology();
+                            }
+                          }}
+                          className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                        />
+                        <Button
+                          variant="outline"
+                          type="button"
+                          // onClick={handleAddTechnology}
+                        >
+                          Add
+                        </Button>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {state.technologies?.map(
+                          (tech: string, index: number) => (
+                            <div
+                              key={index}
+                              className="bg-[#f2b31d]/20 text-yellow-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                            >
+                              {tech}
+                              <button
+                                type="button"
+                                // onClick={() => handleRemoveTechnology(tech)}
+                                className="text-yellow-800 hover:text-yellow-900"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ),
+                        )}
+                      </div>
+                    </div>
                     <div className="space-y-2 md:col-span-2">
                       <label className="text-sm font-semibold text-gray-700">
                         Technologies
@@ -2363,6 +2690,132 @@ export default function NaukriProfilePage() {
                   </Button>
                   <Button
                     onClick={updateProjects}
+                    className="bg-[#f2b31d] hover:bg-[#d9a01a]"
+                  >
+                    Update
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {state.isEditingPublication && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+              >
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Edit Publication
+                  </h2>
+                  <button
+                    onClick={() => setState({ isEditingPublication: false })}
+                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500" />
+                  </button>
+                </div>
+
+                <div className="p-6 space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Publication Title
+                      </label>
+                      <Input
+                        placeholder="e.g., Advanced AI Research"
+                        value={state.publication_title || ""}
+                        onChange={(e) =>
+                          handleFormChange("publication_title", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Journal
+                      </label>
+                      <Input
+                        placeholder="e.g., IEEE Transactions"
+                        value={state.publication_journal || ""}
+                        onChange={(e) =>
+                          handleFormChange("publication_journal", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Volume
+                      </label>
+                      <Input
+                        placeholder="e.g., 42"
+                        value={state.publication_volume || ""}
+                        onChange={(e) =>
+                          handleFormChange("publication_volume", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Issue
+                      </label>
+                      <Input
+                        placeholder="e.g., 3"
+                        value={state.publication_issue || ""}
+                        onChange={(e) =>
+                          handleFormChange("publication_issue", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Year
+                      </label>
+                      <Input
+                        placeholder="e.g., 2023"
+                        value={state.publication_year || ""}
+                        onChange={(e) =>
+                          handleFormChange("publication_year", e.target.value)
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
+                      />
+                    </div>
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="text-sm font-semibold text-gray-700">
+                        Description
+                      </label>
+                      <Textarea
+                        placeholder="Brief description of the publication..."
+                        value={state.publication_description || ""}
+                        onChange={(e) =>
+                          handleFormChange(
+                            "publication_description",
+                            e.target.value,
+                          )
+                        }
+                        className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d] min-h-[100px]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                  <Button
+                    variant="outline"
+                    onClick={() => setState({ isEditingPublication: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={updatePublication}
                     className="bg-[#f2b31d] hover:bg-[#d9a01a]"
                   >
                     Update
