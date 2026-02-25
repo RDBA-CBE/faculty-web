@@ -56,7 +56,7 @@ const FilterSection: React.FC<{
               onChange={() => onToggle(item.value)}
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
-            <span className="text-md text-slate-600 group-hover:text-slate-900 transition-colors">
+            <span className="text-[15px] text-slate-600 group-hover:text-slate-900 transition-colors">
               {item.label}
             </span>
           </div>
@@ -96,7 +96,7 @@ const FilterSectionRadio: React.FC<{
             onChange={() => {}} // 👈 required by React
             className="w-4 h-4 text-amber-500 border-slate-200 focus:ring-amber-400"
           />
-          <span className="text-md text-slate-600">{item.label}</span>
+          <span className="text-[15px] text-slate-600">{item.label}</span>
         </label>
       ))}
     </div>
@@ -168,8 +168,8 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   return (
     <aside className="w-full h-full">
-      <div className="flex justify-between items-center px-4 mt-4">
-        <div className="font-bold">Filter</div>
+      <div className="flex justify-end items-center px-4 mt-4">
+        {/* <div className="font-bold">Filter</div> */}
         <button
           onClick={handleClearFilters}
           className="text-sm font-medium text-red-600 hover:text-red-800"
