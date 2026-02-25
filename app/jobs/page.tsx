@@ -386,7 +386,7 @@ export default function JobsPage() {
   };
 
   const handleSaveToggle = async (
-    jobId: number,
+    jobId: number
     // isSaved: boolean,
     // saveId?: number,
   ) => {
@@ -408,14 +408,14 @@ export default function JobsPage() {
       //   }
       //   await Models.save.delete(saveId);
       //   Success("Job removed from saved list.");
-      // } 
+      // }
       // else {
-        const body = {
-          job_id: jobId,
-          user_id: profile.id,
-        };
-        await Models.save.create(body);
-        Success("Job saved successfully.");
+      const body = {
+        job_id: jobId,
+        user_id: profile.id,
+      };
+      await Models.save.create(body);
+      Success("Job saved successfully.");
       // }
 
       // Refetch job list to get the latest saved status and save_id
@@ -669,8 +669,6 @@ export default function JobsPage() {
         </div>
       </div> */}
 
-
-
         <main className="section-wid py-8 lg:py-12">
           {isTabScreen && selectedJob ? (
             <div
@@ -775,7 +773,7 @@ export default function JobsPage() {
                     <button
                       onClick={() =>
                         handleSaveToggle(
-                          state.jobDetail.id,
+                          state.jobDetail.id
                           // !!state.jobDetail.is_saved,
                           // state.jobDetail.save_id,
                         )
@@ -963,7 +961,7 @@ export default function JobsPage() {
             <div className="flex gap-6 ">
               {/* Left Sidebar - Jobs List */}
               <div className="w-80 flex-shrink-0">
-                <div className="mb-4 flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-sm  overflow-hidden p-1">
+                <div className="mb-4 flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-sm  overflow-hidden p-1 items-center justify-center">
                   <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
                     <Search color="#F2B31D" size={22} />
                     <input
@@ -1038,7 +1036,7 @@ export default function JobsPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleSaveToggle(
-                                job.id,
+                                job.id
                                 // !!job.is_saved,
                                 // job.save_id,
                               );
@@ -1273,10 +1271,7 @@ export default function JobsPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() =>
-                              handleSaveToggle(
-                                state?.jobDetail?.id,
-                                
-                              )
+                              handleSaveToggle(state?.jobDetail?.id)
                             }
                             disabled={isSaving === state?.jobDetail?.id}
                             className="p-1 -m-1"
@@ -1293,7 +1288,6 @@ export default function JobsPage() {
                               //     ? "fill-amber-400 text-amber-500"
                               //     : "text-gray-400"
                               // }
-                              
                             />
                           </button>
                           <RWebShare
@@ -1527,7 +1521,7 @@ export default function JobsPage() {
 
               <div className="flex-grow">
                 {/* content input header start */}
-                <div className="z-30 bg-white lg:pb-5 self-start">
+                <div className="z-30 bg-white  self-start items-center flex justify-center shadow rounded-md">
                   <div className="flex flex-col md:flex-row items-center w-full bg-clr2  rounded-xl  p-1">
                     <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
                       <Search color="#F2B31D" size={22} />
