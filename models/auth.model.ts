@@ -234,6 +234,25 @@ const auth = {
     });
     return promise;
   },
+
+  newsletter:  (body = {} as any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `newsletter/`;
+      instance()
+        .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 };
 
 export default auth;

@@ -1,9 +1,9 @@
-"use client"
+"use client";
 
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import { Failure, useSetState } from "@/utils/function.utils";
+import { Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { useRouter } from "next/navigation";
 
@@ -44,6 +44,25 @@ const Footer = () => {
 
   console.log("jobList", state?.jobList);
 
+  const handleSubscribe = async () => {
+    try {
+      const body = {
+        email: state?.email,
+      };
+
+      const res = await Models.auth.newsletter(body);
+      console.log(res);
+
+      Success("Subscribed Successfully");
+    } catch (error) {
+      console.log(error);
+
+      const apiError = error?.message || "Something went wrong";
+
+      Failure(apiError);
+    }
+  };
+
   return (
     <footer className="relative w-full">
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
@@ -62,10 +81,15 @@ const Footer = () => {
             <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
               <input
                 type="email"
+                value={state?.email}
+                onChange={(e) => setState({ email: e.target.value })}
                 placeholder="Enter Your Email Address..."
                 className="flex-grow px-4 py-2 rounded-full outline-none text-gray-500 text-sm bg-transparent"
               />
-              <button className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm">
+              <button
+                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm"
+                onClick={handleSubscribe}
+              >
                 Subscribe
               </button>
             </div>
