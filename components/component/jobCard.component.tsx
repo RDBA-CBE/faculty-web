@@ -37,90 +37,87 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
     return <IndianRupee className="w-3.5 h-3.5" />;
   };
 
+  const handleSaveList = async (e) => {
+    e.stopPropagation(); // Prevent card click event
+    try {
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
   return (
     <div
-      className="bg-clr2 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+      className="shadow bg-white rounded-xl p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
-      {/* Header */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex items-start gap-3">
+      {/* Header with Title and Company Logo on Right */}
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex-1">
+          <h3 className="font-bold text-gray-900 text-base text-lg ">
+            {capitalizeFLetter(job.job_title)}
+          </h3>
+          <p className="font-medium text-gray-900 text-md ">
+            {capitalizeFLetter(job?.college?.name)}
+          </p>
+        </div>
+
+        {/* Company Logo/Initials on Right */}
+        <div className="flex-shrink-0 ml-3">
           {job?.college?.college_logo ? (
             <img
               src={job?.college?.college_logo}
-              alt="company image"
-              className="w-10 h-10  object-cover"
+              alt="company logo"
+              style={{ objectFit: "contain" }}
+              className="w-10 h-10 rounded-lg object-cover border border-gray-100"
             />
           ) : (
             <div
-              className={`w-10 h-10 rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+              className={`w-10 h-10 rounded-lg ${getAvatarColor(
+                job?.college?.name
+              )} flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
             </div>
           )}
-          <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-gray-900 text-lg leading-tight mb-1 group-hover:text-[#000] transition-colors">
-              {job.job_title}
-            </h3>
-            <p className="text-gray-600 font-medium">{job?.college?.name}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* <Bookmark className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" /> */}
-          <RWebShare
-            data={{
-              title: "Faculty Plus",
-              text: "Check this out!",
-              url: window.location.href,
-            }}
-            onClick={() => console.log("shared successfully!")}
-          >
-            <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
-          </RWebShare>
         </div>
       </div>
 
-      {/* Experience and Salary */}
-      <div className="flex items-center gap-4 text-sm text-gray-600 mb-2">
-        <div className="flex items-center gap-2">
-          <Briefcase className="w-3.5 h-3.5" />
-          <span className="text-sm">{job.experiences?.name}</span>
-        </div>
-        <div className="w-px h-4 bg-gray-300"></div>
-        <div className="flex items-center gap-2">
-          {getSalaryIcon(job?.salary_range_obj?.name)}
-          <span className="text-sm">{job?.salary_range_obj?.name}</span>
+      {/* Experience and Location */}
+      <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+        <span className="text-sm">{job.experiences?.name}</span>
+        <span className="text-gray-400">|</span>
+        <div className="flex items-center gap-1">
+          <MapPin className="w-3.5 h-3.5" />
+          <span className="text-sm">
+            {" "}
+            {job.locations?.map((item) => item.city).join(", ")}
+          </span>
         </div>
       </div>
 
-      {/* Location */}
-      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-        <MapPin className="w-3.5 h-3.5" />
-        <span className="text-sm">
-          {job.locations?.map((item) => item.city).join(", ")}
-        </span>
-      </div>
-
-      {/* Description */}
-      <p className=" text-gray-600 mb-4 line-clamp-2">
+      {/* Job Description */}
+      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
         {job?.job_description ||
           "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
       </p>
 
-      {/* Footer */}
-      <div className="flex items-center justify-between  border-t border-gray-100">
-        <span className="bg-green-50 text-green-700 px-3  rounded-full text-xs font-medium">
-          {capitalizeFLetter(job?.job_type_obj?.name)}
-        </span>
-        <div className="flex items-center gap-1 text-xs text-gray-500">
-          <Clock className="w-3 h-3" />
-          <span>
-            {moment(job.created_at).isValid() &&
-            moment(job.created_at).year() > 1900
-              ? moment(job.created_at).fromNow()
-              : "Just now"}
-          </span>
+      {/* Footer with Posted Date and Save Button */}
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+        <div className="flex items-center gap-1 text-sm text-gray-500">
+          {/* <Clock className="w-3.5 h-3.5" /> */}
+          {moment(job.created_at).isValid() &&
+          moment(job.created_at).year() > 1900
+            ? moment(job.created_at).fromNow()
+            : "Just now"}
         </div>
+
+        <button
+          onClick={handleSaveList}
+          className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors"
+        >
+          <Bookmark className="w-5 h-5" />
+          Save
+        </button>
       </div>
     </div>
   );

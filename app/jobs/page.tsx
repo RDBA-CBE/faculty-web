@@ -621,6 +621,8 @@ export default function JobsPage() {
         </div>
       </div> */}
 
+
+
         <main className="section-wid py-8 lg:py-12">
           {isTabScreen && selectedJob ? (
             <div
@@ -1529,7 +1531,7 @@ export default function JobsPage() {
                 ) : state.jobList?.length > 0 ? (
                   <>
                     <div
-                      className="grid grid-cols-1 md:grid-cols-2  "
+                      className="grid grid-cols-1 md:grid-cols-2 mt-5 "
                       style={{
                         gap: "20px",
                       }}
