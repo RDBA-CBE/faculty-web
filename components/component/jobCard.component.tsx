@@ -67,7 +67,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
         user_id: profile.id,
       };
       if (job?.is_saved) {
-        await Models.save.delete(job.id, profile.id);
+        await Models.save.delete(profile.id,job.id);
         Success("Job removed from saved list.");
       } else {
         await Models.save.create(body);
