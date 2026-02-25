@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
@@ -122,7 +124,7 @@ const Footer = () => {
               <ul className="space-y-3 text-xs text-gray-400">
                 <li>
                   <a
-                    href="#"
+                    href="/about"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     About Us
@@ -130,7 +132,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/job"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Jobs
@@ -138,7 +140,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/contact"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Contact Us
@@ -157,7 +159,7 @@ const Footer = () => {
               >
                 {state?.jobList?.slice(0, 4)?.map((item, index) => (
                   <p
-                    key={index}
+                    key={item.id}
                     onClick={() => router.push(`/jobs?id=${item.id}`)}
                     className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                   >
@@ -174,7 +176,7 @@ const Footer = () => {
               <ul className="space-y-3 text-md text-gray-400">
                 <li>
                   <a
-                    href="#"
+                    href="/privacy-policy"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Privacy Policy
@@ -182,7 +184,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="/terms-conditions"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Terms & Conditions
