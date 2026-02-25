@@ -11,7 +11,7 @@ export const jobApplicationSchema = Yup.object().shape({
     .required("Phone number is required")
     .min(10, "Phone number must be at least 10 digits"),
   experience: Yup.string().required("Experience is required"),
-  
+
   resume: Yup.mixed()
     .required("Resume is required")
     .test(
@@ -71,7 +71,7 @@ export const userResume = Yup.object({
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ].includes(file.type) &&
-        file.size <= 12 * 1024 * 1024
+        file.size <= 12 * 1024 * 1024,
     ),
 });
 
@@ -80,9 +80,16 @@ export const changePassword = Yup.object().shape({
   new_password: Yup.string().required("New Password is required"),
   confirm_password: Yup.string()
     .required("Confirm Password is required")
-    .oneOf([Yup.ref("new_password")], "Passwords must match"),  
-})
+    .oneOf([Yup.ref("new_password")], "Passwords must match"),
+});
 
 export const forgotPassword = Yup.object().shape({
-  email: Yup.string().required("Current Password is required")
-})
+  email: Yup.string().required("Current Password is required"),
+});
+
+export const resetPassword = Yup.object().shape({
+  new_password: Yup.string().required("New Password is required"),
+  confirm_password: Yup.string()
+    .required("Confirm Password is required")
+    .oneOf([Yup.ref("new_password")], "Passwords must match"),
+});
