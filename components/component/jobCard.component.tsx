@@ -13,6 +13,7 @@ import {
   Share2,
   DollarSign,
   IndianRupee,
+  BookmarkCheck,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -31,34 +32,22 @@ interface JobCardProps {
     company_logo: string | null;
     college: any;
     job_description: any;
+    is_saved: boolean;
   };
   onClick?: () => void;
+  updateList?: () => void;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
-  const getSalaryIcon = (salary_range_obj_name: string) => {
-    if (salary_range_obj_name?.includes("$")) {
-      return <DollarSign className="w-3.5 h-3.5" />;
-    }
-    return <IndianRupee className="w-3.5 h-3.5" />;
-  };
-
+export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => {
   const [isSaving, setIsSaving] = useState<number | null>(null);
 
-  const handleSaveToggle = async (
-    e,
-    jobId: number,
-    // isSaved: boolean,
-    // saveId?: number,
-  ) => {
+  const handleSaveToggle = async (e) => {
     e.stopPropagation();
     const profile = JSON.parse(localStorage.getItem("user") || "null");
     if (!profile?.id) {
       Failure("Please log in to save jobs.");
       return;
     }
-
-    setIsSaving(jobId);
 
     try {
       // if (isSaved) {
@@ -72,14 +61,20 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
       //   Success("Job removed from saved list.");
       // }
       // else {
+
       const body = {
-        job_id: jobId,
+        job_id: job?.id,
         user_id: profile.id,
       };
-      await Models.save.create(body);
-      Success("Job saved successfully.");
+      if (job?.is_saved) {
+        await Models.save.delete(job.id, profile.id);
+        Success("Job removed from saved list.");
+      } else {
+        await Models.save.create(body);
+        Success("Job saved successfully.");
+      }
+      updateList()
       // }
-      
 
       // Refetch job list to get the latest saved status and save_id
     } catch (error) {
@@ -118,7 +113,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
           ) : (
             <div
               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                job?.college?.name,
+                job?.college?.name
               )} flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
@@ -157,11 +152,20 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick }) => {
         </div>
 
         <button
-          onClick={(e) => handleSaveToggle(e,job.id)}
+          onClick={(e) => handleSaveToggle(e)}
           className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors"
         >
-          <Bookmark className="w-5 h-5" />
-          Save
+          {job?.is_saved ? (
+            <div className="flex items-center ">
+              <BookmarkCheck className="w-7 h-7 fill-[#24266e] text-white" />
+              <div className="text-[#24266e] font-medium text-sm">Saved</div>
+            </div>
+          ) : (
+            <>
+              <Bookmark className="w-5 h-5 " />
+              Save
+            </>
+          )}
         </button>
       </div>
     </div>

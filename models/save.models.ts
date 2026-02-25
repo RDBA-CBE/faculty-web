@@ -59,9 +59,9 @@ const save = {
     return promise;
   },
 
-  delete: (id) => {
+  delete: (userId,jobId) => {
     return new Promise((resolve, reject) => {
-      const url = `savelists/user/${id}/`; // id = userId
+      const url = `savelists/user/${userId}/job/${jobId}/`; // id = userId
 
       instance()
         .delete(url) // <-- body goes here

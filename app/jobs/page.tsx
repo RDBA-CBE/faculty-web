@@ -1670,7 +1670,7 @@ export default function JobsPage() {
                           }}
                           className="cursor-pointer transition-transform hover:scale-10"
                         >
-                          <JobCard job={job} />
+                          <JobCard job={job} updateList={()=> jobList(state?.page)} />
                         </div>
                       ))}
                     </div>

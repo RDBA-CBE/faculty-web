@@ -45,7 +45,7 @@ export default function SavedJobsPage() {
     try {
       setState({ loading: true });
 
-      const res:any = await Models.save.list(page, state.userId);
+      const res: any = await Models.save.list(page, state.userId);
 
       setState({
         loading: false,
@@ -62,7 +62,6 @@ export default function SavedJobsPage() {
   };
 
   console.log("jobList", state?.jobList);
-  
 
   const handleNext = () => {
     if (state.next) {
@@ -105,18 +104,13 @@ export default function SavedJobsPage() {
             {/* JOB LIST */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {state.jobList?.map((item: any) => {
-                const jobData = item?.job || item;
-                if (!jobData?.id) return null;
-
                 return (
                   <div
-                    key={item.id || jobData.id}
+                    key={item.id || item.id}
                     className="cursor-pointer transition-transform hover:scale-105"
-                    onClick={() =>
-                      router.push(`/jobs?id=${jobData.id}`)
-                    }
+                    onClick={() => router.push(`/jobs?id=${item.id}`)}
                   >
-                    <JobCard job={jobData?.job_id} />
+                    <JobCard job={item?.job} updateList={()=>getSavedJobs(state.page)} />
                   </div>
                 );
               })}
