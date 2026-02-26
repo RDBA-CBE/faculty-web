@@ -48,7 +48,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { buildFormData, Failure, Success, useSetState } from "@/utils/function.utils";
+import {
+  buildFormData,
+  Failure,
+  Success,
+  useSetState,
+} from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
 import { Input } from "../ui/input";
@@ -124,10 +129,8 @@ const Header = () => {
 
   const handleRegister = async () => {
     try {
-      console.log("hello");
-      console.log(state.first_name);
 
-      setState({ btnLoading: true, errors: {} });
+      // setState({ btnLoading: true, errors: {} });
 
       const validateBody = {
         first_name: state.first_name,
@@ -148,6 +151,9 @@ const Header = () => {
         username: state.first_name + " " + state.last_name,
         role: "applicant",
         ...validateBody,
+        newsletter:state.newsletter,
+        terms: state.terms,
+
       };
 
       console.log("body", body);
@@ -163,7 +169,9 @@ const Header = () => {
         btnLoading: false,
       });
 
-      Success("Registration completed Successfully, Please check you email to verify your account and login to continue")
+      Success(
+        "Registration completed Successfully, Please check you email to verify your account and login to continue"
+      );
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -179,7 +187,10 @@ const Header = () => {
 
         setState({ errors: validationErrors, btnLoading: false });
       } else if (error.isTerms) {
-        setState({ errors: { terms: "Please accept terms and conditions" }, btnLoading: false });
+        setState({
+          errors: { terms: "Please accept terms and conditions" },
+          btnLoading: false,
+        });
       } else {
         Failure(error?.error);
         setState({ btnLoading: false });
@@ -191,7 +202,7 @@ const Header = () => {
     try {
       setState({ btnLoading: true });
       const body = {
-        email: state.email.trim(),
+        email: state.email?.trim(),
         password: state.password,
       };
       await Validation.login.validate(body, { abortEarly: false });
@@ -202,7 +213,7 @@ const Header = () => {
       localStorage.setItem("user", JSON.stringify(res.user));
 
       setState({ token: res.access, errors: {}, isOpenLogin: false });
-      Success("Login Successfully!")
+      Success("Login Successfully!");
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -324,12 +335,16 @@ const Header = () => {
                       <span>Profile</span>
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem onClick={() => router.push("/saved-jobs")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/saved-jobs")}
+                    >
                       <Bookmark className="mr-2 h-4 w-4" />
                       <span>Saved Jobs</span>
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem onClick={() => router.push("/change-password")}>
+                    <DropdownMenuItem
+                      onClick={() => router.push("/change-password")}
+                    >
                       <Lock className="mr-2 h-4 w-4" />
                       <span>Change password</span>
                     </DropdownMenuItem>
@@ -492,11 +507,14 @@ const Header = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              
-              <button className="text-amber-500 hover:text-amber-600 text-sm" onClick={()=>{router.push(`/forget-password`)
-                setState({isOpenLogin: false})
-              }}>
+            <div className="flex items-center justify-end">
+              <button
+                className="text-amber-500 hover:text-amber-600 text-sm"
+                onClick={() => {
+                  router.push(`/forget-password`);
+                  setState({ isOpenLogin: false });
+                }}
+              >
                 Forget password?
               </button>
             </div>
@@ -510,10 +528,11 @@ const Header = () => {
               <ArrowRight className="w-4 h-4" />
             </Button>
 
-            
-
             <div className="text-center mt-6">
-              <a href="/terms-conditions" className="text-gray-500 text-sm hover:text-gray-700" >
+              <a
+                href="/terms-conditions"
+                className="text-gray-500 text-sm hover:text-gray-700"
+              >
                 Terms and condition
               </a>
             </div>
@@ -614,26 +633,48 @@ const Header = () => {
                 error={state.errors?.password_confirm}
               />
             </div>
-
-            <div className="flex flex-col">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  className="mr-2"
-                  checked={state.terms || false}
-                  onChange={(e) => handleFormChange("terms", e.target.checked)}
-                />
-                <span className="text-gray-600 text-sm">
-                  I've read and agree with your{" "}
-                  <button className="text-amber-500 hover:text-amber-600">
-                    Terms of Services
-                  </button>
-                  <span className="text-red-500"> *</span>
-                </span>
+            <div className="gap-4 flex flex-col">
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={state.terms || false}
+                    onChange={(e) =>
+                      handleFormChange("terms", e.target.checked)
+                    }
+                  />
+                  <span className="text-gray-600 text-sm">
+                    I've read and agree with your{" "}
+                    <button className="text-amber-500 hover:text-amber-600">
+                      Terms of Services
+                    </button>
+                    <span className="text-red-500"> *</span>
+                  </span>
+                </div>
+                {state.errors?.terms && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {state.errors.terms}
+                  </span>
+                )}
               </div>
-              {state.errors?.terms && <span className="text-red-500 text-xs mt-1">{state.errors.terms}</span>}
-            </div>
 
+              <div className="flex flex-col">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={state.newsletter || false}
+                    onChange={(e) =>
+                      handleFormChange("newsletter", e.target.checked)
+                    }
+                  />
+                  <span className="text-gray-600 text-sm">
+                    Accept to receive newsletter
+                  </span>
+                </div>
+              </div>
+            </div>
             <Button
               onClick={() => {
                 handleRegister();
@@ -646,7 +687,7 @@ const Header = () => {
             </Button>
 
             {/* <div className="text-center text-gray-500 my-4">or</div> */}
-{/* 
+            {/* 
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
@@ -687,7 +728,10 @@ const Header = () => {
             </div> */}
 
             <div className="text-center mt-6">
-              <a href="/terms-conditions" className="text-gray-500 text-sm hover:text-gray-700">
+              <a
+                href="/terms-conditions"
+                className="text-gray-500 text-sm hover:text-gray-700"
+              >
                 Terms and condition
               </a>
             </div>
