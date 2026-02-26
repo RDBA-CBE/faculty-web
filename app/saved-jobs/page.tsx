@@ -97,7 +97,7 @@ export default function SavedJobsPage() {
         {/* LOADING */}
         {state.loading ? (
           <div className="flex items-center justify-center h-[50vh]">
-            <Loader className="animate-spin h-10 w-10 text-[#24266e]" />
+            <Loader className="animate-spin h-10 w-10 text-[#01014B]" />
           </div>
         ) : state.jobList.length > 0 ? (
           <>
