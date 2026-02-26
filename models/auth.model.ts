@@ -237,7 +237,7 @@ const auth = {
 
   newsletter:  (body = {} as any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `newsletter/`;
+      let url = `newsletters/`;
       instance()
         .post(url, body)
         .then((res) => {

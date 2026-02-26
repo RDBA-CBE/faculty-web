@@ -44,29 +44,34 @@ const Footer = () => {
   };
 
   const handleSubscribe = async () => {
-    console.log("✌️state?.emai --->", state?.email);
+    try {
+      if (!state?.email) {
+        Failure("Please enter your email address");
+        return;
+      }
 
-    if (!state?.email) {
-      Failure("Please enter your email address");
-      return;
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(state.email)) {
+        Failure("Please enter a valid email address");
+        return;
+      }
+
+      const body = {
+        email: state.email,
+      };
+
+      const res = await Models.auth.newsletter(body);
+      Success("Subscribed successfully! Thank you for joining our newsletter.");
+      setState({ email: "" });
+    } catch (error) {
+      if (error?.response?.data?.error) {
+        Failure(error?.response?.data?.error);
+        setState({ email: "" });
+      }
+      console.log("✌️error --->", error);
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailRegex.test(state.email)) {
-      Failure("Please enter a valid email address");
-      return;
-    }
-
-    const body = {
-      email: state.email,
-    };
-
-    const res = await Models.auth.news_letter(body);
-    console.log("✌️res --->", res);
-    Success("Subscribed successfully! Thank you for joining our newsletter.");
   };
-
-  
 
   return (
     <footer className="relative w-full">
