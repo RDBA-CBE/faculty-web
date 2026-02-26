@@ -386,7 +386,7 @@ export default function JobsPage() {
   };
 
   const handleSaveToggle = async (
-    jobId: number
+    jobId: number,
     // isSaved: boolean,
     // saveId?: number,
   ) => {
@@ -707,7 +707,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                          state?.jobDetail?.college?.name
+                          state?.jobDetail?.college?.name,
                         )} flex items-center justify-center text-white font-semibold text-lg`}
                       >
                         {state?.jobDetail?.college?.name
@@ -734,7 +734,7 @@ export default function JobsPage() {
                     {capitalizeFLetter(
                       state?.jobDetail?.locations
                         ?.map((item) => item.city)
-                        .join(", ")
+                        .join(", "),
                     )}{" "}
                     {/* • Posted {state?.jobDetail?.postedDate || "2 days ago"} */}
                   </p>
@@ -773,7 +773,7 @@ export default function JobsPage() {
                     <button
                       onClick={() =>
                         handleSaveToggle(
-                          state.jobDetail.id
+                          state.jobDetail.id,
                           // !!state.jobDetail.is_saved,
                           // state.jobDetail.save_id,
                         )
@@ -939,7 +939,7 @@ export default function JobsPage() {
                   ) : (
                     <div
                       className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                        selectedJob.college?.name
+                        selectedJob.college?.name,
                       )} flex items-center justify-center text-white font-semibold`}
                     >
                       {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
@@ -1003,7 +1003,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                job.college?.name
+                                job.college?.name,
                               )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
                             >
                               {job.college?.name?.slice(0, 1).toUpperCase()}
@@ -1036,7 +1036,7 @@ export default function JobsPage() {
                             onClick={(e) => {
                               e.stopPropagation();
                               handleSaveToggle(
-                                job.id
+                                job.id,
                                 // !!job.is_saved,
                                 // job.save_id,
                               );
@@ -1202,7 +1202,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                                state?.jobDetail?.college?.name
+                                state?.jobDetail?.college?.name,
                               )} flex items-center justify-center text-white font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
@@ -1232,7 +1232,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", ")
+                              .join(", "),
                           )}{" "}
                           {/* • Posted{" "}
                           {state?.jobDetail?.postedDate || "2 days ago"} */}
@@ -1361,7 +1361,7 @@ export default function JobsPage() {
                                 <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
                                 <span className="">{item}</span>
                               </li>
-                            )
+                            ),
                           )}
                         </ul>
                       </div>
@@ -1444,7 +1444,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                selectedJob.college?.name
+                                selectedJob.college?.name,
                               )} flex items-center justify-center text-white font-semibold`}
                             >
                               {selectedJob.college?.name
@@ -1522,8 +1522,8 @@ export default function JobsPage() {
               <div className="flex-grow">
                 {/* content input header start */}
                 <div className="z-30 bg-white  self-start items-center flex justify-center shadow rounded-md">
-                  <div className="flex flex-col md:flex-row items-center w-full bg-clr2  rounded-xl  p-1">
-                    <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">
+                  <div className="flex flex-row items-center w-full bg-clr2  rounded-xl  p-1">
+                    <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto">
                       <Search color="#F2B31D" size={22} />
                       <input
                         type="text"
@@ -1572,53 +1572,58 @@ export default function JobsPage() {
                     </div>
                   </div>
 
-                  <div className="py-4 lg:hidden flex items-center justify-between">
-                    <div className="md:hidden">
-                      <Sheet
-                        open={isMobileFilterOpen}
-                        onOpenChange={setIsMobileFilterOpen}
+                  {/* content body job list */}
+                </div>
+
+                <div className="py-4 lg:hidden flex items-center justify-between">
+                  <div className="lg:hidden">
+                    <Sheet
+                      open={isMobileFilterOpen}
+                      onOpenChange={setIsMobileFilterOpen}
+                    >
+                      <SheetTrigger asChild>
+                        <Button variant="outline" className="w-auto">
+                          <Filter className="mr-2 h-4 w-4" />
+                          Filters
+                        </Button>
+                      </SheetTrigger>
+                      <SheetContent
+                        side="bottom"
+                        className="h-[80vh] overflow-y-scroll scrollbar-hide rounded-t-3xl [&>button]:hidden"
                       >
-                        <SheetTrigger asChild>
-                          <Button variant="outline" className="w-auto">
-                            <Filter className="mr-2 h-4 w-4" />
-                            Filters
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                          side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide rounded-t-3xl [&>button]:hidden"
-                        >
-                          <div className="flex items-center justify-between px-4 pb-3 border-b">
-                            <SheetTitle className="text-lg font-semibold">
-                              Filter Jobs
-                            </SheetTitle>
-                            <button
-                              onClick={() => setIsMobileFilterOpen(false)}
-                              className="p-1 hover:bg-clr2 rounded-full"
-                            >
-                              <X size={20} className="text-gray-500" />
-                            </button>
-                          </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
-                            <Filterbar
-                              filters={filters}
-                              onFilterChange={setFilters}
-                              categoryList={state?.categoryList}
-                              locationList={state?.locationList}
-                              jobTypeList={state?.jobTypeList}
-                              experienceList={state?.experienceList}
-                              datePostedList={state?.datePostedList}
-                              salaryRangeList={state?.salaryRangeList}
-                              tagsList={state?.tagsList}
-                              collegeList={state?.collegeList}
-                            />
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-                    </div>
+                        <div className="flex items-center justify-between px-4 pb-3 border-b">
+                          <SheetTitle className="text-lg font-semibold">
+                            Filter Jobs
+                          </SheetTitle>
+                          <button
+                            onClick={() => setIsMobileFilterOpen(false)}
+                            className="p-1 hover:bg-clr2 rounded-full"
+                          >
+                            <X size={20} className="text-gray-500" />
+                          </button>
+                        </div>
+                        <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
+                          <Filterbar
+                            filters={filters}
+                            onFilterChange={setFilters}
+                            categoryList={state?.categoryList}
+                            locationList={state?.locationList}
+                            jobTypeList={state?.jobTypeList}
+                            experienceList={state?.experienceList}
+                            datePostedList={state?.datePostedList}
+                            salaryRangeList={state?.salaryRangeList}
+                            tagsList={state?.tagsList}
+                            collegeList={state?.collegeList}
+                          />
+                        </div>
+                      </SheetContent>
+                    </Sheet>
                   </div>
 
-                  <ChipFilters
+                  
+                </div>
+
+                <ChipFilters
                     filters={filters}
                     onFilterChange={setFilters}
                     categoryList={state?.categoryList}
@@ -1630,9 +1635,6 @@ export default function JobsPage() {
                     collegeList={state?.collegeList}
                     locationList={state?.locationList}
                   />
-
-                  {/* content body job list */}
-                </div>
 
                 {state.loading ? (
                   <div className="flex items-center justify-center h-[100vh] ">
@@ -1670,7 +1672,10 @@ export default function JobsPage() {
                           }}
                           className="cursor-pointer transition-transform hover:scale-10"
                         >
-                          <JobCard job={job} updateList={()=> jobList(state?.page)} />
+                          <JobCard
+                            job={job}
+                            updateList={() => jobList(state?.page)}
+                          />
                         </div>
                       ))}
                     </div>
@@ -1763,7 +1768,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                state.jobDetail?.college?.name
+                                state.jobDetail?.college?.name,
                               )} flex items-center justify-center text-white font-semibold text-sm`}
                             >
                               {state.jobDetail?.college?.name
@@ -1783,7 +1788,7 @@ export default function JobsPage() {
                               <span className="text-sm text-gray-600">
                                 {moment(state.jobDetail?.created_at).isValid()
                                   ? moment(
-                                      state.jobDetail?.created_at
+                                      state.jobDetail?.created_at,
                                     ).fromNow()
                                   : "Just now"}
                               </span>
@@ -1841,7 +1846,7 @@ export default function JobsPage() {
                                     {responsibility}
                                   </p>
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -1864,7 +1869,7 @@ export default function JobsPage() {
                                     {requirements}
                                   </p>
                                 </div>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -1944,7 +1949,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                state.jobDetail?.college?.name
+                                state.jobDetail?.college?.name,
                               )} flex items-center justify-center text-white font-semibold`}
                             >
                               {state.jobDetail?.college?.name

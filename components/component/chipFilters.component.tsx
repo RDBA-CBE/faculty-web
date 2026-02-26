@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 
 const Chip = ({ label, onRemove }) => (
   <div className="flex items-center bg-amber-100 text-amber-800 text-sm font-medium pl-3 pr-2 py-1 rounded-full">
-    <span>{label}</span>
+    <span className="text-[10px] md:text-[12px]">{label}</span>
     <button
       onClick={onRemove}
       className="ml-2 p-0.5 rounded-full hover:bg-amber-200"
@@ -133,7 +133,7 @@ const ChipFilters = ({
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-2 py-4">
+    <div className="flex flex-wrap items-center gap-2 pt-2 pb-2">
       {activeFilters.map((filter, index) => (
         <Chip key={index} label={filter.label} onRemove={filter.onRemove} />
       ))}
