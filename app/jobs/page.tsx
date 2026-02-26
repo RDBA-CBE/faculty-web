@@ -13,6 +13,7 @@ import {
   generateMockJobs,
   getAvatarColor,
   getFileNameFromUrl,
+  Success,
   useSetState,
 } from "@/utils/function.utils";
 import {
@@ -36,6 +37,7 @@ import {
   Share2,
   IndianRupee,
   Loader,
+  BookmarkCheck,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -65,7 +67,6 @@ import { JobCard } from "@/components/component/jobCard.component";
 import PaginationCom from "@/components/component/PaginationCom";
 import CustomSelect from "@/components/common-components/dropdown";
 import moment from "moment";
-import { Success } from "@/components/common-components/toast";
 import { useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
 
@@ -343,6 +344,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     if (jobIdParam) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
       setState({ jobID: jobIdParam });
       jobDetail(jobIdParam).then((res) => {
         if (res) {
@@ -385,18 +387,13 @@ export default function JobsPage() {
     }
   };
 
-  const handleSaveToggle = async (
-    jobId: number,
-    // isSaved: boolean,
-    // saveId?: number,
-  ) => {
+  const handleSaveToggle = async (job) => {
+    // e.stopPropagation();
     const profile = JSON.parse(localStorage.getItem("user") || "null");
     if (!profile?.id) {
       Failure("Please log in to save jobs.");
       return;
     }
-
-    setIsSaving(jobId);
 
     try {
       // if (isSaved) {
@@ -410,20 +407,22 @@ export default function JobsPage() {
       //   Success("Job removed from saved list.");
       // }
       // else {
+
       const body = {
-        job_id: jobId,
-        user_id: profile.id,
+        job_id: job?.id,
+        user_id: profile?.id,
       };
-      await Models.save.create(body);
-      Success("Job saved successfully.");
+      if (job?.is_saved) {
+        await Models.save.delete(profile.id, job.id);
+        Success("Job removed from saved list.");
+      } else {
+        await Models.save.create(body);
+        Success("Job saved successfully.");
+      }
+      jobList(state?.page);
       // }
 
       // Refetch job list to get the latest saved status and save_id
-      await jobList(state.page);
-      // If the detailed job is the one being toggled, refetch its details too
-      if (selectedJob?.id === jobId) {
-        await jobDetail(jobId);
-      }
     } catch (error) {
       console.error("Failed to save/unsave job", error);
       Failure("An error occurred. Please try again.");
@@ -605,6 +604,9 @@ export default function JobsPage() {
     return body;
   };
 
+  console.log("state?.jobDetail", state?.jobDetail);
+  
+
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -771,27 +773,24 @@ export default function JobsPage() {
 
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() =>
-                        handleSaveToggle(
-                          state.jobDetail.id,
-                          // !!state.jobDetail.is_saved,
-                          // state.jobDetail.save_id,
-                        )
-                      }
+                      onClick={() => handleSaveToggle(state.jobDetail)}
                       disabled={isSaving === state.jobDetail.id}
                       className="p-1 -m-1"
                       // aria-label={
                       //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
                       // }
                     >
-                      <Bookmark
-                        className={`w-5 h-5 hover:text-amber-500 cursor-pointer `}
-                        //   ${
-                        //   state.jobDetail.is_saved
-                        //     ? "fill-amber-400 text-amber-500"
-                        //     : ""
-                        // }
-                      />
+                      {state.jobDetail?.is_saved ? (
+                        <div className="flex items-center ">
+                          <BookmarkCheck
+                            className={`w-5 h-5 fill-[#24266e] text-white cursor-pointer `}
+                          />
+                        </div>
+                      ) : (
+                        <>
+                          <Bookmark className="w-5 h-5 " />
+                        </>
+                      )}
                     </button>
                     <RWebShare
                       data={{
@@ -1033,28 +1032,26 @@ export default function JobsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleSaveToggle(
-                                job.id,
-                                // !!job.is_saved,
-                                // job.save_id,
-                              );
-                            }}
+                            onClick={() => handleSaveToggle(job)}
                             disabled={isSaving === job.id}
-                            className="p-1 -m-1 z-10"
-                            aria-label={
-                              job.is_saved ? "Unsave job" : "Save job"
-                            }
+                            className="p-1 -m-1"
+                            // aria-label={
+                            //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                            // }
                           >
-                            <Bookmark
-                              className={`w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer transition-colors ${
-                                job.is_saved
-                                  ? "fill-amber-400 text-amber-400"
-                                  : ""
-                              }`}
-                            />
+                            {job?.is_saved ? (
+                              <div className="flex items-center ">
+                                <BookmarkCheck
+                                  className={`w-5 h-5 fill-[#24266e] text-white cursor-pointer `}
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <Bookmark className="w-5 h-5 " />
+                              </>
+                            )}
                           </button>
+
                           <RWebShare
                             data={{
                               title: "Faculty Plus",
@@ -1271,24 +1268,30 @@ export default function JobsPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() =>
-                              handleSaveToggle(state?.jobDetail?.id)
+                              handleSaveToggle(
+                                state.jobDetail,
+
+                                // !!state.jobDetail.is_saved,
+                                // state.jobDetail.save_id,
+                              )
                             }
-                            disabled={isSaving === state?.jobDetail?.id}
+                            disabled={isSaving == state?.jobDetail?.id}
                             className="p-1 -m-1"
                             // aria-label={
-                            //   state.jobDetail.is_saved
-                            //     ? "Unsave job"
-                            //     : "Save job"
+                            //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
                             // }
                           >
-                            <Bookmark
-                              className={`w-5 h-5 hover:text-amber-500 cursor-pointer `}
-                              //   ${
-                              //   state.jobDetail.is_saved
-                              //     ? "fill-amber-400 text-amber-500"
-                              //     : "text-gray-400"
-                              // }
-                            />
+                            {state.jobDetail?.is_saved ? (
+                              <div className="flex items-center ">
+                                <BookmarkCheck
+                                  className={`w-6 h-6 fill-[#24266e] text-white cursor-pointer `}
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <Bookmark className="w- h-5 " />
+                              </>
+                            )}
                           </button>
                           <RWebShare
                             data={{
@@ -1619,22 +1622,20 @@ export default function JobsPage() {
                       </SheetContent>
                     </Sheet>
                   </div>
-
-                  
                 </div>
 
                 <ChipFilters
-                    filters={filters}
-                    onFilterChange={setFilters}
-                    categoryList={state?.categoryList}
-                    jobTypeList={state?.jobTypeList}
-                    experienceList={state?.experienceList}
-                    datePostedList={state?.datePostedList}
-                    salaryRangeList={state?.salaryRangeList}
-                    tagsList={state?.tagsList}
-                    collegeList={state?.collegeList}
-                    locationList={state?.locationList}
-                  />
+                  filters={filters}
+                  onFilterChange={setFilters}
+                  categoryList={state?.categoryList}
+                  jobTypeList={state?.jobTypeList}
+                  experienceList={state?.experienceList}
+                  datePostedList={state?.datePostedList}
+                  salaryRangeList={state?.salaryRangeList}
+                  tagsList={state?.tagsList}
+                  collegeList={state?.collegeList}
+                  locationList={state?.locationList}
+                />
 
                 {state.loading ? (
                   <div className="flex items-center justify-center h-[100vh] ">

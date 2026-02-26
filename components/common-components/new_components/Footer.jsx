@@ -5,10 +5,11 @@ import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 const Footer = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [state, setState] = useSetState({
     count: 0,
     jobList: [],
@@ -23,11 +24,8 @@ const Footer = () => {
   const jobList = async (page = 1) => {
     try {
       setState({ loading: true });
-      console.log("hello");
       const body = {};
-      console.log("body");
       const res = await Models.job.list(page, body);
-      console.log(res);
 
       setState({
         loading: false,
@@ -69,7 +67,6 @@ const Footer = () => {
         Failure(error?.response?.data?.error);
         setState({ email: "" });
       }
-      console.log("✌️error --->", error);
     }
   };
 
@@ -194,7 +191,12 @@ const Footer = () => {
                 {state?.jobList?.slice(0, 4)?.map((item, index) => (
                   <p
                     key={item.id}
-                    onClick={() => router.push(`/jobs?id=${item.id}`)}
+                    onClick={() => {
+                      router.push(`/jobs?id=${item.id}`);
+                      if (pathname === "/jobs") {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                   >
                     {item?.job_title}
