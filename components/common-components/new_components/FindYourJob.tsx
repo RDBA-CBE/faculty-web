@@ -200,7 +200,7 @@ const FindYourJob = () => {
                   <div
                     key={job.id}
                     className="p-5 border border-gray-200 
-             transition-all duration-300
+             transition-all duration-300 bg-white shadow-xl
              hover:bg-white
              hover:border-none
              hover:-translate-y-1
@@ -219,9 +219,9 @@ const FindYourJob = () => {
                             />
                           ) : (
                             <div
-                              className={`w-10 h-10 rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+                              className={`w-full h-full rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white bg-gray-400 font-semibold flex-shrink-0`}
                             >
-                              {job?.college?.name?.charAt(0).toUpperCase()}
+                              {job?.college?.name?.slice(0, 1).toUpperCase()}
                             </div>
                           )}
                         </div>
@@ -251,7 +251,7 @@ const FindYourJob = () => {
                           <div className="flex items-center justify-between w-100">
                             <button
                               onClick={() => router.push(`/jobs?id=${job.id}`)}
-                              className="border border-[#0a1551] text-[#0a1551] px-5 py-1.5 rounded-full text-sm font-medium hover:bg-[#0a1551] hover:text-white transition"
+                              className="border border-[#0a1551] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#0a1551]  hover:bg-[#0a1551]/90 hover:text-white transition"
                             >
                               View Job
                             </button>

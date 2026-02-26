@@ -166,7 +166,7 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="/job"
+                    href="/jobs"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Jobs
