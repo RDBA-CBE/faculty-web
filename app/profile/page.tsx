@@ -94,6 +94,7 @@ export default function NaukriProfilePage() {
       publications: true,
       achievements: true,
     },
+    newsletter:false
   });
 
   useEffect(() => {
@@ -179,6 +180,7 @@ export default function NaukriProfilePage() {
         current_company: state?.current_company || "",
         current_position: state?.current_position || "",
         profile_logo: state?.profile_logo,
+        newsletter: state?.newsletter
       };
 
       // ✅ Create FormData
@@ -963,6 +965,7 @@ export default function NaukriProfilePage() {
                               profile_logo: null,
                               profile_logo_preview:
                                 state.userDetail?.profile_logo_url || null,
+                                newsletter: state.userDetail?.newsletter || false
                             });
                           }}
                         >
@@ -3951,6 +3954,21 @@ export default function NaukriProfilePage() {
                           className="border-gray-200 focus:border-[#f2b31d] focus:ring-[#f2b31d]"
                         />
                       </div>
+                      <div className="flex flex-col">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    className="mr-2"
+                    checked={state.newsletter || false}
+                    onChange={(e) =>
+                      handleFormChange("newsletter", e.target.checked)
+                    }
+                  />
+                  <span className="text-gray-600 text-sm">
+                    Accept to receive newsletter
+                  </span>
+                </div>
+              </div>
                     </div>
                   </div>
 
