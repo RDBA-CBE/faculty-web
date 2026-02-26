@@ -708,7 +708,7 @@ export default function JobsPage() {
                       <div
                         className={`w-14 h-14 rounded-lg ${getAvatarColor(
                           state?.jobDetail?.college?.name,
-                        )} flex items-center justify-center text-white font-semibold text-lg`}
+                        )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
                       >
                         {state?.jobDetail?.college?.name
                           ?.slice(0, 1)
@@ -940,7 +940,7 @@ export default function JobsPage() {
                     <div
                       className={`w-12 h-12 rounded-lg ${getAvatarColor(
                         selectedJob.college?.name,
-                      )} flex items-center justify-center text-white font-semibold`}
+                      )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                     >
                       {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
                     </div>
@@ -1004,7 +1004,7 @@ export default function JobsPage() {
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
                                 job.college?.name,
-                              )} flex items-center justify-center text-white font-semibold flex-shrink-0`}
+                              )} flex items-center justify-center ${selectedJob?.id === job.id ? "text-black bg-white" : "text-white bg-gray-400"}  font-semibold flex-shrink-0`}
                             >
                               {job.college?.name?.slice(0, 1).toUpperCase()}
                             </div>
@@ -1203,7 +1203,7 @@ export default function JobsPage() {
                             <div
                               className={`w-14 h-14 rounded-lg ${getAvatarColor(
                                 state?.jobDetail?.college?.name,
-                              )} flex items-center justify-center text-white font-semibold text-lg`}
+                              )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
                                 ?.slice(0, 1)
@@ -1257,7 +1257,7 @@ export default function JobsPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                      <div className="flex items-center justify-between pt-4  border-gray-100">
                         <button
                           onClick={() => {
                             setState({ jobID: state?.jobDetail?.id });
@@ -1445,7 +1445,7 @@ export default function JobsPage() {
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
                                 selectedJob.college?.name,
-                              )} flex items-center justify-center text-white font-semibold`}
+                              )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                             >
                               {selectedJob.college?.name
                                 ?.slice(0, 1)
@@ -1769,7 +1769,7 @@ export default function JobsPage() {
                             <div
                               className={`w-10 h-10 rounded-lg ${getAvatarColor(
                                 state.jobDetail?.college?.name,
-                              )} flex items-center justify-center text-white font-semibold text-sm`}
+                              )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
                             >
                               {state.jobDetail?.college?.name
                                 ?.slice(0, 1)
@@ -1950,7 +1950,7 @@ export default function JobsPage() {
                             <div
                               className={`w-12 h-12 rounded-lg ${getAvatarColor(
                                 state.jobDetail?.college?.name,
-                              )} flex items-center justify-center text-white font-semibold`}
+                              )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                             >
                               {state.jobDetail?.college?.name
                                 ?.slice(0, 1)
