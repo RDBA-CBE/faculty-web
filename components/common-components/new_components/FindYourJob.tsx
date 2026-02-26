@@ -196,7 +196,7 @@ const FindYourJob = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                {state?.jobList.map((job) => (
+                {state?.jobList.slice(0,6)?.map((job) => (
                   <div
                     key={job.id}
                     className="p-5 border border-gray-200 
@@ -288,55 +288,7 @@ const FindYourJob = () => {
               </div>
             )}
 
-            {/* Pagination */}
-
-            {state.next && (
-              <div className="flex items-center justify-center gap-2 py-8">
-                {/* Left Arrow */}
-                <button
-                  disabled={!state.prev}
-                  onClick={() =>
-                    setState((prev) => ({ ...prev, page: prev.page - 1 }))
-                  }
-                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
-      ${!state.prev ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"} 
-      transition`}
-                >
-                  ‹
-                </button>
-
-                {/* Page Numbers */}
-                <div className="flex items-center gap-1 rounded-full bg-white px-2 py-1 shadow-sm border border-gray-200">
-                  {getVisiblePages().map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => setState((prev) => ({ ...prev, page }))}
-                      className={`h-8 w-8 rounded-full text-sm transition
-          ${
-            state.page === page
-              ? "bg-[#050A4E] text-white font-medium"
-              : "text-gray-500 hover:bg-gray-100"
-          }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Right Arrow */}
-                <button
-                  disabled={!state.next}
-                  onClick={() =>
-                    setState((prev) => ({ ...prev, page: prev.page + 1 }))
-                  }
-                  className={`flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm border border-gray-200 
-      ${!state.next ? "text-gray-300 cursor-not-allowed" : "text-gray-600 hover:bg-gray-100"} 
-      transition`}
-                >
-                  ›
-                </button>
-              </div>
-            )}
+         
           </div>
 
           {/* Right Sidebar */}
@@ -364,7 +316,7 @@ const FindYourJob = () => {
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="job-spotlight-swiper"
               >
-                {state.jobList?.map((job: any) => (
+                {state.jobList?.slice(0,6)?.map((job: any) => (
                   <SwiperSlide key={job.id}>
                     <div className=" px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                       <div className="mb-4 rounded-lg overflow-hidden h-16 w-full bg-gray-50 flex items-center justify-center  ">

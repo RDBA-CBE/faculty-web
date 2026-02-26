@@ -74,7 +74,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative w-full">
+    <footer className="relative w-full bg-clr1">
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
       <div className="container mx-auto  relative z-20">
         <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-[30%]">
