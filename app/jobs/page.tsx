@@ -1675,7 +1675,7 @@ export default function JobsPage() {
                       ))}
                     </div>
 
-                    {state.next && (
+                    {(state.next || state?.prev) && (
                       <div className="flex justify-center items-center mt-10">
                         <PaginationCom
                           page={state.page}

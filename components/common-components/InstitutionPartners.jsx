@@ -22,38 +22,38 @@ const PARTNERS = [
   },
   {
     id: "2", // Saturn
-    name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/favicon.png",
+    name: "Rathinam College Of Arts And Science",
+    logo: "/assets/images/rathinam.jpeg",
   },
   {
     id: "3", // Blue Plane
-    name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/favicon.png",
+    name: "Bharathiar University",
+     logo: "/assets/images/bharathi.jpeg",
   },
   {
     id: "4", // Orange Hex
-    name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/favicon.png",
+    name: "Karunya Institute of Technology and Sciences",
+    logo: "/assets/images/karunya.png",
   },
   {
     id: "5", // Dark Card / Lightning
-    name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/favicon.png",
+    name: "Coimbatore Institute of Technology",
+     logo: "/assets/images/cit.png",
   },
   {
     id: "6", // Blue Swirl
-    name: "Karpagam College Of Engineering",
-     logo: "/assets/images/Faculty/favicon.png",
+    name: "KPR Institute",
+     logo: "/assets/images/kpr.png",
   },
   {
     id: "7", // Green Segmented
-    name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/favicon.png",
+    name: "Anna University",
+    logo: "/assets/images/anna-uni.png",
   },
   {
     id: "8", // Blue Tech Nodes
-    name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/favicon.png",
+    name: "Bharathidasan University",
+    logo: "/assets/images/barathidhasan.jpeg",
   },
 ];
 

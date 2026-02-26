@@ -128,7 +128,7 @@ const WhatCanIDo = () => {
 
               <div className="bg-white px-6 pb-6 pt-4 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className=" mb-6">
-                  {state?.collegesList?.map((college, index) => (
+                  {state?.collegesList?.slice(0,4)?.map((college, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
