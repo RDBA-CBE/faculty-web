@@ -87,7 +87,7 @@ const ChipFilters = ({
   });
 
   // Date Posted
-  filters.datePosted?.forEach((value) => {
+  filters?.datePosted?.forEach((value) => {
     activeFilters.push({
       label: findLabel(datePostedList, value),
       onRemove: () => {

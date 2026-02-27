@@ -108,10 +108,10 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           ) : (
             <div
               className={`w-10 h-10 rounded-3xl ${getAvatarColor(
-                job?.college?.name,
+                job?.college?.name
               )} flex items-center justify-center text-black bg-gray-400 font-semibold text-sm`}
             >
-              {job?.college?.name?.slice(0,1).toUpperCase()}
+              {job?.college?.name?.slice(0, 1).toUpperCase()}
             </div>
           )}
         </div>
@@ -128,13 +128,11 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             </div>
           </div>
 
-
           {/* Job Description */}
           <p className="text-gray-600 text-sm mb-3 line-clamp-2 w-[80%]">
             {job?.job_description ||
               "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
           </p>
-
 
           {/* Experience and Location */}
           <div className="flex items-center gap-5 text-sm text-gray-600 mb-3">
@@ -143,18 +141,19 @@ export const NewJobCard: React.FC<JobCardProps> = ({
               <span className="text-sm">{job?.experiences?.name}</span>
             </div>
             {/* <span className="text-gray-400">|</span> */}
-            <div className="flex items-center gap-3">
-              <MapPin className="w-3.5 h-3.5 text-[#E6AB1D]" />
-              <span className="text-sm">
-                {" "}
-                {job?.locations?.map((item) => item.city).join(", ")}
-              </span>
-            </div>
+            {job?.locations && (
+              <div className="flex items-center gap-3">
+                <MapPin className="w-3.5 h-3.5 text-[#E6AB1D]" />
+                <span className="text-sm">
+                  {" "}
+                  {job?.locations?.map((item) => item.city).join(", ")}
+                </span>
+              </div>
+            )}
           </div>
-          
         </div>
       </div>
-      <div className="w-full md:w-1/5  flex flex-row md:flex-col justify-between"> 
+      <div className="w-full md:w-1/5  flex flex-row md:flex-col justify-between">
         <div className="flex items-center justifyfy-end gap-2 pt-2 order-1 md:order-0 mb-3">
           <div className="flex items-center gap-1 text-sm text-gray-500 ">
             {/* <Clock className="w-3.5 h-3.5" /> */}
@@ -181,11 +180,10 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             )}
           </button>
         </div>
-     
-          <button className=" order-0 md:order-1 bg-[#24246C] w-fit mb-3 text-sm border border-xl border-[#24246C] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246C] transition-colors text-white hover:text-white">
-           View Job
-          </button>
-       
+
+        <button className=" order-0 md:order-1 bg-[#24246C] w-fit mb-3 text-sm border border-xl border-[#24246C] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246C] transition-colors text-white hover:text-white">
+          View Job
+        </button>
       </div>
     </div>
   );
