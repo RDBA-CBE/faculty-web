@@ -897,7 +897,7 @@ export default function JobsPage() {
                   )}
 
                   {/* Requirements */}
-                  {state?.jobDetail?.requirements && (
+                  {/* {state?.jobDetail?.requirements && (
                     <div className="border-b  px-2 py-2 pb-5">
                       <h2 className="text-lg font-semibold text-black mb-4">
                         Requirements
@@ -911,10 +911,10 @@ export default function JobsPage() {
                         ))}
                       </ul>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Skills */}
-                  {state?.jobDetail?.skills && (
+                  {/* {state?.jobDetail?.skills && (
                     <div className="  px-2 py-2 pb-5">
                       <h2 className="text-lg font-semibold text-gray-900 mb-4">
                         Skills
@@ -930,7 +930,7 @@ export default function JobsPage() {
                         ))}
                       </div>
                     </div>
-                  )}
+                  )} */}
                 </div>
 
                 {/* Job Details */}
@@ -1451,7 +1451,7 @@ export default function JobsPage() {
                         )}
 
                         {/* Requirements */}
-                        {state?.jobDetail?.requirements && (
+                        {/* {state?.jobDetail?.requirements && (
                           <div className="border-b  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-black mb-4">
                               Requirements
@@ -1470,10 +1470,10 @@ export default function JobsPage() {
                               )}
                             </ul>
                           </div>
-                        )}
+                        )} */}
 
                         {/* Skills */}
-                        {state?.jobDetail?.skills && (
+                        {/* {state?.jobDetail?.skills && (
                           <div className="  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                               Skills
@@ -1489,7 +1489,7 @@ export default function JobsPage() {
                               ))}
                             </div>
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
 
@@ -1982,7 +1982,7 @@ export default function JobsPage() {
                           </div>
                         )}
 
-                        {state?.jobDetail?.requirements && (
+                        {/* {state?.jobDetail?.requirements && (
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">
                               Requirements
@@ -2003,9 +2003,9 @@ export default function JobsPage() {
                               )}
                             </div>
                           </div>
-                        )}
+                        )} */}
 
-                        {state?.jobDetail?.skills && (
+                        {/* {state?.jobDetail?.skills && (
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">
                               Skills
@@ -2021,7 +2021,7 @@ export default function JobsPage() {
                               ))}
                             </div>
                           </div>
-                        )}
+                        )} */}
 
                         <div>
                           <h3 className="text-lg font-bold text-gray-900 mb-3">
