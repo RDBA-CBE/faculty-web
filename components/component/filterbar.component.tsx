@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { X, Search } from "lucide-react";
 import {
@@ -18,8 +19,8 @@ interface SidebarProps {
   filters: {
     categories: any[];
     jobTypes: any[];
-    experienceLevels: any;
-    datePosted: any;
+    experienceLevels:any[];
+    datePosted: any[];
     salaryRange: any[];
     tags: any[];
     colleges: any[];
@@ -54,7 +55,7 @@ const FilterSection: React.FC<{
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
-              checked={selected.includes(item.value)}
+              checked={selected?.includes(item.value)}
               onChange={() => onToggle(item.value)}
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
@@ -275,8 +276,8 @@ const Filterbar: React.FC<SidebarProps> = ({
       ...filters,
       categories: [],
       jobTypes: [],
-      experienceLevels: null,
-      datePosted: null,
+      experienceLevels: [],
+      datePosted: [],
       salaryRange: [],
       tags: [],
       colleges: [],

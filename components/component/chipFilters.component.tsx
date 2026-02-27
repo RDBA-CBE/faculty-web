@@ -26,6 +26,9 @@ const ChipFilters = ({
   datePostedList = [],
   locationList = [],
 }) => {
+
+
+
   const activeFilters = [];
 
   const findLabel = (list, value) =>
@@ -100,17 +103,33 @@ const ChipFilters = ({
   });
 
   // Salary Range
-  filters.salaryRange.forEach((value) => {
+ // Salary Range
+if (filters.salaryRange && filters.salaryRange.length > 0) {
+  const selectedRanges = filters?.salaryRange?.map((value) =>
+    findLabel(salaryRangeList, value)
+  );
+
+  // Extract min and max numbers
+  const numbers = selectedRanges.flatMap((range) => {
+    const match = range.match(/\d+/g);
+    return match ? match.map(Number) : [];
+  });
+
+  if (numbers.length > 0) {
+    const min = Math.min(...numbers);
+    const max = Math.max(...numbers);
+
     activeFilters.push({
-      label: `Salary: ${findLabel(salaryRangeList, value)}`,
+      label: `Salary: ${min} - ${max} Lakhs`,
       onRemove: () => {
         onFilterChange({
           ...filters,
-          salaryRange: filters.salaryRange.filter((v) => v !== value),
+          salaryRange: [],
         });
       },
     });
-  });
+  }
+}
 
   // Colleges
   filters.colleges?.forEach((value) => {
@@ -137,6 +156,8 @@ const ChipFilters = ({
       },
     });
   });
+
+
 
   if (activeFilters.length === 0) {
     return null;
