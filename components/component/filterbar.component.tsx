@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { X, Search } from "lucide-react";
 import {
   CATEGORIES,
   JOB_TYPES,
@@ -147,6 +148,26 @@ const Filterbar: React.FC<SidebarProps> = ({
   salaryRangeList,
   tagsList,
 }) => {
+  const [showAllColleges, setShowAllColleges] = useState(false);
+  const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
+  const collegePopupRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        collegePopupRef.current &&
+        !collegePopupRef.current.contains(event.target as Node)
+      ) {
+        setShowAllColleges(false);
+      }
+    };
+
+    if (showAllColleges) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllColleges]);
+
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
       ? list.filter((i) => i !== item)
@@ -213,7 +234,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
         <FilterSection
           title="Choose Colleges"
-          items={collegeList ?? []}
+          items={collegeList?.slice(0, 5) ?? []}
           selected={filters.colleges}
           onToggle={(value) =>
             onFilterChange({
@@ -222,6 +243,86 @@ const Filterbar: React.FC<SidebarProps> = ({
             })
           }
         />
+        {collegeList && collegeList.length > 5 && (
+          <div className="relative mt-3 mb-3">
+            <button
+              onClick={() => setShowAllColleges(true)}
+              className="text-sm text-white hover:text-white font-medium flex items-center justify-center gap-1  bg-[#01014B] w-full rounded-full px-3 py-2 text-center"
+            >
+              Show more
+            </button>
+
+            {showAllColleges && (
+              <div
+                ref={collegePopupRef}
+                className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-bold text-slate-800">All Colleges</h4>
+                  <button
+                    onClick={() => setShowAllColleges(false)}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="relative mb-3">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search colleges..."
+                    value={collegeSearchQuery}
+                    onChange={(e) => setCollegeSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                  />
+                </div>
+
+                <div className="overflow-y-auto flex-1 space-y-2 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {collegeList
+                    ?.filter((c) =>
+                      c.label
+                        .toLowerCase()
+                        .includes(collegeSearchQuery.toLowerCase())
+                    )
+                    .map((item) => (
+                      <label
+                        key={item.value}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.colleges.includes(item.value)}
+                          onChange={() =>
+                            onFilterChange({
+                              ...filters,
+                              colleges: toggleItem(filters.colleges, item.value),
+                            })
+                          }
+                          className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                        />
+                        <span className="text-sm text-slate-600">
+                          {item.label}
+                        </span>
+                      </label>
+                    ))}
+                  {collegeList?.filter((c) =>
+                    c.label
+                      .toLowerCase()
+                      .includes(collegeSearchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No colleges found
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <FilterSectionRadio
           title="Experience Level"
