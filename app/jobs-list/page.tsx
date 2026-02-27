@@ -2160,7 +2160,7 @@ export default function JobsPage() {
                 <div className="space-y-6 bg-[#FFFCF3] overflow-y-auto py-2 px-2 max-h-[85vh]">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
-                      src="/assets/images/Illustration.png"
+                      src="/assets/images/recruitmen at.gif"
                       height={100}
                       width={80}
                       alt="Job Application"

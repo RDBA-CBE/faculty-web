@@ -92,7 +92,7 @@ const FaqResumeSection = () => {
         <div
           className="relative rounded-xl overflow-hidden min-h-[650px]"
           style={{
-            backgroundImage: "url('/assets/images/Faculty/resume_bg.png')",
+            backgroundImage: "url('/assets/images/FAQ.png')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
