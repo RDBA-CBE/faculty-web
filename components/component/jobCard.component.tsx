@@ -159,8 +159,8 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
         >
           {job?.is_saved ? (
             <div className="flex items-center ">
-              <BookmarkCheck className="w-7 h-7 fill-[#01014B] text-white" />
-              <div className="text-[#01014B] font-medium text-sm">Saved</div>
+              <BookmarkCheck className="w-7 h-7 fill-[#24246C] text-white" />
+              <div className="text-[#24246C] font-medium text-sm">Saved</div>
             </div>
           ) : (
             <>

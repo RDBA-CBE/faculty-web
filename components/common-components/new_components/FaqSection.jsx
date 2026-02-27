@@ -52,7 +52,7 @@ const FaqResumeSection = () => {
                 key={item.id}
                 className={` p-6 transition ${
                   active === item.id
-                    ? "rounded-2xl bg-[#01014B0D] shadow-md"
+                    ? "rounded-2xl bg-[#24246C0D] shadow-md"
                     : "border-b border-gray-300"
                 }`}
               >

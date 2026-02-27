@@ -269,7 +269,7 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={` sticky top-0 z-[50] bg-[#01014B] text-white `}
+        className={` sticky top-0 z-[50] bg-[#24246C] text-white `}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
