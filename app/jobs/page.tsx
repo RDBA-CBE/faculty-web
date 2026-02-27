@@ -606,7 +606,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0),
+        ...filters.datePosted.map((d) => durationMap[d] || 0)
       );
 
       if (maxDays === 1) {
@@ -741,7 +741,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.college?.name,
+                              state?.jobDetail?.college?.name
                             )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.college?.name
@@ -750,8 +750,9 @@ export default function JobsPage() {
                           </div>
                         )}
                         <div className="flex-1">
+
                           <h1 className="text-xl font-semibold text-[#313131] mb-1">
-                            {state?.jobDetail?.job_title}
+                            {capitalizeFLetter(state?.jobDetail?.job_title)}
                           </h1>
                           <p className="text-md text-gray-700 mb-2">
                             {state?.jobDetail?.college?.name}
@@ -794,15 +795,16 @@ export default function JobsPage() {
                         )}
                         {state?.jobDetail?.salary_range_obj?.name}
                       </span>
-
-                      <span className="flex items-center gap-3">
-                        <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                        {capitalizeFLetter(
-                          state?.jobDetail?.locations
-                            ?.map((item) => item.city)
-                            .join(", "),
-                        )}{" "}
-                      </span>
+                      {state?.jobDetail?.locations && (
+                        <span className="flex items-center gap-3">
+                          <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                          {capitalizeFLetter(
+                            state?.jobDetail?.locations
+                              ?.map((item) => item.city)
+                              .join(", ")
+                          )}{" "}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -952,7 +954,7 @@ export default function JobsPage() {
                         Title
                       </span>
                       <p className="text-md text-gray-500  ps-6">
-                        {state?.jobDetail?.job_title}
+                        {capitalizeFLetter(state?.jobDetail?.job_title)}
                       </p>
                     </div>
                     <div>
@@ -973,17 +975,19 @@ export default function JobsPage() {
                         {state?.jobDetail?.salary_range_obj?.name}
                       </p>
                     </div>
-                    <div>
-                      <span className="flex gap-2 text-md font-medium  pb-1">
-                        <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                        Location
-                      </span>
-                      <p className="text-md text-gray-500  ps-6">
-                        {state?.jobDetail?.locations
-                          ?.map((item) => item.city)
-                          .join(", ")}
-                      </p>
-                    </div>
+                    {state?.jobDetail?.locations && (
+                      <div>
+                        <span className="flex gap-2 text-md font-medium  pb-1">
+                          <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                          Location
+                        </span>
+                        <p className="text-md text-gray-500  ps-6">
+                          {state?.jobDetail?.locations
+                            ?.map((item) => item.city)
+                            .join(", ")}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -1002,7 +1006,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                          selectedJob.college?.name,
+                          selectedJob.college?.name
                         )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                       >
                         {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
@@ -1012,9 +1016,9 @@ export default function JobsPage() {
                       <h4 className="font-medium text-gray-900">
                         {state?.jobDetail?.college?.name}
                       </h4>
-                      <p className="text-sm text-gray-500">
+                      {/* <p className="text-sm text-gray-500">
                         Technology Company
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                   <p className="leading-relaxed">
@@ -1071,8 +1075,12 @@ export default function JobsPage() {
                               ) : (
                                 <div
                                   className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                    job.college?.name,
-                                  )} flex items-center justify-center ${selectedJob?.id === job.id ? "text-white bg-gray-400" : " ext-white bg-gray-400"}  font-semibold flex-shrink-0`}
+                                    job.college?.name
+                                  )} flex items-center justify-center ${
+                                    selectedJob?.id === job.id
+                                      ? "text-white bg-gray-400"
+                                      : " ext-white bg-gray-400"
+                                  }  font-semibold flex-shrink-0`}
                                 >
                                   {job.college?.name?.slice(0, 1).toUpperCase()}
                                 </div>
@@ -1088,7 +1096,7 @@ export default function JobsPage() {
                                         : "text-gray-900"
                                     }`}
                                   >
-                                    {job.job_title}
+                                    {capitalizeFLetter(job.job_title)}
                                   </h3>
                                   <p
                                     className={`${
@@ -1125,7 +1133,7 @@ export default function JobsPage() {
                                   </span>
                                 </div>
 
-                                <div className="flex  gap-1">
+                               { job.locations &&  <div className="flex  gap-1">
                                   <MapPin
                                     className={`${
                                       selectedJob?.id === job.id && ""
@@ -1140,7 +1148,7 @@ export default function JobsPage() {
                                       ?.map((item) => item.city)
                                       .join(", ")}
                                   </span>
-                                </div>
+                                </div>}
 
                                 {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
@@ -1295,7 +1303,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                state?.jobDetail?.college?.name,
+                                state?.jobDetail?.college?.name
                               )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
@@ -1304,11 +1312,14 @@ export default function JobsPage() {
                             </div>
                           )}
                           <div className="flex-1 flex-col">
+                            
                             <h1 className="text-3xl font-semibold text-gray-900 mb-1">
-                              {state?.jobDetail?.job_title}
+                              {capitalizeFLetter(state?.jobDetail?.job_title)}
                             </h1>
                             <p className="text-md text-gray-700 mb-2">
-                              {state?.jobDetail?.college?.name}
+                              {capitalizeFLetter(
+                                state?.jobDetail?.college?.name
+                              )}
                             </p>
                           </div>
                         </div>
@@ -1331,15 +1342,16 @@ export default function JobsPage() {
                               )}
                               {state?.jobDetail?.salary_range_obj?.name}
                             </span>
-
-                            <span className="flex items-center gap-3">
-                              <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                              {capitalizeFLetter(
-                                state?.jobDetail?.locations
-                                  ?.map((item) => item.city)
-                                  .join(", "),
-                              )}{" "}
-                            </span>
+                            {state?.jobDetail?.locations && (
+                              <span className="flex items-center gap-3">
+                                <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                                {capitalizeFLetter(
+                                  state?.jobDetail?.locations
+                                    ?.map((item) => item.city)
+                                    .join(", ")
+                                )}{" "}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1356,7 +1368,7 @@ export default function JobsPage() {
                             <button
                               onClick={() =>
                                 handleSaveToggle(
-                                  state.jobDetail,
+                                  state.jobDetail
 
                                   // !!state.jobDetail.is_saved,
                                   // state.jobDetail.save_id,
@@ -1543,17 +1555,19 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
-                            <div>
-                              <span className="flex gap-2 text-md font-medium  pb-1">
-                                <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Location
-                              </span>
-                              <p className="text-md text-gray-500  ps-6">
-                                {state?.jobDetail?.locations
-                                  ?.map((item) => item.city)
-                                  .join(", ")}
-                              </p>
-                            </div>
+                            {state?.jobDetail?.locations && (
+                              <div>
+                                <span className="flex gap-2 text-md font-medium  pb-1">
+                                  <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Location
+                                </span>
+                                <p className="text-md text-gray-500  ps-6">
+                                  {state?.jobDetail?.locations
+                                    ?.map((item) => item.city)
+                                    .join(", ")}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -1572,7 +1586,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                  selectedJob.college?.name,
+                                  selectedJob.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {selectedJob.college?.name
@@ -1584,9 +1598,9 @@ export default function JobsPage() {
                               <h4 className="font-medium text-gray-900">
                                 {state?.jobDetail?.college?.name}
                               </h4>
-                              <p className="text-sm text-gray-500">
+                              {/* <p className="text-sm text-gray-500">
                                 Technology Company
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                           <p className="leading-relaxed">
@@ -1903,7 +1917,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
                               >
                                 {state.jobDetail?.college?.name
@@ -1913,7 +1927,7 @@ export default function JobsPage() {
                             )}
                             <div className="flex-1 text-left">
                               <SheetTitle className="text-xl font-bold text-gray-900 text-left">
-                                {state.jobDetail?.job_title}
+                                {capitalizeFLetter(state.jobDetail?.job_title)}
                               </SheetTitle>
                               <p className="text-gray-600 text-left">
                                 {state.jobDetail?.college?.name}
@@ -1923,7 +1937,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at,
+                                        state.jobDetail?.created_at
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -1947,14 +1961,14 @@ export default function JobsPage() {
                               {state.jobDetail?.salary_range_obj?.name}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                         {state.jobDetail?.locations &&  <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
                             <MapPin className="w-3 h-3 text-[#E6AB1D]" />
                             <span>
                               {state.jobDetail?.locations
                                 ?.map((item) => item.city)
                                 .join(", ")}
                             </span>
-                          </div>
+                          </div>}
                         </div>
 
                         <div>
@@ -1983,7 +1997,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -2049,7 +2063,7 @@ export default function JobsPage() {
                                 Job Title
                               </span>
                               <p className="text-sm text-gray-500  ps-6">
-                                {state?.jobDetail?.job_title}
+                                {capitalizeFLetter(state?.jobDetail?.job_title)}
                               </p>
                             </div>
                             <div>
@@ -2070,17 +2084,19 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
-                            <div>
-                              <span className="flex gap-2 text-sm font-medium  pb-1">
-                                <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Location
-                              </span>
-                              <p className="text-sm text-gray-500  ps-6">
-                                {state?.jobDetail?.locations
-                                  ?.map((item) => item.city)
-                                  .join(", ")}
-                              </p>
-                            </div>
+                            {state?.jobDetail?.locations && (
+                              <div>
+                                <span className="flex gap-2 text-sm font-medium  pb-1">
+                                  <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Location
+                                </span>
+                                <p className="text-sm text-gray-500  ps-6">
+                                  {state?.jobDetail?.locations
+                                    ?.map((item) => item.city)
+                                    .join(", ")}
+                                </p>
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -2098,7 +2114,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {state.jobDetail?.college?.name
@@ -2110,9 +2126,9 @@ export default function JobsPage() {
                               <h4 className="font-medium text-gray-900">
                                 {state.jobDetail?.college?.name}
                               </h4>
-                              <p className="text-sm text-gray-500">
+                              {/* <p className="text-sm text-gray-500">
                                 Technology Company
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                           <p className="text-sm text-gray-700 leading-relaxed">
@@ -2127,9 +2143,13 @@ export default function JobsPage() {
                             setState({ jobID: state.jobDetail?.id });
                             handleApply();
                           }}
-                          className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
+                          className="bg-[#24246c] w-full py-3 text-md border border-xl border-[#24246c] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246c] transition-colors text-white hover:text-white"
+
+                          // className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                         >
-                          Apply Job
+                          {state.jobDetail?.apply_link
+                            ? " Apply on company's site"
+                            : " Apply Now"}
                         </button>
                       </div>
                     </>
@@ -2144,7 +2164,7 @@ export default function JobsPage() {
                 setState({ errors: {} });
                 setShowApplicationModal(false);
               }}
-              title={selectedJob?.job_title}
+              title={capitalizeFLetter(selectedJob?.job_title)}
               width="700px"
               renderComponent={() => (
                 <div className="space-y-6 bg-[#eff2fc] overflow-y-auto py-5 px-2 max-h-[85vh]">
