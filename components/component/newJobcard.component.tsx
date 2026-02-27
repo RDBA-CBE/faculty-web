@@ -168,8 +168,8 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           >
             {job?.is_saved ? (
               <div className="flex items-center ">
-                <BookmarkCheck className="w-7 h-7 fill-[#24246C] text-white" />
-                {/* <div className="text-[#24246C] font-medium text-sm">Saved</div> */}
+                <BookmarkCheck className="w-7 h-7 fill-[#1d1d57] text-white" />
+                {/* <div className="text-[#1d1d57] font-medium text-sm">Saved</div> */}
               </div>
             ) : (
               <>
@@ -179,7 +179,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           </button>
         </div>
 
-        <button className=" order-0 md:order-1 bg-[#24246C] w-fit mb-3 text-sm border border-xl border-[#24246C] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246C] transition-colors text-white hover:text-white">
+        <button className=" order-0 md:order-1 bg-[#1d1d57] w-fit mb-3 text-sm border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white">
           View Job
         </button>
       </div>

@@ -8,7 +8,7 @@ export default function AboutPage() {
     <main className="bg-gray-50">
       {/* ================= HERO SECTION ================= */}
 
-      <div className="bg-[#24246C] py-[50px] px-4 ">
+      <div className="bg-[#1d1d57] py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
           <h1 className="!text-white text-[40px] font-semibold">About Us</h1>
         </div>
@@ -36,7 +36,7 @@ export default function AboutPage() {
       </section> */}
 
       {/* ================= WHO WE ARE ================= */}
-      {/* <section className="max-w-7xl mx-auto px-6 py-20">
+      <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <img
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655"
@@ -56,7 +56,7 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
-      </section> */}
+      </section>
 
       {/* ================= HOW IT WORKS ================= */}
       <section className="bg-white py-20">

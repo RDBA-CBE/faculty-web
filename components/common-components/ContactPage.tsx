@@ -4,7 +4,12 @@ export default function ContactPage() {
   return (
     <main className="bg-gray-50">
       {/* ================= HERO ================= */}
-      <section
+       <div className="bg-[#1d1d57] py-[50px] px-4 ">
+        <div className="max-w-7xl 0px] mx-auto text-center">
+          <h1 className="!text-white text-[40px] font-semibold">Contact Us</h1>
+        </div>
+      </div>
+      {/* <section
         className="relative h-[50vh] flex items-center justify-center"
         style={{
           backgroundImage:
@@ -22,7 +27,7 @@ export default function ContactPage() {
             We’re here to assist faculty members and institutions every step of the way.
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= CONTACT INFO CARDS ================= */}
       <section className="max-w-7xl mx-auto px-6 py-20">

@@ -267,7 +267,7 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={` sticky top-0 z-[50] bg-[#24246C] text-white `}
+        className={` sticky top-0 z-[50] bg-[#1d1d57] text-white `}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
@@ -519,7 +519,7 @@ const Header = () => {
 
             <Button
               type="button"
-              className=" bg-[#24246c] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
+              className=" bg-[#1d1d57] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
               onClick={handleLogin}
             >
               {state.btnLoading ? (
@@ -684,7 +684,7 @@ const Header = () => {
                 handleRegister();
               }}
               type="button"
-              className="bg-[#24246c] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
+              className="bg-[#1d1d57] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
             >
                 {state.btnLoading ? (
                 <Loader className="animate-spin" size={16} />

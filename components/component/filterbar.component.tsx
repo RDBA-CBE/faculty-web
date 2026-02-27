@@ -347,7 +347,7 @@ const Filterbar: React.FC<SidebarProps> = ({
           <div className="relative mt-3">
             <button
               onClick={() => setShowAllColleges(true)}
-              className="text-sm font-medium flex items-center  gap-1 text-[#24246C] w-full rounded-full px-3 py-2 ps-7"
+              className="text-sm font-medium flex items-center  gap-1 text-[#1d1d57] w-full rounded-full px-3 py-2 ps-7"
             >
               View more
             </button>
