@@ -74,20 +74,30 @@ const ChipFilters = ({
   });
 
   // Experience Level
-  if (filters.experienceLevels) {
+  filters.experienceLevels?.forEach((value) => {
     activeFilters.push({
-      label: findLabel(experienceList, filters.experienceLevels),
-      onRemove: () => onFilterChange({ ...filters, experienceLevels: null }),
+      label: findLabel(experienceList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          experienceLevels: filters.experienceLevels.filter((v) => v !== value),
+        });
+      },
     });
-  }
+  });
 
   // Date Posted
-  if (filters.datePosted && filters.datePosted !== "All") {
+  filters.datePosted?.forEach((value) => {
     activeFilters.push({
-      label: findLabel(datePostedList, filters.datePosted),
-      onRemove: () => onFilterChange({ ...filters, datePosted: "All" }),
+      label: findLabel(datePostedList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          datePosted: filters.datePosted.filter((v) => v !== value),
+        });
+      },
     });
-  }
+  });
 
   // Salary Range
   filters.salaryRange.forEach((value) => {

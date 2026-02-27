@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { X, Search } from "lucide-react";
 import {
   CATEGORIES,
@@ -7,6 +7,7 @@ import {
   POSTED_DATE_OPTIONS,
   TAGS,
 } from "@/utils/constant.utils";
+import PriceRangeSlider from "../common-components/priceRange";
 
 interface CategoryItem {
   value: number;
@@ -36,10 +37,10 @@ interface SidebarProps {
 
 const FilterSection: React.FC<{
   title: string;
-  items: { value: number; label: string }[];
+  items: { value: number | string; label: string }[];
   counts?: number[];
-  selected: number[];
-  onToggle: (value: number) => void;
+  selected: (number | string)[];
+  onToggle: (value: number | string) => void;
 }> = ({ title, items, counts, selected, onToggle }) => (
   <div>
     <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
@@ -47,7 +48,7 @@ const FilterSection: React.FC<{
     <div className="space-y-2">
       {items.map((item, idx) => (
         <label
-          key={idx} // ✅ FIXED
+          key={item.value}
           className="flex items-center justify-between group cursor-pointer"
         >
           <div className="flex items-center gap-3">
@@ -151,6 +152,101 @@ const Filterbar: React.FC<SidebarProps> = ({
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
   const collegePopupRef = useRef<HTMLDivElement>(null);
+  const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
+    0, 5000000,
+  ]);
+  const filtersRef = useRef(filters);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isInternalChange = useRef(false);
+
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
+
+  const parseSalaryLabel = useCallback((label: string) => {
+    if (!label) return null;
+    const normalized = label.replace(/,/g, "").toLowerCase();
+    const rangeMatch = normalized.match(/(\d+)\s*-\s*(\d+)\s*lakhs?/);
+    if (rangeMatch) {
+      return {
+        min: parseInt(rangeMatch[1]) * 100000,
+        max: parseInt(rangeMatch[2]) * 100000,
+      };
+    }
+    return null;
+  }, []);
+
+  const maxSalary = useMemo(() => {
+    if (!salaryRangeList || salaryRangeList.length === 0) return 5000000;
+    let max = 0;
+    salaryRangeList.forEach((item) => {
+      const parsed = parseSalaryLabel(item.label);
+      if (parsed && parsed.max > max) max = parsed.max;
+    });
+    return max > 0 ? max : 5000000;
+  }, [salaryRangeList, parseSalaryLabel]);
+
+  useEffect(() => {
+    if (isInternalChange.current) {
+      isInternalChange.current = false;
+      return;
+    }
+
+    if (filters.salaryRange.length === 0) {
+      setSalarySliderRange([0, maxSalary]);
+    } else if (salaryRangeList && salaryRangeList.length > 0) {
+      let min = maxSalary;
+      let max = 0;
+      let found = false;
+
+      filters.salaryRange.forEach((id: number) => {
+        const item = salaryRangeList.find((i) => i.value === id);
+        if (item) {
+          const parsed = parseSalaryLabel(item.label);
+          if (parsed) {
+            if (parsed.min < min) min = parsed.min;
+            if (parsed.max > max) max = parsed.max;
+            found = true;
+          }
+        }
+      });
+
+      if (found) {
+        setSalarySliderRange([min, max]);
+      }
+    }
+  }, [filters.salaryRange, salaryRangeList, maxSalary, parseSalaryLabel]);
+
+  const handleSalarySliderChange = (range: [number, number]) => {
+    isInternalChange.current = true;
+    setSalarySliderRange(range);
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    debounceTimerRef.current = setTimeout(() => {
+      if (!salaryRangeList) return;
+
+      const selectedIds = salaryRangeList.reduce((acc: number[], item) => {
+        const parsed = parseSalaryLabel(item.label);
+        if (parsed) {
+          // A salary range option should be included if it overlaps with the slider's range.
+          // We use strict inequalities (< and >) to ensure there is an actual overlap,
+          // excluding ranges that just touch the boundaries (e.g., [1L, 2L] excludes "2-3L").
+          if (parsed.min < range[1] && parsed.max > range[0]) {
+            acc.push(item.value);
+          }
+        }
+        return acc;
+      }, []);
+
+      onFilterChange({
+        ...filtersRef.current,
+        salaryRange: selectedIds,
+      });
+    }, 500);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -187,10 +283,13 @@ const Filterbar: React.FC<SidebarProps> = ({
     });
   };
 
+  console.log("experienceList", experienceList);
+  
+
   return (
     <aside className="w-full h-full">
-      <div className="flex justify-end items-center px-4 mt-4">
-        {/* <div className="font-bold">Filter</div> */}
+       <div className="flex w-full justify-between items-center px-4 mt-4">
+        <div className="font-semibold text-[#1e293b]">Filter</div>
         <button
           onClick={handleClearFilters}
           className="text-sm font-medium text-red-600 hover:text-red-800"
@@ -324,41 +423,51 @@ const Filterbar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        <FilterSectionRadio
+        {/* <FilterSection
           title="Experience Level"
           items={experienceList ?? []}
-          name="experienceLevel"
-          selected={filters.experienceLevels}
-          onChange={(value) =>
-            onFilterChange({
-              ...filters,
-              experienceLevels: value,
-            })
-          }
-        />
-
-        <FilterSection
-          title="Salary Range"
-          items={salaryRangeList ?? []}
-          selected={filters.salaryRange}
+          // counts={CATEGORIES.map((c) => c.count)}
+           selected={filters.experienceLevels}
           onToggle={(value) =>
             onFilterChange({
               ...filters,
-              salaryRange: toggleItem(filters.salaryRange, value),
+              experienceLevels: toggleItem(filters.experienceLevels, value),
+            })
+          }
+        /> */}
+
+        <FilterSection
+          title="Experience Level"
+          items={experienceList ?? []}
+          selected={filters.experienceLevels}
+          onToggle={(value) =>
+            onFilterChange({
+              ...filters,
+              experienceLevels: toggleItem(filters.experienceLevels, value),
             })
           }
         />
 
+        <div className="pt-[15px]">
+          <PriceRangeSlider
+            title="Salary Range"
+            min={0}
+            max={maxSalary}
+            value={salarySliderRange}
+            onChange={handleSalarySliderChange}
+            step={100000}
+          />
+        </div>
+
         {/* Experience Level */}
-        <FilterSectionRadio
+        <FilterSection
           title="Date Posted"
           items={datePostedList ?? []}
-          name="datePosted"
           selected={filters.datePosted}
-          onChange={(value) =>
+          onToggle={(value) =>
             onFilterChange({
               ...filters,
-              datePosted: value,
+              datePosted: toggleItem(filters.datePosted, value),
             })
           }
         />

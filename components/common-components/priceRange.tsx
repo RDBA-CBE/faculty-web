@@ -4,10 +4,12 @@ import React, { useEffect, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 
 interface PriceRangeSliderProps {
+  title: string;
   min: number;
   max: number;
   value?: [number, number];
   onChange: (value: [number, number]) => void;
+  step?: number;
 }
 
 const formatPrice = (value: number) => {
@@ -17,10 +19,12 @@ const formatPrice = (value: number) => {
 };
 
 const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
+  title,
   min,
   max,
   value,
   onChange,
+  step,
 }) => {
   const [range, setRange] = useState<[number, number]>(value || [min, max]);
 
@@ -44,7 +48,7 @@ const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
         <Slider
           min={min}
           max={max}
-          step={(max - min) / 100}
+          step={step}
           value={range}
           onValueChange={(val: [number, number]) => {
             setRange(val);

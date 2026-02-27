@@ -119,8 +119,8 @@ export default function JobsPage() {
     location: locationParam ? parseInt(locationParam, 10) : null,
     categories: [],
     jobTypes: [],
-    experienceLevels: null,
-    datePosted: "All",
+    experienceLevels: [],
+    datePosted: [],
     salaryRange: [],
     tags: [],
     experience: "",
@@ -186,7 +186,7 @@ export default function JobsPage() {
     filters.location,
     filters.jobTypes,
     filters.experienceLevels,
-    filters?.datePosted,
+    filters.datePosted,
     filters.salaryRange,
     filters?.tags,
     filters?.colleges,
@@ -360,6 +360,14 @@ export default function JobsPage() {
   const handleApply = () => {
     const profile = JSON.parse(localStorage.getItem("user"));
     const userId = profile?.id;
+
+    console.log("state.jobDetail", state.jobDetail);
+    
+    
+    if (state.jobDetail?.apply_link) {
+      window.open(state.jobDetail.apply_link, "_blank");
+      return;
+    }
 
     if (profile) {
       handleFormSubmitWithprofile(userId);
@@ -561,7 +569,7 @@ export default function JobsPage() {
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels) {
+    if (filters?.experienceLevels?.length > 0) {
       body.experience = filters.experienceLevels;
     }
 
@@ -577,31 +585,24 @@ export default function JobsPage() {
       body.tags = filters.tags?.map((tag) => tag.value).join(",");
     }
 
-    if (filters?.datePosted == "24h") {
-      body.date_posted_after = moment()
-        .subtract(24, "hours")
-        .format("YYYY-MM-DD");
-    }
+    if (filters?.datePosted?.length > 0) {
+      const durationMap = {
+        "24h": 1,
+        "7d": 7,
+        "15d": 15,
+        "30d": 30,
+        "last-mon": 30, // Approximation
+      };
+      const maxDays = Math.max(
+        ...filters.datePosted.map((d) => durationMap[d] || 0),
+      );
 
-    if (filters?.datePosted == "7d") {
-      body.date_posted_after = moment()
-        .subtract(7, "days")
-        .format("YYYY-MM-DD");
-      body.date_posted_before = moment().format("YYYY-MM-DD");
-    }
-
-    if (filters?.datePosted == "15d") {
-      body.date_posted_after = moment()
-        .subtract(15, "days")
-        .format("YYYY-MM-DD");
-      body.date_posted_before = moment().format("YYYY-MM-DD");
-    }
-
-    if (filters?.datePosted == "30d") {
-      body.date_posted_after = moment()
-        .subtract(30, "days")
-        .format("YYYY-MM-DD");
-      body.date_posted_before = moment().format("YYYY-MM-DD");
+      if (maxDays === 1) {
+        body.date_posted_after = moment().subtract(24, "hours").format("YYYY-MM-DD");
+      } else if (maxDays > 1) {
+        body.date_posted_after = moment().subtract(maxDays, "days").format("YYYY-MM-DD");
+        body.date_posted_before = moment().format("YYYY-MM-DD");
+      }
     }
 
     return body;
@@ -652,8 +653,8 @@ export default function JobsPage() {
       location: null,
       categories: [],
       jobTypes: [],
-      experienceLevels: null,
-      datePosted: "All",
+      experienceLevels: [],
+      datePosted: [],
       salaryRange: [],
       tags: [],
       experience: "",
@@ -774,7 +775,7 @@ export default function JobsPage() {
                       }}
                       className="bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-white hover:text-white"
                     >
-                      Apply Now
+                    {state.jobDetail?.apply_link ? " Apply on company's site" : " Apply Now"} 
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -1333,7 +1334,7 @@ export default function JobsPage() {
                             }}
                             className="bg-[#01014B]  text-md border border-xl border-[#01014B] rounded rounded-3xl  px-6 py-1  hover:bg-[#01014B] transition-colors text-white hover:text-white"
                           >
-                            Apply Now
+                             {state.jobDetail?.apply_link ? " Apply on company's site" : " Apply Now"} 
                           </button>
                         </div>
                       </div>
