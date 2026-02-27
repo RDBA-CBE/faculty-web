@@ -1457,3 +1457,35 @@ body {
     margin: auto;
   }
 }
+
+.hero-banner-image {
+  height: 850px;
+}
+
+/* 1200px and below */
+@media (max-width: 1180px) {
+  .hero-banner-image {
+    height: 650px;
+  }
+}
+
+/* 1024px and below */
+@media (max-width: 1024px) {
+  .hero-banner-image {
+    height: 580px;
+  }
+}
+
+/* 768px and below */
+@media (max-width: 768px) {
+  .hero-banner-image {
+    height: 480px;
+  }
+}
+
+/* 576px and below */
+@media (max-width: 576px) {
+  .hero-banner-image {
+    height: 380px;
+  }
+}

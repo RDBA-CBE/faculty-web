@@ -53,7 +53,7 @@ const NewHeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-[600px] lg:min-h-[95vh] flex items-center overflow-hidden">
+    <section className="relative h-[95vh] w-full flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -63,11 +63,13 @@ const NewHeroSection = () => {
           className="object-cover"
           priority
         />
+        {/* Overlay for better text readability if needed */}
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      <div className="section-wid w-full  py-16 lg:py-0 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
+      <div className="section-wid h-full  mx-auto  py-16 lg:py-0   relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 2xl:gap-16  h-full">
+          {/* Left Content - Aligned to bottom */}
           <div className="space-y-6 lg:space-y-8 flex flex-col justify-center">
             {/* Heading */}
             <div className="space-y-5">
@@ -105,22 +107,6 @@ const NewHeroSection = () => {
                   }
                 />
               </div>
-
-              {/* <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-             <div>
-                <CustomSelect
-                  className="w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
-                  placeholder="Select Colleges"
-                  options={state.collgeList}
-                  value={state?.colleges || ""}
-                  onChange={(selected) =>
-                    setState({
-                      ...state,
-                      colleges: selected ? selected.value : "",
-                    })
-                  }
-                />
-              </div> */}
 
               <button
                 className="w-full sm:w-auto bg-[#F2B31D] text-black px-8 py-4 sm:py-3 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-base font-semibold whitespace-nowrap"
@@ -160,21 +146,22 @@ const NewHeroSection = () => {
                     ))}
                   </div>
                 </div>
-                <div className="flex -space-x-3">
+                <div className="flex -space-x-3 xl:-space-x-4">
                   {["image_1", "image_2", "image_3"].map((img, i) => (
                     <div
                       key={i}
-                      className="w-12 h-12 rounded-full border-2 border-white overflow-hidden"
+                      className="w-10 h-10 sm:w-12 sm:h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 rounded-full border-2 border-white overflow-hidden shadow-lg"
                     >
                       <Image
                         src={`/assets/images/${img}.png`}
                         alt="user"
-                        width={48}
-                        height={48}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   ))}
-                  <div className="w-12 h-12 bg-black text-white rounded-full border-2 border-white flex items-center justify-center text-lg font-bold">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 xl:w-14 xl:h-14 2xl:w-16 2xl:h-16 bg-black text-white rounded-full border-2 border-white flex items-center justify-center text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold shadow-lg">
                     +
                   </div>
                 </div>
@@ -182,7 +169,7 @@ const NewHeroSection = () => {
             </div>
           </div>
 
-          {/* Right Image */}
+          {/* Right Image - Aligned to bottom */}
           <div className="relative hidden lg:flex justify-end items-end h-full">
             <div className="relative w-full h-full flex items-end justify-end">
               <Image
@@ -190,12 +177,20 @@ const NewHeroSection = () => {
                 alt="Hero Banner"
                 width={800}
                 height={800}
-                className="object-cover object-bottom w-auto h-[750px] xl:h-[750px]"
+                className="object-contain object-bottom w-auto h-[500px] sm:h-[550px] lg:h-[600px] xl:h-[700px] 2xl:h-[800px]"
+                priority
               />
             </div>
           </div>
         </div>
       </div>
+
+      {/* Optional: Scroll indicator */}
+      {/* <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 hidden lg:block">
+        <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+          <div className="w-1 h-2 bg-white/50 rounded-full mt-2 animate-bounce" />
+        </div>
+      </div> */}
     </section>
   );
 };
