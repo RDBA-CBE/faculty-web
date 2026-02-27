@@ -786,7 +786,7 @@ export default function JobsPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleSaveToggle(state.jobDetail)}
-                        disabled={isSaving === state.jobDetail.id}
+                        disabled={isSaving === state?.jobDetail?.id}
                         className="p-1 -m-1"
                         // aria-label={
                         //   state.jobDetail.is_saved ? "Unsave job" : "Save job"

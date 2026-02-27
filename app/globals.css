@@ -12,13 +12,13 @@ body {
 p {
   font-family: "Fira Sans", sans-serif;
   font-optical-sizing: auto;
-  color: #24246C;
+  color: #393939;
 }
 div,
 span,
 li,
 ul {
-  color: #24246C;
+  color: #393939;
   font-size: 16px;
 }
 
