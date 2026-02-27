@@ -49,7 +49,7 @@ const ForgotPasswordForm = () => {
 
       Success(
         res?.message ||
-          "Password reset link sent successfully! Please check your email.",
+          "Password reset link sent successfully! Please check your email."
       );
 
       router.push("/");
@@ -109,7 +109,7 @@ const ForgotPasswordForm = () => {
         <Button
           onClick={handleSubmit}
           type="button"
-          className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg flex items-center justify-center gap-2"
+          className="w-full py-3 bg-[#24246c]  hover:bg-amber-500 text-white font-bold rounded-3xl flex items-center justify-center gap-2"
           disabled={state.btnLoading}
         >
           {state.btnLoading ? (

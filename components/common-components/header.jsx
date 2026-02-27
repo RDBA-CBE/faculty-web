@@ -129,8 +129,7 @@ const Header = () => {
 
   const handleRegister = async () => {
     try {
-
-      // setState({ btnLoading: true, errors: {} });
+      setState({ btnLoading: true, errors: {} });
 
       const validateBody = {
         first_name: state.first_name,
@@ -151,9 +150,8 @@ const Header = () => {
         username: state.first_name + " " + state.last_name,
         role: "applicant",
         ...validateBody,
-        newsletter:state.newsletter,
+        newsletter: state.newsletter,
         terms: state.terms,
-
       };
 
       console.log("body", body);
@@ -269,7 +267,7 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={` sticky top-0 z-[50] bg-[#24246C] text-white `}
+        className={` sticky top-0 z-[50] bg-[#01014B] text-white `}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
@@ -385,7 +383,7 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden ${
-                      isHomePage ? "text-white" : "text-white"
+                      isHomePage ? "text-gray-700" : "text-gray-700"
                     }`}
                   >
                     <MenuIcon className="h-6 w-6" />
@@ -521,11 +519,17 @@ const Header = () => {
 
             <Button
               type="button"
-              className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg flex items-center justify-center gap-2"
+              className=" bg-[#24246c] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
               onClick={handleLogin}
             >
-              Sign In
-              <ArrowRight className="w-4 h-4" />
+              {state.btnLoading ? (
+                <Loader className="animate-spin" size={16} />
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </Button>
 
             <div className="text-center mt-6">
@@ -646,7 +650,7 @@ const Header = () => {
                   />
                   <span className="text-gray-600 text-sm">
                     I've read and agree with your{" "}
-                    <button className="text-amber-500 hover:text-amber-600">
+                    <button className="text-amber-500 hover:text-amber-600" onClick={() => window.open("/terms-conditions", "_blank")}>
                       Terms of Services
                     </button>
                     <span className="text-red-500"> *</span>
@@ -680,10 +684,18 @@ const Header = () => {
                 handleRegister();
               }}
               type="button"
-              className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg flex items-center justify-center gap-2"
+              className="bg-[#24246c] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
             >
-              Create Account
-              <ArrowRight className="w-4 h-4" />
+                {state.btnLoading ? (
+                <Loader className="animate-spin" size={16} />
+              ) : (
+                <>
+                  Create Account
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+
+             
             </Button>
 
             {/* <div className="text-center text-gray-500 my-4">or</div> */}
@@ -731,6 +743,7 @@ const Header = () => {
               <a
                 href="/terms-conditions"
                 className="text-gray-500 text-sm hover:text-gray-700"
+                target="_blank"
               >
                 Terms and condition
               </a>

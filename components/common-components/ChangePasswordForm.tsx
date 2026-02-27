@@ -63,7 +63,7 @@ const ChangePasswordForm = () => {
       // Assuming Validation.resetPassword exists and is similar to register validation
       await Validation.changePassword.validate(body, { abortEarly: false });
 
-      const res:any = await Models.auth.change_password(body);
+      const res: any = await Models.auth.change_password(body);
 
       setState({
         btnLoading: false,
@@ -87,7 +87,7 @@ const ChangePasswordForm = () => {
         setState({ errors: validationErrors });
       } else {
         console.log("error", error);
-        
+
         Failure(error.error || "An error occurred. Please try again.");
       }
     }
@@ -116,17 +116,18 @@ const ChangePasswordForm = () => {
         </div>
 
         <div className="space-y-4">
-             <div className="relative">
+          <div className="relative">
             <Input
               type="password"
               placeholder="Current Password"
               value={state.current_password || ""}
-              onChange={(e) => handleFormChange("current_password", e.target.value)}
+              onChange={(e) =>
+                handleFormChange("current_password", e.target.value)
+              }
               required
               bg="ffffff"
               error={state.errors?.current_password}
             />
-            
           </div>
 
           <div className="relative">
@@ -139,7 +140,6 @@ const ChangePasswordForm = () => {
               bg="ffffff"
               error={state.errors?.new_password}
             />
-            
           </div>
 
           <div className="relative">
@@ -154,16 +154,13 @@ const ChangePasswordForm = () => {
               bg="ffffff"
               error={state.errors?.confirm_password}
             />
-           
-             
-           
           </div>
         </div>
 
         <Button
           onClick={handleSubmit}
           type="button"
-          className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg flex items-center justify-center gap-2"
+          className="w-full py-3 bg-[#24246c] hover:bg-amber-500 text-white font-bold rounded-3xl flex items-center justify-center gap-2"
           disabled={state.btnLoading}
         >
           {state.btnLoading ? (
