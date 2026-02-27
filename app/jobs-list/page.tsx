@@ -974,6 +974,7 @@ export default function JobsPage() {
                         {state?.jobDetail?.salary_range_obj?.name}
                       </p>
                     </div>
+                    {state?.jobDetail?.locations &&
                     <div>
                       <span className="flex gap-2 text-md font-medium  pb-1">
                         <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -985,6 +986,7 @@ export default function JobsPage() {
                           .join(", ")}
                       </p>
                     </div>
+                    }
                   </div>
                 </div>
 
@@ -1124,7 +1126,8 @@ export default function JobsPage() {
                                 >
                                   {job.experiences?.name}
                                 </span>
-
+{job.locations &&
+<>
                                 <MapPin
                                   className={`${
                                     selectedJob?.id === job.id && ""
@@ -1139,6 +1142,8 @@ export default function JobsPage() {
                                     ?.map((item) => capitalizeFLetter(item.city))
                                     .join(", ")}
                                 </span>
+                                </>
+                                }
 
                                 {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
@@ -1329,7 +1334,7 @@ export default function JobsPage() {
                               )}
                               {state?.jobDetail?.salary_range_obj?.name}
                             </span>
-
+{ state?.jobDetail?.locations &&
                             <span className="flex items-center gap-3">
                               <MapPin className="w-4 h-4 text-[#E6AB1D]" />
                               {capitalizeFLetter(
@@ -1338,6 +1343,7 @@ export default function JobsPage() {
                                   .join(", ")
                               )}{" "}
                             </span>
+                            }
                           </div>
                         </div>
                       </div>
@@ -1541,6 +1547,7 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
+                            {state?.jobDetail?.locations &&
                             <div>
                               <span className="flex gap-2 text-md font-medium  pb-1">
                                 <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -1552,6 +1559,7 @@ export default function JobsPage() {
                                   .join(", ")}
                               </p>
                             </div>
+                            }
                           </div>
                         </div>
 
@@ -1945,6 +1953,7 @@ export default function JobsPage() {
                               {state.jobDetail?.salary_range_obj?.name}
                             </span>
                           </div>
+                          {state.jobDetail?.locations &&
                           <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
                             <MapPin className="w-3 h-3 text-[#E6AB1D]" />
                             <span>
@@ -1953,6 +1962,7 @@ export default function JobsPage() {
                                 .join(", ")}
                             </span>
                           </div>
+                          }
                         </div>
 
                         <div>
@@ -2068,6 +2078,7 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
+                            {state?.jobDetail?.locations &&
                             <div>
                               <span className="flex gap-2 text-sm font-medium  pb-1">
                                 <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -2079,6 +2090,7 @@ export default function JobsPage() {
                                   .join(", ")}
                               </p>
                             </div>
+                            }
                           </div>
                         </div>
 
