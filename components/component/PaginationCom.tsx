@@ -15,7 +15,7 @@ const PaginationCom = ({ page, next, prev, onNext, onPrev }) => {
         {/* Previous */}
 
         <PaginationItem>
-          <div className={`bg-clr2 p-2 rounded-lg  ${!prev && "opacity-50 cursor-not-allowed"}`}>
+          <div className={`bg-clr2 p-2 rounded-lg cursor-pointer  ${!prev && "opacity-50 cursor-not-allowed"}`}>
             <ArrowLeft
              
               onClick={(e) => {
@@ -36,7 +36,7 @@ const PaginationCom = ({ page, next, prev, onNext, onPrev }) => {
         {/* Next */}
 
         <PaginationItem>
-          <div className={`bg-clr2 p-2 rounded-lg  ${!next && "opacity-50 cursor-not-allowed"}`}>
+          <div className={`bg-clr2 p-2 rounded-lg cursor-pointer  ${!next && "opacity-50 cursor-not-allowed"}`}>
             {" "}
             <ArrowRight
               onClick={(e) => {

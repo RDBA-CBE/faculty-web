@@ -405,6 +405,7 @@ export default function JobsPage() {
       return;
     }
 
+    setIsSaving(job.id);
     try {
       // if (isSaved) {
       //   if (!saveId) {
@@ -625,16 +626,20 @@ export default function JobsPage() {
 
   const handleNext = () => {
     if (!state.next) return;
-    setState({ page: state.page + 1 });
-    jobList(state.page + 1);
+    const nextPage = state.page + 1;
+    setState({ page: nextPage });
+    jobList(nextPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   console.log("state.page", state.page);
 
   const handlePrev = () => {
     if (!state.prev) return;
-    setState({ page: state.page - 1 });
-    jobList(state.page);
+    const prevPage = state.page - 1;
+    setState({ page: prevPage });
+    jobList(prevPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleFormChange = (field, value) => {
@@ -1530,7 +1535,7 @@ export default function JobsPage() {
                 </div>
               </div>
             ) : (
-              <div className="relative flex flex-col lg:flex-row gap-8">
+              <div className="relative flex flex-col lg:flex-row gap-8 items-start">
                 <div
                   className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
                     isSidebarOpen
@@ -1561,8 +1566,9 @@ export default function JobsPage() {
                 </div>
 
                 {/* DESKTOP STICKY SIDEBAR */}
-                <div className="hidden lg:block shrink-0  bg-clr2 rounded-xl self-start">
-                  <div className="h-fit w-72 ">
+                <div className="hidden lg:block shrink-0 bg-clr2 rounded-xl self-start lg:sticky lg:top-8">
+                  {/* make the filter wrapper scrollable if it grows taller than viewport */}
+                  <div className="h-fit w-72 max-h-[calc(100vh-4rem)] overflow-y-auto">
                     <Filterbar
                       filters={filters}
                       onFilterChange={setFilters}

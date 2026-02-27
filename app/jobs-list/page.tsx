@@ -931,7 +931,7 @@ export default function JobsPage() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 lg:h-[calc(100vh-4rem)] lg:overflow-hidden">
             <div
               className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
                 isSidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -940,14 +940,15 @@ export default function JobsPage() {
             />
 
             <div
-              className={`fixed lg:sticky lg:top-16 z-50 lg:z-0 left-0 top-0 h-full lg:h-auto w-80 lg:w-auto transition-transform lg:translate-x-0 ${
+              className={`fixed lg:static lg:sticky lg:top-16 z-50 lg:z-0 left-0 top-0 h-full lg:h-auto w-80 lg:w-auto transition-transform lg:translate-x-0 ${
                 isSidebarOpen ? "translate-x-0" : "-translate-x-full"
               }`}
             >
               <Filterbar filters={filters} onFilterChange={setFilters} />
             </div>
 
-            <div className="flex-grow">
+            {/* right column: make scrollable independently */}
+            <div className="flex-grow lg:overflow-y-auto h-full">
               <div className="sticky top-16 z-10 bg-white lg:pb-5">
                 <div className="flex flex-col lg:flex-row items-center w-full bg-white border border-slate-100 rounded-sm shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden p-1">
                   <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto">

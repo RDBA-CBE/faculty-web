@@ -53,6 +53,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       return;
     }
 
+    setIsSaving(job.id);
     try {
       // if (isSaved) {
       //   if (!saveId) {
@@ -164,8 +165,9 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           </div>
 
           <button
+            disabled={isSaving === job.id}
             onClick={(e) => handleSaveToggle(e)}
-            className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors"
+            className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors disabled:opacity-50"
           >
             {job?.is_saved ? (
               <div className="flex items-center ">
