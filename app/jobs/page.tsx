@@ -324,37 +324,37 @@ export default function JobsPage() {
     }
   };
 
- const jobDetail = async (jobId) => {
-  try {
-    setState({ loading: true });
+  const jobDetail = async (jobId) => {
+    try {
+      setState({ loading: true });
 
-    const res: any = await Models.job.details(jobId);
+      const res: any = await Models.job.details(jobId);
 
-    const responsibilities =
-      res?.responsibility?.blocks?.flatMap((block) => {
-        if (block.type === "list") {
-          return block.data.items; // array
-        }
+      const responsibilities =
+        res?.responsibility?.blocks?.flatMap((block) => {
+          if (block.type === "list") {
+            return block.data.items; // array
+          }
 
-        if (block.type === "paragraph") {
-          return [block.data.text]; // convert to array
-        }
+          if (block.type === "paragraph") {
+            return [block.data.text]; // convert to array
+          }
 
-        return [];
-      }) || [];
+          return [];
+        }) || [];
 
-    setState({
-      loading: false,
-      jobDetail: res,
-      responsibilities: responsibilities,
-    });
+      setState({
+        loading: false,
+        jobDetail: res,
+        responsibilities: responsibilities,
+      });
 
-    return res;
-  } catch (error) {
-    setState({ loading: false });
-    Failure("Failed to fetch jobs");
-  }
-};
+      return res;
+    } catch (error) {
+      setState({ loading: false });
+      Failure("Failed to fetch jobs");
+    }
+  };
 
   useEffect(() => {
     if (jobIdParam) {
@@ -750,7 +750,7 @@ export default function JobsPage() {
                           </div>
                         )}
                         <div className="flex-1">
-                          <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                          <h1 className="text-xl font-semibold text-[#313131] mb-1">
                             {state?.jobDetail?.job_title}
                           </h1>
                           <p className="text-md text-gray-700 mb-2">
@@ -1025,22 +1025,25 @@ export default function JobsPage() {
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <div className="flex gap-6 ">
                 {/* Left Sidebar - Jobs List */}
-                <div className="w-80 flex-shrink-0 bg-white py-5">
-                  <div className="mb-4 flex flex-col lg:flex-row items-center w-full bg-clr2  rounded-sm  overflow-hidden py-1 items-center justify-center">
-                    <div className="flex-grow flex items-center px-6 py-4 lg:py-0 w-full lg:w-auto border border-[#F5F5F5] mx-4 bg-[#F5F5F5]">
-                      <Search color="#F2B31D" size={22} />
+                <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#E4E4E4]">
+                  <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
+                    <div className="flex-grow flex gap-3 items-center px-6 py-4 lg:py-0 w-full lg:w-auto border border-[#E4E4E4] mx-4 bg-[#F5F5F5]">
+                      <Search color="#E4E4E4" size={22} />
                       <input
                         type="text"
                         placeholder="Search by: Job tittle, Position, Keyword..."
-                        className="w-full pl-4 py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
+                        className="w-full  py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
                         value={state.search}
                         onChange={(e) => setState({ search: e.target.value })}
                       />
                     </div>
+                    <h3 className="text-black px-6 font-semibold mt-4">Job List</h3>
 
                     {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
                   </div>
                   <div className="sticky top-16 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
+                    
+
                     {state.jobList?.map((job) => (
                       <div
                         key={job.id}
@@ -1050,10 +1053,10 @@ export default function JobsPage() {
                           jobDetail(job.id);
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }}
-                        className={`cursor-pointer px-2 py-5 transition-all border-b border-gray-400 ${
+                        className={`cursor-pointer px-2 py-5 transition-all   ${
                           selectedJob?.id === job.id
-                            ? "border  bg-[#fff] shadow-lg "
-                            : ""
+                            ? "border border-[#01014B] bg-[#fff]  "
+                            : "border-b border-[#E4E4E4]"
                         }`}
                       >
                         <div className="flex flex-row gap-4 justify-between">
@@ -1092,7 +1095,7 @@ export default function JobsPage() {
                                       selectedJob?.id === job.id
                                         ? ""
                                         : "text-gray-600"
-                                    } text-sm font-medium`}
+                                    } text-sm font-normal`}
                                   >
                                     {job.college?.name}
                                   </p>
@@ -1101,39 +1104,43 @@ export default function JobsPage() {
                               {/* Header */}
                               {/* Experience and Salary */}
                               <div
-                                className={`flex justify-start gap-3 text-xs mb-3 border-none mt-4 ${
+                                className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
                                   selectedJob?.id === job.id
                                     ? ""
                                     : "text-gray-600"
                                 }`}
                               >
-                                <Briefcase
-                                  className={`${
-                                    selectedJob?.id === job.id && ""
-                                  } w-3 h-3 text-[#E6AB1D]`}
-                                />
-                                <span
-                                  className={`text-[12px] ${
-                                    selectedJob?.id === job.id && ""
-                                  }`}
-                                >
-                                  {job.experiences?.name}
-                                </span>
+                                <div className="flex gap-2">
+                                  <Briefcase
+                                    className={`${
+                                      selectedJob?.id === job.id && ""
+                                    } w-3 h-3 text-[#E6AB1D]`}
+                                  />
+                                  <span
+                                    className={`text-[12px] pt-[-2px] ${
+                                      selectedJob?.id === job.id && ""
+                                    }`}
+                                  >
+                                    {job.experiences?.name}
+                                  </span>
+                                </div>
 
-                                <MapPin
-                                  className={`${
-                                    selectedJob?.id === job.id && ""
-                                  } w-3 h-3 text-[#E6AB1D]`}
-                                />
-                                <span
-                                  className={`text-[12px]${
-                                    selectedJob?.id === job.id && ""
-                                  }`}
-                                >
-                                  {job.locations
-                                    ?.map((item) => item.city)
-                                    .join(", ")}
-                                </span>
+                                <div className="flex  gap-1">
+                                  <MapPin
+                                    className={`${
+                                      selectedJob?.id === job.id && ""
+                                    } w-3 h-3 text-[#E6AB1D]`}
+                                  />
+                                  <span
+                                    className={`text-[12px] pt-[-2px] ${
+                                      selectedJob?.id === job.id && "text-[12px]"
+                                    }`}
+                                  >
+                                    {job.locations
+                                      ?.map((item) => item.city)
+                                      .join(", ")}
+                                  </span>
+                                </div>
 
                                 {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
@@ -1297,7 +1304,7 @@ export default function JobsPage() {
                             </div>
                           )}
                           <div className="flex-1 flex-col">
-                            <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                            <h1 className="text-3xl font-semibold text-gray-900 mb-1">
                               {state?.jobDetail?.job_title}
                             </h1>
                             <p className="text-md text-gray-700 mb-2">
@@ -1494,10 +1501,10 @@ export default function JobsPage() {
                     </div>
 
                     {/* Right Sidebar */}
-                    <div className="w-full xl:w-80 flex-shrink-0 mt-5">
-                      <div className="sticky top-20 space-y-4">
+                    <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
+                      <div className="sticky top-20 space-y-4 ">
                         {/* Job Details */}
-                        <div className="bg-clr2    p-6">
+                        <div className="bg-clr2   border border-[#E4E4E4]  p-6">
                           <h3 className="text-lg font-semibold text-black mb-4">
                             Job Overview
                           </h3>
@@ -1551,7 +1558,7 @@ export default function JobsPage() {
                         </div>
 
                         {/* Company Info */}
-                        <div className="bg-white   p-6">
+                        <div className="bg-white  border border-[#E4E4E4]  p-6">
                           <h3 className="text-lg font-semibold text-gray-900 mb-4">
                             About {state?.jobDetail?.company}
                           </h3>
@@ -1623,9 +1630,9 @@ export default function JobsPage() {
                 </div>
 
                 {/* DESKTOP STICKY SIDEBAR */}
-                <div className="hidden lg:block shrink-0 bg-clr2 rounded-xl self-start lg:sticky lg:top-8">
+                <div className="hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#E4E4E4]">
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
-                  <div className="h-fit w-72 max-h-[calc(100vh-4rem)] overflow-y-auto">
+                  <div className="">
                     <Filterbar
                       filters={filters}
                       onFilterChange={setFilters}
@@ -1643,14 +1650,14 @@ export default function JobsPage() {
 
                 <div className="flex-grow">
                   {/* content input header start */}
-                  <div className="z-30 bg-white  self-start items-center flex justify-center shadow rounded-3xl">
+                  <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#E4E4E4] rounded-3xl">
                     <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
                       <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto md:border-r border-[#000]/40">
                         <Search color="#5c5a5a93" size={22} />
                         <input
                           type="text"
                           placeholder="Search by: Job tittle, Position, Keyword..."
-                          className="w-full pl-4 bg-transparent text-sm text-black focus:outline-none placeholder:text-[#313131] font-medium text-black"
+                          className="w-full pl-4 bg-transparent text-sm  focus:outline-none placeholder:text-[#313131] placeholder:font-normal font-medium  text-black"
                           value={state.search}
                           onChange={(e) => setState({ search: e.target.value })}
                         />
@@ -1763,7 +1770,7 @@ export default function JobsPage() {
                   ) : state.jobList?.length > 0 ? (
                     <>
                       <div
-                        className="grid grid-cols-1  mt-5 bg-white px-5"
+                        className="grid grid-cols-1  mt-5 bg-white px-5 border border-[#E4E4E4]"
                         style={{
                           gap: "20px",
                         }}
@@ -1941,13 +1948,13 @@ export default function JobsPage() {
                             </span>
                           </div>
                           <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
-                        <MapPin className="w-3 h-3 text-[#E6AB1D]" />
-                        <span>
-                          {state.jobDetail?.locations
-                            ?.map((item) => item.city)
-                            .join(", ")}
-                        </span>
-                      </div>
+                            <MapPin className="w-3 h-3 text-[#E6AB1D]" />
+                            <span>
+                              {state.jobDetail?.locations
+                                ?.map((item) => item.city)
+                                .join(", ")}
+                            </span>
+                          </div>
                         </div>
 
                         <div>
@@ -2036,7 +2043,7 @@ export default function JobsPage() {
                             {state.jobDetail?.job_type_obj?.name}
                           </p>
                         </div> */}
-                         <div>
+                            <div>
                               <span className=" flex gap-2 text-sm font-medium  pb-1">
                                 <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                 Job Title
@@ -2140,12 +2147,12 @@ export default function JobsPage() {
               title={selectedJob?.job_title}
               width="700px"
               renderComponent={() => (
-                <div className="space-y-6 bg-[#FFFCF3] overflow-y-auto py-2 px-2 max-h-[85vh]">
+                <div className="space-y-6 bg-[#eff2fc] overflow-y-auto py-5 px-2 max-h-[85vh]">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
                       src="/assets/images/Illustration.png"
-                      height={100}
-                      width={80}
+                      height={150}
+                      width={100}
                       alt="Job Application"
                       className="object-contain"
                     />
@@ -2250,7 +2257,7 @@ export default function JobsPage() {
                     <Button
                       type="button"
                       onClick={handleFormSubmit}
-                      className="px-12 py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
+                      className="px-12 py-3 bg-[#24246C] hover:bg-amber-500 text-white font-semibold rounded-lg"
                     >
                       Submit
                     </Button>

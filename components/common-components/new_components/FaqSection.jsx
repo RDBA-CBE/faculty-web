@@ -39,7 +39,7 @@ const FaqResumeSection = () => {
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
+          <h2 className="text-3xl lg:text-4xl font-semibold text-black mb-3">
             Frequently Asked Questions
           </h2>
           <p className="text-gray-600 mb-10">
@@ -61,10 +61,10 @@ const FaqResumeSection = () => {
                   onClick={() => setActive(active === item.id ? "" : item.id)}
                 >
                   <div className="flex gap-5 items-center">
-                    <span className="text-2xl font-bold text-black">
+                    <span className="text-2xl font-medium text-black">
                       {item.id}
                     </span>
-                    <h4 className="sub-ti font-bold">
+                    <h4 className="sub-ti !font-medium">
                       {item.question}
                     </h4>
                   </div>

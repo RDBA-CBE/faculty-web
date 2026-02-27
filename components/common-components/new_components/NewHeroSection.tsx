@@ -53,7 +53,7 @@ const NewHeroSection = () => {
   };
 
   return (
-    <section className="relative min-h-[600px] lg:min-h-[600px] flex items-center overflow-hidden">
+    <section className="relative min-h-[600px] lg:min-h-[95vh] flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -74,7 +74,7 @@ const NewHeroSection = () => {
               <h1 className="text-[35px] lg:text-[40px] xl:text-[50px] leading-[50px] lg:leading-[66px] xl:leading-[74px] font-bold text-white">
                 Find Your Dream Job Today!
               </h1>
-              <p className="text-white max-w-xl text-base lg:text-lg leading-relaxed">
+              <p className="text-[#F0F0F0CC] max-w-xl text-base lg:text-lg leading-relaxed">
                 Ultrices purus dolor viverra mi laoreet at cursus justo.
                 Ultrices purus diam egestas amet faucibus tempor blandit. Elit
                 velit mauris aliquam est diam. Leo
@@ -86,14 +86,14 @@ const NewHeroSection = () => {
               <input
                 type="text"
                 placeholder="Job Title or College"
-                className="w-full sm:flex-1 px-6 py-4 sm:py-3 focus:outline-none text-base sm:text-base rounded-full sm:rounded-l-full sm:rounded-r-none border-b sm:border-b-0 border-gray-100 placeholder:text-gray-400"
+                className="w-full sm:flex-1 px-6 py-4 sm:py-3 focus:outline-none text-base sm:text-base rounded-full sm:rounded-l-full sm:rounded-r-none border-b sm:border-b-0 border-gray-100 placeholder:text-[#373535]"
                 value={state.search}
                 onChange={(e) => setState({ search: e.target.value })}
               />
               <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
               <div>
                 <CustomSelect
-                  className="w-auto px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
+                  className="w-auto placeholder:text-[#373535] px-6 py-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
                   placeholder="Select Location"
                   options={state.locationList}
                   value={state?.location || ""}
@@ -188,9 +188,9 @@ const NewHeroSection = () => {
               <Image
                 src="/assets/images/banner_logo.png"
                 alt="Hero Banner"
-                width={600}
-                height={600}
-                className="object-contain object-bottom w-auto h-[600px] xl:h-[600px]"
+                width={800}
+                height={800}
+                className="object-cover object-bottom w-auto h-[750px] xl:h-[750px]"
               />
             </div>
           </div>

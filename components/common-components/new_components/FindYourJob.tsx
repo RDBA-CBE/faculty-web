@@ -146,7 +146,7 @@ const FindYourJob = () => {
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-12">
-              <h2 className="text-3xl lg:text-4xl font-bold text-black">
+              <h2 className="text-3xl lg:text-4xl font-semibold text-[#151515]">
                 Find Your Job
               </h2>
 
@@ -196,7 +196,7 @@ const FindYourJob = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                {state?.jobList.slice(0,6)?.map((job) => (
+                {state?.jobList.slice(0, 6)?.map((job) => (
                   <div
                     key={job.id}
                     className="p-5 border border-gray-200 
@@ -219,14 +219,14 @@ const FindYourJob = () => {
                             />
                           ) : (
                             <div
-                              className={`w-full h-full rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white bg-gray-400 font-semibold flex-shrink-0`}
+                              className={`w-full h-full rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
                             >
                               {job?.college?.name?.slice(0, 1).toUpperCase()}
                             </div>
                           )}
                         </div>
                         <div>
-                          <h3 className="sub-ti font-semibold text-black mb-0.5">
+                          <h3 className="sub-ti !font-medium text-black mb-0.5 ">
                             {job.job_title}
                           </h3>
                           <p className="text-sm text-gray-600">
@@ -287,8 +287,6 @@ const FindYourJob = () => {
                 ))}
               </div>
             )}
-
-         
           </div>
 
           {/* Right Sidebar */}
@@ -299,10 +297,10 @@ const FindYourJob = () => {
                 <h3 className="text-2xl font-bold text-white">Job spotlight</h3>
                 <div className="flex gap-2">
                   <button className="swiper-spotlight-prev w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
-                    <ChevronLeft className="w-5 h-5 text-white" />
+                    <ChevronLeft className="w-4 h-4 text-white" />
                   </button>
                   <button className="swiper-spotlight-next w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
-                    <ChevronRight className="w-5 h-5 text-white" />
+                    <ChevronRight className="w-4 h-4 text-white" />
                   </button>
                 </div>
               </div>
@@ -316,7 +314,7 @@ const FindYourJob = () => {
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
                 className="job-spotlight-swiper"
               >
-                {state.jobList?.slice(0,6)?.map((job: any) => (
+                {state.jobList?.slice(0, 6)?.map((job: any) => (
                   <SwiperSlide key={job.id}>
                     <div className=" px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                       <div className="mb-4 rounded-lg overflow-hidden h-16 w-full bg-gray-50 flex items-center justify-center  ">

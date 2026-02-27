@@ -35,7 +35,7 @@ const PriceRangeSlider: React.FC<PriceRangeSliderProps> = ({
 
   return (
     <div className="w-full">
-      <div className="mb-2 font-semibold text-gray-900">Price Range</div>
+      <div className="mb-2 font-semibold text-gray-900">Salary Range</div>
 
       {/* top range values */}
       <div className="flex justify-between text-sm font-medium mb-2">

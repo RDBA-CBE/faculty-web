@@ -43,7 +43,7 @@ const WhatCanIDo = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9 ">
-            <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
+            <h2 className="text-3xl lg:text-4xl font-semibold text-black mb-3 text-[#151515]">
               What can I do With Faculty Pro?
             </h2>
             <p className="text-gray-600 mb-8">
@@ -72,7 +72,7 @@ const WhatCanIDo = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="sub-ti font-bold text-black mb-1">
+                    <h3 className="sub-ti font-semibold text-[#1E1E1E] mb-1">
                       Find and Apply for Faculty Jobs
                     </h3>
                     <p className="text-gray-600 text-md">
@@ -88,7 +88,7 @@ const WhatCanIDo = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="sub-ti font-bold text-black mb-1">
+                    <h3 className="sub-ti font-semibold text-[#1E1E1E] mb-1">
                       Hire Qualified Teaching Professionals Easily
                     </h3>
                     <p className="text-gray-600 text-md">
@@ -104,7 +104,7 @@ const WhatCanIDo = () => {
                     </div>
                   </div>
                   <div>
-                    <h3 className="sub-ti font-bold text-black mb-1">
+                    <h3 className="sub-ti font-semibold text-[#1E1E1E] mb-1">
                       Manage Applications in One Platform
                     </h3>
                     <p className="text-gray-600 text-md">

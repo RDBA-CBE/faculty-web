@@ -87,17 +87,17 @@ const TopHiringColleges = () => {
           <div className="lg:col-span-9">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl lg:text-4xl xl:text-4xl font-bold text-black">
+              <h2 className="text-3xl lg:text-4xl xl:text-4xl font-semibold text-[#151515]">
                 Top Hiring Colleges
               </h2>
 
               {/* Navigation Buttons - Desktop */}
               <div className="hidden lg:flex items-center gap-3">
                 <button className="swiper-button-prev-custom w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
-                  <ChevronLeft className="w-5 h-5 text-gray-600" />
+                  <ChevronLeft className="w-4 h-4 text-gray-600" />
                 </button>
                 <button className="swiper-button-next-custom w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
-                  <ChevronRight className="w-5 h-5 text-gray-600" />
+                  <ChevronRight className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
             </div>
@@ -129,7 +129,7 @@ const TopHiringColleges = () => {
               {state?.collegesList.map((college) => (
                 <SwiperSlide key={college.id}>
                   <div
-                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-gray-200 bg-white hover:bg-[#0a1551] transition-all duration-300"
+                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#C7C7C7]  hover:bg-[#0a1551] transition-all duration-300"
                     onClick={() => router.push(`/jobs?college=${college.id}`)}
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100">
@@ -141,7 +141,7 @@ const TopHiringColleges = () => {
                     </div>
 
                     <div className="flex-1 flex flex-col justify-center px-2">
-                      <h3 className="sub-ti font-semibold mb-1 leading-tight line-clamp-2 text-black group-hover:text-white transition-colors">
+                      <h3 className="sub-ti !font-medium mb-1 leading-tight line-clamp-2 !text-[#313131] group-hover:!text-white transition-colors">
                         {college.college_name}
                       </h3>
                       <p className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors">

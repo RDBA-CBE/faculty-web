@@ -92,7 +92,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
 
   return (
     <div
-      className=" border-b border-gray-400 py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
+      className=" border-b  border-[#E4E4E4] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
       onClick={onClick}
     >
       <div className=" w-full md:w-4/5 flex flex-row gap-5">
@@ -119,10 +119,10 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           {/* Header with Title and Company Logo on Right */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
-              <h3 className="font-bold text-gray-900 text-base text-lg ">
+              <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  ">
                 {capitalizeFLetter(job?.job_title)}
               </h3>
-              <p className="font-medium text-gray-900 text-md ">
+              <p className="font-medium font-normal text-[#848282] text-md ">
                 {capitalizeFLetter(job?.college?.name)}
               </p>
             </div>
@@ -130,7 +130,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
 
 
           {/* Job Description */}
-          <p className="text-gray-600 text-sm mb-3 line-clamp-2 w-[80%]">
+          <p className="text-[#515151] text-sm mb-3 line-clamp-2 w-[80%]">
             {job?.job_description ||
               "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
           </p>
@@ -139,13 +139,13 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           {/* Experience and Location */}
           <div className="flex items-center gap-5 text-sm text-gray-600 mb-3">
             <div className="flex items-center gap-3">
-              <Briefcase className="w-3.5 h-3.5 text-[#E6AB1D]" />
-              <span className="text-sm">{job?.experiences?.name}</span>
+              <Briefcase className="w-4 h-4 text-[#ffb400]" />
+              <span className="text-sm text-[#6D6C6C]">{job?.experiences?.name}</span>
             </div>
             {/* <span className="text-gray-400">|</span> */}
             <div className="flex items-center gap-3">
-              <MapPin className="w-3.5 h-3.5 text-[#E6AB1D]" />
-              <span className="text-sm">
+              <MapPin className="w-4 h-4 text-[#ffb400]" />
+              <span className="text-sm text-[#6D6C6C]">
                 {" "}
                 {job?.locations?.map((item) => item.city).join(", ")}
               </span>
@@ -156,7 +156,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       </div>
       <div className="w-full md:w-1/5  flex flex-row md:flex-col justify-between"> 
         <div className="flex items-center justifyfy-end gap-2 pt-2 order-1 md:order-0 mb-3">
-          <div className="flex items-center gap-1 text-sm text-gray-500 ">
+          <div className="flex font-normal items-center gap-1 text-sm text-[#565656] ">
             {/* <Clock className="w-3.5 h-3.5" /> */}
             {moment(job?.created_at).isValid() &&
             moment(job?.created_at).year() > 1900

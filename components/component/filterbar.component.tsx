@@ -43,7 +43,7 @@ const FilterSection: React.FC<{
   onToggle: (value: number | string) => void;
 }> = ({ title, items, counts, selected, onToggle }) => (
   <div>
-    <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
 
     <div className="space-y-2">
       {items.map((item, idx) => (
@@ -58,13 +58,13 @@ const FilterSection: React.FC<{
               onChange={() => onToggle(item.value)}
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
-            <span className="text-[15px] text-slate-600 group-hover:text-slate-900 transition-colors">
+            <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors">
               {item.label}
             </span>
           </div>
 
           {counts && (
-            <span className="text-xs text-slate-400">{counts[idx]}</span>
+            <span className="text-xs text-[#000]">{counts[idx]}</span>
           )}
         </label>
       ))}
@@ -80,7 +80,7 @@ const FilterSectionRadio: React.FC<{
   onChange: (value: number | string | null) => void;
 }> = ({ title, items, selected, name, onChange }) => (
   <div>
-    <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
 
     <div className="space-y-2">
       {items.map((item) => (
@@ -112,7 +112,7 @@ const FilterSectionString: React.FC<{
   onToggle: (item: string) => void;
 }> = ({ title, items, selected, onToggle }) => (
   <div>
-    <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
 
     <div className="space-y-2">
       {items.map((item) => (
@@ -289,7 +289,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   return (
     <aside className="w-full h-full">
        <div className="flex w-full justify-between items-center px-4 mt-4">
-        <div className="font-semibold text-[#1e293b]">Filter</div>
+        <div className="font-semibold text-[#000]">All Filters</div>
         <button
           onClick={handleClearFilters}
           className="text-sm font-medium text-red-600 hover:text-red-800"
@@ -313,7 +313,7 @@ const Filterbar: React.FC<SidebarProps> = ({
         />
 
         {categoryList?.length > 5 && (
-          <button className="mt-6 w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-bold rounded-lg text-sm transition-colors mb-4">
+          <button className="mt-6 w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-lg text-sm transition-colors mb-4">
             Show More
           </button>
         )} */}
@@ -343,12 +343,12 @@ const Filterbar: React.FC<SidebarProps> = ({
           }
         />
         {collegeList && collegeList.length > 5 && (
-          <div className="relative mt-3 mb-3">
+          <div className="relative mt-3">
             <button
               onClick={() => setShowAllColleges(true)}
-              className="text-sm text-white hover:text-white font-medium flex items-center justify-center gap-1  bg-[#24246C] w-full rounded-full px-3 py-2 text-center"
+              className="text-sm font-medium flex items-center  gap-1 text-[#24246C] w-full rounded-full px-3 py-2 ps-7"
             >
-              Show more
+              View more
             </button>
 
             {showAllColleges && (
@@ -357,7 +357,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                 className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
               >
                 <div className="flex justify-between items-center mb-3">
-                  <h4 className="font-bold text-slate-800">All Colleges</h4>
+                  <h4 className="font-semibold text-[#000]">All Colleges</h4>
                   <button
                     onClick={() => setShowAllColleges(false)}
                     className="text-slate-400 hover:text-slate-600"
@@ -474,7 +474,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
         {/* Tags */}
         {/* <div>
-          <h3 className="text-md font-bold text-slate-800 mb-3 pt-[15px]">
+          <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
             Tags
           </h3>
           <div className="flex flex-wrap gap-2">

@@ -1,12 +1,21 @@
 "use client";
 
+import { Check } from "lucide-react";
+import Image from "next/image";
+
 export default function AboutPage() {
   return (
     <main className="bg-gray-50">
       {/* ================= HERO SECTION ================= */}
-    
 
-      <section
+      <div className="bg-[#24246C] py-[50px] px-4 ">
+        <div className="max-w-7xl 0px] mx-auto text-center">
+          <h1 className="!text-white text-[40px] font-semibold">About Us</h1>
+        </div>
+      </div>
+
+     
+      {/* <section
         className="relative h-[50vh] flex items-center justify-center"
         style={{
           backgroundImage:
@@ -24,10 +33,10 @@ export default function AboutPage() {
             Connecting faculty members with the right academic opportunities.
           </p>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= WHO WE ARE ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      {/* <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <img
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655"
@@ -36,9 +45,7 @@ export default function AboutPage() {
           />
 
           <div>
-            <h2 className="text-3xl font-semibold mb-4">
-              Who We Are
-            </h2>
+            <h2 className="text-3xl font-semibold mb-4">Who We Are</h2>
             <p className="text-gray-600 leading-relaxed mb-4">
               Faculty Web is a dedicated academic job platform designed
               specifically for faculty members and educational institutions.
@@ -49,7 +56,7 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= HOW IT WORKS ================= */}
       <section className="bg-white py-20">
@@ -87,15 +94,9 @@ export default function AboutPage() {
                   {item.step}
                 </span>
 
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="mx-auto my-4"
-                />
+                <img src={item.img} alt={item.title} className="mx-auto my-4" />
 
-                <h3 className="text-xl font-semibold mb-2">
-                  {item.title}
-                </h3>
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-600">{item.desc}</p>
               </div>
             ))}
@@ -104,7 +105,7 @@ export default function AboutPage() {
       </section>
 
       {/* ================= WHY CHOOSE US ================= */}
-      <section className="bg-gray-50 py-20">
+      {/* <section className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <img
@@ -139,10 +140,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= FEATURE CARDS ================= */}
-      <section className="bg-white py-20">
+      {/* <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -166,17 +167,156 @@ export default function AboutPage() {
                 key={i}
                 className="border rounded-xl p-8 text-center hover:shadow-lg transition"
               >
-                <img
-                  src={item.img}
-                  alt={item.title}
-                  className="mx-auto mb-4"
-                />
-                <h3 className="text-xl font-semibold mb-2">
-                  {item.title}
-                </h3>
+                <img src={item.img} alt={item.title} className="mx-auto mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
                 <p className="text-gray-600">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section> */}
+
+      <section
+        className="py-20 bg-cover bg-center bg-no-repeat relative my-5"
+        style={{
+          backgroundImage: "url('/assets/images/Faculty/count_bg.png')",
+        }}
+      >
+        <div className="absolute "></div>
+
+        <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0 relative z-10">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 ">
+            <div className="text-center gap-2 flex flex-col justify-center items-center">
+              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+                <img
+                  className="w-[70px] text-center"
+                  src="/assets/images/Vector.png"
+                  alt=""
+                />
+              </div>
+
+              {/* <div className="hidden lg:block absolute left-2/3 top-1/2 -translate-x-1/2 h-px w-80 bg-white/30"></div> */}
+
+              <p className="text-white text-lg lg:text-2xl font-medium pt-5">
+                Trusted Institutions
+              </p>
+              <p className="text-white">
+                Only verified academic institutions are listed.
+              </p>
+            </div>
+            <div className="text-center gap-2 flex flex-col justify-center items-center">
+              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+                <img
+                  className="w-[70px] text-center"
+                  src="/assets/images/Vector.png"
+                  alt=""
+                />
+              </div>
+
+              {/* <div className="hidden lg:block absolute left-2/3 top-1/2 -translate-x-1/2 h-px w-80 bg-white/30"></div> */}
+
+              <p className="text-white text-lg lg:text-2xl font-medium pt-5">
+                Trusted Institutions
+              </p>
+              <p className="text-white">
+                Only verified academic institutions are listed.
+              </p>
+            </div>
+
+            <div className="text-center gap-2 flex flex-col justify-center items-center">
+              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+                <img
+                  className="w-[70px] text-center"
+                  src="/assets/images/Vector.png"
+                  alt=""
+                />
+              </div>
+
+              {/* <div className="hidden lg:block absolute left-2/3 top-1/2 -translate-x-1/2 h-px w-80 bg-white/30"></div> */}
+
+              <p className="text-white text-lg lg:text-2xl font-medium pt-5">
+                Trusted Institutions
+              </p>
+              <p className="text-white">
+                Only verified academic institutions are listed.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-wid py-20">
+        <div className="lg:col-span-9 ">
+          <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
+            What can I do With Faculty Pro?
+          </h2>
+          <p className="text-gray-600 mb-8">
+            Lorem ipsum dolor sit amet consectetur. Quam sit nullam ac
+            scelerisque mi varius tellus feugiat.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
+            {/* Image */}
+            <div className="rounded-lg overflow-hidden">
+              <Image
+                src="/assets/images/Faculty/group.png"
+                alt="Faculty Team"
+                width={500}
+                height={400}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Features */}
+            <div className="space-y-10">
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
+                    <Check className="w-5 h-5 text-black" strokeWidth={3} />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="sub-ti font-bold text-black mb-1">
+                    Find and Apply for Faculty Jobs
+                  </h3>
+                  <p className="text-gray-600 text-md">
+                    Explore verified academic openings across institutions.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
+                    <Check className="w-5 h-5 text-black" strokeWidth={3} />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="sub-ti font-bold text-black mb-1">
+                    Hire Qualified Teaching Professionals Easily
+                  </h3>
+                  <p className="text-gray-600 text-md">
+                    Post vacancies and shortlist candidates effortlessly.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <div className="flex-shrink-0 mt-1">
+                  <div className="w-8 h-8 rounded-full bg-white border-2 border-black flex items-center justify-center">
+                    <Check className="w-5 h-5 text-black" strokeWidth={3} />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="sub-ti font-bold text-black mb-1">
+                    Manage Applications in One Platform
+                  </h3>
+                  <p className="text-gray-600 text-md">
+                    Track, review, and communicate with applicants.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
