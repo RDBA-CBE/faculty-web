@@ -38,6 +38,7 @@ import {
   IndianRupee,
   Loader,
   BookmarkCheck,
+  Workflow,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -997,85 +998,86 @@ export default function JobsPage() {
                             : ""
                         }`}
                       >
-                        <div className="flex flex-row gap-4">
-                          <div>
-                            {job?.college?.college_logo ? (
-                              <img
-                                src={job?.college?.college_logo}
-                                alt={job?.college?.name}
-                                className="w-6 h-6  object-cover"
-                              />
-                            ) : (
-                              <div
-                                className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                  job.college?.name,
-                                )} flex items-center justify-center ${selectedJob?.id === job.id ? "text-white bg-gray-400" : " ext-white bg-gray-400"}  font-semibold flex-shrink-0`}
-                              >
-                                {job.college?.name?.slice(0, 1).toUpperCase()}
+                        <div className="flex flex-row gap-4 justify-between">
+                          <div className="flex flex-row gap-4">
+                            <div>
+                              {job?.college?.college_logo ? (
+                                <img
+                                  src={job?.college?.college_logo}
+                                  alt={job?.college?.name}
+                                  className="w-6 h-6  object-cover"
+                                />
+                              ) : (
+                                <div
+                                  className={`w-6 h-6 rounded-lg ${getAvatarColor(
+                                    job.college?.name,
+                                  )} flex items-center justify-center ${selectedJob?.id === job.id ? "text-white bg-gray-400" : " ext-white bg-gray-400"}  font-semibold flex-shrink-0`}
+                                >
+                                  {job.college?.name?.slice(0, 1).toUpperCase()}
+                                </div>
+                              )}
+                            </div>
+                            <div>
+                              <div className="flex items-start gap-3">
+                                <div className="min-w-0 flex-1">
+                                  <h3
+                                    className={`font-semibold  leading-tight mb-1 ${
+                                      selectedJob?.id === job.id
+                                        ? ""
+                                        : "text-gray-900"
+                                    }`}
+                                  >
+                                    {job.job_title}
+                                  </h3>
+                                  <p
+                                    className={`${
+                                      selectedJob?.id === job.id
+                                        ? ""
+                                        : "text-gray-600"
+                                    } text-sm font-medium`}
+                                  >
+                                    {job.college?.name}
+                                  </p>
+                                </div>
                               </div>
-                            )}
-                          </div>
-                          <div>
-                            <div className="flex items-start gap-3">
-                              <div className="min-w-0 flex-1">
-                                <h3
-                                  className={`font-semibold  leading-tight mb-1 ${
-                                    selectedJob?.id === job.id
-                                      ? ""
-                                      : "text-gray-900"
+                              {/* Header */}
+                              {/* Experience and Salary */}
+                              <div
+                                className={`flex justify-start gap-3 text-xs mb-3 border-none mt-4 ${
+                                  selectedJob?.id === job.id
+                                    ? ""
+                                    : "text-gray-600"
+                                }`}
+                              >
+                                <Briefcase
+                                  className={`${
+                                    selectedJob?.id === job.id && ""
+                                  } w-3 h-3 text-[#E6AB1D]`}
+                                />
+                                <span
+                                  className={`text-[12px] ${
+                                    selectedJob?.id === job.id && ""
                                   }`}
                                 >
-                                  {job.job_title}
-                                </h3>
-                                <p
+                                  {job.experiences?.name}
+                                </span>
+
+                                <MapPin
                                   className={`${
-                                    selectedJob?.id === job.id
-                                      ? ""
-                                      : "text-gray-600"
-                                  } text-sm font-medium`}
+                                    selectedJob?.id === job.id && ""
+                                  } w-3 h-3 text-[#E6AB1D]`}
+                                />
+                                <span
+                                  className={`text-[12px]${
+                                    selectedJob?.id === job.id && ""
+                                  }`}
                                 >
-                                  {job.college?.name}
-                                </p>
-                              </div>
-                            </div>
-                            {/* Header */}
-                            {/* Experience and Salary */}
-                            <div
-                              className={`flex justify-start gap-3 text-xs mb-3 border-none mt-4 ${
-                                selectedJob?.id === job.id
-                                  ? ""
-                                  : "text-gray-600"
-                              }`}
-                            >
-                              <Briefcase
-                                className={`${
-                                  selectedJob?.id === job.id && ""
-                                } w-3 h-3 text-[#E6AB1D]`}
-                              />
-                              <span
-                                className={`text-[12px] ${
-                                  selectedJob?.id === job.id && ""
-                                }`}
-                              >
-                                {job.experiences?.name}
-                              </span>
+                                  {job.locations
+                                    ?.map((item) => item.city)
+                                    .join(", ")}
+                                </span>
 
-                              <MapPin
-                                className={`${
-                                  selectedJob?.id === job.id && ""
-                                } w-3 h-3 text-[#E6AB1D]`}
-                              />
-                              <span
-                                className={`text-[12px]${
-                                  selectedJob?.id === job.id && ""
-                                }`}
-                              >
-                                {job.locations
-                                  ?.map((item) => item.city)
-                                  .join(", ")}
-                              </span>
-
-                              {/* <div className="flex items-center gap-1">
+                                {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -1099,8 +1101,8 @@ export default function JobsPage() {
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                            </div>
-                            {/* Location
+                              </div>
+                              {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -1123,18 +1125,18 @@ export default function JobsPage() {
                                   .join(", ")}
                               </span>
                             </div> */}
-                            {/* Footer */}
-                            {/* <div
+                              {/* Footer */}
+                              {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                            {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                              {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                            {/* <div
+                              {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -1157,7 +1159,8 @@ export default function JobsPage() {
                                     : "Just now"}
                                 </span>
                               </div> */}
-                            {/* </div> */}
+                              {/* </div> */}
+                            </div>
                           </div>
 
                           <div>
@@ -1209,62 +1212,66 @@ export default function JobsPage() {
                   {/* Job Header Card */}
                   <div className=" border-b  px-2 py-2 pb-5">
                     <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-start gap-4 h-full">
-                        {state?.jobDetail?.college?.college_logo ? (
-                          <img
-                            src={state?.jobDetail?.college?.college_logo}
-                            alt={state?.jobDetail?.college?.name}
-                            className="w-12 h-12  object-cover  rounded-3xl"
-                          />
-                        ) : (
-                          <div
-                            className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                              state?.jobDetail?.college?.name,
-                            )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
-                          >
-                            {state?.jobDetail?.college?.name
-                              ?.slice(0, 1)
-                              .toUpperCase()}
+                      <div>
+                        <div className="w-fit bg-[#01014B1A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                          {/* • Posted{" "} */}
+                          {state?.jobDetail?.postedDate || "2 days ago"}
+                        </div>
+                        <div className="flex items-start gap-4 h-full mb-4">
+                          {state?.jobDetail?.college?.college_logo ? (
+                            <img
+                              src={state?.jobDetail?.college?.college_logo}
+                              alt={state?.jobDetail?.college?.name}
+                              className="w-12 h-12  object-cover  rounded-3xl"
+                            />
+                          ) : (
+                            <div
+                              className={`w-12 h-12 rounded-3xl ${getAvatarColor(
+                                state?.jobDetail?.college?.name,
+                              )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
+                            >
+                              {state?.jobDetail?.college?.name
+                                ?.slice(0, 1)
+                                .toUpperCase()}
+                            </div>
+                          )}
+                          <div className="flex-1 flex-col">
+                            <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                              {state?.jobDetail?.job_title}
+                            </h1>
+                            <p className="text-md text-gray-700 mb-2">
+                              {state?.jobDetail?.college?.name}
+                            </p>
                           </div>
-                        )}
-                        <div className="flex-1 flex-col">
-                          <h1 className="text-xl font-semibold text-gray-900 mb-1">
-                            {state?.jobDetail?.job_title}
-                          </h1>
-                          <p className="text-md text-gray-700 mb-2">
-                            {state?.jobDetail?.college?.name}
-                          </p>
+                        </div>
 
-                          <div className=" mt-14">
-                            <div className="flex items-center gap-5 text-sm text-gray-600">
-                              <span className="flex items-center gap-3">
-                                <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
-                                {state?.jobDetail?.experiences?.name}
-                              </span>
-                              {/* <span className="flex items-center gap-1">
+                        <div className=" ">
+                          <div className="flex items-center gap-5 text-sm text-gray-600">
+                            <span className="flex items-center gap-3">
+                              <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
+                              {state?.jobDetail?.experiences?.name}
+                            </span>
+                            {/* <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
                           {state?.jobDetail?.job_type_obj?.name}
                         </span> */}
-                              <span className="flex items-center gap-3">
-                                {selectedJob.salary_range?.includes("$") ? (
-                                  <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
-                                ) : (
-                                  <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
-                                )}
-                                {state?.jobDetail?.salary_range_obj?.name}
-                              </span>
+                            <span className="flex items-center gap-3">
+                              {selectedJob.salary_range?.includes("$") ? (
+                                <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
+                              ) : (
+                                <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
+                              )}
+                              {state?.jobDetail?.salary_range_obj?.name}
+                            </span>
 
-                              <span className="flex items-center gap-3">
-                                <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                                {capitalizeFLetter(
-                                  state?.jobDetail?.locations
-                                    ?.map((item) => item.city)
-                                    .join(", "),
-                                )}{" "}
-                                {/* • Posted{" "}
-                          {state?.jobDetail?.postedDate || "2 days ago"} */}
-                              </span>
-                            </div>
+                            <span className="flex items-center gap-3">
+                              <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                              {capitalizeFLetter(
+                                state?.jobDetail?.locations
+                                  ?.map((item) => item.city)
+                                  .join(", "),
+                              )}{" "}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -1276,7 +1283,7 @@ export default function JobsPage() {
                         >
                           <X size={25} className=" hover:text-gray-600" />
                         </button>
-                        <div className="flex flex-col items-end justify-between pt-4 gap-3  border-gray-100">
+                        <div className="flex flex-col items-end justify-between pt-4 gap-8  border-gray-100">
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() =>
@@ -1429,7 +1436,7 @@ export default function JobsPage() {
                         {/* Job Details */}
                         <div className="bg-clr2    p-6">
                           <h3 className="text-lg font-semibold text-black mb-4">
-                            Job details
+                            Job Overview
                           </h3>
                           <div className="space-y-4">
                             {/* <div>
@@ -1440,7 +1447,18 @@ export default function JobsPage() {
                         </div> */}
                             <div>
                               <span className=" flex gap-2 text-md font-medium  pb-1">
-                               <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" /> Experience level
+                                <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Job Title
+                              </span>
+                              <p className="text-md text-gray-500  ps-6">
+                                {state?.jobDetail?.job_title}
+                              </p>
+                            </div>
+
+                            <div>
+                              <span className=" flex gap-2 text-md font-medium  pb-1">
+                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Experience level
                               </span>
                               <p className="text-md text-gray-500  ps-6">
                                 {state?.jobDetail?.experiences?.name}
@@ -1448,7 +1466,8 @@ export default function JobsPage() {
                             </div>
                             <div>
                               <span className="flex gap-2 text-md font-medium  pb-1">
-                               <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]"/> Salary
+                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Salary
                               </span>
                               <p className="text-md text-gray-500 ps-6">
                                 {state?.jobDetail?.salary_range_obj?.name}
@@ -1456,7 +1475,8 @@ export default function JobsPage() {
                             </div>
                             <div>
                               <span className="flex gap-2 text-md font-medium  pb-1">
-                              <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />  Location
+                                <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Location
                               </span>
                               <p className="text-md text-gray-500  ps-6">
                                 {state?.jobDetail?.locations
