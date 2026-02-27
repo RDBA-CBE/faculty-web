@@ -385,7 +385,7 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden ${
-                      isHomePage ? "text-gray-700" : "text-gray-700"
+                      isHomePage ? "text-white" : "text-white"
                     }`}
                   >
                     <MenuIcon className="h-6 w-6" />
