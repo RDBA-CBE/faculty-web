@@ -324,25 +324,37 @@ export default function JobsPage() {
     }
   };
 
-  const jobDetail = async (jobId) => {
-    try {
-      setState({ loading: true });
-      const res: any = await Models.job.details(jobId);
-      const responsibilities =
-        res?.responsibility?.blocks
-          ?.filter((block) => block.type === "list")
-          ?.flatMap((block) => block.data.items) || [];
-      setState({
-        loading: false,
-        jobDetail: res,
-        responsibilities: responsibilities,
-      });
-      return res;
-    } catch (error) {
-      setState({ loading: false });
-      Failure("Failed to fetch jobs");
-    }
-  };
+ const jobDetail = async (jobId) => {
+  try {
+    setState({ loading: true });
+
+    const res: any = await Models.job.details(jobId);
+
+    const responsibilities =
+      res?.responsibility?.blocks?.flatMap((block) => {
+        if (block.type === "list") {
+          return block.data.items; // array
+        }
+
+        if (block.type === "paragraph") {
+          return [block.data.text]; // convert to array
+        }
+
+        return [];
+      }) || [];
+
+    setState({
+      loading: false,
+      jobDetail: res,
+      responsibilities: responsibilities,
+    });
+
+    return res;
+  } catch (error) {
+    setState({ loading: false });
+    Failure("Failed to fetch jobs");
+  }
+};
 
   useEffect(() => {
     if (jobIdParam) {
@@ -362,8 +374,7 @@ export default function JobsPage() {
     const userId = profile?.id;
 
     console.log("state.jobDetail", state.jobDetail);
-    
-    
+
     if (state.jobDetail?.apply_link) {
       window.open(state.jobDetail.apply_link, "_blank");
       return;
@@ -599,9 +610,13 @@ export default function JobsPage() {
       );
 
       if (maxDays === 1) {
-        body.date_posted_after = moment().subtract(24, "hours").format("YYYY-MM-DD");
+        body.date_posted_after = moment()
+          .subtract(24, "hours")
+          .format("YYYY-MM-DD");
       } else if (maxDays > 1) {
-        body.date_posted_after = moment().subtract(maxDays, "days").format("YYYY-MM-DD");
+        body.date_posted_after = moment()
+          .subtract(maxDays, "days")
+          .format("YYYY-MM-DD");
         body.date_posted_before = moment().format("YYYY-MM-DD");
       }
     }
@@ -708,33 +723,43 @@ export default function JobsPage() {
                 {/* Job Header Card */}
                 <div className="bg-clr2 rounded-lg   p-6 ">
                   <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-start gap-4">
-                      {state?.jobDetail?.college?.college_logo ? (
-                        <img
-                          src={state?.jobDetail?.college?.college_logo}
-                          alt={state?.jobDetail?.college?.name}
-                          className="w-14 h-14  object-cover"
-                        />
-                      ) : (
-                        <div
-                          className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                            state?.jobDetail?.college?.name,
-                          )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
-                        >
-                          {state?.jobDetail?.college?.name
-                            ?.slice(0, 1)
-                            .toUpperCase()}
+                    <div>
+                      <div className="w-fit bg-[#24246C1A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
+                        {/* • Posted{" "} */}
+                        {moment(state?.jobDetail?.created_at).isValid() &&
+                        moment(state?.jobDetail?.created_at).year() > 1900
+                          ? moment(state?.jobDetail?.created_at).fromNow()
+                          : "Just now"}
+                      </div>
+                      <div className="flex items-start gap-4">
+                        {state?.jobDetail?.college?.college_logo ? (
+                          <img
+                            src={state?.jobDetail?.college?.college_logo}
+                            alt={state?.jobDetail?.college?.name}
+                            className="w-14 h-14  object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`w-14 h-14 rounded-lg ${getAvatarColor(
+                              state?.jobDetail?.college?.name,
+                            )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
+                          >
+                            {state?.jobDetail?.college?.name
+                              ?.slice(0, 1)
+                              .toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <h1 className="text-xl font-semibold text-gray-900 mb-1">
+                            {state?.jobDetail?.job_title}
+                          </h1>
+                          <p className="text-md text-gray-700 mb-2">
+                            {state?.jobDetail?.college?.name}
+                          </p>
                         </div>
-                      )}
-                      <div className="flex-1">
-                        <h1 className="text-xl font-semibold text-gray-900 mb-1">
-                          {state?.jobDetail?.job_title}
-                        </h1>
-                        <p className="text-md text-gray-700 mb-2">
-                          {state?.jobDetail?.college?.name}
-                        </p>
                       </div>
                     </div>
+
                     <button
                       className="p-1"
                       onClick={() => setSelectedJob(null)}
@@ -744,17 +769,17 @@ export default function JobsPage() {
                   </div>
 
                   <div className="mb-3">
-                    <p className="text-sm text-gray-500 mb-3">
+                    {/* <p className="text-sm text-gray-500 mb-3">
                       {capitalizeFLetter(
                         state?.jobDetail?.locations
                           ?.map((item) => item.city)
                           .join(", "),
                       )}{" "}
-                      {/* • Posted {state?.jobDetail?.postedDate || "2 days ago"} */}
-                    </p>
+                      • Posted {state?.jobDetail?.postedDate || "2 days ago"}
+                    </p> */}
                     <div className="flex items-center gap-4 text-sm text-gray-600">
                       <span className="flex items-center gap-1">
-                        <Briefcase className="w-4 h-4" />
+                        <Briefcase className="w-4 h-4 text-[#F2B31D]" />
                         {state?.jobDetail?.experiences?.name}
                       </span>
                       {/* <span className="flex items-center gap-1">
@@ -763,11 +788,20 @@ export default function JobsPage() {
                   </span> */}
                       <span className="flex items-center gap-1">
                         {selectedJob.salary_range?.includes("$") ? (
-                          <DollarSign className="w-4 h-4" />
+                          <DollarSign className="w-4 h-4 text-[#F2B31D]" />
                         ) : (
-                          <IndianRupee className="w-4 h-4" />
+                          <IndianRupee className="w-4 h-4 text-[#F2B31D]" />
                         )}
                         {state?.jobDetail?.salary_range_obj?.name}
+                      </span>
+
+                      <span className="flex items-center gap-3">
+                        <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                        {capitalizeFLetter(
+                          state?.jobDetail?.locations
+                            ?.map((item) => item.city)
+                            .join(", "),
+                        )}{" "}
                       </span>
                     </div>
                   </div>
@@ -778,9 +812,11 @@ export default function JobsPage() {
                         setState({ jobID: state?.jobDetail?.id });
                         handleApply();
                       }}
-                      className="bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-white hover:text-white"
+                      className="bg-[#24246c]  text-md border border-xl border-[#24246c] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246c] transition-colors text-white hover:text-white"
                     >
-                    {state.jobDetail?.apply_link ? " Apply on company's site" : " Apply Now"} 
+                      {state.jobDetail?.apply_link
+                        ? " Apply on company's site"
+                        : " Apply Now"}
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -901,7 +937,7 @@ export default function JobsPage() {
 
                 <div className="bg-clr2 rounded-lg   p-6">
                   <h3 className="text-lg font-semibold text-black mb-4">
-                    Job details
+                    Job Overview
                   </h3>
                   <div className="space-y-2">
                     {/* <div>
@@ -911,22 +947,38 @@ export default function JobsPage() {
                   </p>
                 </div> */}
                     <div>
-                      <p className="text-md font-medium  pb-1">
-                        Experience level
+                      <span className=" flex gap-2 text-md font-medium  pb-1">
+                        <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" /> Job
+                        Title
+                      </span>
+                      <p className="text-md text-gray-500  ps-6">
+                        {state?.jobDetail?.job_title}
                       </p>
-                      <p className="text-md text-black">
+                    </div>
+                    <div>
+                      <span className=" flex gap-2 text-md font-medium  pb-1">
+                        <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Experience level
+                      </span>
+                      <p className="text-md text-gray-500  ps-6">
                         {state?.jobDetail?.experiences?.name}
                       </p>
                     </div>
                     <div>
-                      <p className="text-md font-medium  pb-1">Salary</p>
-                      <p className="text-md text-black">
+                      <span className="flex gap-2 text-md font-medium  pb-1">
+                        <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Salary
+                      </span>
+                      <p className="text-md text-gray-500 ps-6">
                         {state?.jobDetail?.salary_range_obj?.name}
                       </p>
                     </div>
                     <div>
-                      <p className="text-md font-medium  pb-1">Location</p>
-                      <p className="text-md text-black">
+                      <span className="flex gap-2 text-md font-medium  pb-1">
+                        <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Location
+                      </span>
+                      <p className="text-md text-gray-500  ps-6">
                         {state?.jobDetail?.locations
                           ?.map((item) => item.city)
                           .join(", ")}
@@ -1221,7 +1273,10 @@ export default function JobsPage() {
                       <div>
                         <div className="w-fit bg-[#24246C1A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
                           {/* • Posted{" "} */}
-                          {state?.jobDetail?.postedDate || "2 days ago"}
+                          {moment(state?.jobDetail?.created_at).isValid() &&
+                          moment(state?.jobDetail?.created_at).year() > 1900
+                            ? moment(state?.jobDetail?.created_at).fromNow()
+                            : "Just now"}
                         </div>
                         <div className="flex items-start gap-4 h-full mb-4">
                           {state?.jobDetail?.college?.college_logo ? (
@@ -1339,7 +1394,9 @@ export default function JobsPage() {
                             }}
                             className="bg-[#24246C]  text-md border border-xl border-[#24246C] rounded rounded-3xl  px-6 py-1  hover:bg-[#24246C] transition-colors text-white hover:text-white"
                           >
-                             {state.jobDetail?.apply_link ? " Apply on company's site" : " Apply Now"} 
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
                           </button>
                         </div>
                       </div>
@@ -1834,7 +1891,7 @@ export default function JobsPage() {
                               <img
                                 src={state.jobDetail.college?.college_logo}
                                 alt={state.jobDetail.college?.name}
-                                className="w-10 h-10 rounded-lg"
+                                className="w-10 h-10 rounded-lg object-contain"
                               />
                             ) : (
                               <div
@@ -1855,7 +1912,7 @@ export default function JobsPage() {
                                 {state.jobDetail?.college?.name}
                               </p>
                               <div className="flex items-center gap-2 mt-2">
-                                <Star className="w-4 h-4 text-amber-400 fill-current" />
+                                {/* <Star className="w-4 h-4 text-amber-400 fill-current" /> */}
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
@@ -1868,29 +1925,29 @@ export default function JobsPage() {
                           </div>
                         </SheetHeader>
 
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                          <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
-                            <Briefcase className="w-3 h-3" />
+                        <div className="flex flex-wrap items-center gap-1 text-sm text-gray-600">
+                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                            <Briefcase className="w-3 h-3 text-[#E6AB1D]" />
                             <span>{state.jobDetail?.experiences?.name} </span>
                           </div>
                           {/* <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
                         <Clock className="w-3 h-3" />
                         <span>{state.jobDetail?.job_type_obj?.name}</span>
                       </div> */}
-                          <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
-                            <DollarSign className="w-3 h-3" />
+                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                            <IndianRupee className="w-3 h-3 text-[#E6AB1D]" />
                             <span>
                               {state.jobDetail?.salary_range_obj?.name}
                             </span>
                           </div>
-                          {/* <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
-                        <MapPin className="w-3 h-3" />
+                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                        <MapPin className="w-3 h-3 text-[#E6AB1D]" />
                         <span>
                           {state.jobDetail?.locations
                             ?.map((item) => item.city)
                             .join(", ")}
                         </span>
-                      </div> */}
+                      </div>
                         </div>
 
                         <div>
@@ -1914,7 +1971,7 @@ export default function JobsPage() {
                                     key={index}
                                     className="flex items-start gap-2"
                                   >
-                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
                                     <p className="text-gray-600 text-sm">
                                       {responsibility}
                                     </p>
@@ -1968,7 +2025,7 @@ export default function JobsPage() {
 
                         <div>
                           <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            Job details
+                            Job Overview
                           </h3>
                           <div className="space-y-3">
                             {/* <div>
@@ -1979,28 +2036,40 @@ export default function JobsPage() {
                             {state.jobDetail?.job_type_obj?.name}
                           </p>
                         </div> */}
+                         <div>
+                              <span className=" flex gap-2 text-sm font-medium  pb-1">
+                                <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Job Title
+                              </span>
+                              <p className="text-sm text-gray-500  ps-6">
+                                {state?.jobDetail?.job_title}
+                              </p>
+                            </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-1">
+                              <span className=" flex gap-2 text-sm font-medium  pb-1">
+                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                 Experience level
-                              </p>
-                              <p className="text-sm text-gray-900">
-                                {state.jobDetail?.experiences?.name}
+                              </span>
+                              <p className="text-sm text-gray-500  ps-6">
+                                {state?.jobDetail?.experiences?.name}
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-1">
+                              <span className="flex gap-2 text-sm font-medium  pb-1">
+                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                 Salary
-                              </p>
-                              <p className="text-sm text-gray-900">
-                                {state.jobDetail?.salary_range_obj?.name}
+                              </span>
+                              <p className="text-sm text-gray-500 ps-6">
+                                {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-gray-500 mb-1">
+                              <span className="flex gap-2 text-sm font-medium  pb-1">
+                                <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                 Location
-                              </p>
-                              <p className="text-sm text-gray-900">
-                                {state.jobDetail?.locations
+                              </span>
+                              <p className="text-sm text-gray-500  ps-6">
+                                {state?.jobDetail?.locations
                                   ?.map((item) => item.city)
                                   .join(", ")}
                               </p>
