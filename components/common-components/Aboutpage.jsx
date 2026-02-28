@@ -126,7 +126,7 @@ export default function AboutPage() {
       </section> */}
 
       {/* ================= HOW IT WORKS ================= */}
-      <section className="bg-white py-20">
+      <section className="bg-white pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-7xl 0px] mx-auto text-center">
             <p className="uppercase text-sm tracking-widest font-medium text-[#6C757D] mb-5">
@@ -254,7 +254,7 @@ export default function AboutPage() {
       </section> */}
 
       <section
-        className="py-20 bg-cover bg-center bg-no-repeat relative my-5"
+        className="py-20 bg-cover bg-center bg-no-repeat relative"
         style={{
           backgroundImage: "url('/assets/images/Faculty/count_bg.png')",
         }}
@@ -322,7 +322,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="section-wid py-20">
+      <section className="section-wid pt-20 pb-16">
         <div className="lg:col-span-9 ">
           <h2 className="text-3xl lg:text-4xl font-semibold  mb-3 text-[#151515]">
             What can I do With Faculty Pro?
