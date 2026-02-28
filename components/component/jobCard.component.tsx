@@ -92,7 +92,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <div
-      className="shadow bg-white rounded-xl p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
+      className="shadow bg-white  p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
       {/* Header with Title and Company Logo on Right */}
