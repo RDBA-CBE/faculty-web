@@ -23,6 +23,7 @@ import { Navigation, Autoplay } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import {
+  capitalizeFLetter,
   Dropdown,
   Failure,
   getAvatarColor,
@@ -157,7 +158,7 @@ const FindYourJob = () => {
                   <input
                     type="text"
                     placeholder="Job title, Position, Keyword..."
-                    className="w-full focus:outline-none text-sm bg-trasparent"
+                    className="w-full focus:outline-none text-sm placeholder:bg-none placeholder:text-[#313131]"
                     value={state.search}
                     onChange={(e) => setState({ search: e.target.value })}
                   />
@@ -226,20 +227,20 @@ const FindYourJob = () => {
                           )}
                         </div>
                         <div>
-                          <h3 className="sub-ti !font-medium text-black mb-0.5 ">
-                            {job.job_title}
+                          <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 ">
+                            {capitalizeFLetter(job.job_title)}
                           </h3>
                           <p className="text-sm text-gray-600">
                             {job.college?.name}
                           </p>
 
-                          <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4">
+                          <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4 mb-5">
                             <div className="flex items-center gap-1.5">
-                              <Briefcase className="w-3.5 h-3.5 text-orange-500" />
+                              <Briefcase className="w-4 h-4 text-[#ffb400]" />
                               <span>{job.experiences?.name}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5 text-gray-500" />
+                              <MapPin className="w-4 h-4 text-[#ffb400]" />
                               <span>
                                 {job.locations
                                   ?.map((item) => item.city)
@@ -294,12 +295,12 @@ const FindYourJob = () => {
             {/* Job Spotlight */}
             <div className=" border ">
               <div className="bg-[#0a1551] flex items-center justify-between py-3 px-4">
-                <h3 className="text-2xl font-bold text-white">Job spotlight</h3>
+                <h3 className="text-2xl font-medium text-white">Job spotlight</h3>
                 <div className="flex gap-2">
-                  <button className="swiper-spotlight-prev w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
+                  <button className="swiper-spotlight-prev w-8 h-8 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
                     <ChevronLeft className="w-4 h-4 text-white" />
                   </button>
-                  <button className="swiper-spotlight-next w-10 h-10 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
+                  <button className="swiper-spotlight-next w-8 h-8 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
                     <ChevronRight className="w-4 h-4 text-white" />
                   </button>
                 </div>
@@ -335,7 +336,7 @@ const FindYourJob = () => {
                         )}
                       </div>
 
-                      <h4 className="sub-ti font-bold text-black mb-2 line-clamp-1">
+                      <h4 className="sub-ti !font-semibold !text-[#313131] mb-2 line-clamp-1">
                         {job.job_title}
                       </h4>
                       <p className="text-base text-gray-600 mb-4 line-clamp-1">
@@ -360,7 +361,7 @@ const FindYourJob = () => {
                       <div className="relative flex items-center justify-end">
                         <button
                           onClick={() => router.push(`/jobs?id=${job.id}`)}
-                          className="relative z-10 border border-black text-black px-2 py-1 rounded-full text-base font-small hover:bg-black hover:text-white transition flex items-center gap-2"
+                          className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#0a1551] hover:text-white transition flex items-center gap-2"
                         >
                           Apply Now
                         </button>
@@ -374,7 +375,7 @@ const FindYourJob = () => {
             {/* Jobs By Category */}
             <div className="bg-[#0a1551] border ">
               <div className="py-3 px-4">
-                <h3 className="text-2xl font-bold text-white">
+                <h3 className="text-2xl font-medium text-white">
                   Jobs By Category
                 </h3>
               </div>
@@ -391,8 +392,8 @@ const FindYourJob = () => {
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
                     >
-                      <ChevronRight className="w-4 h-4" />
-                      <span className="text-base">{category.name}</span>
+                      <ChevronRight className="w-4 h-4 text-[#1F1F1F]" />
+                      <span className="text-[#1F1F1F]">{category.name}</span>
                     </div>
                   ))}
                 </div>

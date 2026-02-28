@@ -79,11 +79,11 @@ export default function InstitutionPartners() {
                 </div> */}
 
                 {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
-                <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
+                <h2 className="text-3xl lg:text-4xl font-semibold text-[#151515] mb-3">
                   Institution Partners
                 </h2>
 
-                <p className="text-gray-600">
+                <p className="">
                   Classical Latin Literature From 45 BC, Making It Over 2000
                   Years Old. Richard McClintock, A Latin Professor At Hampden
                   Sydney College In Virginia.
@@ -132,8 +132,8 @@ const PartnerCard = (props) => {
         <img src={p.logo} alt="" className="w-20" />
       </div>
       <h3
-        className={`text-center sub-ti px-1 leading-tight group-hover:text-white transition-colors ${
-          p.isDark ? "!text-[#fff]" : "text-[#000]"
+        className={`text-center sub-ti !font-medium px-1 leading-tight group-hover:text-white transition-colors ${
+          p.isDark ? "!text-[#fff]" : "!text-[#2D2D2D]"
         }`}
       >{p.name}</h3>
     
