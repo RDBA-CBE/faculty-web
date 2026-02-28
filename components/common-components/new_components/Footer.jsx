@@ -77,7 +77,7 @@ const Footer = () => {
         <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-[30%]">
           {/* Text & Input Content */}
           <div className="w-full md:w-1/2 text-black z-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+            <h2 className="text-2xl md:text-3xl font-semibold text-[#1C1C1C] mb-2">
               Subscribe Newsletter
             </h2>
             <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
@@ -91,11 +91,11 @@ const Footer = () => {
                 value={state?.email}
                 onChange={(e) => setState({ email: e.target.value })}
                 placeholder="Enter Your Email Address..."
-                className="flex-grow px-4 py-2 rounded-full outline-none text-gray-500 text-sm bg-transparent"
+                className="flex-grow px-4 py-2 rounded-full outline-none text-[#373535] text-sm bg-transparent placeholder:text-[#373535]"
               />
               <button
                 onClick={() => handleSubscribe()}
-                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-bold px-6 py-2 rounded-full text-sm"
+                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-semibold px-6 py-2 rounded-full text-sm"
               >
                 Subscribe
               </button>

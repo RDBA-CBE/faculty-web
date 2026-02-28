@@ -93,10 +93,10 @@ const TopHiringColleges = () => {
 
               {/* Navigation Buttons - Desktop */}
               <div className="hidden lg:flex items-center gap-3">
-                <button className="swiper-button-prev-custom w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
+                <button className="swiper-button-prev-custom w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
                   <ChevronLeft className="w-4 h-4 text-gray-600" />
                 </button>
-                <button className="swiper-button-next-custom w-12 h-12 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
+                <button className="swiper-button-next-custom w-10 h-10 rounded-full border-2 border-gray-300 flex items-center justify-center hover:bg-gray-100 transition">
                   <ChevronRight className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
@@ -182,12 +182,12 @@ const TopHiringColleges = () => {
                       width={40}
                     />
                   </div>
-                  <h3 className="text-2xl  font-bold text-white">
+                  <h3 className="text-2xl  font-medium text-white">
                     Faculty Pro
                   </h3>
                 </div>
 
-                <h4 className="text-lg  font-bold text-white ">
+                <h4 className="text-lg  font-normal text-white ">
                   Get Best Matches Jobs
                   <br />
                   On Your Email.

@@ -39,10 +39,10 @@ const FaqResumeSection = () => {
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-black mb-3">
+          <h2 className="text-3xl lg:text-4xl font-semibold text-[#1F1F1F] mb-3">
             Frequently Asked Questions
           </h2>
-          <p className="text-gray-600 mb-10">
+          <p className=" mb-10">
             There are many variations of passages of Lorem Ipsum available.
           </p>
 
@@ -61,10 +61,10 @@ const FaqResumeSection = () => {
                   onClick={() => setActive(active === item.id ? "" : item.id)}
                 >
                   <div className="flex gap-5 items-center">
-                    <span className="text-2xl font-medium text-black">
+                    <span className={`text-2xl font-medium ${active === item.id ? "text-[#0a1551]" : "text-[#6C757D]"}`}>
                       {item.id}
                     </span>
-                    <h4 className="sub-ti !font-medium">
+                    <h4 className="sub-ti !font-medium !text-[#1F1F1F]">
                       {item.question}
                     </h4>
                   </div>
@@ -81,7 +81,7 @@ const FaqResumeSection = () => {
                 </div>
 
                 {active === item.id && (
-                  <p className="text-gray-600 mt-4 pl-14">{item.answer}</p>
+                  <p className=" mt-4 pl-14">{item.answer}</p>
                 )}
               </div>
             ))}
