@@ -24,7 +24,7 @@ const DownloadAppSection = () => {
             <div className="flex items-start gap-4 ">
               <CheckCircle className="text-[#0a1551] w-6 h-6 mt-1 text-bold" />
               <div>
-                <h4 className="sub-ti !font-medium text-[#1E1E1E]">
+                <h4 className="sub-ti !font-medium !text-[#1E1E1E]">
                   Download Faculty Pro App
                 </h4>
                 <p className="">
@@ -36,7 +36,7 @@ const DownloadAppSection = () => {
             <div className="flex items-start gap-4">
               <CheckCircle className="text-[#0a1551] w-6 h-6 mt-1" />
               <div>
-                <h4 className="sub-ti !font-medium text-[#1E1E1E]">
+                <h4 className="sub-ti !font-medium !text-[#1E1E1E]">
                   Get Started on Mobile
                 </h4>
                 <p className="">
@@ -48,7 +48,7 @@ const DownloadAppSection = () => {
             <div className="flex items-start gap-4">
               <CheckCircle className="text-[#0a1551] w-6 h-6 mt-1" />
               <div>
-                <h4 className="sub-ti !font-medium text-[#1E1E1E]">
+                <h4 className="sub-ti !font-medium !text-[#1E1E1E]">
                   Smart Hiring at Your Fingertips
                 </h4>
                 <p className="">

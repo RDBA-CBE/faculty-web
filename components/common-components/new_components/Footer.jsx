@@ -243,7 +243,7 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-            <p className="text-[10px] text-gray-400  tracking-widest">
+            <p className="text-[14px] text-white/80  tracking-widest">
               Copyright 2026 © Faculty Plus. Concept by{" "}
               <a
                 href="http://irepute.in/"
