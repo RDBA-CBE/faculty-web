@@ -53,7 +53,7 @@ const WhatCanIDo = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
               {/* Image */}
-              <div className="rounded-lg overflow-hidden">
+              <div className="overflow-hidden">
                 <Image
                   src="/assets/images/Faculty/group.png"
                   alt="Faculty Team"

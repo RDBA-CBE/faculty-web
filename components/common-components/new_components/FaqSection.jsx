@@ -90,7 +90,7 @@ const FaqResumeSection = () => {
 
         {/* RIGHT SIDE - SMALLER FORM */}
         <div
-          className="relative rounded-xl overflow-hidden min-h-[650px]"
+          className="relative  overflow-hidden min-h-[650px]"
           style={{
             backgroundImage: "url('/assets/images/FAQ.png')",
             backgroundSize: "cover",

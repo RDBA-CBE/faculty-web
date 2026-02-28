@@ -14,7 +14,6 @@ export default function AboutPage() {
         </div>
       </div>
 
-     
       {/* <section
         className="relative h-[50vh] flex items-center justify-center"
         style={{
@@ -35,8 +34,76 @@ export default function AboutPage() {
         </div>
       </section> */}
 
+      <section className="bg-clr1 py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
+            {/* LEFT COLUMN */}
+            <div className="order-2 lg:order-1">
+              {/* Top Image */}
+              <div className="w-full">
+                <Image
+                  src="/assets/images/about-1.png"
+                  alt="About Image"
+                  width={800}
+                  height={500}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Bottom Paragraph */}
+              <div className="mt-8">
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  Veritatis nulla laudantium sunt, beatae, officiis minima nihil
+                  eos vero quasi laboriosam doloremque aliquam! Iure quis ut
+                  amet natus eius cumque optio. Excepteur sint occaecat
+                  cupidatat non proident doloremque aliquam! Iure quis ut amet
+                  natus eius cumque optio.
+                </p>
+                {/* <p className="mt-4">
+                  Excepteur sint occaecat cupidatat non proident doloremque aliquam! Iure quis ut amet natus eius cumque optio.
+                </p> */}
+              </div>
+            </div>
+
+            {/* RIGHT COLUMN */}
+            <div className="order-1 lg:order-2">
+              {/* Small Label */}
+              <p className="uppercase text-sm tracking-widest font-medium text-[#6C757D] mb-3">
+                About Us
+              </p>
+
+              {/* Heading */}
+              <h2 className="text-3xl md:text-4xl font-semibold text-[#313131] leading-snug">
+                Empowering Institutions To Hire <br />
+                Exceptional Faculty Faster
+              </h2>
+
+              {/* Description */}
+              <p className="mt-5 max-w-xl">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                Veritatis nulla laudantium sunt, beatae, officiis minima nihil
+                eos vero quasi laboriosam doloremque aliquam! Iure quis ut amet
+                natus eius cumque optio.
+              </p>
+
+              {/* Bottom Image */}
+              <div className="mt-10">
+                <Image
+                  src="/assets/images/about-2.png"
+                  alt="Handshake"
+                  width={800}
+                  height={400}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ================= WHO WE ARE ================= */}
-      <section className="max-w-7xl mx-auto px-6 py-20">
+      {/* <section className="max-w-7xl mx-auto px-6 py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <img
             src="https://images.unsplash.com/photo-1524178232363-1fb2b075b655"
@@ -56,13 +123,18 @@ export default function AboutPage() {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ================= HOW IT WORKS ================= */}
       <section className="bg-white py-20">
         <div className="max-w-7xl mx-auto px-6">
+          <div className="max-w-7xl 0px] mx-auto text-center">
+            <p className="uppercase text-sm tracking-widest font-medium text-[#6C757D] mb-5">
+              What we do
+            </p>
+          </div>
           <h2 className="text-3xl font-semibold text-center mb-12">
-            How Faculty Web Works
+            Lorem ipsum dolor sit amet <br /> consectetur. Tortor
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -71,33 +143,38 @@ export default function AboutPage() {
                 step: "01",
                 title: "Create Profile",
                 desc: "Faculty members create a profile with qualifications and experience.",
-                img: "https://img.icons8.com/fluency/96/user-male-circle.png",
+                img: "/assets/images/userico.png",
+                imghover: "/assets/images/userico-white.png",
               },
               {
                 step: "02",
                 title: "Explore Jobs",
                 desc: "Browse verified academic job opportunities from institutions.",
-                img: "https://img.icons8.com/fluency/96/search.png",
+                img: "/assets/images/case.png",
+                imghover: "/assets/images/case-white.png",
               },
               {
                 step: "03",
                 title: "Apply & Connect",
                 desc: "Apply directly and connect with institutions easily.",
-                img: "https://img.icons8.com/fluency/96/handshake.png",
+                img: "/assets/images/hand-shake.png",
+                imghover: "/assets/images/hand-shake-white.png",
               },
             ].map((item, i) => (
               <div
                 key={i}
-                className="border rounded-xl p-8 text-center hover:shadow-lg transition"
+                className="border border-[#C4C4C4] p-8 text-center hover:shadow-lg transition bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat"
               >
-                <span className="text-indigo-600 font-bold text-lg">
+                {/* <span className="text-indigo-600 font-bold text-lg">
                   {item.step}
-                </span>
+                </span> */}
 
                 <img src={item.img} alt={item.title} className="mx-auto my-4" />
 
-                <h3 className="text-xl font-semibold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
+                <h3 className="text-xl font-semibold mb-2 text-[#313131]">
+                  {item.title}
+                </h3>
+                <p className="">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -247,7 +324,7 @@ export default function AboutPage() {
 
       <section className="section-wid py-20">
         <div className="lg:col-span-9 ">
-          <h2 className="text-3xl lg:text-4xl font-bold text-black mb-3">
+          <h2 className="text-3xl lg:text-4xl font-semibold  mb-3 text-[#151515]">
             What can I do With Faculty Pro?
           </h2>
           <p className="text-gray-600 mb-8">
@@ -257,7 +334,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
             {/* Image */}
-            <div className="rounded-lg overflow-hidden">
+            <div className="overflow-hidden">
               <Image
                 src="/assets/images/Faculty/group.png"
                 alt="Faculty Team"
@@ -276,7 +353,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="sub-ti font-bold text-black mb-1">
+                  <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
                     Find and Apply for Faculty Jobs
                   </h3>
                   <p className="text-gray-600 text-md">
@@ -292,7 +369,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="sub-ti font-bold text-black mb-1">
+                  <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
                     Hire Qualified Teaching Professionals Easily
                   </h3>
                   <p className="text-gray-600 text-md">
@@ -308,7 +385,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="sub-ti font-bold text-black mb-1">
+                  <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
                     Manage Applications in One Platform
                   </h3>
                   <p className="text-gray-600 text-md">

@@ -1062,7 +1062,7 @@ export default function JobsPage() {
 
                     {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
                   </div>
-                  <div className="sticky top-16 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
+                  <div className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
                     {state.jobList?.map((job) => (
                       <div
                         key={job.id}
