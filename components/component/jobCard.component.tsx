@@ -38,7 +38,11 @@ interface JobCardProps {
   updateList?: () => void;
 }
 
-export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => {
+export const JobCard: React.FC<JobCardProps> = ({
+  job,
+  onClick,
+  updateList,
+}) => {
   const [isSaving, setIsSaving] = useState<number | null>(null);
 
   const handleSaveToggle = async (e) => {
@@ -68,13 +72,13 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
         user_id: profile.id,
       };
       if (job?.is_saved) {
-        await Models.save.delete(profile.id,job.id);
+        await Models.save.delete(profile.id, job.id);
         Success("Job removed from saved list.");
       } else {
         await Models.save.create(body);
         Success("Job saved successfully.");
       }
-      updateList()
+      updateList();
       // }
 
       // Refetch job list to get the latest saved status and save_id
@@ -97,7 +101,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
           <h3 className="font-bold text-gray-900 text-base text-lg ">
             {capitalizeFLetter(job?.job_title)}
           </h3>
-          <p className="font-medium text-gray-900 text-md ">
+          <p className="font-medium font-normal text-[#848282] text-md ">
             {capitalizeFLetter(job?.college?.name)}
           </p>
         </div>
@@ -114,7 +118,7 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
           ) : (
             <div
               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                job?.college?.name
+                job?.college?.name,
               )} flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
@@ -125,11 +129,16 @@ export const JobCard: React.FC<JobCardProps> = ({ job, onClick,updateList }) => 
 
       {/* Experience and Location */}
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
-        <span className="text-sm">{job?.experiences?.name}</span>
+        <div className="flex items-center gap-3">
+          <Briefcase className="w-4 h-4 text-[#ffb400]" />
+          <span className="text-sm text-[#6D6C6C]">
+            {job?.experiences?.name}
+          </span>
+        </div>
         <span className="text-gray-400">|</span>
-        <div className="flex items-center gap-1">
-          <MapPin className="w-3.5 h-3.5" />
-          <span className="text-sm">
+        <div className="flex items-center gap-3">
+          <MapPin className="w-4 h-4 text-[#ffb400]" />
+          <span className="text-sm text-[#6D6C6C]">
             {" "}
             {job?.locations?.map((item) => item.city).join(", ")}
           </span>

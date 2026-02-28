@@ -39,6 +39,8 @@ import {
   Loader,
   BookmarkCheck,
   Workflow,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -114,6 +116,7 @@ export default function JobsPage() {
   const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [isTabScreen, setIsTabScreen] = useState(false);
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
     location: locationParam ? parseInt(locationParam, 10) : null,
@@ -1698,6 +1701,29 @@ export default function JobsPage() {
                           <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
                         </div>
 
+                        <div className="hidden lg:flex items-center gap-1 px-2 border-l border-gray-300">
+                          <button
+                            onClick={() => setViewType("list")}
+                            className={`p-2 rounded-md transition-colors ${
+                              viewType === "list"
+                                ? "bg-[#1d1d57] text-white"
+                                : "text-gray-400 hover:bg-gray-100"
+                            }`}
+                          >
+                            <List size={20} />
+                          </button>
+                          <button
+                            onClick={() => setViewType("grid")}
+                            className={`p-2 rounded-md transition-colors ${
+                              viewType === "grid"
+                                ? "bg-[#1d1d57] text-white"
+                                : "text-gray-400 hover:bg-gray-100"
+                            }`}
+                          >
+                            <LayoutGrid size={20} />
+                          </button>
+                        </div>
+
                         {/* <button
                       className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       onClick={() => jobList(state?.page)}
@@ -1776,7 +1802,9 @@ export default function JobsPage() {
                   ) : state.jobList?.length > 0 ? (
                     <>
                       <div
-                        className="grid grid-cols-2  mt-5 px-5"
+                        className={`grid ${
+                          viewType === "grid" ? "grid-cols-2" : "grid-cols-1"
+                        } mt-5 px-5`}
                         style={{
                           gap: "20px",
                         }}
@@ -1808,15 +1836,17 @@ export default function JobsPage() {
                             }}
                             className="cursor-pointer transition-transform hover:scale-10"
                           >
-                            <JobCard
-                              job={job}
-                              updateList={() => jobList(state?.page)}
-                            />
-                            {/* 
-                            <NewJobCard
-                              job={job}
-                              updateList={() => jobList(state?.page)}
-                            /> */}
+                            {viewType === "grid" ? (
+                              <JobCard
+                                job={job}
+                                updateList={() => jobList(state?.page)}
+                              />
+                            ) : (
+                              <NewJobCard
+                                job={job}
+                                updateList={() => jobList(state?.page)}
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
@@ -2160,7 +2190,7 @@ export default function JobsPage() {
                 <div className="space-y-6 bg-[#FFFCF3] overflow-y-auto py-2 px-2 max-h-[85vh]">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
-                      src="/assets/images/recruitmen at.gif"
+                      src="/assets/images/recruitmen.gif"
                       height={100}
                       width={80}
                       alt="Job Application"

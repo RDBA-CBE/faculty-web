@@ -39,6 +39,8 @@ import {
   Loader,
   BookmarkCheck,
   Workflow,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -114,6 +116,8 @@ export default function JobsPage() {
   const [isMobileScreen, setIsMobileScreen] = useState(false);
   const [isTabScreen, setIsTabScreen] = useState(false);
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
+  const [isWideScreen, setIsWideScreen] = useState(false);
+  const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
     location: locationParam ? parseInt(locationParam, 10) : null,
@@ -606,7 +610,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0)
+        ...filters.datePosted.map((d) => durationMap[d] || 0),
       );
 
       if (maxDays === 1) {
@@ -632,6 +636,7 @@ export default function JobsPage() {
       setIsMobileScreen(width < 768);
       setIsTabScreen(width >= 768 && width < 1024);
       setIsDesktopScreen(width >= 1024);
+      setIsWideScreen(width >= 1200);
     };
 
     handleResize();
@@ -683,6 +688,8 @@ export default function JobsPage() {
     });
     setState({ search: "" });
   };
+
+  const finalViewType = isWideScreen ? viewType : "list";
 
   return (
     <>
@@ -741,7 +748,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.college?.name
+                              state?.jobDetail?.college?.name,
                             )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.college?.name
@@ -750,7 +757,6 @@ export default function JobsPage() {
                           </div>
                         )}
                         <div className="flex-1">
-
                           <h1 className="text-xl font-semibold text-[#313131] mb-1">
                             {capitalizeFLetter(state?.jobDetail?.job_title)}
                           </h1>
@@ -801,7 +807,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", ")
+                              .join(", "),
                           )}{" "}
                         </span>
                       )}
@@ -1006,7 +1012,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                          selectedJob.college?.name
+                          selectedJob.college?.name,
                         )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                       >
                         {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
@@ -1025,6 +1031,15 @@ export default function JobsPage() {
                     {state?.jobDetail?.company_detail}
                   </p>
                 </div>
+                {state?.jobDetail?.job_image && (
+                  <div className="bg-clr2 w-fit rounded-lg  p-6">
+                    <img
+                      src={state?.jobDetail?.job_image}
+                      alt={state?.jobDetail?.job_title}
+                      className="w-100 max-h-[400px]"
+                    />
+                  </div>
+                )}
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <div className="flex gap-6 ">
@@ -1041,13 +1056,13 @@ export default function JobsPage() {
                         onChange={(e) => setState({ search: e.target.value })}
                       />
                     </div>
-                    <h3 className="text-black px-6 font-semibold mt-4">Job List</h3>
+                    <h3 className="text-black px-6 font-semibold mt-4">
+                      Job List
+                    </h3>
 
                     {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
                   </div>
                   <div className="sticky top-16 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
-                    
-
                     {state.jobList?.map((job) => (
                       <div
                         key={job.id}
@@ -1075,7 +1090,7 @@ export default function JobsPage() {
                               ) : (
                                 <div
                                   className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                    job.college?.name
+                                    job.college?.name,
                                   )} flex items-center justify-center ${
                                     selectedJob?.id === job.id
                                       ? "text-white bg-gray-400"
@@ -1133,22 +1148,25 @@ export default function JobsPage() {
                                   </span>
                                 </div>
 
-                               { job.locations &&  <div className="flex  gap-1">
-                                  <MapPin
-                                    className={`${
-                                      selectedJob?.id === job.id && ""
-                                    } w-3 h-3 text-[#E6AB1D]`}
-                                  />
-                                  <span
-                                    className={`text-[12px] pt-[-2px] ${
-                                      selectedJob?.id === job.id && "text-[12px]"
-                                    }`}
-                                  >
-                                    {job.locations
-                                      ?.map((item) => item.city)
-                                      .join(", ")}
-                                  </span>
-                                </div>}
+                                {job.locations && (
+                                  <div className="flex  gap-1">
+                                    <MapPin
+                                      className={`${
+                                        selectedJob?.id === job.id && ""
+                                      } w-3 h-3 text-[#E6AB1D]`}
+                                    />
+                                    <span
+                                      className={`text-[12px] pt-[-2px] ${
+                                        selectedJob?.id === job.id &&
+                                        "text-[12px]"
+                                      }`}
+                                    >
+                                      {job.locations
+                                        ?.map((item) => item.city)
+                                        .join(", ")}
+                                    </span>
+                                  </div>
+                                )}
 
                                 {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
@@ -1303,7 +1321,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                state?.jobDetail?.college?.name
+                                state?.jobDetail?.college?.name,
                               )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
@@ -1312,13 +1330,12 @@ export default function JobsPage() {
                             </div>
                           )}
                           <div className="flex-1 flex-col">
-                            
                             <h1 className="text-3xl font-semibold text-gray-900 mb-1">
                               {capitalizeFLetter(state?.jobDetail?.job_title)}
                             </h1>
                             <p className="text-md text-gray-700 mb-2">
                               {capitalizeFLetter(
-                                state?.jobDetail?.college?.name
+                                state?.jobDetail?.college?.name,
                               )}
                             </p>
                           </div>
@@ -1348,7 +1365,7 @@ export default function JobsPage() {
                                 {capitalizeFLetter(
                                   state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", ")
+                                    .join(", "),
                                 )}{" "}
                               </span>
                             )}
@@ -1368,7 +1385,7 @@ export default function JobsPage() {
                             <button
                               onClick={() =>
                                 handleSaveToggle(
-                                  state.jobDetail
+                                  state.jobDetail,
 
                                   // !!state.jobDetail.is_saved,
                                   // state.jobDetail.save_id,
@@ -1586,7 +1603,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                  selectedJob.college?.name
+                                  selectedJob.college?.name,
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {selectedJob.college?.name
@@ -1607,6 +1624,16 @@ export default function JobsPage() {
                             {state?.jobDetail?.college_detail}
                           </p>
                         </div>
+
+                        {state?.jobDetail?.job_image && (
+                          <div className="bg-white  border border-[#E4E4E4]  p-6">
+                            <img
+                              src={state?.jobDetail?.job_image}
+                              alt={state?.jobDetail?.job_title}
+                              className="w-100 max-h-[400px]"
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -1666,7 +1693,7 @@ export default function JobsPage() {
                   {/* content input header start */}
                   <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#E4E4E4] rounded-3xl">
                     <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
-                      <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto md:border-r border-[#000]/40">
+                      <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto ">
                         <Search color="#5c5a5a93" size={22} />
                         <input
                           type="text"
@@ -1677,7 +1704,9 @@ export default function JobsPage() {
                         />
                       </div>
 
-                      <div className="hidden lg:block w-px h-10 bg-slate-100"></div>
+                      {isWideScreen && (
+                        <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
+                      )}
 
                       <div className="flex items-center w-full lg:w-auto p-2 lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
                         <div className="flex items-center px-4 flex-grow lg:w-64 ">
@@ -1705,6 +1734,36 @@ export default function JobsPage() {
                       /> */}
                           <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
                         </div>
+
+                        {isWideScreen && (
+                          <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
+                        )}
+
+                        {isWideScreen && (
+                          <div className="hidden lg:flex items-center gap-1 px-2 ">
+                            <button
+                              onClick={() => setViewType("grid")}
+                              className={`p-2 rounded-md transition-colors ${
+                                viewType === "grid"
+                                  ? "bg-[#1d1d57] text-white"
+                                  : "text-gray-400 hover:bg-gray-100"
+                              }`}
+                            >
+                              <LayoutGrid size={15} />
+                            </button>
+
+                            <button
+                              onClick={() => setViewType("list")}
+                              className={`p-2 rounded-md transition-colors ${
+                                viewType === "list"
+                                  ? "bg-[#1d1d57] text-white"
+                                  : "text-gray-400 hover:bg-gray-100"
+                              }`}
+                            >
+                              <List size={15} />
+                            </button>
+                          </div>
+                        )}
 
                         {/* <button
                       className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
@@ -1784,7 +1843,14 @@ export default function JobsPage() {
                   ) : state.jobList?.length > 0 ? (
                     <>
                       <div
-                        className="grid grid-cols-1  mt-5 bg-white px-5 border border-[#E4E4E4]"
+                        className={`grid ${
+                          finalViewType === "grid"
+                            ? "grid-cols-2"
+                            : "grid-cols-1"
+                        } mt-5   ${
+                          finalViewType === "list" &&
+                          "bg-white px-5 border border-[#E4E4E4]"
+                        }`}
                         style={{
                           gap: "20px",
                         }}
@@ -1816,15 +1882,17 @@ export default function JobsPage() {
                             }}
                             className="cursor-pointer transition-transform hover:scale-10"
                           >
-                            {/* <JobCard
-                              job={job}
-                              updateList={() => jobList(state?.page)}
-                            /> */}
-
-                            <NewJobCard
-                              job={job}
-                              updateList={() => jobList(state?.page)}
-                            />
+                            {finalViewType === "grid" ? (
+                              <JobCard
+                                job={job}
+                                updateList={() => jobList(state?.page)}
+                              />
+                            ) : (
+                              <NewJobCard
+                                job={job}
+                                updateList={() => jobList(state?.page)}
+                              />
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1917,7 +1985,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name
+                                  state.jobDetail?.college?.name,
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
                               >
                                 {state.jobDetail?.college?.name
@@ -1937,7 +2005,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at
+                                        state.jobDetail?.created_at,
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -1961,14 +2029,16 @@ export default function JobsPage() {
                               {state.jobDetail?.salary_range_obj?.name}
                             </span>
                           </div>
-                         {state.jobDetail?.locations &&  <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
-                            <MapPin className="w-3 h-3 text-[#E6AB1D]" />
-                            <span>
-                              {state.jobDetail?.locations
-                                ?.map((item) => item.city)
-                                .join(", ")}
-                            </span>
-                          </div>}
+                          {state.jobDetail?.locations && (
+                            <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                              <MapPin className="w-3 h-3 text-[#E6AB1D]" />
+                              <span>
+                                {state.jobDetail?.locations
+                                  ?.map((item) => item.city)
+                                  .join(", ")}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         <div>
@@ -1997,7 +2067,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -2114,7 +2184,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name
+                                  state.jobDetail?.college?.name,
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {state.jobDetail?.college?.name
@@ -2135,6 +2205,16 @@ export default function JobsPage() {
                             {state.jobDetail?.company_detail}
                           </p>
                         </div>
+
+                        {state?.jobDetail?.job_image && (
+                          <div className="pt-4">
+                            <img
+                              src={state?.jobDetail?.job_image}
+                              alt={state?.jobDetail?.job_title}
+                              className="w-100 max-h-[400px]"
+                            />
+                          </div>
+                        )}
                       </div>
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
@@ -2170,7 +2250,7 @@ export default function JobsPage() {
                 <div className="space-y-6 bg-[#eff2fc] overflow-y-auto py-5 px-2 max-h-[85vh]">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
-                      src="/assets/images/recruitmen at.gif"
+                      src="/assets/images/recruitmen.gif"
                       height={150}
                       width={100}
                       alt="Job Application"
