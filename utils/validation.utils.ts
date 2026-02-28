@@ -84,7 +84,9 @@ export const changePassword = Yup.object().shape({
 });
 
 export const forgotPassword = Yup.object().shape({
-  email: Yup.string().required("Current Password is required"),
+  email: Yup.string()
+  .email("Enter a valid email address")
+  .required("Email is required"),
 });
 
 export const resetPassword = Yup.object().shape({
