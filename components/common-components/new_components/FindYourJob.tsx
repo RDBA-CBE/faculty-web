@@ -140,19 +140,19 @@ const FindYourJob = () => {
   };
 
   return (
-    <section className="py-12 lg:py-16 ">
+    <section className="py-12 lg:py-16 bg-[#0000ff0a]">
       <div className="section-wid w-full ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-12">
-              <h2 className="text-3xl lg:text-4xl font-semibold text-[#151515]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+              <h2 className="text-3xl font-semibold text-[#151515]">
                 Find Your Job
               </h2>
 
               {/* Search Bar */}
-              <div className=" rounded-full shadow-md border border-gray-200 p-1.5 flex items-center gap-1 max-w-2xl">
+              <div className="bg-white   rounded-full shadow-md border border-gray-200 p-1.5 flex items-center gap-1 max-w-2xl">
                 <div className="flex items-center flex-1 px-3 py-1.5">
                   <Search className="w-4 h-4 text-gray-400 mr-2" />
                   <input
@@ -170,6 +170,7 @@ const FindYourJob = () => {
                   <CustomSelect
                     placeholder="City, state"
                     options={state.locationList}
+                    className="p-0 border-none focus:outline-none"
                     value={state?.location || ""}
                     onChange={(selected) =>
                       setState({
@@ -196,11 +197,11 @@ const FindYourJob = () => {
                 <Loader2 className="w-10 h-10 animate-spin text-[#0a1551]" />
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6">
                 {state?.jobList.slice(0, 6)?.map((job) => (
                   <div
                     key={job.id}
-                    className="p-5 border border-gray-200 
+                    className="p-3 md:p-5 border border-gray-200 
              transition-all duration-300 bg-white shadow-xl
              hover:bg-white
              hover:border-none
@@ -208,7 +209,7 @@ const FindYourJob = () => {
              hover:shadow-2xl hover:shadow-gray-300 h-full"
                   >
                     <div className="flex items-start justify-between mb-3 h-full">
-                      <div className="flex items-start gap-3 h-full">
+                      <div className="flex  items-start gap-3 w-full h-full">
                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100 overflow-hidden">
                           {job?.college?.college_logo ? (
                             <Image
@@ -226,63 +227,74 @@ const FindYourJob = () => {
                             </div>
                           )}
                         </div>
-                        <div>
-                          <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 ">
-                            {capitalizeFLetter(job.job_title)}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {job.college?.name}
-                          </p>
 
-                          <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4 mb-5">
-                            <div className="flex items-center gap-1.5">
-                              <Briefcase className="w-4 h-4 text-[#ffb400]" />
-                              <span>{job.experiences?.name}</span>
+                        <div className="w-full">
+                          <div className="flex justify-between">
+                            <div>
+                              <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 ">
+                                {capitalizeFLetter(job.job_title)}
+                              </h3>
+                              <p className="text-sm text-gray-600">
+                                {job.college?.name}
+                              </p>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                              <MapPin className="w-4 h-4 text-[#ffb400]" />
-                              <span>
-                                {job.locations
-                                  ?.map((item) => item.city)
-                                  .join(", ")}
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between w-100">
-                            <button
-                              onClick={() => router.push(`/jobs?id=${job.id}`)}
-                              className="border border-[#0a1551] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#0a1551]  hover:bg-[#0a1551]/90 hover:text-white transition"
+                            <RWebShare
+                              data={{
+                                title: "Faculty Plus",
+                                text: "Check this out!",
+                                url: window.location.href,
+                              }}
+                              onClick={() =>
+                                console.log("shared successfully!")
+                              }
                             >
-                              View Job
-                            </button>
+                              <button className="text-gray-800 hover:text-black transition h-fit">
+                                <Share2 className="w-5 h-5" />
+                              </button>
+                            </RWebShare>
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4 mb-5">
+                              <div className="flex items-center gap-1.5">
+                                <Briefcase className="w-4 h-4 text-[#ffb400]" />
+                                <span>{job.experiences?.name}</span>
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <MapPin className="w-4 h-4 text-[#ffb400]" />
+                                <span>
+                                  {job.locations
+                                    ?.map((item) => item.city)
+                                    .join(", ")}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between w-100 pt-3">
+                              <button
+                                onClick={() =>
+                                  router.push(`/jobs?id=${job.id}`)
+                                }
+                                className="border border-[#0a1551] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#0a1551]  hover:bg-[#0a1551]/90 hover:text-white transition"
+                              >
+                                View Job
+                              </button>
+
+                              <div className="flex items-center justify-end text-end gap-1 text-xs text-gray-500">
+                                <Clock className="w-3 h-3" />
+                                <span>
+                                  {moment(job.created_at).isValid() &&
+                                  moment(job.created_at).year() > 1900
+                                    ? moment(job.created_at).fromNow()
+                                    : "Just now"}
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                      <div className="flex flex-col items-end justify-between h-full">
-                        <RWebShare
-                          data={{
-                            title: "Faculty Plus",
-                            text: "Check this out!",
-                            url: window.location.href,
-                          }}
-                          onClick={() => console.log("shared successfully!")}
-                        >
-                          <button className="text-gray-800 hover:text-black transition">
-                            <Share2 className="w-5 h-5" />
-                          </button>
-                        </RWebShare>
-
-                        <div className="flex items-center justify-end text-end gap-1 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          <span>
-                            {moment(job.created_at).isValid() &&
-                            moment(job.created_at).year() > 1900
-                              ? moment(job.created_at).fromNow()
-                              : "Just now"}
-                          </span>
-                        </div>
-                      </div>
+                      {/* <div className="flex flex-col items-end justify-between h-full">
+                        
+                      </div> */}
                     </div>
                   </div>
                 ))}
@@ -295,7 +307,9 @@ const FindYourJob = () => {
             {/* Job Spotlight */}
             <div className=" border ">
               <div className="bg-[#0a1551] flex items-center justify-between py-3 px-4">
-                <h3 className="text-2xl font-medium text-white">Job spotlight</h3>
+                <h3 className="text-2xl font-medium text-white">
+                  Job spotlight
+                </h3>
                 <div className="flex gap-2">
                   <button className="swiper-spotlight-prev w-8 h-8 rounded-full border-2 border-white flex items-center justify-center hover:bg-white/10 transition">
                     <ChevronLeft className="w-4 h-4 text-white" />
@@ -313,12 +327,12 @@ const FindYourJob = () => {
                   nextEl: ".swiper-spotlight-next",
                 }}
                 autoplay={{ delay: 3000, disableOnInteraction: false }}
-                className="job-spotlight-swiper"
+                className="job-spotlight-swiper bg-white"
               >
                 {state.jobList?.slice(0, 6)?.map((job: any) => (
                   <SwiperSlide key={job.id}>
                     <div className=" px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
-                      <div className="mb-4 rounded-lg overflow-hidden h-16 w-full bg-gray-50 flex items-center justify-center  ">
+                      <div className="mb-4 rounded-lg overflow-hidden h-16 w-full  flex items-center justify-center  ">
                         {job?.college?.college_logo ? (
                           <img
                             src={job?.college?.college_logo}

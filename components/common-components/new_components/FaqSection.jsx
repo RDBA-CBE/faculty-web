@@ -35,11 +35,11 @@ const FaqResumeSection = () => {
   const [active, setActive] = useState("01");
 
   return (
-    <section className="section-wid py-20 ">
+    <section className="section-wid pt-12 pb-16 ">
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-[#1F1F1F] mb-3">
+          <h2 className="text-3xl font-semibold text-[#1F1F1F] mb-3">
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">

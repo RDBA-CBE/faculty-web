@@ -44,12 +44,12 @@ const WhatCanIDo = () => {
   console.log("collegesList", state?.collegesList);
 
   return (
-    <section className="pb-12 pt-8 lg:pb-16 pt-12 ">
+    <section className="pb-12 pt-8 lg:py-16  ">
       <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9 ">
-            <h2 className="text-3xl lg:text-4xl font-semibold  mb-3 text-[#151515]">
+            <h2 className="text-3xl  font-semibold  mb-3 text-[#151515]">
               What can I do With Faculty Pro?
             </h2>
             <p className="text-gray-600 mb-8">

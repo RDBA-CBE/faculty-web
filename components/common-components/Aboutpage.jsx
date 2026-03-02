@@ -74,7 +74,7 @@ export default function AboutPage() {
               </p>
 
               {/* Heading */}
-              <h2 className="text-3xl md:text-4xl font-semibold text-[#313131] leading-snug">
+              <h2 className="text-3xl  font-semibold text-[#151515] leading-snug">
                 Empowering Institutions To Hire <br />
                 Exceptional Faculty Faster
               </h2>
@@ -133,7 +133,7 @@ export default function AboutPage() {
               What we do
             </p>
           </div>
-          <h2 className="text-3xl font-semibold text-center mb-12">
+          <h2 className="text-3xl font-semibold text-[#151515] text-center mb-12">
             Lorem ipsum dolor sit amet <br /> consectetur. Tortor
           </h2>
 
@@ -324,7 +324,7 @@ export default function AboutPage() {
 
       <section className="section-wid pt-20 pb-16">
         <div className="lg:col-span-9 ">
-          <h2 className="text-3xl lg:text-4xl font-semibold  mb-3 text-[#151515]">
+          <h2 className="text-3xl  font-semibold  mb-3 text-[#151515]">
             What can I do With Faculty Pro?
           </h2>
           <p className="text-gray-600 mb-8">

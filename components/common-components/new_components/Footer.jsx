@@ -81,7 +81,7 @@ const Footer = () => {
               Subscribe Newsletter
             </h2>
             <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
-              Lorem ipsum dolor sit amet consectetur. Ultricies ac
+              Lorem ipsum dolor sit amet consectetur. Ultricies
             </p>
 
             {/* Input Group */}

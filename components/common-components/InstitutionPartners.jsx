@@ -65,7 +65,7 @@ export default function InstitutionPartners() {
   const rightPartners = [PARTNERS[0], PARTNERS[1], PARTNERS[4], PARTNERS[5]];
 
   return (
-    <section className="bg-gray-50 py-16">
+    <section className="bg-gray-50 pb-16 pt-20">
       <div className="section-wid">
         <div className="flex items-center justify-center">
           <div className=" w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -79,7 +79,7 @@ export default function InstitutionPartners() {
                 </div> */}
 
                 {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
-                <h2 className="text-3xl lg:text-4xl font-semibold text-[#151515] mb-3">
+                <h2 className="text-3xl  font-semibold text-[#151515] mb-3">
                   Institution Partners
                 </h2>
 

@@ -50,7 +50,7 @@ export default function ContactPage() {
             {/* LEFT CONTENT */}
             <div>
               {/* Heading */}
-              <h2 className="text-4xl font-semibold text-[#313131] leading-snug mb-6">
+              <h2 className="text-3xl font-semibold text-[#151515]  mb-6">
                 You Will Grow, You Will <br />
                 Succeed. We Promise That
               </h2>
@@ -254,7 +254,7 @@ export default function ContactPage() {
 
       <section className="section-wid py-16">
         <div className="lg:col-span-2">
-          <h2 className="text-3xl lg:text-4xl font-semibold text-[#1F1F1F] mb-3">
+          <h2 className="text-3xl font-semibold text-[#151515] mb-3">
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">
