@@ -350,7 +350,7 @@ export default function JobsPage() {
       setState({
         loading: false,
         jobDetail: res,
-        responsibilities: responsibilities,
+        responsibilities: responsibilities || null,
       });
 
       return res;
@@ -359,6 +359,8 @@ export default function JobsPage() {
       Failure("Failed to fetch jobs");
     }
   };
+  console.log("responsibilities", state?.responsibilities);
+  
 
   useEffect(() => {
     if (jobIdParam) {
@@ -801,14 +803,15 @@ export default function JobsPage() {
                         )}
                         {state?.jobDetail?.salary_range_obj?.name}
                       </span>
-                      {state?.jobDetail?.locations && (
+                      {state?.jobDetail?.college?.address && (
                         <span className="flex items-center gap-3">
                           <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                          {capitalizeFLetter(
+                          {/* {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
                               .join(", "),
-                          )}{" "}
+                          )}{" "} */}
+                          {state?.jobDetail?.college?.address}
                         </span>
                       )}
                     </div>
@@ -887,7 +890,7 @@ export default function JobsPage() {
                   </div>
 
                   {/* Responsibilities */}
-                  {state?.responsibilities && (
+                  {state?.responsibilities?.length > 0 && (
                     <div className="border-b  px-2 py-2 pb-5">
                       <h2 className="text-lg font-semibold text-black mb-4">
                         Key responsibilities
@@ -981,16 +984,17 @@ export default function JobsPage() {
                         {state?.jobDetail?.salary_range_obj?.name}
                       </p>
                     </div>
-                    {state?.jobDetail?.locations && (
+                    {state?.jobDetail?.college?.address && (
                       <div>
                         <span className="flex gap-2 text-md font-medium  pb-1">
                           <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                           Location
                         </span>
                         <p className="text-md text-gray-500  ps-6">
-                          {state?.jobDetail?.locations
+                          {/* {state?.jobDetail?.locations
                             ?.map((item) => item.city)
-                            .join(", ")}
+                            .join(", ")} */}
+                            {state?.jobDetail?.college?.address}
                         </p>
                       </div>
                     )}
@@ -1148,7 +1152,7 @@ export default function JobsPage() {
                                   </span>
                                 </div>
 
-                                {job.locations && (
+                                {job?.college?.address && (
                                   <div className="flex  gap-1">
                                     <MapPin
                                       className={`${
@@ -1161,9 +1165,10 @@ export default function JobsPage() {
                                         "text-[12px]"
                                       }`}
                                     >
-                                      {job.locations
+                                      {/* {job.locations
                                         ?.map((item) => item.city)
-                                        .join(", ")}
+                                        .join(", ")} */}
+                                        {job?.college?.address}
                                     </span>
                                   </div>
                                 )}
@@ -1359,14 +1364,15 @@ export default function JobsPage() {
                               )}
                               {state?.jobDetail?.salary_range_obj?.name}
                             </span>
-                            {state?.jobDetail?.locations && (
+                            {state?.jobDetail?.college?.address && (
                               <span className="flex items-center gap-3">
                                 <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                                {capitalizeFLetter(
+                                {/* {capitalizeFLetter(
                                   state?.jobDetail?.locations
                                     ?.map((item) => item.city)
                                     .join(", "),
-                                )}{" "}
+                                )}{" "} */}
+                                {state?.jobDetail?.college?.address}
                               </span>
                             )}
                           </div>
@@ -1466,7 +1472,7 @@ export default function JobsPage() {
                         </div>
 
                         {/* Responsibilities */}
-                        {state?.responsibilities && (
+                        {state?.responsibilities?.length > 0 && (
                           <div className="border-b  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-black mb-4">
                               Key responsibilities
@@ -1572,16 +1578,17 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
-                            {state?.jobDetail?.locations && (
+                            {state?.jobDetail?.college?.address && (
                               <div>
                                 <span className="flex gap-2 text-md font-medium  pb-1">
                                   <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                   Location
                                 </span>
                                 <p className="text-md text-gray-500  ps-6">
-                                  {state?.jobDetail?.locations
+                                  {/* {state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", ")}
+                                    .join(", ")} */}
+                                   { state?.jobDetail?.college?.address}
                                 </p>
                               </div>
                             )}
@@ -2029,13 +2036,14 @@ export default function JobsPage() {
                               {state.jobDetail?.salary_range_obj?.name}
                             </span>
                           </div>
-                          {state.jobDetail?.locations && (
+                          {state?.jobDetail?.college?.address && (
                             <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
                               <MapPin className="w-3 h-3 text-[#E6AB1D]" />
                               <span>
-                                {state.jobDetail?.locations
+                                {/* {state.jobDetail?.locations
                                   ?.map((item) => item.city)
-                                  .join(", ")}
+                                  .join(", ")} */}
+                                  {state?.jobDetail?.college?.address}
                               </span>
                             </div>
                           )}
@@ -2050,7 +2058,7 @@ export default function JobsPage() {
                           </p>
                         </div>
 
-                        {state.responsibilities && (
+                        {state?.responsibilities?.length > 0 && (
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">
                               Key Responsibilities
@@ -2154,16 +2162,17 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
-                            {state?.jobDetail?.locations && (
+                            {state?.jobDetail?.college?.address && (
                               <div>
                                 <span className="flex gap-2 text-sm font-medium  pb-1">
                                   <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                   Location
                                 </span>
                                 <p className="text-sm text-gray-500  ps-6">
-                                  {state?.jobDetail?.locations
+                                  {/* {state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", ")}
+                                    .join(", ")} */}
+                                    {state?.jobDetail?.college?.address}
                                 </p>
                               </div>
                             )}
