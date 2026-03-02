@@ -2312,19 +2312,19 @@ export default function JobsPage() {
                   </div>
                   <div className="space-y-2">
                     <CustomSelect
-                      title="Experience"
+                      // title="Experience"
                       required
-                      className="border border-gray-200 "
+                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
                       options={state.experienceList}
                       value={state?.experience || ""}
-                      onChange={(selected) =>
+                      onChange={(selected) => 
                         setState({
                           ...state,
                           experience: selected ? selected.value : "",
                         })
                       }
                       error={state?.errors?.experience}
-                      // placeholder="Experience"
+                      placeholder="Experience"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2334,7 +2334,7 @@ export default function JobsPage() {
                       onChange={(e) =>
                         handleFormChange("message", e.target.value)
                       }
-                      className="min-h-[150px]"
+                      className="min-h-[150px] bg-white"
                     />
 
                     {/* <TextArea
