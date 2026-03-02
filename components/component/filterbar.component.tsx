@@ -355,7 +355,7 @@ const Filterbar: React.FC<SidebarProps> = ({
             {showAllColleges && (
               <div
                 ref={collegePopupRef}
-                className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
+                className="absolute left-[5%] top-[-200px]  mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
               >
                 <div className="flex justify-between items-center mb-3">
                   <h4 className="font-semibold text-[#000]">All Colleges</h4>

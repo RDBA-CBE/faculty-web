@@ -65,11 +65,17 @@ const TopHiringColleges = () => {
   const collgeList = async () => {
     try {
       setState({ loading: true });
+
       const res = await Models.colleges.collegeList();
+
+      // Filter colleges where total_jobs > 0
+      const filteredColleges = res?.results?.filter(
+        (college) => college?.total_jobs > 0,
+      );
 
       setState({
         loading: false,
-        collegesList: res?.results,
+        collegesList: filteredColleges,
       });
     } catch (error) {
       setState({ loading: false });

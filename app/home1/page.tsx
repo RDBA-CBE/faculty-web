@@ -37,7 +37,7 @@ export default function Home1Page() {
         <WhatCanIDo />
         <StatsSection />
         <InstitutionPartners />
-        <DownloadAppSection />
+        {/* <DownloadAppSection /> */}
         <FaqResumeSection />
 
         {/* <div>

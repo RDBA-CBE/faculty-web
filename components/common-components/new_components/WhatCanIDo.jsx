@@ -23,11 +23,17 @@ const WhatCanIDo = () => {
   const collegeList = async () => {
     try {
       setState({ loading: true });
+
       const res = await Models.colleges.collegeList();
+
+      // Filter colleges where total_jobs > 0
+      const filteredColleges = res?.results?.filter(
+        (college) => college?.total_jobs > 0,
+      );
 
       setState({
         loading: false,
-        collegesList: res?.results,
+        collegesList: filteredColleges,
       });
     } catch (error) {
       setState({ loading: false });
@@ -36,7 +42,7 @@ const WhatCanIDo = () => {
   };
 
   console.log("collegesList", state?.collegesList);
-  
+
   return (
     <section className="pb-12 pt-8 lg:pb-16 pt-12 ">
       <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0">
@@ -128,14 +134,18 @@ const WhatCanIDo = () => {
 
               <div className="bg-white px-6 pb-6 pt-4 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className=" mb-6">
-                  {state?.collegesList?.slice(0,4)?.map((college, index) => (
+                  {state?.collegesList?.slice(0, 4)?.map((college, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
                       onClick={() => router.push(`/jobs?college=${college.id}`)}
                     >
                       <div className="w-8 h-8 rounded-full  flex-shrink-0">
-                        <img className="rounded-full" src={college.college_logo} alt={college.college_name} />
+                        <img
+                          className="rounded-full"
+                          src={college.college_logo}
+                          alt={college.college_name}
+                        />
                       </div>
                       <div className="flex-1">
                         <h4 className="text-md font-semibold text-gray-800">

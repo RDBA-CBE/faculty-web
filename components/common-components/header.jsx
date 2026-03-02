@@ -460,9 +460,9 @@ const Header = () => {
           <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[85vh] overflow-y-auto scrollbar-hide rounded rounded-lg">
             <div className="flex items-center justify-center w-full mb-6">
               <img
-                src="/assets/images/login.png"
-                height={200}
-                width={150}
+                src="/assets/images/Logo.png"
+                height={400}
+                width={200}
                 alt="Login Illustration"
                 className="object-contain"
               />
@@ -556,9 +556,9 @@ const Header = () => {
           <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg">
             <div className="flex items-center justify-center w-full mb-6">
               <img
-                src="/assets/images/login.png"
-                height={200}
-                width={150}
+                src="/assets/images/Logo.png"
+                height={400}
+                width={200}
                 alt="Registration Illustration"
                 className="object-contain"
               />
