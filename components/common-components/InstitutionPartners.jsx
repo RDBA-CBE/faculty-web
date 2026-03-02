@@ -132,7 +132,7 @@ const PartnerCard = (props) => {
         <img src={p.logo} alt="" className="w-20" />
       </div>
       <h3
-        className={`text-center sub-ti !font-medium px-1 leading-tight group-hover:text-white transition-colors ${
+        className={`text-center sub-ti !font-medium px-1 leading-tight group-hover:!text-white transition-colors ${
           p.isDark ? "!text-[#fff]" : "!text-[#2D2D2D]"
         }`}
       >{p.name}</h3>

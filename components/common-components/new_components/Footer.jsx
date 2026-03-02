@@ -182,7 +182,7 @@ const Footer = () => {
 
             <div className="md:col-span-4">
               <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
-                Job Categories
+                Recent Jobs
               </h3>
               <div
                 className="grid grid-cols-2  gap-y-2 text-md text-gray-400"

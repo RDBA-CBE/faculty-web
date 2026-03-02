@@ -2247,12 +2247,12 @@ export default function JobsPage() {
               title={capitalizeFLetter(selectedJob?.job_title)}
               width="700px"
               renderComponent={() => (
-                <div className="space-y-6 bg-[#eff2fc] overflow-y-auto py-5 px-2 max-h-[85vh]">
+                <div className="space-y-6 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
                       src="/assets/images/recruitmen.gif"
-                      height={150}
-                      width={100}
+                      height={200}
+                      width={150}
                       alt="Job Application"
                       className="object-contain"
                     />
@@ -2317,7 +2317,7 @@ export default function JobsPage() {
                       className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
                       options={state.experienceList}
                       value={state?.experience || ""}
-                      onChange={(selected) => 
+                      onChange={(selected) =>
                         setState({
                           ...state,
                           experience: selected ? selected.value : "",
@@ -2357,7 +2357,7 @@ export default function JobsPage() {
                     <Button
                       type="button"
                       onClick={handleFormSubmit}
-                      className="px-12 py-3 bg-[#1d1d57] hover:bg-amber-500 text-white font-semibold rounded-lg"
+                      className="px-12 py-3 bg-[#1d1d57] hover:bg-[#1d1d57] text-white font-semibold rounded-full"
                     >
                       Submit
                     </Button>
@@ -2367,69 +2367,48 @@ export default function JobsPage() {
             />
 
             <Modal
-              isOpen={state.congratsOpen}
-              // isOpen={showApplicationModal}
+  isOpen={state.congratsOpen}
+  setIsOpen={() => {
+    setState({ errors: {}, congratsOpen: false });
+  }}
+  title="Job Application Success"
+  width="750px"
+  hideHeader={true}
+  renderComponent={() => (
+    <div className="relative min-h-[500px] bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-12 overflow-hidden">
 
-              setIsOpen={() => {
-                setState({ errors: {}, congratsOpen: false });
-              }}
-              title="Job Application Success"
-              width="750px"
-              hideHeader={true}
-              renderComponent={() => (
-                <div className="relative min-h-[500px] bg-gradient-to-br from-yellow-50 via-amber-50 to-orange-50 flex flex-col items-center justify-center text-center p-12 overflow-hidden">
-                  {/* Large background circles */}
-                  <div className="absolute -top-20 -left-20 w-80 h-80 bg-gradient-to-br from-yellow-200 to-amber-200 rounded-full opacity-30"></div>
-                  <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-gradient-to-tl from-amber-200 to-orange-200 rounded-full opacity-25"></div>
+      {/* Large background circles */}
+      <div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-gray-300 opacity-30 rounded-full"></div>
+      <div className="absolute -top-20 right-[-100px] w-[380px] h-[380px] bg-gray-300 opacity-30 rounded-full"></div>
 
-                  {/* Small decorative circles */}
-                  <div className="absolute top-12 left-16 w-6 h-6 bg-amber-400 rounded-full opacity-80"></div>
-                  <div className="absolute top-20 right-20 w-16 h-16 bg-amber-300 rounded-full opacity-60"></div>
-                  <div className="absolute bottom-24 left-24 w-12 h-12 bg-yellow-200 rounded-full opacity-70"></div>
+      {/* Small decorative circles */}
+      <div className="absolute top-24 left-32 w-3 h-3 bg-gray-400 rounded-full"></div>
+      <div className="absolute top-28 right-40 w-4 h-4 bg-[#01014B] rounded-full"></div>
+      <div className="absolute bottom-32 left-40 w-3 h-3 bg-gray-300 rounded-full"></div>
 
-                  {/* Success star badge */}
-                  <div className="relative mb-8 z-10">
-                    <div className="w-40 h-40 relative">
-                      {/* Vector star background */}
-                      <img
-                        src="/assets/images/Vector.png"
-                        alt="Success Star"
-                        className="w-full h-full object-contain"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <svg
-                          className="w-16 h-16 text-white z-20"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="4"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
+      {/* Success star badge */}
+      <div className="relative mb-8 z-10">
+        <div className="w-40 h-40 relative">
+          <img
+            src="/assets/images/job-check.png"
+            alt="Success Star"
+            className="w-full h-full object-contain"
+          />
+        </div>
+      </div>
 
-                  <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
-                    Congrats, your job applied!
-                  </h2>
-                  <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Curabitur dignissim rutrum dui quis malesuada.
-                  </p>
-                  {/* <button
-                onClick={() => setState({ congratsOpen: false })}
-                className="w-full max-w-md py-4 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-full text-lg transition-colors z-10 shadow-lg"
-              >
-                Let's Discover
-              </button> */}
-                </div>
-              )}
-            />
+      <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
+        Congrats, your job applied!
+      </h2>
+
+      <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        Curabitur dignissim rutrum dui quis malesuada.
+      </p>
+
+    </div>
+  )}
+/>
           </main>
         </div>
       </div>
