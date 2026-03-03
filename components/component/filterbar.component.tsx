@@ -1,5 +1,11 @@
-"use client"
-import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
+"use client";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { X, Search } from "lucide-react";
 import {
   CATEGORIES,
@@ -19,11 +25,12 @@ interface SidebarProps {
   filters: {
     categories: any[];
     jobTypes: any[];
-    experienceLevels:any[];
+    experienceLevels: any[];
     datePosted: any[];
     salaryRange: any[];
     tags: any[];
     colleges: any[];
+    department: any[];
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -33,7 +40,8 @@ interface SidebarProps {
   datePostedList?: any[];
   salaryRangeList?: any[];
   tagsList?: any[];
-  collegeList?: any[];  
+  collegeList?: any[];
+  deptList?: any[];
 }
 
 const FilterSection: React.FC<{
@@ -44,7 +52,9 @@ const FilterSection: React.FC<{
   onToggle: (value: number | string) => void;
 }> = ({ title, items, counts, selected, onToggle }) => (
   <div>
-    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
+      {title}
+    </h3>
 
     <div className="space-y-2">
       {items.map((item, idx) => (
@@ -64,9 +74,7 @@ const FilterSection: React.FC<{
             </span>
           </div>
 
-          {counts && (
-            <span className="text-xs text-[#000]">{counts[idx]}</span>
-          )}
+          {counts && <span className="text-xs text-[#000]">{counts[idx]}</span>}
         </label>
       ))}
     </div>
@@ -81,7 +89,9 @@ const FilterSectionRadio: React.FC<{
   onChange: (value: number | string | null) => void;
 }> = ({ title, items, selected, name, onChange }) => (
   <div>
-    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
+      {title}
+    </h3>
 
     <div className="space-y-2">
       {items.map((item) => (
@@ -113,7 +123,9 @@ const FilterSectionString: React.FC<{
   onToggle: (item: string) => void;
 }> = ({ title, items, selected, onToggle }) => (
   <div>
-    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">{title}</h3>
+    <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
+      {title}
+    </h3>
 
     <div className="space-y-2">
       {items.map((item) => (
@@ -149,10 +161,19 @@ const Filterbar: React.FC<SidebarProps> = ({
   datePostedList,
   salaryRangeList,
   tagsList,
+  deptList,
 }) => {
+  console.log("✌️deptList --->", deptList);
+
   const [showAllColleges, setShowAllColleges] = useState(false);
+  const [showAllDept, setShowAllDept] = useState(false);
+
   const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
+  const [deptSearchQuery, setDeptSearchQuery] = useState("");
+
   const collegePopupRef = useRef<HTMLDivElement>(null);
+  const deptPopupRef = useRef<HTMLDivElement>(null);
+
   const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
     0, 5000000,
   ]);
@@ -265,6 +286,22 @@ const Filterbar: React.FC<SidebarProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showAllColleges]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        deptPopupRef.current &&
+        !deptPopupRef.current.contains(event.target as Node)
+      ) {
+        setShowAllDept(false);
+      }
+    };
+
+    if (showAllDept) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllDept]);
+
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
       ? list.filter((i) => i !== item)
@@ -285,11 +322,10 @@ const Filterbar: React.FC<SidebarProps> = ({
   };
 
   console.log("experienceList", experienceList);
-  
 
   return (
     <aside className="w-full h-full">
-       <div className="flex w-full justify-between items-center px-4 mt-4">
+      <div className="flex w-full justify-between items-center px-4 mt-4">
         <div className="font-semibold text-[#000]">All Filters</div>
         <button
           onClick={handleClearFilters}
@@ -343,6 +379,7 @@ const Filterbar: React.FC<SidebarProps> = ({
             })
           }
         />
+
         {collegeList && collegeList.length > 5 && (
           <div className="relative mt-3">
             <button
@@ -399,7 +436,10 @@ const Filterbar: React.FC<SidebarProps> = ({
                           onChange={() =>
                             onFilterChange({
                               ...filters,
-                              colleges: toggleItem(filters.colleges, item.value),
+                              colleges: toggleItem(
+                                filters.colleges,
+                                item.value
+                              ),
                             })
                           }
                           className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
@@ -423,7 +463,100 @@ const Filterbar: React.FC<SidebarProps> = ({
             )}
           </div>
         )}
+        <FilterSection
+          title="Choose Department"
+          items={deptList?.slice(0, 5) ?? []}
+          selected={filters.department}
+          onToggle={(value) =>
+            onFilterChange({
+              ...filters,
+              department: toggleItem(filters.department, value),
+            })
+          }
+        />
+        {deptList && deptList.length > 5 && (
+          <div className="relative mt-3">
+            <button
+              onClick={() => setShowAllDept(true)}
+              className="text-sm font-medium flex items-center  gap-1 text-[#1d1d57] w-full rounded-full px-3 py-2 ps-7"
+            >
+              View more
+            </button>
 
+            {showAllDept && (
+              <div
+                ref={deptPopupRef}
+                className="absolute left-[5%] top-[-200px]  mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-[#000]">All Department</h4>
+                  <button
+                    onClick={() => setShowAllDept(false)}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="relative mb-3">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search department..."
+                    value={deptSearchQuery}
+                    onChange={(e) => setDeptSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                  />
+                </div>
+
+                <div className="overflow-y-auto flex-1 space-y-2 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {deptList
+                    ?.filter((c) =>
+                      c.label
+                        .toLowerCase()
+                        .includes(deptSearchQuery.toLowerCase())
+                    )
+                    .map((item) => (
+                      <label
+                        key={item.value}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.department.includes(item.value)}
+                          onChange={() =>
+                            onFilterChange({
+                              ...filters,
+                              department: toggleItem(
+                                filters.department,
+                                item.value
+                              ),
+                            })
+                          }
+                          className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                        />
+                        <span className="text-sm text-slate-600">
+                          {item.label}
+                        </span>
+                      </label>
+                    ))}
+                  {deptList?.filter((c) =>
+                    c.label
+                      .toLowerCase()
+                      .includes(deptSearchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No department found
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
         {/* <FilterSection
           title="Experience Level"
           items={experienceList ?? []}

@@ -296,6 +296,12 @@ const Header = () => {
                     <Link
                       key={menu.title}
                       href={menu.url}
+                      onClick={(e) => {
+                        if (menu.url === "/jobs" && pathname === "/jobs") {
+                          e.preventDefault();
+                          window.location.href = "/jobs";
+                        }
+                      }}
                       className={`font-medium transition-colors duration-200 ${
                         isActive
                           ? "text-[#F2B31D]"

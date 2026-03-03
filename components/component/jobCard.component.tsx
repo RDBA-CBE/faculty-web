@@ -14,6 +14,7 @@ import {
   DollarSign,
   IndianRupee,
   BookmarkCheck,
+  Building2,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -33,6 +34,7 @@ interface JobCardProps {
     college: any;
     job_description: any;
     is_saved: boolean;
+    department?: any;
   };
   onClick?: () => void;
   updateList?: () => void;
@@ -118,7 +120,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           ) : (
             <div
               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                job?.college?.name,
+                job?.college?.name
               )} flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
@@ -128,7 +130,7 @@ export const JobCard: React.FC<JobCardProps> = ({
       </div>
 
       {/* Experience and Location */}
-      <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+      <div className="flex items-center gap-2 text-sm text-gray-600 ">
         <div className="flex items-center gap-3">
           <Briefcase className="w-4 h-4 text-[#ffb400]" />
           <span className="text-sm text-[#6D6C6C]">
@@ -145,7 +147,14 @@ export const JobCard: React.FC<JobCardProps> = ({
           </span>
         </div>
       </div>
-
+      <div className="flex items-center gap-3 mb-3 mt-2">
+        <Building2 className="w-4 h-4 text-[#ffb400]" />
+        <span className="text-sm text-[#6D6C6C]">
+          {" "}
+          {job?.department?.map((item) => item.name).join(", ")}
+          {/* {job?.college?.address} */}
+        </span>
+      </div>
       {/* Job Description */}
       <p className="text-gray-600 text-sm mb-3 line-clamp-2">
         {job?.job_description ||

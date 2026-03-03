@@ -83,7 +83,6 @@ const TopHiringColleges = () => {
     }
   };
 
-  console.log("collegeList", state?.collegeList);
 
   return (
     <section className="py-12 lg:py-20 bg-gray-50">

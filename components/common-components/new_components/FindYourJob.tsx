@@ -17,6 +17,7 @@ import {
   Share,
   Share2,
   Clock,
+  Building2,
 } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
@@ -221,7 +222,9 @@ const FindYourJob = () => {
                             />
                           ) : (
                             <div
-                              className={`w-full h-full rounded-lg ${getAvatarColor(job?.college?.name)} flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
+                              className={`w-full h-full rounded-lg ${getAvatarColor(
+                                job?.college?.name
+                              )} flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
                             >
                               {job?.college?.name?.slice(0, 1).toUpperCase()}
                             </div>
@@ -254,7 +257,7 @@ const FindYourJob = () => {
                             </RWebShare>
                           </div>
                           <div>
-                            <div className="flex items-center gap-4 mb-4 text-xs text-gray-600 mt-4 mb-5">
+                            <div className="flex items-center gap-4  text-xs text-gray-600 mt-4 mb-2">
                               <div className="flex items-center gap-1.5">
                                 <Briefcase className="w-4 h-4 text-[#ffb400]" />
                                 <span>{job.experiences?.name}</span>
@@ -268,7 +271,14 @@ const FindYourJob = () => {
                                 </span>
                               </div>
                             </div>
-
+                            <div className="flex items-center gap-1.5 mb-4 ">
+                              <Building2 className="w-4 h-4 text-[#ffb400]" />
+                              <span>
+                                {job.department
+                                  ?.map((item) => item.name)
+                                  .join(", ")}
+                              </span>
+                            </div>
                             <div className="flex items-center justify-between w-100 pt-3">
                               <button
                                 onClick={() =>
@@ -342,7 +352,7 @@ const FindYourJob = () => {
                         ) : (
                           <div
                             className={`w-full h-full ${getAvatarColor(
-                              job?.college?.name,
+                              job?.college?.name
                             )} flex items-center justify-center text-white font-bold text-4xl`}
                           >
                             {job?.college?.name?.charAt(0).toUpperCase()}
@@ -357,7 +367,7 @@ const FindYourJob = () => {
                         {job.college?.name}
                       </p>
 
-                      <div className="space-y-2 mb-4">
+                      <div className="space-y-2 ">
                         <div className="flex items-center gap-2 text-sm text-gray-700">
                           <Briefcase className="w-4 h-4 text-yellow-500" />
                           <span>{job.experiences?.name}</span>
@@ -370,6 +380,12 @@ const FindYourJob = () => {
                               .join(", ")}
                           </span>
                         </div>
+                      </div>
+                      <div className="flex items-center gap-2 mb-4 mt-1 ">
+                        <Building2 className="w-4 h-4 text-[#ffb400]" />
+                        <span>
+                          {job.department?.map((item) => item.name).join(", ")}
+                        </span>
                       </div>
 
                       <div className="relative flex items-center justify-end">
@@ -401,7 +417,7 @@ const FindYourJob = () => {
                       key={index}
                       onClick={() =>
                         router.push(
-                          `/jobs?search=${encodeURIComponent(category.name)}`,
+                          `/jobs?search=${encodeURIComponent(category.name)}`
                         )
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"

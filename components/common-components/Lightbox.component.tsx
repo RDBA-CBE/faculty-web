@@ -19,7 +19,7 @@ interface ImageType {
 }
 
 interface LightboxProps {
-  images: ImageType[];
+  images: any;
   initialIndex?: number;
   isOpen: boolean;
   onClose: () => void;
@@ -248,7 +248,7 @@ const LightboxGallery = ({
           <div className="relative max-w-7xl max-h-full w-full h-full flex flex-col">
             {/* Header - Controls */}
             <div className="flex justify-between items-center text-white mb-4 px-4">
-              <div className="text-lg font-medium">
+              <div className="text-lg font-medium text-white">
                 {currentIndex + 1} / {images.length}
               </div>
 
@@ -260,7 +260,7 @@ const LightboxGallery = ({
                     className="p-2 hover:bg-white/10 rounded-full transition-colors"
                     title="Reset Zoom"
                   >
-                    <Minus size={20} />
+                    <Minus size={20}  className="text-white" />
                   </button>
                 )}
 
@@ -272,7 +272,7 @@ const LightboxGallery = ({
                   }`}
                   title="Zoom Out"
                 >
-                  <ZoomOut size={20} />
+                  <ZoomOut size={20}  className="text-white"/>
                 </button>
 
                 <button
@@ -283,7 +283,7 @@ const LightboxGallery = ({
                   }`}
                   title="Zoom In"
                 >
-                  <ZoomIn size={20} />
+                  <ZoomIn size={20}  className="text-white" />
                 </button>
 
                 {/* Close Button */}
@@ -291,7 +291,7 @@ const LightboxGallery = ({
                   onClick={onClose}
                   className="p-2 hover:bg-white/10 rounded-full transition-colors"
                 >
-                  <X size={24} />
+                  <X size={24} className="text-white" />
                 </button>
               </div>
             </div>
@@ -357,7 +357,7 @@ const LightboxGallery = ({
                   onTouchEnd={handleMouseUp}
                 >
                   <Image
-                    src={images[currentIndex].image_url}
+                    src={images[currentIndex]}
                     alt={
                       images[currentIndex].alt || `Image ${currentIndex + 1}`
                     }

@@ -17,14 +17,18 @@ const job = {
         url += `&location_id=${encodeURIComponent(body.location)}`;
       }
 
+      if (body?.department) {
+        url += `&department=${encodeURIComponent(body.department)}`;
+      }
+
       if (body.jobTypes) {
         url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
-       if (body.experience) {
+      if (body.experience) {
         url += `&experience=${encodeURIComponent(body.experience)}`;
       }
 
-       if (body.colleges) {
+      if (body.colleges) {
         url += `&college=${encodeURIComponent(body.colleges)}`;
       }
 
@@ -47,7 +51,7 @@ const job = {
       if (body.date_posted_after) {
         url += `&date_posted_after=${body.date_posted_after}`;
       }
-      
+
       instance()
         .get(url)
         .then((res) => {

@@ -1,13 +1,14 @@
 import instance from "@/utils/axios.utils";
-import axiosWithoutToken from "@/utils/axiosWithoutToken";
 
-const colleges = {
-  // 🔓 PUBLIC API – NO TOKEN
-  list: () => {
-    return new Promise((resolve, reject) => {
-      const url = `colleges/`;
 
-      axiosWithoutToken()
+const department = {
+  list: (data=null) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `departments/`;
+      if (data?.pagination == "No") {
+        url += `?pagination=${encodeURIComponent(false)}`;
+      }
+      instance()
         .get(url)
         .then((res) => {
           resolve(res.data);
@@ -20,13 +21,12 @@ const colleges = {
           }
         });
     });
+    return promise;
   },
 
-  // 🔒 PROTECTED APIs – WITH TOKEN
   create: (data: any) => {
-    return new Promise((resolve, reject) => {
-      const url = `colleges/`;
-
+    let promise = new Promise((resolve, reject) => {
+      let url = `job-locations/`;
       instance()
         .post(url, data)
         .then((res) => {
@@ -40,12 +40,12 @@ const colleges = {
           }
         });
     });
+    return promise;
   },
 
   update: (data: any, id: any) => {
-    return new Promise((resolve, reject) => {
-      const url = `colleges/${id}/`;
-
+    let promise = new Promise((resolve, reject) => {
+      let url = `job-locations/${id}/`;
       instance()
         .patch(url, data)
         .then((res) => {
@@ -59,12 +59,12 @@ const colleges = {
           }
         });
     });
+    return promise;
   },
 
   delete: (id: any) => {
-    return new Promise((resolve, reject) => {
-      const url = `colleges/${id}/`;
-
+    let promise = new Promise((resolve, reject) => {
+      let url = `job-locations/${id}/`;
       instance()
         .delete(url)
         .then((res) => {
@@ -78,12 +78,12 @@ const colleges = {
           }
         });
     });
+    return promise;
   },
 
   details: (id: any) => {
-    return new Promise((resolve, reject) => {
-      const url = `colleges/${id}/`;
-
+    let promise = new Promise((resolve, reject) => {
+      let url = `job-categories/${id}/`;
       instance()
         .get(url)
         .then((res) => {
@@ -97,49 +97,8 @@ const colleges = {
           }
         });
     });
-  },
-
-  collegeList: (data = null) => {
-    return new Promise((resolve, reject) => {
-      let url = `colleges/colleges-list/`;
-
-      if (data?.pagination == "No") {
-        url += `?pagination=${encodeURIComponent(false)}`;
-      }
-
-      axiosWithoutToken()
-        .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((error) => {
-          if (error.response) {
-            reject(error.response.message);
-          } else {
-            reject(error);
-          }
-        });
-    });
-  },
-
-  dashboard: () => {
-    return new Promise((resolve, reject) => {
-      const url = `dashboard/`;
-
-      axiosWithoutToken()
-        .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((error) => {
-          if (error.response) {
-            reject(error.response.message);
-          } else {
-            reject(error);
-          }
-        });
-    });
+    return promise;
   },
 };
 
-export default colleges;
+export default department;

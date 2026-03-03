@@ -25,6 +25,7 @@ const ChipFilters = ({
   collegeList = [],
   datePostedList = [],
   locationList = [],
+  deptList = [],
 }) => {
 
 
@@ -143,6 +144,20 @@ if (filters.salaryRange && filters.salaryRange.length > 0) {
       },
     });
   });
+
+
+  filters.department?.forEach((value) => {
+    activeFilters.push({
+      label: findLabel(deptList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          department: filters.department.filter((v) => v !== value),
+        });
+      },
+    });
+  });
+
 
   // Tags
   filters.tags.forEach((value) => {

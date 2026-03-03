@@ -14,6 +14,7 @@ import {
   DollarSign,
   IndianRupee,
   BookmarkCheck,
+  Building2,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -33,6 +34,7 @@ interface JobCardProps {
     college: any;
     job_description: any;
     is_saved: boolean;
+    department?: any;
   };
   onClick?: () => void;
   updateList?: () => void;
@@ -143,7 +145,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
               </span>
             </div>
             {/* <span className="text-gray-400">|</span> */}
-            {job?.college?.address && (
+            {job?.locations?.length > 0 && (
               <div className="flex items-center gap-3">
                 <MapPin className="w-4 h-4 text-[#ffb400]" />
                 <span className="text-sm text-[#6D6C6C]">
@@ -153,6 +155,14 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 </span>
               </div>
             )}
+            <div className="flex items-center gap-3 ">
+              <Building2 className="w-4 h-4 text-[#ffb400]" />
+              <span className="text-sm text-[#6D6C6C]">
+                {" "}
+                {job?.department?.map((item) => item.name).join(", ")}
+                {/* {job?.college?.address} */}
+              </span>
+            </div>
           </div>
         </div>
       </div>

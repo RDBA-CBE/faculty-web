@@ -18,6 +18,7 @@ import masterExperience from "@/models/master_experience";
 import colleges from "@/models/college.models";
 import publications from "@/models/publications.models";
 import save from "@/models/save.models";
+import department from "@/models/department.model";
 
 
 
@@ -39,7 +40,8 @@ export const Models = {
   masterExperience,
   colleges,
   publications,
-  save
+  save,
+  department
   
   
 };

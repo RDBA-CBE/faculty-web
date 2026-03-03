@@ -41,8 +41,9 @@ import {
   Workflow,
   LayoutGrid,
   List,
+  Building2,
 } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -71,14 +72,18 @@ import { NewJobCard } from "@/components/component/newJobcard.component";
 import PaginationCom from "@/components/component/PaginationCom";
 import CustomSelect from "@/components/common-components/dropdown";
 import moment from "moment";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
 
 import { RWebShare } from "react-web-share";
 import ChipFilters from "@/components/component/chipFilters.component";
+import LightboxGallery from "@/components/common-components/Lightbox.component";
+import { set } from "date-fns";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
+
+  const router = useRouter();
   const jobIdParam = searchParams.get("id");
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
@@ -130,9 +135,18 @@ export default function JobsPage() {
     experience: "",
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
+    department: [],
   });
 
   const debouncedSearch = useDebounce(state.search, 500);
+
+  const initialFiltersRef = useRef(filters);
+
+  const isFilterApplied = () => {
+    return (
+      JSON.stringify(filters) !== JSON.stringify(initialFiltersRef.current)
+    );
+  };
 
   useEffect(() => {
     if (selectedJob && isTabScreen) {
@@ -150,6 +164,7 @@ export default function JobsPage() {
     salaryRangeList();
     tagsList();
     collegeList();
+    departmentList();
   }, []);
 
   useEffect(() => {
@@ -194,6 +209,7 @@ export default function JobsPage() {
     filters.salaryRange,
     filters?.tags,
     filters?.colleges,
+    filters?.department,
   ]);
 
   const categoryList = async () => {
@@ -250,11 +266,30 @@ export default function JobsPage() {
 
   const collegeList = async () => {
     try {
-      const res: any = await Models.colleges.collegeList();
+      const body = {
+        pagination: "No",
+      };
+      const res: any = await Models.colleges.collegeList(body);
       const dropdown = Dropdown(res?.results, "college_name");
 
       setState({
         collegeList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const departmentList = async () => {
+    try {
+      const body = {
+        pagination: "No",
+      };
+      const res: any = await Models.department.list(body);
+      const dropdown = Dropdown(res?.results, "department_name");
+
+      setState({
+        deptList: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -291,9 +326,6 @@ export default function JobsPage() {
       console.log("✌️error --->", error);
     }
   };
-
-  console.log("salaryRangeList", state?.salaryRangeList);
-  console.log("salaryRange", filters?.salaryRange);
 
   const tagsList = async () => {
     try {
@@ -359,8 +391,6 @@ export default function JobsPage() {
       Failure("Failed to fetch jobs");
     }
   };
-  console.log("responsibilities", state?.responsibilities);
-  
 
   useEffect(() => {
     if (jobIdParam) {
@@ -563,7 +593,6 @@ export default function JobsPage() {
       }
     }
   };
-  console.log("state.errors --->", state.errors);
 
   const bodyData = () => {
     const body: any = {};
@@ -577,6 +606,10 @@ export default function JobsPage() {
 
     if (filters?.categories?.length > 0) {
       body.category = filters.categories;
+    }
+
+    if (filters?.department?.length > 0) {
+      body.department = filters.department;
     }
 
     if (filters?.location) {
@@ -612,7 +645,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0),
+        ...filters.datePosted.map((d) => durationMap[d] || 0)
       );
 
       if (maxDays === 1) {
@@ -687,6 +720,7 @@ export default function JobsPage() {
       experience: "",
       jobID: null,
       colleges: [],
+      department: [],
     });
     setState({ search: "" });
   };
@@ -750,7 +784,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.college?.name,
+                              state?.jobDetail?.college?.name
                             )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
                           >
                             {state?.jobDetail?.college?.name
@@ -803,17 +837,25 @@ export default function JobsPage() {
                         )}
                         {state?.jobDetail?.salary_range_obj?.name}
                       </span>
+
                       {state?.jobDetail?.college?.address && (
                         <span className="flex items-center gap-3">
                           <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                          {/* {capitalizeFLetter(
+                          {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", "),
-                          )}{" "} */}
-                          {state?.jobDetail?.college?.address}
+                              .join(", ")
+                          )}{" "}
+                          {/* {state?.jobDetail?.college?.address} */}
                         </span>
                       )}
+                      <span className="flex items-center gap-1">
+                        <Building2 className="w-4 h-4 text-[#F2B31D]" />
+
+                        {state?.jobDetail?.department
+                          ?.map((item) => item?.name)
+                          ?.join(", ")}
+                      </span>
                     </div>
                   </div>
 
@@ -984,6 +1026,17 @@ export default function JobsPage() {
                         {state?.jobDetail?.salary_range_obj?.name}
                       </p>
                     </div>
+                    <div>
+                      <span className="flex gap-2 text-md font-medium  pb-1">
+                        <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Department
+                      </span>
+                      <p className="text-md text-gray-500 ps-6">
+                        {state?.jobDetail?.department
+                          ?.map((item) => item?.name)
+                          ?.join(", ")}
+                      </p>
+                    </div>
                     {state?.jobDetail?.college?.address && (
                       <div>
                         <span className="flex gap-2 text-md font-medium  pb-1">
@@ -991,10 +1044,10 @@ export default function JobsPage() {
                           Location
                         </span>
                         <p className="text-md text-gray-500  ps-6">
-                          {/* {state?.jobDetail?.locations
+                          {state?.jobDetail?.locations
                             ?.map((item) => item.city)
-                            .join(", ")} */}
-                            {state?.jobDetail?.college?.address}
+                            .join(", ")}
+                          {/* {state?.jobDetail?.college?.address} */}
                         </p>
                       </div>
                     )}
@@ -1002,9 +1055,22 @@ export default function JobsPage() {
                 </div>
 
                 {/* Company Info */}
+
+                {state?.jobDetail?.job_image && (
+                  <div
+                    className="bg-clr2 w-fit rounded-lg  p-6 cursor-pointer"
+                    onClick={() => setState({ imgOpen: true })}
+                  >
+                    <img
+                      src={state?.jobDetail?.job_image}
+                      alt={state?.jobDetail?.job_title}
+                      className="w-100 max-h-[400px]"
+                    />
+                  </div>
+                )}
                 <div className="bg-clr2 rounded-lg  p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                    About {state?.jobDetail?.company}
+                    About
                   </h3>
                   <div className="flex items-start gap-3 mb-4">
                     {selectedJob.college?.college_logo ? (
@@ -1016,7 +1082,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                          selectedJob.college?.name,
+                          selectedJob.college?.name
                         )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                       >
                         {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
@@ -1030,20 +1096,23 @@ export default function JobsPage() {
                         Technology Company
                       </p> */}
                     </div>
+                    <button
+                      onClick={() => {
+                        setSelectedJob(null);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        router.push(
+                          `/jobs?college=${state?.jobDetail?.college?.id}`
+                        );
+                      }}
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                    >
+                      {state?.jobDetail?.college?.total_jobs || 0} Openings
+                    </button>
                   </div>
                   <p className="leading-relaxed">
                     {state?.jobDetail?.company_detail}
                   </p>
                 </div>
-                {state?.jobDetail?.job_image && (
-                  <div className="bg-clr2 w-fit rounded-lg  p-6">
-                    <img
-                      src={state?.jobDetail?.job_image}
-                      alt={state?.jobDetail?.job_title}
-                      className="w-100 max-h-[400px]"
-                    />
-                  </div>
-                )}
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <div className="flex gap-6 ">
@@ -1094,7 +1163,7 @@ export default function JobsPage() {
                               ) : (
                                 <div
                                   className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                    job.college?.name,
+                                    job.college?.name
                                   )} flex items-center justify-center ${
                                     selectedJob?.id === job.id
                                       ? "text-white bg-gray-400"
@@ -1165,10 +1234,10 @@ export default function JobsPage() {
                                         "text-[12px]"
                                       }`}
                                     >
-                                      {/* {job.locations
+                                      {job.locations
                                         ?.map((item) => item.city)
-                                        .join(", ")} */}
-                                        {job?.college?.address}
+                                        .join(", ")}
+                                      {/* {job?.college?.address} */}
                                     </span>
                                   </div>
                                 )}
@@ -1197,6 +1266,22 @@ export default function JobsPage() {
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
+                              </div>
+                              <div className="flex gap-2">
+                                <Building2
+                                  className={`${
+                                    selectedJob?.id === job.id && ""
+                                  } w-3 h-3 text-[#E6AB1D]`}
+                                />
+                                <span
+                                  className={`text-[12px] pt-[-2px] ${
+                                    selectedJob?.id === job.id && ""
+                                  }`}
+                                >
+                                  {job.department
+                                    ?.map((item) => item?.name)
+                                    ?.join(", ")}
+                                </span>
                               </div>
                               {/* Location
                             <div
@@ -1326,7 +1411,7 @@ export default function JobsPage() {
                           ) : (
                             <div
                               className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                state?.jobDetail?.college?.name,
+                                state?.jobDetail?.college?.name
                               )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
                             >
                               {state?.jobDetail?.college?.name
@@ -1340,7 +1425,7 @@ export default function JobsPage() {
                             </h1>
                             <p className="text-md text-gray-700 mb-2">
                               {capitalizeFLetter(
-                                state?.jobDetail?.college?.name,
+                                state?.jobDetail?.college?.name
                               )}
                             </p>
                           </div>
@@ -1367,14 +1452,20 @@ export default function JobsPage() {
                             {state?.jobDetail?.college?.address && (
                               <span className="flex items-center gap-3">
                                 <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                                {/* {capitalizeFLetter(
+                                {capitalizeFLetter(
                                   state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", "),
-                                )}{" "} */}
-                                {state?.jobDetail?.college?.address}
+                                    .join(", ")
+                                )}{" "}
+                                {/* {state?.jobDetail?.college?.address} */}
                               </span>
                             )}
+                            <span className="flex items-center gap-3">
+                              <Building2 className="w-4 h-4 text-[#E6AB1D]" />
+                              {state?.jobDetail?.department
+                                ?.map((item) => item?.name)
+                                ?.join(", ")}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -1391,7 +1482,7 @@ export default function JobsPage() {
                             <button
                               onClick={() =>
                                 handleSaveToggle(
-                                  state.jobDetail,
+                                  state.jobDetail
 
                                   // !!state.jobDetail.is_saved,
                                   // state.jobDetail.save_id,
@@ -1578,6 +1669,19 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
+
+                            <div>
+                              <span className="flex gap-2 text-md font-medium  pb-1">
+                                <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Department
+                              </span>
+                              <p className="text-md text-gray-500 ps-6">
+                                {state?.jobDetail?.department
+                                  ?.map((item) => item?.name)
+                                  ?.join(", ")}
+                              </p>
+                            </div>
+
                             {state?.jobDetail?.college?.address && (
                               <div>
                                 <span className="flex gap-2 text-md font-medium  pb-1">
@@ -1585,10 +1689,10 @@ export default function JobsPage() {
                                   Location
                                 </span>
                                 <p className="text-md text-gray-500  ps-6">
-                                  {/* {state?.jobDetail?.locations
+                                  {state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", ")} */}
-                                   { state?.jobDetail?.college?.address}
+                                    .join(", ")}
+                                  {/* {state?.jobDetail?.college?.address} */}
                                 </p>
                               </div>
                             )}
@@ -1596,9 +1700,22 @@ export default function JobsPage() {
                         </div>
 
                         {/* Company Info */}
+
+                        {state?.jobDetail?.job_image && (
+                          <div
+                            className="bg-white  border border-[#E4E4E4] cursor-pointer  p-6"
+                            onClick={() => setState({ imgOpen: true })}
+                          >
+                            <img
+                              src={state?.jobDetail?.job_image}
+                              alt={state?.jobDetail?.job_title}
+                              className="w-100 max-h-[400px]"
+                            />
+                          </div>
+                        )}
                         <div className="bg-white  border border-[#E4E4E4]  p-6">
                           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                            About {state?.jobDetail?.company}
+                            About
                           </h3>
                           <div className="flex items-start gap-3 mb-4">
                             {selectedJob?.college?.college_logo ? (
@@ -1610,7 +1727,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                  selectedJob.college?.name,
+                                  selectedJob.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {selectedJob.college?.name
@@ -1627,20 +1744,24 @@ export default function JobsPage() {
                               </p> */}
                             </div>
                           </div>
+                          <button
+                            onClick={() => {
+                              setSelectedJob(null);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+
+                              router.push(
+                                `/jobs?college=${state?.jobDetail?.college?.id}`
+                              );
+                            }}
+                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                          >
+                            {state?.jobDetail?.college?.total_jobs || 0}{" "}
+                            Openings
+                          </button>
                           <p className="leading-relaxed">
                             {state?.jobDetail?.college_detail}
                           </p>
                         </div>
-
-                        {state?.jobDetail?.job_image && (
-                          <div className="bg-white  border border-[#E4E4E4]  p-6">
-                            <img
-                              src={state?.jobDetail?.job_image}
-                              alt={state?.jobDetail?.job_title}
-                              className="w-100 max-h-[400px]"
-                            />
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -1671,6 +1792,7 @@ export default function JobsPage() {
                     jobTypeList={state?.jobTypeList}
                     experienceList={state?.experienceList}
                     collegeList={state?.collegeList}
+                    deptList={state?.deptList}
                     datePostedList={state?.datePostedList}
                     salaryRangeList={state?.salaryRangeList}
                     tagsList={state?.tagsList}
@@ -1692,6 +1814,7 @@ export default function JobsPage() {
                       datePostedList={state?.datePostedList}
                       salaryRangeList={state?.salaryRangeList}
                       tagsList={state?.tagsList}
+                      deptList={state?.deptList}
                     />
                   </div>
                 </div>
@@ -1804,12 +1927,22 @@ export default function JobsPage() {
                             <SheetTitle className="text-lg font-semibold">
                               Filter Jobs
                             </SheetTitle>
-                            <button
-                              onClick={() => setIsMobileFilterOpen(false)}
-                              className="p-1 hover:bg-clr2 rounded-full"
-                            >
-                              <X size={20} className="text-gray-500" />
-                            </button>
+                            <div className="flex items-center gap-2 justify-center">
+                              {isFilterApplied() && (
+                                <button
+                                  onClick={() => setIsMobileFilterOpen(false)}
+                                  className=" bg-[#1d1d57] w-fit  text-sm border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                                >
+                                  Apply
+                                </button>
+                              )}
+                              <button
+                                onClick={() => setIsMobileFilterOpen(false)}
+                                className="p-1 hover:bg-clr2 rounded-full"
+                              >
+                                <X size={20} className="text-gray-500" />
+                              </button>
+                            </div>
                           </div>
                           <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
                             <Filterbar
@@ -1823,6 +1956,7 @@ export default function JobsPage() {
                               salaryRangeList={state?.salaryRangeList}
                               tagsList={state?.tagsList}
                               collegeList={state?.collegeList}
+                              deptList={state?.deptList}
                             />
                           </div>
                         </SheetContent>
@@ -1840,6 +1974,7 @@ export default function JobsPage() {
                     salaryRangeList={state?.salaryRangeList}
                     tagsList={state?.tagsList}
                     collegeList={state?.collegeList}
+                    deptList={state?.deptList}
                     locationList={state?.locationList}
                   />
 
@@ -1992,7 +2127,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
                               >
                                 {state.jobDetail?.college?.name
@@ -2012,7 +2147,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at,
+                                        state.jobDetail?.created_at
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -2040,10 +2175,10 @@ export default function JobsPage() {
                             <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
                               <MapPin className="w-3 h-3 text-[#E6AB1D]" />
                               <span>
-                                {/* {state.jobDetail?.locations
+                                {state.jobDetail?.locations
                                   ?.map((item) => item.city)
-                                  .join(", ")} */}
-                                  {state?.jobDetail?.college?.address}
+                                  .join(", ")}
+                                {/* {state?.jobDetail?.college?.address} */}
                               </span>
                             </div>
                           )}
@@ -2075,7 +2210,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -2126,6 +2261,7 @@ export default function JobsPage() {
                           <h3 className="text-lg font-bold text-gray-900 mb-3">
                             Job Overview
                           </h3>
+
                           <div className="space-y-3">
                             {/* <div>
                           <p className="text-sm font-medium text-gray-500 mb-1">
@@ -2162,6 +2298,18 @@ export default function JobsPage() {
                                 {state?.jobDetail?.salary_range_obj?.name}
                               </p>
                             </div>
+
+                            <div>
+                              <span className="flex gap-2 text-md font-medium  pb-1">
+                                <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Department
+                              </span>
+                              <p className="text-md text-gray-500 ps-6">
+                                {state?.jobDetail?.department
+                                  ?.map((item) => item?.name)
+                                  ?.join(", ")}
+                              </p>
+                            </div>
                             {state?.jobDetail?.college?.address && (
                               <div>
                                 <span className="flex gap-2 text-sm font-medium  pb-1">
@@ -2169,15 +2317,28 @@ export default function JobsPage() {
                                   Location
                                 </span>
                                 <p className="text-sm text-gray-500  ps-6">
-                                  {/* {state?.jobDetail?.locations
+                                  {state?.jobDetail?.locations
                                     ?.map((item) => item.city)
-                                    .join(", ")} */}
-                                    {state?.jobDetail?.college?.address}
+                                    .join(", ")}
+                                  {/* {state?.jobDetail?.college?.address} */}
                                 </p>
                               </div>
                             )}
                           </div>
                         </div>
+
+                        {state?.jobDetail?.job_image && (
+                          <div
+                            className="pt-4 cursor-pointer"
+                            onClick={() => setState({ imgOpen: true })}
+                          >
+                            <img
+                              src={state?.jobDetail?.job_image}
+                              alt={state?.jobDetail?.job_title}
+                              className="w-100 max-h-[400px]"
+                            />
+                          </div>
+                        )}
 
                         <div>
                           <h3 className="text-lg font-bold text-gray-900 mb-3">
@@ -2193,7 +2354,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                               >
                                 {state.jobDetail?.college?.name
@@ -2210,20 +2371,24 @@ export default function JobsPage() {
                               </p> */}
                             </div>
                           </div>
+                          <button
+                            onClick={() => {
+                              setSelectedJob(null);
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+
+                              router.push(
+                                `/jobs?college=${state?.jobDetail?.college?.id}`
+                              );
+                            }}
+                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                          >
+                            {state?.jobDetail?.college?.total_jobs || 0}{" "}
+                            Openings
+                          </button>
                           <p className="text-sm text-gray-700 leading-relaxed">
                             {state.jobDetail?.company_detail}
                           </p>
                         </div>
-
-                        {state?.jobDetail?.job_image && (
-                          <div className="pt-4">
-                            <img
-                              src={state?.jobDetail?.job_image}
-                              alt={state?.jobDetail?.job_title}
-                              className="w-100 max-h-[400px]"
-                            />
-                          </div>
-                        )}
                       </div>
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
@@ -2374,50 +2539,54 @@ export default function JobsPage() {
                 </div>
               )}
             />
-
+            {state.imgOpen && (
+              <LightboxGallery
+                isOpen={state.imgOpen}
+                onClose={() => setState({ imgOpen: false })}
+                images={[state?.jobDetail?.job_image]}
+              />
+            )}
             <Modal
-  isOpen={state.congratsOpen}
-  setIsOpen={() => {
-    setState({ errors: {}, congratsOpen: false });
-  }}
-  title="Job Application Success"
-  width="750px"
-  hideHeader={true}
-  renderComponent={() => (
-    <div className="relative min-h-[500px] bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-12 overflow-hidden">
+              isOpen={state.congratsOpen}
+              setIsOpen={() => {
+                setState({ errors: {}, congratsOpen: false });
+              }}
+              title="Job Application Success"
+              width="750px"
+              hideHeader={true}
+              renderComponent={() => (
+                <div className="relative min-h-[500px] bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-12 overflow-hidden">
+                  {/* Large background circles */}
+                  <div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-gray-300 opacity-30 rounded-full"></div>
+                  <div className="absolute -top-20 right-[-100px] w-[380px] h-[380px] bg-gray-300 opacity-30 rounded-full"></div>
 
-      {/* Large background circles */}
-      <div className="absolute -top-32 -left-32 w-[420px] h-[420px] bg-gray-300 opacity-30 rounded-full"></div>
-      <div className="absolute -top-20 right-[-100px] w-[380px] h-[380px] bg-gray-300 opacity-30 rounded-full"></div>
+                  {/* Small decorative circles */}
+                  <div className="absolute top-24 left-32 w-3 h-3 bg-gray-400 rounded-full"></div>
+                  <div className="absolute top-28 right-40 w-4 h-4 bg-[#01014B] rounded-full"></div>
+                  <div className="absolute bottom-32 left-40 w-3 h-3 bg-gray-300 rounded-full"></div>
 
-      {/* Small decorative circles */}
-      <div className="absolute top-24 left-32 w-3 h-3 bg-gray-400 rounded-full"></div>
-      <div className="absolute top-28 right-40 w-4 h-4 bg-[#01014B] rounded-full"></div>
-      <div className="absolute bottom-32 left-40 w-3 h-3 bg-gray-300 rounded-full"></div>
+                  {/* Success star badge */}
+                  <div className="relative mb-8 z-10">
+                    <div className="w-40 h-40 relative">
+                      <img
+                        src="/assets/images/job-check.png"
+                        alt="Success Star"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                  </div>
 
-      {/* Success star badge */}
-      <div className="relative mb-8 z-10">
-        <div className="w-40 h-40 relative">
-          <img
-            src="/assets/images/job-check.png"
-            alt="Success Star"
-            className="w-full h-full object-contain"
-          />
-        </div>
-      </div>
+                  <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
+                    Congrats, your job applied!
+                  </h2>
 
-      <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
-        Congrats, your job applied!
-      </h2>
-
-      <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-        Curabitur dignissim rutrum dui quis malesuada.
-      </p>
-
-    </div>
-  )}
-/>
+                  <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Curabitur dignissim rutrum dui quis malesuada.
+                  </p>
+                </div>
+              )}
+            />
           </main>
         </div>
       </div>
