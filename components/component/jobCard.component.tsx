@@ -163,7 +163,7 @@ export const JobCard: React.FC<JobCardProps> = ({
         </div>
 
         <button
-          disabled={isSaving === job.id}
+          disabled={isSaving === job?.id}
           onClick={(e) => handleSaveToggle(e)}
           className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors disabled:opacity-50"
         >

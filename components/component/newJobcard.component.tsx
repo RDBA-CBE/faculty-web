@@ -168,10 +168,11 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors disabled:opacity-50"
           >
             {job?.is_saved ? (
-              <div className="flex items-center ">
-                <BookmarkCheck className="w-7 h-7 fill-[#1d1d57] text-white" />
-                {/* <div className="text-[#1d1d57] font-medium text-sm">Saved</div> */}
-              </div>
+
+               <div className="flex items-center ">
+                            <BookmarkCheck className="w-7 h-7 fill-[#1d1d57] text-white" />
+                          </div>
+            
             ) : (
               <>
                 <Bookmark className="w-5 h-5 " />
