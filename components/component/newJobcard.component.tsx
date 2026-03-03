@@ -138,17 +138,21 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           <div className="flex items-center gap-5 text-sm text-gray-600 mb-3">
             <div className="flex items-center gap-3">
               <Briefcase className="w-4 h-4 text-[#ffb400]" />
-              <span className="text-sm text-[#6D6C6C]">{job?.experiences?.name}</span>
+              <span className="text-sm text-[#6D6C6C]">
+                {job?.experiences?.name}
+              </span>
             </div>
             {/* <span className="text-gray-400">|</span> */}
-            {job?.college?.address && <div className="flex items-center gap-3">
-              <MapPin className="w-4 h-4 text-[#ffb400]" />
-              <span className="text-sm text-[#6D6C6C]">
-                {" "}
-                {/* {job?.locations?.map((item) => item.city).join(", ")} */}
-                {job?.college?.address}
-              </span>
-            </div>}
+            {job?.college?.address && (
+              <div className="flex items-center gap-3">
+                <MapPin className="w-4 h-4 text-[#ffb400]" />
+                <span className="text-sm text-[#6D6C6C]">
+                  {" "}
+                  {job?.locations?.map((item) => item.city).join(", ")}
+                  {/* {job?.college?.address} */}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -168,11 +172,9 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             className=" flex  gap-1 items-center text-sm  font-medium hover:text-blue-700 transition-colors disabled:opacity-50"
           >
             {job?.is_saved ? (
-
-               <div className="flex items-center ">
-                            <BookmarkCheck className="w-7 h-7 fill-[#1d1d57] text-white" />
-                          </div>
-            
+              <div className="flex items-center ">
+                <BookmarkCheck className="w-7 h-7 fill-[#1d1d57] text-white" />
+              </div>
             ) : (
               <>
                 <Bookmark className="w-5 h-5 " />
