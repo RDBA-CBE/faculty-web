@@ -2,6 +2,8 @@
 
 import Filterbar from "@/components/component/filterbar.component";
 import useDebounce from "@/components/common-components/useDebounce";
+import Breadcrumb from "@/components/common-components/Breadcrumb";
+
 
 import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
@@ -758,13 +760,15 @@ export default function JobsPage() {
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
                 >
-                  <ArrowLeft size={20} />
-                  <span className="font-medium">Back to Jobs</span>
+                  {/* <ArrowLeft size={20} /> */}
+                  <Breadcrumb />
+                  {/* <span className="font-medium">Back to Jobs</span> */}
                 </button>
 
                 {/* Job Header */}
                 {/* Job Header Card */}
                 <div className="bg-clr2 rounded-lg   p-6 ">
+
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
@@ -1115,7 +1119,11 @@ export default function JobsPage() {
                 </div>
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
-              <div className="flex gap-6 ">
+              <>
+                <Breadcrumb />
+
+              <div className="flex gap-6 py-4 ">
+
                 {/* Left Sidebar - Jobs List */}
                 <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#E4E4E4]">
                   <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
@@ -1390,6 +1398,7 @@ export default function JobsPage() {
                 </div>
 
                 <div className="flex-1 ">
+
                   {/* Job Header Card */}
                   <div className=" border-b  px-2 py-2 pb-5">
                     <div className="flex items-start justify-between mb-2">
@@ -1767,6 +1776,7 @@ export default function JobsPage() {
                   </div>
                 </div>
               </div>
+              </>
             ) : (
               <div className="relative flex flex-col lg:flex-row gap-8 items-start">
                 <div
