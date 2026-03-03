@@ -129,6 +129,7 @@ export default function JobsPage() {
     experience: "",
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
+    department:[]
   });
 
   const debouncedSearch = useDebounce(state.search, 500);
@@ -683,6 +684,7 @@ export default function JobsPage() {
       experience: "",
       jobID: null,
       colleges: [],
+      department: [],
     });
     setState({ search: "" });
   };
