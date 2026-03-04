@@ -563,3 +563,10 @@ export const DateFormat = (date, type = "dateTime") => {
       return m.format("DD MMM YYYY, hh:mm A");
   }
 };
+
+export const CharSlice = (text, limit) => {
+  if (!text) return "";
+  return text.length > limit 
+    ? text.slice(0, limit) + "..." 
+    : text;
+};

@@ -1810,7 +1810,7 @@ export default function JobsPage() {
                 </div>
 
                 {/* DESKTOP STICKY SIDEBAR */}
-                <div className="hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#E4E4E4]">
+                <div className="w-80 hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#E4E4E4]">
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div className="">
                     <Filterbar

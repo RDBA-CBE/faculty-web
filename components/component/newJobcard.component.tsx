@@ -137,7 +137,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           </p>
 
           {/* Experience and Location */}
-          <div className="flex items-center gap-5 text-sm text-gray-600 mb-3">
+          <div className="flex flex-wrap items-center gap-5 text-sm text-gray-600 mb-3">
             <div className="flex items-center gap-3">
               <Briefcase className="w-4 h-4 text-[#ffb400]" />
               <span className="text-sm text-[#6D6C6C]">

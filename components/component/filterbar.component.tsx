@@ -15,6 +15,7 @@ import {
   TAGS,
 } from "@/utils/constant.utils";
 import PriceRangeSlider from "../common-components/priceRange";
+import { CharSlice } from "@/utils/function.utils";
 
 interface CategoryItem {
   value: number;
@@ -69,8 +70,9 @@ const FilterSection: React.FC<{
               onChange={() => onToggle(item.value)}
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
-            <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors">
-              {item.label}
+            <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors ">
+              {/* {item.label} */}
+             { CharSlice(item.label, 32)}
             </span>
           </div>
 
