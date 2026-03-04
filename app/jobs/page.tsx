@@ -46,6 +46,8 @@ import {
   Mail,
   MailIcon,
   PhoneCall,
+  Award,
+  Building,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -118,6 +120,7 @@ export default function JobsPage() {
     showCollegeModal: false,
     departmentDetail: null,
     showDepartmentModal: false,
+    department_id: null,
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -422,9 +425,28 @@ export default function JobsPage() {
       return;
     }
 
+    const newState: { department_id?: number | null } = {};
+    if (state.jobDetail?.department?.length === 1) {
+      newState.department_id = state.jobDetail.department[0].id;
+    } else {
+      newState.department_id = null;
+    }
+
     if (profile) {
+      setState(newState);
       handleFormSubmitWithprofile(userId);
     } else {
+      setState({
+        ...newState,
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        message: "",
+        experience: "",
+        resume: null,
+        errors: {},
+      });
       setShowApplicationModal(true);
     }
   };
@@ -533,6 +555,15 @@ export default function JobsPage() {
       //  never overwrite state
       setState({ btnLoading: true, errors: {} });
 
+      // Manual validation for department
+      if (state.jobDetail?.department?.length > 1 && !state.department_id) {
+        setState({
+          errors: { ...state.errors, department_id: "Please select a department." },
+          btnLoading: false,
+        });
+        return;
+      }
+
       const profile = JSON.parse(localStorage.getItem("user") || "null");
 
       //  GUEST USER (WITH RESUME)
@@ -561,6 +592,10 @@ export default function JobsPage() {
       formData.append("experience", state.experience);
       formData.append("message", state.message || "");
       formData.append("status", "Applied");
+
+      if (state.department_id) {
+        formData.append("department_id", state.department_id);
+      }
 
       if (state.resume) {
         formData.append("resume", state.resume); // FILE OBJECT
@@ -592,6 +627,7 @@ export default function JobsPage() {
         message: "",
         experience: "",
         resume: null,
+        department_id: null,
         congratsOpen: true,
         btnLoading: false,
       });
@@ -760,6 +796,9 @@ export default function JobsPage() {
     });
     setState({ search: "" });
   };
+
+
+  
 
   return (
     <>
@@ -2667,6 +2706,157 @@ export default function JobsPage() {
               </Sheet>
             )}
 
+             <Modal
+              isOpen={showApplicationModal}
+              setIsOpen={() => {
+                setState({ errors: {} });
+                setShowApplicationModal(false);
+              }}
+              title={capitalizeFLetter(selectedJob?.job_title)}
+              width="700px"
+              renderComponent={() => (
+                <div className="space-y-6 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
+                  <div className="flex items-center justify-center w-full mb-6">
+                    <img
+                      src="/assets/images/recruitmen.gif"
+                      height={200}
+                      width={150}
+                      alt="Job Application"
+                      className="object-contain"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+                    <Input
+                      placeholder="First Name*"
+                      value={state.firstName}
+                      bg="ffffff"
+                      onChange={(e) =>
+                        handleFormChange("firstName", e.target.value)
+                      }
+                      required
+                      error={state.errors?.firstName}
+                    />
+                    <Input
+                      placeholder="Last Name*"
+                      value={state.lastName}
+                      onChange={(e) =>
+                        handleFormChange("lastName", e.target.value)
+                      }
+                      required
+                      bg="ffffff"
+                      error={state.errors?.lastName}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Input
+                      type="email"
+                      placeholder="Email*"
+                      value={state.email}
+                      onChange={(e) =>
+                        handleFormChange("email", e.target.value)
+                      }
+                      required
+                      bg="ffffff"
+                      error={state.errors?.email}
+                    />
+                    {/* <Input
+                  type="tel"
+                  placeholder="Phone Number*"
+                  value={state.phone}
+                  onChange={(e) => handleFormChange("phone", e.target.value)}
+                  required
+                  bg="ffffff"
+
+                /> */}
+
+                    <CustomPhoneInput
+                      // title="Phone Number"
+                      value={state.phone}
+                      onChange={(value) => handleFormChange("phone", value)}
+                      error={state.errors?.phone}
+                      required
+                    />
+                  </div>
+
+                 
+                  <div className="space-y-2">
+                    <CustomSelect
+                      // title="Experience"
+                      required
+                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
+                      options={state.experienceList}
+                      value={state?.experience || ""}
+                      onChange={(selected) =>
+                        setState({
+                          ...state,
+                          experience: selected ? selected.value : "",
+                        })
+                      }
+                      error={state?.errors?.experience}
+                      placeholder="Experience"
+                    />
+                  </div>
+
+                  {state.jobDetail?.department?.length > 0 && (
+                    <CustomSelect
+                      label="Choose Department"
+                      options={state.jobDetail.department.map((d) => ({
+                        value: d.id,
+                        label: d.name,
+                      }))}
+                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
+                      value={state.department_id}
+                      onChange={(selected) =>
+                        handleFormChange(
+                          "department_id",
+                          selected ? selected.value : null,
+                        )
+                      }
+                      placeholder="Select a department"
+                      disabled={state.jobDetail.department.length <= 1}
+                      error={state.errors.department_id}
+                    />
+                  )}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <TextArea
+                      placeholder="Your message..."
+                      value={state.message}
+                      onChange={(e) =>
+                        handleFormChange("message", e.target.value)
+                      }
+                      className="min-h-[150px] bg-white"
+                    />
+
+                    {/* <TextArea
+                  type="email"
+                  placeholder="Email*"
+                  value={state.email}
+                  onChange={(e) => handleFormChange("email", e.target.value)}
+                  required
+                  bg="ffffff"
+                /> */}
+
+                    <FileUpload
+                      value={state.resume || null}
+                      onChange={(file) => handleFormChange("resume", file)}
+                      error={state.errors?.resume}
+                    />
+                  </div>
+
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      type="button"
+                      onClick={handleFormSubmit}
+                      className="px-12 py-3 bg-[#1d1d57] hover:bg-[#1d1d57] text-white font-semibold rounded-full"
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </div>
+              )}
+            />
+
             {state.imgOpen && (
               <LightboxGallery
                 isOpen={state.imgOpen}
@@ -2785,9 +2975,16 @@ export default function JobsPage() {
                           </div>
 
                           <div className="flex items-start gap-2">
-                            <MapPin className="w-4 h-4 text-[#F2B31D] mt-1" />
+                            <MapPin className="w-4 h-4 text-[#F2B31D]" />
                             <span className="line-clamp-2">
                               {state.collegeDetail?.college_address}
+                            </span>
+                          </div> 
+
+                          <div className="flex items-start gap-2">
+                            <Building className="w-4 h-4 text-[#F2B31D] " />
+                            <span className="line-clamp-2">
+                              {state.collegeDetail?.college_types?.map((item )=>(item?.name))?.join( " ,")}
                             </span>
                           </div>
                         </div>
@@ -2898,7 +3095,7 @@ export default function JobsPage() {
                                   key={index}
                                   className="flex items-start gap-2"
                                 >
-                                  <Check className="w-4 h-4 text-[#F2B31D] mt-1" />
+                                  <Award className="w-5 h-5 text-[#F2B31D] " />
                                   {item.achievement}
                                 </li>
                               ),
@@ -3002,7 +3199,7 @@ export default function JobsPage() {
                                       key={index}
                                       className="flex items-start gap-2"
                                     >
-                                      <Check className="w-4 h-4 text-[#F2B31D] mt-1" />
+                                      <Award className="w-5 h-5 text-[#F2B31D] " />
                                       {item.achievement}
                                     </li>
                                   ),
