@@ -11,13 +11,21 @@ export default function Breadcrumb() {
       <span>/</span>
 
       {/* Jobs */}
+
       <Link
         href="/jobs"
         className="hover:text-black"
-        onClick={() => window.location.reload()}
+        onClick={() => (window.location.href = "/jobs")}
       >
         Job
       </Link>
+      {/* <Link
+        href="/jobs"
+        className="hover:text-black"
+        // onClick={() => window.location.reload()}
+      >
+        Job
+      </Link> */}
 
       <span>/</span>
 
