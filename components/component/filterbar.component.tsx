@@ -165,7 +165,6 @@ const Filterbar: React.FC<SidebarProps> = ({
   tagsList,
   deptList,
 }) => {
-  console.log("✌️deptList --->", deptList);
 
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
@@ -323,7 +322,6 @@ const Filterbar: React.FC<SidebarProps> = ({
     });
   };
 
-  console.log("experienceList", experienceList);
 
   return (
     <aside className="w-full h-full">

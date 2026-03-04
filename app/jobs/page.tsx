@@ -411,7 +411,6 @@ export default function JobsPage() {
     const profile = JSON.parse(localStorage.getItem("user"));
     const userId = profile?.id;
 
-    console.log("state.jobDetail", state.jobDetail);
 
     if (state.jobDetail?.apply_link) {
       window.open(state.jobDetail.apply_link, "_blank");
@@ -492,7 +491,6 @@ export default function JobsPage() {
     }
   };
 
-  console.log("resume", state?.resume);
 
   const handleFormSubmit = async () => {
     try {
@@ -500,7 +498,6 @@ export default function JobsPage() {
       setState({ btnLoading: true, errors: {} });
 
       const profile = JSON.parse(localStorage.getItem("user") || "null");
-      console.log("profile", profile);
 
       //  GUEST USER (WITH RESUME)
 
@@ -545,7 +542,6 @@ export default function JobsPage() {
       }
 
       const res = await Models.applications.create(formData);
-      console.log("job apply res", res);
 
       //  COMMON SUCCESS STATE
 
@@ -572,7 +568,6 @@ export default function JobsPage() {
           validationErrors[err.path] = err.message;
         });
 
-        console.log("validationErrors", validationErrors);
         setState({
           errors: validationErrors,
           btnLoading: false,
@@ -665,8 +660,6 @@ export default function JobsPage() {
     return body;
   };
 
-  console.log("state?.jobDetail", state?.jobDetail);
-
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
@@ -689,7 +682,6 @@ export default function JobsPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  console.log("state.page", state.page);
 
   const handlePrev = () => {
     if (!state.prev) return;
@@ -2340,7 +2332,9 @@ export default function JobsPage() {
                         {state?.jobDetail?.job_image && (
                           <div
                             className="pt-4 cursor-pointer"
-                            onClick={() => setState({ imgOpen: true })}
+                            onClick={() => {
+                              setSelectedJob(null)
+                              setState({ imgOpen: true })}}
                           >
                             <img
                               src={state?.jobDetail?.job_image}
@@ -2552,7 +2546,12 @@ export default function JobsPage() {
             {state.imgOpen && (
               <LightboxGallery
                 isOpen={state.imgOpen}
-                onClose={() => setState({ imgOpen: false })}
+                onClose={() => {
+                  if(isMobileScreen){
+                  setSelectedJob(state.jobDetail);
+                }
+                  setState({ imgOpen: false })
+                }}
                 images={[state?.jobDetail?.job_image]}
               />
             )}
