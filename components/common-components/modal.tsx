@@ -46,7 +46,7 @@ export default function Modal({
       <DialogContent
         hideClose
         // className={`p-0 ${width ? `sm:max-w-[${width}]` : "sm:max-w-[500px]"}`}
-        className={cn("p-0 bg-[#EFF2F6]", width ? widthClasses[width] : "sm:max-w-[500px]")}
+        className={cn("p-0 bg-[#EFF2F6] !gap-0", width ? widthClasses[width] : "sm:max-w-[500px]")}
       >
         {/* Custom header with title + close in one row */}
         {!hideHeader && (

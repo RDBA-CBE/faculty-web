@@ -4,7 +4,6 @@ import Filterbar from "@/components/component/filterbar.component";
 import useDebounce from "@/components/common-components/useDebounce";
 import Breadcrumb from "@/components/common-components/Breadcrumb";
 
-
 import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
   buildResumeFile,
@@ -44,6 +43,9 @@ import {
   LayoutGrid,
   List,
   Building2,
+  Mail,
+  MailIcon,
+  PhoneCall,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -112,6 +114,10 @@ export default function JobsPage() {
     sortOrder: "",
     errors: {},
     jobID: null,
+    collegeDetail: null,
+    showCollegeModal: false,
+    departmentDetail: null,
+    showDepartmentModal: false,
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -411,7 +417,6 @@ export default function JobsPage() {
     const profile = JSON.parse(localStorage.getItem("user"));
     const userId = profile?.id;
 
-
     if (state.jobDetail?.apply_link) {
       window.open(state.jobDetail.apply_link, "_blank");
       return;
@@ -491,6 +496,37 @@ export default function JobsPage() {
     }
   };
 
+  const getCollege = async (e, id) => {
+    e.stopPropagation();
+    try {
+      setState({ loading: true });
+      const res: any = await Models.colleges.details(id);
+      setState({
+        collegeDetail: res,
+        showCollegeModal: true,
+        loading: false,
+      });
+    } catch (error) {
+      setState({ loading: false });
+      Failure("Failed to fetch college details");
+    }
+  };
+
+  const getDepartment = async (e, id) => {
+    e.stopPropagation();
+    try {
+      setState({ loading: true });
+      const res: any = await Models.department.depdetails(id);
+      setState({
+        departmentDetail: res,
+        showDepartmentModal: true,
+        loading: false,
+      });
+    } catch (error) {
+      setState({ loading: false });
+      Failure("Failed to fetch department details");
+    }
+  };
 
   const handleFormSubmit = async () => {
     try {
@@ -642,7 +678,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0)
+        ...filters.datePosted.map((d) => durationMap[d] || 0),
       );
 
       if (maxDays === 1) {
@@ -659,6 +695,13 @@ export default function JobsPage() {
 
     return body;
   };
+
+  const naccData = [
+    { label: "A++", highlight: true },
+    { label: "NBA Accredited" },
+    { label: "Autonomous" },
+    { label: "UGC Approved" },
+  ];
 
   useEffect(() => {
     const handleResize = () => {
@@ -681,7 +724,6 @@ export default function JobsPage() {
     jobList(nextPage);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
 
   const handlePrev = () => {
     if (!state.prev) return;
@@ -718,8 +760,6 @@ export default function JobsPage() {
     });
     setState({ search: "" });
   };
-
-  const finalViewType = isWideScreen ? viewType : "list";
 
   return (
     <>
@@ -760,7 +800,6 @@ export default function JobsPage() {
                 {/* Job Header */}
                 {/* Job Header Card */}
                 <div className="bg-clr2 rounded-lg   p-6 ">
-
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
@@ -776,12 +815,18 @@ export default function JobsPage() {
                             src={state?.jobDetail?.college?.college_logo}
                             alt={state?.jobDetail?.college?.name}
                             className="w-14 h-14  object-cover"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
                           />
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.college?.name
+                              state?.jobDetail?.college?.name,
                             )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
                           >
                             {state?.jobDetail?.college?.name
                               ?.slice(0, 1)
@@ -789,7 +834,12 @@ export default function JobsPage() {
                           </div>
                         )}
                         <div className="flex-1">
-                          <h1 className="text-xl font-semibold text-[#313131] mb-1">
+                          <h1
+                            className="text-xl font-semibold text-[#313131] mb-1"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          >
                             {capitalizeFLetter(state?.jobDetail?.job_title)}
                           </h1>
                           <p className="text-md text-gray-700 mb-2">
@@ -840,18 +890,11 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", ")
+                              .join(", "),
                           )}{" "}
                           {/* {state?.jobDetail?.college?.address} */}
                         </span>
                       )}
-                      <span className="flex items-center gap-1">
-                        <Building2 className="w-4 h-4 text-[#F2B31D]" />
-
-                        {state?.jobDetail?.department
-                          ?.map((item) => item?.name)
-                          ?.join(", ")}
-                      </span>
                     </div>
                   </div>
 
@@ -910,6 +953,45 @@ export default function JobsPage() {
                       About the job
                     </h2>
                     <div className="leading-relaxed space-y-4">
+                      <div className="leading-relaxed space-y-6">
+                        {state?.jobDetail?.department?.length > 0 && (
+                          <div>
+                            <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                              Departments
+                            </h3>
+
+                            <div className="flex flex-wrap gap-3">
+                              {state?.jobDetail?.department?.map(
+                                (item, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => getDepartment(e, item.id)}
+                                    className="px-4 py-2 text-sm font-medium rounded-full 
+                       bg-blue-50 text-[#1d1d57] 
+                       border border-blue-100
+                       hover:bg-[#1d1d57] hover:text-white
+                       transition-all duration-200"
+                                  >
+                                    {item.name}
+                                  </button>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        )}
+                        {/* Job Description Section */}
+                        {state?.jobDetail?.job_description && (
+                          <div>
+                            <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                              Job Description
+                            </h3>
+
+                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                              {state?.jobDetail?.job_description}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                       <p>
                         {state?.jobDetail?.job_description}
                         {/* We are looking for a talented professional to join our
@@ -1028,9 +1110,18 @@ export default function JobsPage() {
                         Department
                       </span>
                       <p className="text-md text-gray-500 ps-6">
-                        {state?.jobDetail?.department
-                          ?.map((item) => item?.name)
-                          ?.join(", ")}
+                        {state?.jobDetail?.department?.map((item, index) => (
+                          <div key={index}>
+                            <span
+                              className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                              onClick={(e) => getDepartment(e, item.id)}
+                            >
+                              {item.name}
+                            </span>
+                            {index < state.jobDetail.department.length - 1 &&
+                              ", "}
+                          </div>
+                        ))}
                       </p>
                     </div>
                     {state?.jobDetail?.college?.address && (
@@ -1074,18 +1165,29 @@ export default function JobsPage() {
                         src={selectedJob.college?.college_logo}
                         alt={selectedJob.college?.name}
                         className="w-12 h-12 rounded-lg object-cover"
+                        onClick={(e) =>
+                          getCollege(e, state?.jobDetail.college?.id)
+                        }
                       />
                     ) : (
                       <div
                         className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                          selectedJob.college?.name
+                          selectedJob.college?.name,
                         )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                        onClick={(e) =>
+                          getCollege(e, state?.jobDetail.college?.id)
+                        }
                       >
                         {selectedJob.college?.name?.slice(0, 1).toUpperCase()}
                       </div>
                     )}
                     <div>
-                      <h4 className="font-medium text-gray-900">
+                      <h4
+                        className="font-medium text-gray-900"
+                        onClick={(e) =>
+                          getCollege(e, state?.jobDetail.college?.id)
+                        }
+                      >
                         {state?.jobDetail?.college?.name}
                       </h4>
                       {/* <p className="text-sm text-gray-500">
@@ -1097,7 +1199,7 @@ export default function JobsPage() {
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
-                          `/jobs?college=${state?.jobDetail?.college?.id}`
+                          `/jobs?college=${state?.jobDetail?.college?.id}`,
                         );
                       }}
                       className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -1114,135 +1216,137 @@ export default function JobsPage() {
               <>
                 <Breadcrumb />
 
-              <div className="flex gap-6 py-4 ">
+                <div className="flex gap-6 py-4 ">
+                  {/* Left Sidebar - Jobs List */}
+                  <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#E4E4E4]">
+                    <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
+                      <div className="flex-grow flex gap-3 items-center px-6 py-4 lg:py-0 w-full lg:w-auto border border-[#E4E4E4] mx-4 bg-[#F5F5F5]">
+                        <Search color="#E4E4E4" size={22} />
+                        <input
+                          type="text"
+                          placeholder="Search by: Job tittle, Position, Keyword..."
+                          className="w-full  py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                          value={state.search}
+                          onChange={(e) => setState({ search: e.target.value })}
+                        />
+                      </div>
+                      <h3 className="text-black px-6 font-semibold mt-4">
+                        Job List
+                      </h3>
 
-                {/* Left Sidebar - Jobs List */}
-                <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#E4E4E4]">
-                  <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
-                    <div className="flex-grow flex gap-3 items-center px-6 py-4 lg:py-0 w-full lg:w-auto border border-[#E4E4E4] mx-4 bg-[#F5F5F5]">
-                      <Search color="#E4E4E4" size={22} />
-                      <input
-                        type="text"
-                        placeholder="Search by: Job tittle, Position, Keyword..."
-                        className="w-full  py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
-                        value={state.search}
-                        onChange={(e) => setState({ search: e.target.value })}
-                      />
+                      {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
                     </div>
-                    <h3 className="text-black px-6 font-semibold mt-4">
-                      Job List
-                    </h3>
-
-                    {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
-                  </div>
-                  <div className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
-                    {state.jobList?.map((job) => (
-                      <div
-                        key={job.id}
-                        onClick={() => {
-                          setSelectedJob(job);
-                          setState({ jobID: job.id });
-                          jobDetail(job.id);
-                          window.scrollTo({ top: 0, behavior: "smooth" });
-                        }}
-                        className={`cursor-pointer px-2 py-5 transition-all   ${
-                          selectedJob?.id === job.id
-                            ? "border border-[#01014B] bg-[#fff]  "
-                            : "border-b border-[#E4E4E4]"
-                        }`}
-                      >
-                        <div className="flex flex-row gap-4 justify-between">
-                          <div className="flex flex-row gap-4">
-                            <div>
-                              {job?.college?.college_logo ? (
-                                <img
-                                  src={job?.college?.college_logo}
-                                  alt={job?.college?.name}
-                                  className="w-6 h-6  object-cover"
-                                />
-                              ) : (
-                                <div
-                                  className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                    job.college?.name
-                                  )} flex items-center justify-center ${
-                                    selectedJob?.id === job.id
-                                      ? "text-white bg-gray-400"
-                                      : " ext-white bg-gray-400"
-                                  }  font-semibold flex-shrink-0`}
-                                >
-                                  {job.college?.name?.slice(0, 1).toUpperCase()}
-                                </div>
-                              )}
-                            </div>
-                            <div>
-                              <div className="flex items-start gap-3">
-                                <div className="min-w-0 flex-1">
-                                  <h3
-                                    className={`font-semibold  leading-tight mb-1 ${
-                                      selectedJob?.id === job.id
-                                        ? ""
-                                        : "text-gray-900"
-                                    }`}
-                                  >
-                                    {capitalizeFLetter(job.job_title)}
-                                  </h3>
-                                  <p
-                                    className={`${
-                                      selectedJob?.id === job.id
-                                        ? ""
-                                        : "text-gray-600"
-                                    } text-sm font-normal`}
-                                  >
-                                    {job.college?.name}
-                                  </p>
-                                </div>
-                              </div>
-                              {/* Header */}
-                              {/* Experience and Salary */}
-                              <div
-                                className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
-                                  selectedJob?.id === job.id
-                                    ? ""
-                                    : "text-gray-600"
-                                }`}
-                              >
-                                <div className="flex gap-2">
-                                  <Briefcase
-                                    className={`${
-                                      selectedJob?.id === job.id && ""
-                                    } w-3 h-3 text-[#E6AB1D]`}
+                    <div className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
+                      {state.jobList?.map((job) => (
+                        <div
+                          key={job.id}
+                          onClick={() => {
+                            setSelectedJob(job);
+                            setState({ jobID: job.id });
+                            jobDetail(job.id);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                          }}
+                          className={`cursor-pointer px-2 py-5 transition-all   ${
+                            selectedJob?.id === job.id
+                              ? "border border-[#01014B] bg-[#fff]  "
+                              : "border-b border-[#E4E4E4]"
+                          }`}
+                        >
+                          <div className="flex flex-row gap-4 justify-between">
+                            <div className="flex flex-row gap-4">
+                              <div>
+                                {job?.college?.college_logo ? (
+                                  <img
+                                    src={job?.college?.college_logo}
+                                    alt={job?.college?.name}
+                                    className="w-6 h-6  object-cover"
                                   />
-                                  <span
-                                    className={`text-[12px] pt-[-2px] ${
-                                      selectedJob?.id === job.id && ""
-                                    }`}
+                                ) : (
+                                  <div
+                                    className={`w-6 h-6 rounded-lg ${getAvatarColor(
+                                      job.college?.name,
+                                    )} flex items-center justify-center ${
+                                      selectedJob?.id === job.id
+                                        ? "text-white bg-gray-400"
+                                        : " ext-white bg-gray-400"
+                                    }  font-semibold flex-shrink-0`}
                                   >
-                                    {job.experiences?.name}
-                                  </span>
+                                    {job.college?.name
+                                      ?.slice(0, 1)
+                                      .toUpperCase()}
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <div className="flex items-start gap-3">
+                                  <div className="min-w-0 flex-1">
+                                    <h3
+                                      className={`font-semibold  leading-tight mb-1 ${
+                                        selectedJob?.id === job.id
+                                          ? ""
+                                          : "text-gray-900"
+                                      }`}
+                                    >
+                                      {capitalizeFLetter(job.job_title)}
+                                    </h3>
+                                    <p
+                                      className={`cursor-pointer ${
+                                        selectedJob?.id === job.id
+                                          ? ""
+                                          : "text-gray-600 hover:underline"
+                                      } text-sm font-normal`}
+                                      // onClick={(e) => getCollege(e, job.college?.id)}
+                                    >
+                                      {job.college?.name}
+                                    </p>
+                                  </div>
                                 </div>
-
-                                {job?.college?.address && (
-                                  <div className="flex  gap-1">
-                                    <MapPin
+                                {/* Header */}
+                                {/* Experience and Salary */}
+                                <div
+                                  className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
+                                    selectedJob?.id === job.id
+                                      ? ""
+                                      : "text-gray-600"
+                                  }`}
+                                >
+                                  <div className="flex gap-2">
+                                    <Briefcase
                                       className={`${
                                         selectedJob?.id === job.id && ""
                                       } w-3 h-3 text-[#E6AB1D]`}
                                     />
                                     <span
                                       className={`text-[12px] pt-[-2px] ${
-                                        selectedJob?.id === job.id &&
-                                        "text-[12px]"
+                                        selectedJob?.id === job.id && ""
                                       }`}
                                     >
-                                      {job.locations
-                                        ?.map((item) => item.city)
-                                        .join(", ")}
-                                      {/* {job?.college?.address} */}
+                                      {job.experiences?.name}
                                     </span>
                                   </div>
-                                )}
 
-                                {/* <div className="flex items-center gap-1">
+                                  {job?.college?.address && (
+                                    <div className="flex  gap-1">
+                                      <MapPin
+                                        className={`${
+                                          selectedJob?.id === job.id && ""
+                                        } w-3 h-3 text-[#E6AB1D]`}
+                                      />
+                                      <span
+                                        className={`text-[12px] pt-[-2px] ${
+                                          selectedJob?.id === job.id &&
+                                          "text-[12px]"
+                                        }`}
+                                      >
+                                        {job.locations
+                                          ?.map((item) => item.city)
+                                          .join(", ")}
+                                        {/* {job?.college?.address} */}
+                                      </span>
+                                    </div>
+                                  )}
+
+                                  {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -1266,24 +1370,35 @@ export default function JobsPage() {
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                              </div>
-                              <div className="flex gap-2">
-                                <Building2
-                                  className={`${
-                                    selectedJob?.id === job.id && ""
-                                  } w-3 h-3 text-[#E6AB1D]`}
-                                />
-                                <span
-                                  className={`text-[12px] pt-[-2px] ${
-                                    selectedJob?.id === job.id && ""
-                                  }`}
-                                >
-                                  {job.department
-                                    ?.map((item) => item?.name)
-                                    ?.join(", ")}
-                                </span>
-                              </div>
-                              {/* Location
+                                </div>
+                                <div className="flex gap-2">
+                                  <Building2 className="w-4 h-4 text-[#ffb400]" />
+
+                                  <span className="flex items-center ">
+                                    {job?.department
+                                      ?.slice(0, 1)
+                                      .map((item, index) => (
+                                        <span
+                                          key={index}
+                                          className="cursor-pointer text-[12px]"
+                                          // onClick={(e) => {
+                                          //   e.stopPropagation();
+                                          //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                          // }}
+                                        >
+                                          {item.name}
+                                        </span>
+                                      ))}
+
+                                    {/* If more than 2 departments */}
+                                    {job?.department?.length > 2 && (
+                                      <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[10px] font-medium">
+                                        +{job.department.length - 2}
+                                      </div>
+                                    )}
+                                  </span>
+                                </div>
+                                {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -1306,18 +1421,18 @@ export default function JobsPage() {
                                   .join(", ")}
                               </span>
                             </div> */}
-                              {/* Footer */}
-                              {/* <div
+                                {/* Footer */}
+                                {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                              {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                              {/* <div
+                                {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -1340,35 +1455,35 @@ export default function JobsPage() {
                                     : "Just now"}
                                 </span>
                               </div> */}
-                              {/* </div> */}
+                                {/* </div> */}
+                              </div>
                             </div>
-                          </div>
 
-                          <div>
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={() => handleSaveToggle(job)}
-                                  disabled={isSaving === job.id}
-                                  className="p-1 -m-1"
-                                  // aria-label={
-                                  //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                  // }
-                                >
-                                  {job?.is_saved ? (
-                                    <div className="flex items-center ">
-                                      <BookmarkCheck
-                                        className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
-                                      />
-                                    </div>
-                                  ) : (
-                                    <>
-                                      <Bookmark className="w-5 h-5 " />
-                                    </>
-                                  )}
-                                </button>
+                            <div>
+                              <div className="flex justify-between items-start mb-3">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleSaveToggle(job)}
+                                    disabled={isSaving === job.id}
+                                    className="p-1 -m-1"
+                                    // aria-label={
+                                    //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                    // }
+                                  >
+                                    {job?.is_saved ? (
+                                      <div className="flex items-center ">
+                                        <BookmarkCheck
+                                          className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <Bookmark className="w-5 h-5 " />
+                                      </>
+                                    )}
+                                  </button>
 
-                                {/* <RWebShare
+                                  {/* <RWebShare
                               data={{
                                 title: "Faculty Plus",
                                 text: "Check this out!",
@@ -1380,212 +1495,242 @@ export default function JobsPage() {
                             >
                               <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                             </RWebShare> */}
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex-1 ">
-
-                  {/* Job Header Card */}
-                  <div className=" border-b  px-2 py-2 pb-5">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
-                          {/* • Posted{" "} */}
-                          {moment(state?.jobDetail?.created_at).isValid() &&
-                          moment(state?.jobDetail?.created_at).year() > 1900
-                            ? moment(state?.jobDetail?.created_at).fromNow()
-                            : "Just now"}
-                        </div>
-                        <div className="flex items-start gap-4 h-full mb-4">
-                          {state?.jobDetail?.college?.college_logo ? (
-                            <img
-                              src={state?.jobDetail?.college?.college_logo}
-                              alt={state?.jobDetail?.college?.name}
-                              className="w-12 h-12  object-cover  rounded-3xl"
-                            />
-                          ) : (
-                            <div
-                              className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                state?.jobDetail?.college?.name
-                              )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
-                            >
-                              {state?.jobDetail?.college?.name
-                                ?.slice(0, 1)
-                                .toUpperCase()}
-                            </div>
-                          )}
-                          <div className="flex-1 flex-col">
-                            <h1 className="text-3xl font-semibold text-gray-900 mb-1">
-                              {capitalizeFLetter(state?.jobDetail?.job_title)}
-                            </h1>
-                            <p className="text-md text-gray-700 mb-2">
-                              {capitalizeFLetter(
-                                state?.jobDetail?.college?.name
-                              )}
-                            </p>
+                  <div className="flex-1 ">
+                    {/* Job Header Card */}
+                    <div className=" border-b  px-2 py-2 pb-5">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                            {/* • Posted{" "} */}
+                            {moment(state?.jobDetail?.created_at).isValid() &&
+                            moment(state?.jobDetail?.created_at).year() > 1900
+                              ? moment(state?.jobDetail?.created_at).fromNow()
+                              : "Just now"}
                           </div>
-                        </div>
+                          <div className="flex items-start gap-4 h-full mb-4">
+                            {state?.jobDetail?.college?.college_logo ? (
+                              <img
+                                src={state?.jobDetail?.college?.college_logo}
+                                alt={state?.jobDetail?.college?.name}
+                                className="w-12 h-12  object-cover  rounded-3xl"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
+                              />
+                            ) : (
+                              <div
+                                className={`w-12 h-12 rounded-3xl ${getAvatarColor(
+                                  state?.jobDetail?.college?.name,
+                                )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
+                              >
+                                {state?.jobDetail?.college?.name
+                                  ?.slice(0, 1)
+                                  .toUpperCase()}
+                              </div>
+                            )}
+                            <div className="flex-1 flex-col">
+                              <h1 className="text-3xl font-semibold text-gray-900 mb-1">
+                                {capitalizeFLetter(state?.jobDetail?.job_title)}
+                              </h1>
+                              <p
+                                className="text-md text-gray-700 mb-2 cursor-pointer hover:underline"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
+                              >
+                                {capitalizeFLetter(
+                                  state?.jobDetail?.college?.name,
+                                )}
+                              </p>
+                            </div>
+                          </div>
 
-                        <div className=" ">
-                          <div className="flex items-center gap-5 text-sm text-gray-600">
-                            <span className="flex items-center gap-3">
-                              <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
-                              {state?.jobDetail?.experiences?.name}
-                            </span>
-                            {/* <span className="flex items-center gap-1">
+                          <div className=" ">
+                            <div className="flex items-center gap-5 text-sm text-gray-600">
+                              <span className="flex items-center gap-3">
+                                <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
+                                {state?.jobDetail?.experiences?.name}
+                              </span>
+                              {/* <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
                           {state?.jobDetail?.job_type_obj?.name}
                         </span> */}
-                            <span className="flex items-center gap-3">
-                              {selectedJob.salary_range?.includes("$") ? (
-                                <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
-                              ) : (
-                                <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
-                              )}
-                              {state?.jobDetail?.salary_range_obj?.name}
-                            </span>
-                            {state?.jobDetail?.college?.address && (
                               <span className="flex items-center gap-3">
-                                <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                                {capitalizeFLetter(
-                                  state?.jobDetail?.locations
-                                    ?.map((item) => item.city)
-                                    .join(", ")
-                                )}{" "}
-                                {/* {state?.jobDetail?.college?.address} */}
+                                {selectedJob.salary_range?.includes("$") ? (
+                                  <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
+                                ) : (
+                                  <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
+                                )}
+                                {state?.jobDetail?.salary_range_obj?.name}
                               </span>
-                            )}
-                            <span className="flex items-center gap-3">
-                              <Building2 className="w-4 h-4 text-[#E6AB1D]" />
-                              {state?.jobDetail?.department
-                                ?.map((item) => item?.name)
-                                ?.join(", ")}
-                            </span>
+                              {state?.jobDetail?.college?.address && (
+                                <span className="flex items-center gap-3">
+                                  <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                                  {capitalizeFLetter(
+                                    state?.jobDetail?.locations
+                                      ?.map((item) => item.city)
+                                      .join(", "),
+                                  )}{" "}
+                                  {/* {state?.jobDetail?.college?.address} */}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex flex-col gap-5 justify-between items-end h-full">
-                        <button
-                          className="p-1"
-                          onClick={() => setSelectedJob(null)}
-                        >
-                          <X size={25} className=" hover:text-gray-600" />
-                        </button>
-                        <div className="flex flex-col items-end justify-between pt-4 gap-8  border-gray-100">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() =>
-                                handleSaveToggle(
-                                  state.jobDetail
-
-                                  // !!state.jobDetail.is_saved,
-                                  // state.jobDetail.save_id,
-                                )
-                              }
-                              disabled={isSaving == state?.jobDetail?.id}
-                              className="p-1 -m-1"
-                              // aria-label={
-                              //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                              // }
-                            >
-                              {state.jobDetail?.is_saved ? (
-                                <div className="flex items-center ">
-                                  <BookmarkCheck
-                                    className={`w-6 h-6 fill-[#1d1d57] text-white cursor-pointer `}
-                                  />
-                                </div>
-                              ) : (
-                                <>
-                                  <Bookmark className="w- h-5 " />
-                                </>
-                              )}
-                            </button>
-                            <RWebShare
-                              data={{
-                                title: "Faculty Plus",
-                                text: "Check this out!",
-                                url: window.location.href,
-                              }}
-                              onClick={() =>
-                                console.log("shared successfully!")
-                              }
-                            >
-                              <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
-                            </RWebShare>
-                          </div>
-
+                        <div className="flex flex-col gap-5 justify-between items-end h-full">
                           <button
-                            onClick={() => {
-                              setState({ jobID: state?.jobDetail?.id });
-                              handleApply();
-                            }}
-                            className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                            className="p-1"
+                            onClick={() => setSelectedJob(null)}
                           >
-                            {state.jobDetail?.apply_link
-                              ? " Apply on company's site"
-                              : " Apply Now"}
+                            <X size={25} className=" hover:text-gray-600" />
                           </button>
+                          <div className="flex flex-col items-end justify-between pt-4 gap-8  border-gray-100">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() =>
+                                  handleSaveToggle(
+                                    state.jobDetail,
+
+                                    // !!state.jobDetail.is_saved,
+                                    // state.jobDetail.save_id,
+                                  )
+                                }
+                                disabled={isSaving == state?.jobDetail?.id}
+                                className="p-1 -m-1"
+                                // aria-label={
+                                //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                // }
+                              >
+                                {state.jobDetail?.is_saved ? (
+                                  <div className="flex items-center ">
+                                    <BookmarkCheck
+                                      className={`w-6 h-6 fill-[#1d1d57] text-white cursor-pointer `}
+                                    />
+                                  </div>
+                                ) : (
+                                  <>
+                                    <Bookmark className="w- h-5 " />
+                                  </>
+                                )}
+                              </button>
+                              <RWebShare
+                                data={{
+                                  title: "Faculty Plus",
+                                  text: "Check this out!",
+                                  url: window.location.href,
+                                }}
+                                onClick={() =>
+                                  console.log("shared successfully!")
+                                }
+                              >
+                                <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                              </RWebShare>
+                            </div>
+
+                            <button
+                              onClick={() => {
+                                setState({ jobID: state?.jobDetail?.id });
+                                handleApply();
+                              }}
+                              className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                            >
+                              {state.jobDetail?.apply_link
+                                ? " Apply on company's site"
+                                : " Apply Now"}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-6 flex-col xl:flex-row">
-                    {/* Main Content */}
-                    <div className="flex-1 space-y-1   p-3">
-                      <div>
-                        {/* Job Description */}
-                        <div className="border-b  px-2 py-2 pb-5">
-                          <h2 className="text-lg font-semibold text-black mb-4">
-                            About the job
-                          </h2>
-                          <div className="leading-relaxed space-y-4">
-                            <p>
-                              {state?.jobDetail?.job_description}
-                              {/* We are looking for a talented professional to join our
-                        dynamic team. This role offers an excellent opportunity
-                        to work with cutting-edge technologies and contribute to
-                        meaningful projects that impact thousands of users. */}
-                            </p>
-                            {/* <p>
-                        The ideal candidate will have strong technical skills,
-                        excellent communication abilities, and a passion for
-                        innovation. You'll be working in a collaborative
-                        environment where your ideas and contributions are
-                        valued.
-                      </p> */}
-                          </div>
-                        </div>
-
-                        {/* Responsibilities */}
-                        {state?.responsibilities?.length > 0 && (
+                    <div className="flex gap-6 flex-col xl:flex-row">
+                      {/* Main Content */}
+                      <div className="flex-1 space-y-1   p-3">
+                        <div>
+                          {/* Job Description */}
                           <div className="border-b  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-black mb-4">
-                              Key responsibilities
+                              About the job
                             </h2>
-                            <ul className="space-y-3">
-                              {state?.responsibilities?.map((item, index) => (
-                                <li
-                                  key={index}
-                                  className="flex items-start gap-3"
-                                >
-                                  <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                            {/* Department Section */}
+                            <div className="leading-relaxed space-y-6">
+                              {state?.jobDetail?.department?.length > 0 && (
+                                <div>
+                                  <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                    Departments
+                                  </h3>
 
-                                  <span className="">{item}</span>
-                                </li>
-                              ))}
-                            </ul>
+                                  <div className="flex flex-wrap gap-3">
+                                    {state?.jobDetail?.department?.map(
+                                      (item, index) => (
+                                        <button
+                                          key={index}
+                                          onClick={(e) =>
+                                            getDepartment(e, item.id)
+                                          }
+                                          className="px-4 py-2 text-sm font-medium rounded-full 
+                       bg-blue-50 text-[#1d1d57] 
+                       border border-blue-100
+                       hover:bg-[#1d1d57] hover:text-white
+                       transition-all duration-200"
+                                        >
+                                          {item.name}
+                                        </button>
+                                      ),
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+                              {/* Job Description Section */}
+                              {state?.jobDetail?.job_description && (
+                                <div>
+                                  <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                    Job Description
+                                  </h3>
+
+                                  <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                    {state?.jobDetail?.job_description}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
 
-                        {/* Requirements */}
-                        {/* {state?.jobDetail?.requirements && (
+                          {/* Responsibilities */}
+                          {state?.responsibilities?.length > 0 && (
+                            <div className="border-b  px-2 py-2 pb-5">
+                              <h2 className="text-lg font-semibold text-black mb-4">
+                                Key responsibilities
+                              </h2>
+                              <ul className="space-y-3">
+                                {state?.responsibilities?.map((item, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start gap-3"
+                                  >
+                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+
+                                    <span className="">{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* Requirements */}
+                          {/* {state?.jobDetail?.requirements && (
                           <div className="border-b  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-black mb-4">
                               Requirements
@@ -1606,8 +1751,8 @@ export default function JobsPage() {
                           </div>
                         )} */}
 
-                        {/* Skills */}
-                        {/* {state?.jobDetail?.skills && (
+                          {/* Skills */}
+                          {/* {state?.jobDetail?.skills && (
                           <div className="  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                               Skills
@@ -1624,150 +1769,169 @@ export default function JobsPage() {
                             </div>
                           </div>
                         )} */}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Right Sidebar */}
-                    <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
-                      <div className="sticky top-20 space-y-4 ">
-                        {/* Job Details */}
-                        <div className="bg-clr2   border border-[#E4E4E4]  p-6">
-                          <h3 className="text-lg font-semibold text-black mb-4">
-                            Job Overview
-                          </h3>
-                          <div className="space-y-4">
-                            {/* <div>
+                      {/* Right Sidebar */}
+                      <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
+                        <div className="sticky top-20 space-y-4 ">
+                          {/* Job Details */}
+                          <div className="bg-clr2   border border-[#E4E4E4]  p-6">
+                            <h3 className="text-lg font-semibold text-black mb-4">
+                              Job Overview
+                            </h3>
+                            <div className="space-y-4">
+                              {/* <div>
                           <p className="text-md font-medium  pb-1">Job type</p>
                           <p className="text-md text-black">
                             {state?.jobDetail?.job_type_obj?.name}
                           </p>
                         </div> */}
-                            <div>
-                              <span className=" flex gap-2 text-md font-medium  pb-1">
-                                <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Job Title
-                              </span>
-                              <p className="text-md text-gray-500  ps-6">
-                                {state?.jobDetail?.job_title}
-                              </p>
-                            </div>
-
-                            <div>
-                              <span className=" flex gap-2 text-md font-medium  pb-1">
-                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Experience level
-                              </span>
-                              <p className="text-md text-gray-500  ps-6">
-                                {state?.jobDetail?.experiences?.name}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="flex gap-2 text-md font-medium  pb-1">
-                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Salary
-                              </span>
-                              <p className="text-md text-gray-500 ps-6">
-                                {state?.jobDetail?.salary_range_obj?.name}
-                              </p>
-                            </div>
-
-                            <div>
-                              <span className="flex gap-2 text-md font-medium  pb-1">
-                                <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Department
-                              </span>
-                              <p className="text-md text-gray-500 ps-6">
-                                {state?.jobDetail?.department
-                                  ?.map((item) => item?.name)
-                                  ?.join(", ")}
-                              </p>
-                            </div>
-
-                            {state?.jobDetail?.college?.address && (
                               <div>
-                                <span className="flex gap-2 text-md font-medium  pb-1">
-                                  <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Location
+                                <span className=" flex gap-2 text-md font-medium  pb-1">
+                                  <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Job Title
                                 </span>
                                 <p className="text-md text-gray-500  ps-6">
-                                  {state?.jobDetail?.locations
-                                    ?.map((item) => item.city)
-                                    .join(", ")}
-                                  {/* {state?.jobDetail?.college?.address} */}
+                                  {state?.jobDetail?.job_title}
                                 </p>
                               </div>
-                            )}
-                          </div>
-                        </div>
 
-                        {/* Company Info */}
-
-                        {state?.jobDetail?.job_image && (
-                          <div
-                            className="bg-white  border border-[#E4E4E4] cursor-pointer  p-6"
-                            onClick={() => setState({ imgOpen: true })}
-                          >
-                            <img
-                              src={state?.jobDetail?.job_image}
-                              alt={state?.jobDetail?.job_title}
-                              className="w-100 max-h-[400px]"
-                            />
-                          </div>
-                        )}
-                        <div className="bg-white  border border-[#E4E4E4]  p-6">
-                          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                            About
-                          </h3>
-                          <div className="flex items-start gap-3 mb-4">
-                            {selectedJob?.college?.college_logo ? (
-                              <img
-                                src={selectedJob.college.college_logo}
-                                alt={selectedJob.college.name}
-                                className="w-12 h-12 rounded-3xl object-cover"
-                              />
-                            ) : (
-                              <div
-                                className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                  selectedJob.college?.name
-                                )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
-                              >
-                                {selectedJob.college?.name
-                                  ?.slice(0, 1)
-                                  .toUpperCase()}
+                              <div>
+                                <span className=" flex gap-2 text-md font-medium  pb-1">
+                                  <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Experience level
+                                </span>
+                                <p className="text-md text-gray-500  ps-6">
+                                  {state?.jobDetail?.experiences?.name}
+                                </p>
                               </div>
-                            )}
-                            <div>
-                              <h4 className="font-medium text-gray-900">
-                                {state?.jobDetail?.college?.name}
-                              </h4>
-                              {/* <p className="text-sm text-gray-500">
-                                Technology Company
-                              </p> */}
+                              <div>
+                                <span className="flex gap-2 text-md font-medium  pb-1">
+                                  <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Salary
+                                </span>
+                                <p className="text-md text-gray-500 ps-6">
+                                  {state?.jobDetail?.salary_range_obj?.name}
+                                </p>
+                              </div>
+
+                              <div>
+                                <span className="flex gap-2 text-md font-medium  pb-1">
+                                  <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                  Department
+                                </span>
+                                <p className="text-md text-gray-500 ps-6">
+                                  {state?.jobDetail?.department?.map(
+                                    (item, index) => (
+                                      <div key={index}>
+                                        <span
+                                          className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                                          onClick={(e) =>
+                                            getDepartment(e, item.id)
+                                          }
+                                        >
+                                          {item.name}
+                                        </span>
+                                        {index <
+                                          state.jobDetail.department.length -
+                                            1 && ", "}
+                                      </div>
+                                    ),
+                                  )}
+                                </p>
+                              </div>
+
+                              {state?.jobDetail?.college?.address && (
+                                <div>
+                                  <span className="flex gap-2 text-md font-medium  pb-1">
+                                    <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Location
+                                  </span>
+                                  <p className="text-md text-gray-500  ps-6">
+                                    {state?.jobDetail?.locations
+                                      ?.map((item) => item.city)
+                                      .join(", ")}
+                                    {/* {state?.jobDetail?.college?.address} */}
+                                  </p>
+                                </div>
+                              )}
                             </div>
                           </div>
-                          <button
-                            onClick={() => {
-                              setSelectedJob(null);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
 
-                              router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`
-                              );
-                            }}
-                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
-                          >
-                            {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                            Openings
-                          </button>
-                          <p className="leading-relaxed">
-                            {state?.jobDetail?.college_detail}
-                          </p>
+                          {/* Company Info */}
+
+                          {state?.jobDetail?.job_image && (
+                            <div
+                              className="bg-white  border border-[#E4E4E4] cursor-pointer  p-6"
+                              onClick={() => setState({ imgOpen: true })}
+                            >
+                              <img
+                                src={state?.jobDetail?.job_image}
+                                alt={state?.jobDetail?.job_title}
+                                className="w-100 max-h-[400px]"
+                              />
+                            </div>
+                          )}
+                          <div className="bg-white  border border-[#E4E4E4]  p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                              About
+                            </h3>
+                            <div className="flex items-start gap-3 mb-4">
+                              {selectedJob?.college?.college_logo ? (
+                                <img
+                                  src={selectedJob.college.college_logo}
+                                  alt={selectedJob.college.name}
+                                  className="w-12 h-12 rounded-3xl object-cover"
+                                />
+                              ) : (
+                                <div
+                                  className={`w-12 h-12 rounded-3xl ${getAvatarColor(
+                                    selectedJob.college?.name,
+                                  )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                                >
+                                  {selectedJob.college?.name
+                                    ?.slice(0, 1)
+                                    .toUpperCase()}
+                                </div>
+                              )}
+                              <div>
+                                <h4
+                                  className="font-medium text-gray-900 cursor-pointer hover:underline"
+                                  onClick={(e) =>
+                                    getCollege(e, state?.jobDetail.college?.id)
+                                  }
+                                >
+                                  {state?.jobDetail?.college?.name}
+                                </h4>
+                                {/* <p className="text-sm text-gray-500">
+                                Technology Company
+                              </p> */}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => {
+                                setSelectedJob(null);
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+
+                                router.push(
+                                  `/jobs?college=${state?.jobDetail?.college?.id}`,
+                                );
+                              }}
+                              className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                            >
+                              {state?.jobDetail?.college?.total_jobs || 0}{" "}
+                              Openings
+                            </button>
+                            <p className="leading-relaxed">
+                              {state?.jobDetail?.college_detail}
+                            </p>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
               </>
             ) : (
               <div className="relative flex flex-col lg:flex-row gap-8 items-start">
@@ -1986,60 +2150,81 @@ export default function JobsPage() {
                     </div>
                   ) : state.jobList?.length > 0 ? (
                     <>
-                      <div
-                        className={`grid ${
-                          finalViewType === "grid"
-                            ? "grid-cols-2"
-                            : "grid-cols-1"
-                        } mt-5   ${
-                          finalViewType === "list" &&
-                          "bg-white px-5 border border-[#E4E4E4]"
-                        }`}
-                        style={{
-                          gap: "20px",
-                        }}
-                      >
-                        {/* {filteredJobs.map((job) => ( */}
-                        {state.jobList?.map((job: any) => (
+                      {(() => {
+                        const isGridView = viewType === "grid" || !isWideScreen;
+                        return (
                           <div
-                            key={job.id}
-                            onClick={() => {
-                              if (isTabScreen) {
-                                setIsAnimating(false);
-                                setTimeout(() => {
-                                  setSelectedJob(job);
-                                  setState({ jobID: job.id });
-                                  setIsAnimating(true);
-                                  jobDetail(job.id);
-                                  window.scrollTo({
-                                    top: 0,
-                                    behavior: "smooth",
-                                  });
-                                }, 100);
-                              } else {
-                                setSelectedJob(job);
-                                setState({ jobID: job.id });
-                                jobDetail(job.id);
-                                if (isDesktopScreen) setShowJobDetail(true);
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                              }
+                            className={`grid mt-5 ${
+                              isGridView
+                                ? "grid-cols-1 xl:grid-cols-2"
+                                : "grid-cols-1"
+                            } ${
+                              !isGridView &&
+                              "bg-white px-5 border border-[#E4E4E4]"
+                            }`}
+                            style={{
+                              gap: "20px",
                             }}
-                            className="cursor-pointer transition-transform hover:scale-10"
                           >
-                            {finalViewType === "grid" ? (
-                              <JobCard
-                                job={job}
-                                updateList={() => jobList(state?.page)}
-                              />
-                            ) : (
-                              <NewJobCard
-                                job={job}
-                                updateList={() => jobList(state?.page)}
-                              />
-                            )}
+                            {/* {filteredJobs.map((job) => ( */}
+                            {state.jobList?.map((job: any) => (
+                              <div
+                                key={job.id}
+                                onClick={() => {
+                                  if (isTabScreen) {
+                                    setIsAnimating(false);
+                                    setTimeout(() => {
+                                      setSelectedJob(job);
+                                      setState({ jobID: job.id });
+                                      setIsAnimating(true);
+                                      jobDetail(job.id);
+                                      window.scrollTo({
+                                        top: 0,
+                                        behavior: "smooth",
+                                      });
+                                    }, 100);
+                                  } else {
+                                    setSelectedJob(job);
+                                    setState({ jobID: job.id });
+                                    jobDetail(job.id);
+                                    if (isDesktopScreen)
+                                      setShowJobDetail(true);
+                                    window.scrollTo({
+                                      top: 0,
+                                      behavior: "smooth",
+                                    });
+                                  }
+                                }}
+                                className="cursor-pointer transition-transform hover:scale-10"
+                              >
+                                {isGridView ? (
+                                  <JobCard
+                                    job={job}
+                                    updateList={() => jobList(state?.page)}
+                                    onCollegeClick={(e, id) =>
+                                      getCollege(e, id)
+                                    }
+                                    onDepartmentClick={(e, id) =>
+                                      getDepartment(e, id)
+                                    }
+                                  />
+                                ) : (
+                                  <NewJobCard
+                                    job={job}
+                                    updateList={() => jobList(state?.page)}
+                                    onCollegeClick={(e, id) =>
+                                      getCollege(e, id)
+                                    }
+                                    onDepartmentClick={(e, id) =>
+                                      getDepartment(e, id)
+                                    }
+                                  />
+                                )}
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
+                        );
+                      })()}
 
                       {(state.next || state?.prev) && (
                         <div className="flex justify-center items-center mt-10">
@@ -2125,12 +2310,18 @@ export default function JobsPage() {
                                 src={state.jobDetail.college?.college_logo}
                                 alt={state.jobDetail.college?.name}
                                 className="w-10 h-10 rounded-lg object-contain"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
                               />
                             ) : (
                               <div
                                 className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name
+                                  state.jobDetail?.college?.name,
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
                               >
                                 {state.jobDetail?.college?.name
                                   ?.slice(0, 1)
@@ -2141,7 +2332,12 @@ export default function JobsPage() {
                               <SheetTitle className="text-xl font-bold text-gray-900 text-left">
                                 {capitalizeFLetter(state.jobDetail?.job_title)}
                               </SheetTitle>
-                              <p className="text-gray-600 text-left">
+                              <p
+                                className="text-gray-600 text-left"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
+                              >
                                 {state.jobDetail?.college?.name}
                               </p>
                               <div className="flex items-center gap-2 mt-2">
@@ -2149,7 +2345,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at
+                                        state.jobDetail?.created_at,
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -2187,6 +2383,35 @@ export default function JobsPage() {
                         </div>
 
                         <div>
+                          <div className="leading-relaxed space-y-6 ">
+                            {state?.jobDetail?.department?.length > 0 && (
+                              <div>
+                                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                                  Departments
+                                </h3>
+
+                                <div className="flex flex-wrap gap-3 mb-5">
+                                  {state?.jobDetail?.department?.map(
+                                    (item, index) => (
+                                      <button
+                                        key={index}
+                                        onClick={(e) =>
+                                          getDepartment(e, item.id)
+                                        }
+                                        className="px-3 py-1 text-xs leading-relaxed rounded-full 
+                       bg-blue-50 text-[#1d1d57] 
+                       border border-blue-100
+                       hover:bg-[#1d1d57] hover:text-white
+                       transition-all duration-200"
+                                      >
+                                        {item.name}
+                                      </button>
+                                    ),
+                                  )}
+                                </div>
+                              </div>
+                            )}
+                          </div>
                           <h3 className="text-lg font-bold text-gray-900 mb-3">
                             Job Description
                           </h3>
@@ -2212,7 +2437,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -2307,9 +2532,23 @@ export default function JobsPage() {
                                 Department
                               </span>
                               <p className="text-md text-gray-500 ps-6">
-                                {state?.jobDetail?.department
-                                  ?.map((item) => item?.name)
-                                  ?.join(", ")}
+                                {state?.jobDetail?.department?.map(
+                                  (item, index) => (
+                                    <div key={index}>
+                                      <span
+                                        className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                                        onClick={(e) =>
+                                          getDepartment(e, item.id)
+                                        }
+                                      >
+                                        {item.name}
+                                      </span>
+                                      {index <
+                                        state.jobDetail.department.length - 1 &&
+                                        ", "}
+                                    </div>
+                                  ),
+                                )}
                               </p>
                             </div>
                             {state?.jobDetail?.college?.address && (
@@ -2333,8 +2572,9 @@ export default function JobsPage() {
                           <div
                             className="pt-4 cursor-pointer"
                             onClick={() => {
-                              setSelectedJob(null)
-                              setState({ imgOpen: true })}}
+                              setSelectedJob(null);
+                              setState({ imgOpen: true });
+                            }}
                           >
                             <img
                               src={state?.jobDetail?.job_image}
@@ -2354,12 +2594,18 @@ export default function JobsPage() {
                                 src={state.jobDetail?.college?.college_logo}
                                 alt={state.jobDetail?.college?.name}
                                 className="w-12 h-12 rounded-lg object-cover"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
                               />
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name
+                                  state.jobDetail?.college?.name,
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
                               >
                                 {state.jobDetail?.college?.name
                                   ?.slice(0, 1)
@@ -2367,7 +2613,12 @@ export default function JobsPage() {
                               </div>
                             )}
                             <div>
-                              <h4 className="font-medium text-gray-900">
+                              <h4
+                                className="font-medium text-gray-900"
+                                onClick={(e) =>
+                                  getCollege(e, state?.jobDetail.college?.id)
+                                }
+                              >
                                 {state.jobDetail?.college?.name}
                               </h4>
                               {/* <p className="text-sm text-gray-500">
@@ -2381,7 +2632,7 @@ export default function JobsPage() {
                               window.scrollTo({ top: 0, behavior: "smooth" });
 
                               router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`
+                                `/jobs?college=${state?.jobDetail?.college?.id}`,
                               );
                             }}
                             className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -2416,141 +2667,14 @@ export default function JobsPage() {
               </Sheet>
             )}
 
-            <Modal
-              isOpen={showApplicationModal}
-              setIsOpen={() => {
-                setState({ errors: {} });
-                setShowApplicationModal(false);
-              }}
-              title={capitalizeFLetter(selectedJob?.job_title)}
-              width="700px"
-              renderComponent={() => (
-                <div className="space-y-6 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
-                  <div className="flex items-center justify-center w-full mb-6">
-                    <img
-                      src="/assets/images/recruitmen.gif"
-                      height={200}
-                      width={150}
-                      alt="Job Application"
-                      className="object-contain"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
-                    <Input
-                      placeholder="First Name*"
-                      value={state.firstName}
-                      bg="ffffff"
-                      onChange={(e) =>
-                        handleFormChange("firstName", e.target.value)
-                      }
-                      required
-                      error={state.errors?.firstName}
-                    />
-                    <Input
-                      placeholder="Last Name*"
-                      value={state.lastName}
-                      onChange={(e) =>
-                        handleFormChange("lastName", e.target.value)
-                      }
-                      required
-                      bg="ffffff"
-                      error={state.errors?.lastName}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      type="email"
-                      placeholder="Email*"
-                      value={state.email}
-                      onChange={(e) =>
-                        handleFormChange("email", e.target.value)
-                      }
-                      required
-                      bg="ffffff"
-                      error={state.errors?.email}
-                    />
-                    {/* <Input
-                  type="tel"
-                  placeholder="Phone Number*"
-                  value={state.phone}
-                  onChange={(e) => handleFormChange("phone", e.target.value)}
-                  required
-                  bg="ffffff"
-
-                /> */}
-
-                    <CustomPhoneInput
-                      // title="Phone Number"
-                      value={state.phone}
-                      onChange={(value) => handleFormChange("phone", value)}
-                      error={state.errors?.phone}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <CustomSelect
-                      // title="Experience"
-                      required
-                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
-                      options={state.experienceList}
-                      value={state?.experience || ""}
-                      onChange={(selected) =>
-                        setState({
-                          ...state,
-                          experience: selected ? selected.value : "",
-                        })
-                      }
-                      error={state?.errors?.experience}
-                      placeholder="Experience"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <TextArea
-                      placeholder="Your message..."
-                      value={state.message}
-                      onChange={(e) =>
-                        handleFormChange("message", e.target.value)
-                      }
-                      className="min-h-[150px] bg-white"
-                    />
-
-                    {/* <TextArea
-                  type="email"
-                  placeholder="Email*"
-                  value={state.email}
-                  onChange={(e) => handleFormChange("email", e.target.value)}
-                  required
-                  bg="ffffff"
-                /> */}
-
-                    <FileUpload
-                      value={state.resume || null}
-                      onChange={(file) => handleFormChange("resume", file)}
-                      error={state.errors?.resume}
-                    />
-                  </div>
-
-                  <div className="flex justify-center pt-4">
-                    <Button
-                      type="button"
-                      onClick={handleFormSubmit}
-                      className="px-12 py-3 bg-[#1d1d57] hover:bg-[#1d1d57] text-white font-semibold rounded-full"
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                </div>
-              )}
-            />
             {state.imgOpen && (
               <LightboxGallery
                 isOpen={state.imgOpen}
                 onClose={() => {
-                  if(isMobileScreen){
-                  setSelectedJob(state.jobDetail);
-                }
-                  setState({ imgOpen: false })
+                  if (isMobileScreen) {
+                    setSelectedJob(state.jobDetail);
+                  }
+                  setState({ imgOpen: false });
                 }}
                 images={[state?.jobDetail?.job_image]}
               />
@@ -2596,6 +2720,316 @@ export default function JobsPage() {
                 </div>
               )}
             />
+            <Modal
+              isOpen={state.showCollegeModal}
+              setIsOpen={() => {
+                setState({ showCollegeModal: false, collegeDetail: null });
+              }}
+              title="College Details"
+              width="700px"
+              renderComponent={() => (
+                <div className="p-4 sm:p-5 md:p-6 space-y-5 md:space-y-6 max-h-[75vh] overflow-y-auto">
+                  {state.loading ? (
+                    <div className="flex items-center justify-center h-40">
+                      <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                    </div>
+                  ) : (
+                    <>
+                      {/* ================= College Header ================= */}
+                      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-5 pb-4 md:pb-5 border-b text-center sm:text-left">
+                        {state.collegeDetail?.college_logo ? (
+                          <img
+                            src={state.collegeDetail.college_logo}
+                            alt={state.collegeDetail.college_name}
+                            className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-xl object-cover border shadow-sm"
+                          />
+                        ) : (
+                          <div
+                            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl ${getAvatarColor(
+                              state.collegeDetail?.college_name,
+                            )} flex items-center justify-center text-white font-bold text-lg sm:text-xl md:text-2xl shadow`}
+                          >
+                            {state.collegeDetail?.college_name
+                              ?.charAt(0)
+                              ?.toUpperCase()}
+                          </div>
+                        )}
+
+                        <div>
+                          <h2 className="text-xl sm:text-2xl font-semibold text-[#1d1d57]">
+                            {state.collegeDetail?.college_name}
+                          </h2>
+                          <p className="text-xs sm:text-sm text-gray-500">
+                            {state.collegeDetail?.institution_name}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* ================= Contact Info ================= */}
+                      <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
+                        <h3 className="text-sm font-semibold text-gray-800 mb-2 sm:mb-3">
+                          Contact Info
+                        </h3>
+
+                        <div className="space-y-2 text-xs sm:text-sm text-gray-600">
+                          <div className="flex items-center gap-2">
+                            <MailIcon className="w-4 h-4 text-[#F2B31D]" />
+                            <span className="truncate">
+                              {state.collegeDetail?.college_email}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            <PhoneCall className="w-4 h-4 text-[#F2B31D]" />
+                            {state.collegeDetail?.college_phone}
+                          </div>
+
+                          <div className="flex items-start gap-2">
+                            <MapPin className="w-4 h-4 text-[#F2B31D] mt-1" />
+                            <span className="line-clamp-2">
+                              {state.collegeDetail?.college_address}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* ================= NAAC Accreditation ================= */}
+                      {state.collegeDetail?.naac_accreditations?.length > 0 && (
+                        <div className="bg-white shadow-md rounded-2xl p-4 sm:p-5 md:p-6">
+                          <div className="flex flex-col sm:flex-row items-center gap-3 mb-3 md:mb-4 text-center sm:text-left">
+                            <img
+                              src="/assets/images/naac.png"
+                              alt="NAAC Logo"
+                              className="h-10 sm:h-12 object-contain"
+                            />
+                            <h3 className="text-base sm:text-lg font-semibold text-[#1d1d57]">
+                              NAAC & Accreditation
+                            </h3>
+                          </div>
+
+                          <div className="flex flex-wrap justify-center sm:justify-start gap-2 sm:gap-3">
+                            {state.collegeDetail?.naac_accreditations?.map(
+                              (item, index) => (
+                                <span
+                                  key={index}
+                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-100 text-green-700"
+                                >
+                                  {item.grade}
+                                </span>
+                              ),
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ================= NIRF Details ================= */}
+                      {(state.collegeDetail?.nirf_band ||
+                        state.collegeDetail?.nirf_categories?.length > 0) && (
+                        <div className="bg-white shadow-md rounded-2xl p-4 sm:p-5 md:p-6">
+                          <div className="flex flex-col sm:flex-row items-center gap-3 mb-3 md:mb-4 text-center sm:text-left">
+                            <img
+                              src="/assets/images/nirf.png"
+                              alt="NIRF Logo"
+                              className="h-6 sm:h-8 object-contain"
+                            />
+                            <h3 className="text-base sm:text-lg font-semibold text-[#1d1d57]">
+                              NIRF Rankings
+                            </h3>
+                          </div>
+
+                          <div className="flex flex-wrap gap-2 sm:gap-3 items-center justify-center sm:justify-start">
+                            {state.collegeDetail?.nirf_band?.is_active && (
+                              <span className="px-4 sm:px-5 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-blue-100 text-blue-700">
+                                Band: {state.collegeDetail?.nirf_band?.band}
+                              </span>
+                            )}
+
+                            {state.collegeDetail?.nirf_categories?.map(
+                              (item) =>
+                                item.is_active ? (
+                                  <span
+                                    key={item.id}
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
+                                  >
+                                    {item.category}
+                                  </span>
+                                ) : null,
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* ================= Stats ================= */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                        {state.collegeDetail?.intake_per_year && (
+                          <div className="bg-[#1d1d57] text-white rounded-xl p-4 md:p-5 text-center">
+                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                              Intake Per Year
+                            </p>
+                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                              {state.collegeDetail?.intake_per_year}
+                            </h3>
+                          </div>
+                        )}
+
+                        {state.collegeDetail?.total_strength && (
+                          <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
+                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                              Total Strength
+                            </p>
+                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                              {state.collegeDetail?.total_strength}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* ================= Achievements ================= */}
+                      {state.collegeDetail?.recent_achievements && (
+                        <div className="space-y-2 sm:space-y-3">
+                          <h4 className="font-semibold text-gray-800 text-sm sm:text-base">
+                            Achievements
+                          </h4>
+
+                          <ul className="space-y-2 text-xs sm:text-sm text-gray-700">
+                            {state.collegeDetail?.recent_achievements?.map(
+                              (item, index) => (
+                                <li
+                                  key={index}
+                                  className="flex items-start gap-2"
+                                >
+                                  <Check className="w-4 h-4 text-[#F2B31D] mt-1" />
+                                  {item.achievement}
+                                </li>
+                              ),
+                            )}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* ================= Summary ================= */}
+                      {state.collegeDetail?.summary && (
+                        <div className="bg-gray-50 rounded-xl p-4 sm:p-5">
+                          <h4 className="font-semibold mb-2 text-gray-800 text-sm sm:text-base">
+                            Summary
+                          </h4>
+                          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                            {state.collegeDetail?.summary}
+                          </p>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            />
+            {state.departmentDetail && (
+              <Modal
+                isOpen={state.showDepartmentModal}
+                setIsOpen={() => {
+                  setState({
+                    showDepartmentModal: false,
+                    departmentDetail: null,
+                  });
+                }}
+                title="Department Details"
+                width="700px"
+                renderComponent={() => (
+                  <div className="p-5 sm:p-6 md:p-8 space-y-6 md:space-y-8 max-h-[75vh] overflow-y-auto">
+                    {state.loading ? (
+                      <div className="flex items-center justify-center h-40">
+                        <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                      </div>
+                    ) : (
+                      state.departmentDetail && (
+                        <>
+                          {/* ================= Header ================= */}
+                          <div className="pb-4 md:pb-6 border-b text-center sm:text-left">
+                            <h2 className="text-2xl sm:text-3xl font-semibold text-[#1d1d57]">
+                              {state.departmentDetail.department_name}
+                            </h2>
+
+                            <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                              {state.departmentDetail.college_name}
+                            </p>
+                          </div>
+
+                          {/* ================= Stats Section ================= */}
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                            {state.departmentDetail.nba_accreditation && (
+                              <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-5 md:p-6">
+                                <div className="flex items-center gap-3 mb-3">
+                                  <img
+                                    src="/assets/images/nba.png"
+                                    alt="NBA Logo"
+                                    className="h-6 sm:h-8 object-contain"
+                                  />
+                                  <p className="text-base sm:text-lg font-semibold text-[#1d1d57]">
+                                    NBA Accreditation
+                                  </p>
+                                </div>
+
+                                <span className="inline-flex px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-100 text-green-700">
+                                  Accredited
+                                </span>
+                              </div>
+                            )}
+
+                            {state.departmentDetail.intake_per_year && (
+                              <div className="bg-[#1d1d57] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
+                                <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                  Intake Per Year
+                                </p>
+                                <h3 className="text-2xl sm:text-3xl font-bold mt-2">
+                                  {state.departmentDetail.intake_per_year}
+                                </h3>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* ================= Achievements ================= */}
+                          {state.departmentDetail.recent_achievements?.length >
+                            0 && (
+                            <div>
+                              <h3 className="text-base sm:text-lg font-semibold text-[#1d1d57] mb-3 sm:mb-4">
+                                Recent Achievements
+                              </h3>
+
+                              <ul className="space-y-2 text-xs sm:text-sm text-gray-700">
+                                {state.departmentDetail.recent_achievements?.map(
+                                  (item, index) => (
+                                    <li
+                                      key={index}
+                                      className="flex items-start gap-2"
+                                    >
+                                      <Check className="w-4 h-4 text-[#F2B31D] mt-1" />
+                                      {item.achievement}
+                                    </li>
+                                  ),
+                                )}
+                              </ul>
+                            </div>
+                          )}
+
+                          {/* ================= Summary ================= */}
+                          {state.departmentDetail.summary && (
+                            <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 md:p-6">
+                              <h3 className="text-base sm:text-lg font-semibold text-[#1d1d57] mb-2 sm:mb-3">
+                                Summary
+                              </h3>
+
+                              <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                                {state.departmentDetail.summary}
+                              </p>
+                            </div>
+                          )}
+                        </>
+                      )
+                    )}
+                  </div>
+                )}
+              />
+            )}
           </main>
         </div>
       </div>

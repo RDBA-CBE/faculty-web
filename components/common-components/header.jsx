@@ -389,10 +389,10 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden ${
-                      isHomePage ? "text-gray-700" : "text-gray-700"
+                      isHomePage ? "text-white" : "text-white"
                     }`}
                   >
-                    <MenuIcon className="h-6 w-6" />
+                    <MenuIcon className="h-6 w-6 text-white" />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80">

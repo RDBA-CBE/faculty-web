@@ -38,12 +38,16 @@ interface JobCardProps {
   };
   onClick?: () => void;
   updateList?: () => void;
+  onCollegeClick?: (e: React.MouseEvent, id: number) => void;
+  onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
 
 export const NewJobCard: React.FC<JobCardProps> = ({
   job,
   onClick,
   updateList,
+  onCollegeClick,
+  onDepartmentClick,
 }) => {
   const [isSaving, setIsSaving] = useState<number | null>(null);
 
@@ -106,12 +110,14 @@ export const NewJobCard: React.FC<JobCardProps> = ({
               alt="company logo"
               style={{ objectFit: "contain" }}
               className="w-10 h-10 rounded-3xl object-cover border border-gray-100"
+              onClick={(e) => onCollegeClick(e, job?.college?.id)}
             />
           ) : (
             <div
               className={`w-10 h-10 rounded-3xl ${getAvatarColor(
-                job?.college?.name
+                job?.college?.name,
               )} flex items-center justify-center text-black bg-gray-400 font-semibold text-sm`}
+              onClick={(e) => onCollegeClick(e, job?.college?.id)}
             >
               {job?.college?.name?.slice(0, 1).toUpperCase()}
             </div>
@@ -124,7 +130,10 @@ export const NewJobCard: React.FC<JobCardProps> = ({
               <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  ">
                 {capitalizeFLetter(job?.job_title)}
               </h3>
-              <p className="font-medium font-normal text-[#848282] text-md ">
+              <p
+                className="font-medium font-normal text-[#848282] text-md hover:underline"
+                onClick={(e) => onCollegeClick(e, job?.college?.id)}
+              >
                 {capitalizeFLetter(job?.college?.name)}
               </p>
             </div>
@@ -155,14 +164,32 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 </span>
               </div>
             )}
-            <div className="flex items-center gap-3 ">
-              <Building2 className="w-4 h-4 text-[#ffb400]" />
-              <span className="text-sm text-[#6D6C6C]">
-                {" "}
-                {job?.department?.map((item) => item.name).join(", ")}
-                {/* {job?.college?.address} */}
-              </span>
-            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Building2 className="w-4 h-4 text-[#ffb400]" />
+
+            <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+              {job?.department?.slice(0, 1).map((item, index) => (
+                <span
+                  key={index}
+                  className="cursor-pointer  text-sm text-[#6D6C6C]"
+                  // onClick={(e) => {
+                  //   e.stopPropagation();
+                  //   onDepartmentClick && onDepartmentClick(e, item.id);
+                  // }}
+                >
+                  {item.name}
+                 
+                </span>
+              ))}
+
+              {/* If more than 2 departments */}
+              {job?.department?.length > 2 && (
+                <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                  +{job.department.length - 2}
+                </div>
+              )}
+            </span>
           </div>
         </div>
       </div>

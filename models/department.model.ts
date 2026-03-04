@@ -24,6 +24,25 @@ const department = {
     return promise;
   },
 
+  depdetails: (id: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `departments/${id}/`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
   create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `job-locations/`;

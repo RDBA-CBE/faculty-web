@@ -38,12 +38,16 @@ interface JobCardProps {
   };
   onClick?: () => void;
   updateList?: () => void;
+  onCollegeClick?: (e: React.MouseEvent, id: number) => void;
+  onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
 
 export const JobCard: React.FC<JobCardProps> = ({
   job,
   onClick,
   updateList,
+  onCollegeClick,
+  onDepartmentClick,
 }) => {
   const [isSaving, setIsSaving] = useState<number | null>(null);
 
@@ -103,13 +107,19 @@ export const JobCard: React.FC<JobCardProps> = ({
           <h3 className="font-bold text-gray-900 text-base text-lg ">
             {capitalizeFLetter(job?.job_title)}
           </h3>
-          <p className="font-medium font-normal text-[#848282] text-md ">
+          <p
+            className="font-medium font-normal text-[#848282] text-md hover:underline"
+            onClick={(e) => onCollegeClick(e, job?.college?.id)}
+          >
             {capitalizeFLetter(job?.college?.name)}
           </p>
         </div>
 
         {/* Company Logo/Initials on Right */}
-        <div className="flex-shrink-0 ml-3">
+        <div
+          className="flex-shrink-0 ml-3"
+          onClick={(e) => onCollegeClick(e, job?.college?.id)}
+        >
           {job?.college?.college_logo ? (
             <img
               src={job?.college?.college_logo}
@@ -120,7 +130,7 @@ export const JobCard: React.FC<JobCardProps> = ({
           ) : (
             <div
               className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                job?.college?.name
+                job?.college?.name,
               )} flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
@@ -147,12 +157,30 @@ export const JobCard: React.FC<JobCardProps> = ({
           </span>
         </div>
       </div>
+
       <div className="flex items-center gap-3 mb-3 mt-2">
         <Building2 className="w-4 h-4 text-[#ffb400]" />
-        <span className="text-sm text-[#6D6C6C]">
-          {" "}
-          {job?.department?.map((item) => item.name).join(", ")}
-          {/* {job?.college?.address} */}
+
+        <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+          {job?.department?.slice(0, 1).map((item, index) => (
+            <span
+              key={index}
+              className="cursor-pointer  text-sm text-[#6D6C6C]"
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   onDepartmentClick && onDepartmentClick(e, item.id);
+              // }}
+            >
+              {item.name}
+            </span>
+          ))}
+
+          {/* If more than 2 departments */}
+          {job?.department?.length > 2 && (
+            <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+              +{job.department.length - 2}
+            </div>
+          )}
         </span>
       </div>
       {/* Job Description */}
