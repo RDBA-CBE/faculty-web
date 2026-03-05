@@ -134,10 +134,10 @@ const TopHiringColleges = () => {
               {state?.collegesList.map((college) => (
                 <SwiperSlide key={college.id}>
                   <div
-                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[1.02]  hover:bg-[#01014B] transition-all duration-500"
+                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[1.05]  hover:bg-[#01014B] transition-all duration-500"
                     onClick={() => router.push(`/jobs?college=${college.id}`)}
                   >
-                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100 group-hover:scale-110">
+                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100 group-hover:scale-115">
                       <img
                         src={college.college_logo}
                         alt={college.college_name}

@@ -204,11 +204,12 @@ const FindYourJob = () => {
                   <div
                     key={job.id}
                     className="p-3 md:p-5 border border-[#c7c7c787]
-             transition-all duration-300 bg-white 
+             transition-all duration-300 bg-white cursor-pointer
              hover:bg-white
              hover:border-none
              hover:-translate-y-1
              hover:shadow-2xl hover:shadow-gray-300 h-full"
+                    onClick={() => router.push(`/jobs?id=${job.id}`)}
                   >
                     <div className="flex items-start justify-between mb-3 h-full">
                       <div className="flex  items-start gap-3 w-full h-full">
