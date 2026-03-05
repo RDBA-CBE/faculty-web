@@ -1152,7 +1152,7 @@ export default function JobsPage() {
                         {state?.jobDetail?.department?.map((item, index) => (
                           <div key={index}>
                             <span
-                              className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                              className="text-md text-gray-500 hover:text-[#1d1d57] cursor-pointer hover:underline"
                               onClick={(e) => getDepartment(e, item.id)}
                             >
                               {item.name}
@@ -2028,7 +2028,7 @@ export default function JobsPage() {
                   {/* content input header start */}
                   <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl">
                     <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
-                      <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto ">
+                      <div className="flex-grow flex items-center ps-3 md:px-6 py-2  lg:py-0 w-full lg:w-auto ">
                         <Search color="#5c5a5a93" size={22} />
                         <input
                           type="text"
@@ -2043,7 +2043,7 @@ export default function JobsPage() {
                         <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
                       )}
 
-                      <div className="flex items-center w-full lg:w-auto p-2 lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
+                      <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
                         <div className="flex items-center px-4 flex-grow lg:w-64 ">
                           <MapPin color="#5c5a5a93" size={22} />
 
@@ -2056,6 +2056,7 @@ export default function JobsPage() {
                                 location: selected ? selected.value : null,
                               })
                             }
+                            className="py-0 border-none"
                             placeholder="Location"
                           />
                           {/* <input
@@ -2573,9 +2574,9 @@ export default function JobsPage() {
                               <p className="text-md text-gray-500 ps-6">
                                 {state?.jobDetail?.department?.map(
                                   (item, index) => (
-                                    <div key={index}>
+                                    <div key={index} className="text-sm text-gray-500">
                                       <span
-                                        className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                                        className="text-sm text-gray-500 hover:text-[#1d1d57] cursor-pointer hover:underline"
                                         onClick={(e) =>
                                           getDepartment(e, item.id)
                                         }
