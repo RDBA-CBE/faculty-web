@@ -39,7 +39,7 @@ const FaqResumeSection = () => {
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-3xl font-semibold text-[#1F1F1F] mb-3">
+          <h2 className="text-2xl md:text-3xl font-semibold text-[#1F1F1F] mb-3">
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">
@@ -61,7 +61,7 @@ const FaqResumeSection = () => {
                   onClick={() => setActive(active === item.id ? "" : item.id)}
                 >
                   <div className="flex gap-5 items-center">
-                    <span className={`text-2xl font-medium ${active === item.id ? "text-[#0a1551]" : "text-[#6C757D]"}`}>
+                    <span className={`text-2xl font-medium ${active === item.id ? "text-[#01014B]" : "text-[#6C757D]"}`}>
                       {item.id}
                     </span>
                     <h4 className="sub-ti !font-medium !text-[#1F1F1F]">
@@ -70,12 +70,12 @@ const FaqResumeSection = () => {
                   </div>
 
                   {active === item.id ? (
-                    <div className="bg-[#0a1551] rounded-full p-1">
+                    <div className="bg-[#01014B] rounded-full p-1">
                       <X className="text-white h-5 w-5" />
                     </div>
                   ) : (
-                    <div className="border border-[#0a1551] rounded-full p-1">
-                      <Plus className="h-5 w-5 text-[#0a1551]" />
+                    <div className="border border-[#01014B] rounded-full p-1">
+                      <Plus className="h-5 w-5 text-[#01014B]" />
                     </div>
                   )}
                 </div>
@@ -90,7 +90,7 @@ const FaqResumeSection = () => {
 
         {/* RIGHT SIDE - SMALLER FORM */}
         <div
-          className="relative  overflow-hidden min-h-[650px]"
+          className="relative  overflow-hidden min-h-[400px] md:min-h-[650px]"
           style={{
             backgroundImage: "url('/assets/images/FAQ.png')",
             backgroundSize: "cover",

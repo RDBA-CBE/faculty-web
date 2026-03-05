@@ -277,7 +277,7 @@ export default function ContactPage() {
                 >
                   <div className="flex gap-5 items-center">
                     <span
-                      className={`text-2xl font-medium ${active === item.id ? "text-[#0a1551]" : "text-[#6C757D]"}`}
+                      className={`text-2xl font-medium ${active === item.id ? "text-[#01014B]" : "text-[#6C757D]"}`}
                     >
                       {item.id}
                     </span>
@@ -287,12 +287,12 @@ export default function ContactPage() {
                   </div>
 
                   {active === item.id ? (
-                    <div className="bg-[#0a1551] rounded-full p-1">
+                    <div className="bg-[#01014B] rounded-full p-1">
                       <X className="text-white h-5 w-5" />
                     </div>
                   ) : (
-                    <div className="border border-[#0a1551] rounded-full p-1">
-                      <Plus className="h-5 w-5 text-[#0a1551]" />
+                    <div className="border border-[#01014B] rounded-full p-1">
+                      <Plus className="h-5 w-5 text-[#01014B]" />
                     </div>
                   )}
                 </div>

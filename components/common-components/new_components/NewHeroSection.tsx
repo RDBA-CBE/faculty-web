@@ -53,7 +53,7 @@ const NewHeroSection = () => {
   };
 
   return (
-    <section className="relative h-[95vh] w-full flex items-center overflow-hidden">
+    <section className="relative h-fit md:h-[95vh] w-full flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
@@ -118,7 +118,7 @@ const NewHeroSection = () => {
             </div>
 
             {/* Stats */}
-            <div className="flex flex-wrap items-start gap-4 md:gap-8 lg:gap-12 pt-2">
+            <div className="flex flex-wrap items-start gap-4 md:gap-8 lg:gap-12 pt-8 md:pt-2">
               <div>
                 <div className="text-2xl md:text-4xl lg:text-4xl font-bold text-white mb-1">
                   125K+

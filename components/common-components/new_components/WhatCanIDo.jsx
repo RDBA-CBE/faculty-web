@@ -49,7 +49,7 @@ const WhatCanIDo = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9 ">
-            <h2 className="text-3xl  font-semibold  mb-3 text-[#151515]">
+            <h2 className="text-2xl md:text-3xl  font-semibold  mb-3 text-[#151515]">
               What can I do With Faculty Pro?
             </h2>
             <p className="text-gray-600 mb-8">
@@ -125,9 +125,9 @@ const WhatCanIDo = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-4">
             {/* Jobs By Location */}
-            <div className="bg-[#0a1551] border ">
+            <div className="bg-[#01014B] border ">
               <div className="py-3 px-4">
-                <h3 className="text-2xl font-medium text-white">
+                <h3 className="text-xl md:text-2xl font-medium text-white">
                   Jobs By Colleges
                 </h3>
               </div>
@@ -160,7 +160,7 @@ const WhatCanIDo = () => {
                 </div>
 
                 <button
-                  className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition"
+                  className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#01014B] transition"
                   onClick={() => router.push(`/jobs`)}
                 >
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">

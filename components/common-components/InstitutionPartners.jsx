@@ -79,7 +79,7 @@ export default function InstitutionPartners() {
                 </div> */}
 
                 {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
-                <h2 className="text-3xl  font-semibold text-[#151515] mb-3">
+                <h2 className="text-2xl md:text-3xl  font-semibold text-[#151515] mb-3">
                   Institution Partners
                 </h2>
 
@@ -90,7 +90,7 @@ export default function InstitutionPartners() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 {leftPartners.map((p) => (
                   <PartnerCard p={p} key={p.id} />
                 ))}
@@ -99,7 +99,7 @@ export default function InstitutionPartners() {
 
             {/* RIGHT SECTION: 4 Cards (Aligned with Title) */}
             <div className="pt-0">
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6">
                 {rightPartners.map((p) => (
                   <PartnerCard p={p} key={p.id} />
                 ))}
@@ -120,7 +120,7 @@ const PartnerCard = (props) => {
       className={`
         flex flex-col items-center justify-center p-6 rounded-[24px] transition-all duration-300
         min-h-[220px] border  group relative overflow-hidden
-        border border-[#C7C7C7] hover:bg-[#0a1551]
+        border border-[#C7C7C7] hover:bg-[#01014B]
         ${
           p.isDark
             ? "bg-[#1e1e1e] border-[#C7C7C7] !text-[#fff]  hover:scale-[1.02] border-1 "

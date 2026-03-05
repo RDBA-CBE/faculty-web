@@ -1241,7 +1241,7 @@ export default function JobsPage() {
                           `/jobs?college=${state?.jobDetail?.college?.id}`,
                         );
                       }}
-                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                     >
                       {state?.jobDetail?.college?.total_jobs || 0} Openings
                     </button>
@@ -1957,7 +1957,7 @@ export default function JobsPage() {
                                   `/jobs?college=${state?.jobDetail?.college?.id}`,
                                 );
                               }}
-                              className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                              className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                             >
                               {state?.jobDetail?.college?.total_jobs || 0}{" "}
                               Openings
@@ -2674,7 +2674,7 @@ export default function JobsPage() {
                                 `/jobs?college=${state?.jobDetail?.college?.id}`,
                               );
                             }}
-                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                           >
                             {state?.jobDetail?.college?.total_jobs || 0}{" "}
                             Openings

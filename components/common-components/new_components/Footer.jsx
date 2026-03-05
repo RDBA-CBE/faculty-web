@@ -73,8 +73,8 @@ const Footer = () => {
   return (
     <footer className="relative w-full bg-clr1">
       {/* 1. Subscribe Section - This container centers the narrow yellow card */}
-      <div className="container mx-auto  relative z-20">
-        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between p-6 md:p-10 min-h-[180px] relative shadow-xl translate-y-[30%]">
+      <div className="sm:container mx-auto  relative z-20">
+        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between  p-6 md:p-10 min-h-[180px] relative shadow-xl md:translate-y-[30%]">
           {/* Text & Input Content */}
           <div className="w-full md:w-1/2 text-black z-10">
             <h2 className="text-2xl md:text-3xl font-semibold text-[#1C1C1C] mb-2">
@@ -95,7 +95,7 @@ const Footer = () => {
               />
               <button
                 onClick={() => handleSubscribe()}
-                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-semibold px-6 py-2 rounded-full text-sm"
+                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-semibold px-5 md:px-6 py-2 rounded-full text-sm"
               >
                 Subscribe
               </button>
@@ -117,7 +117,7 @@ const Footer = () => {
 
       {/* 2. Main Footer Section - This takes the full screen width */}
       <div
-        className="w-full bg-[#000033] text-white pt-[180px] pb-12 mt-[-10px]"
+        className="w-full bg-[#000033] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
         style={{
           backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
           backgroundSize: "cover",
@@ -244,7 +244,7 @@ const Footer = () => {
               ))}
             </div>
             <p className="text-[14px] text-white/80  tracking-widest">
-              Copyright 2026 © Faculty Plus. Concept by{" "}
+              Copyright 2026 © Faculty Pro. Concept by{" "}
               <a
                 href="http://irepute.in/"
                 target="_blank"

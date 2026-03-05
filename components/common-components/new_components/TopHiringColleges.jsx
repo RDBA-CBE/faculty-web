@@ -92,7 +92,7 @@ const TopHiringColleges = () => {
           <div className="lg:col-span-9">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl  font-semibold text-[#151515]">
+              <h2 className="text-2xl md:text-3xl  font-semibold text-[#151515]">
                 Top Hiring Colleges
               </h2>
 
@@ -134,7 +134,7 @@ const TopHiringColleges = () => {
               {state?.collegesList.map((college) => (
                 <SwiperSlide key={college.id}>
                   <div
-                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[1.02]  hover:bg-[#0a1551] transition-all duration-500"
+                    className="group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[1.02]  hover:bg-[#01014B] transition-all duration-500"
                     onClick={() => router.push(`/jobs?college=${college.id}`)}
                   >
                     <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100 group-hover:scale-110">
@@ -154,7 +154,7 @@ const TopHiringColleges = () => {
                       </p>
                     </div>
 
-                    <button className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#0a1551] text-white group-hover:bg-[#F2B31D] group-hover:text-black">
+                    <button className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black">
                       {college.total_jobs} Openings
                     </button>
                   </div>

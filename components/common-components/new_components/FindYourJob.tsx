@@ -149,7 +149,7 @@ const FindYourJob = () => {
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-              <h2 className="text-3xl font-semibold text-[#151515]">
+              <h2 className="text-2xl md:text-3xl font-semibold text-[#151515]">
                 Find Your Job
               </h2>
 
@@ -187,7 +187,7 @@ const FindYourJob = () => {
                   <SlidersHorizontal className="w-4 h-4 mr-1" />
                   <span className="text-sm font-medium">Filters</span>
                 </button> */}
-                <button className="bg-[#0a1551] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#080f3d] transition">
+                <button className="bg-[#01014B] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#080f3d] transition">
                   Find Job
                 </button>
               </div>
@@ -196,7 +196,7 @@ const FindYourJob = () => {
             {/* Job Cards Grid */}
             {state.loading ? (
               <div className="flex justify-center items-center h-64">
-                <Loader2 className="w-10 h-10 animate-spin text-[#0a1551]" />
+                <Loader2 className="w-10 h-10 animate-spin text-[#01014B]" />
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6">
@@ -313,7 +313,7 @@ const FindYourJob = () => {
                                 onClick={() =>
                                   router.push(`/jobs?id=${job.id}`)
                                 }
-                                className="border border-[#0a1551] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#0a1551]  hover:bg-[#0a1551]/90 hover:text-white transition"
+                                className="border border-[#01014B] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#01014B]  hover:bg-[#01014B]/90 hover:text-white transition"
                               >
                                 View Job
                               </button>
@@ -345,8 +345,8 @@ const FindYourJob = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Job Spotlight */}
             <div className=" border ">
-              <div className="bg-[#0a1551] flex items-center justify-between py-3 px-4">
-                <h3 className="text-2xl font-medium text-white">
+              <div className="bg-[#01014B] flex items-center justify-between py-3 px-4">
+                <h3 className="text-xl md:text-2xl font-medium text-white">
                   Job spotlight
                 </h3>
                 <div className="flex gap-2">
@@ -440,7 +440,7 @@ const FindYourJob = () => {
                       <div className="relative flex items-center justify-end">
                         <button
                           onClick={() => router.push(`/jobs?id=${job.id}`)}
-                          className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#0a1551] hover:text-white transition flex items-center gap-2"
+                          className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#01014B] hover:text-white transition flex items-center gap-2"
                         >
                           Apply Now
                         </button>
@@ -452,9 +452,9 @@ const FindYourJob = () => {
             </div>
 
             {/* Jobs By Category */}
-            <div className="bg-[#0a1551] border ">
+            <div className="bg-[#01014B] border ">
               <div className="py-3 px-4">
-                <h3 className="text-2xl font-medium text-white">
+                <h3 className="text-xl md:text-2xl font-medium text-white">
                   Jobs By Category
                 </h3>
               </div>
@@ -469,7 +469,7 @@ const FindYourJob = () => {
                           `/jobs?search=${encodeURIComponent(category.name)}`,
                         )
                       }
-                      className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
+                      className="flex items-center gap-2 text-gray-800 hover:text-[#01014B] cursor-pointer transition"
                     >
                       <ChevronRight className="w-4 h-4 text-[#1F1F1F]" />
                       <span className="text-[#1F1F1F]">{category.name}</span>
@@ -477,7 +477,7 @@ const FindYourJob = () => {
                   ))}
                 </div>
 
-                {/* <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#0a1551] transition">
+                {/* <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#01014B] transition">
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
                     <Plus className="w-4 h-4" />
                   </div>
