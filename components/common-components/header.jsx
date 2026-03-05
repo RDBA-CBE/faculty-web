@@ -388,11 +388,11 @@ const Header = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`lg:hidden ${
+                    className={`lg:hidden hover:bg-trasparent ${
                       isHomePage ? "text-white" : "text-white"
                     }`}
                   >
-                    <MenuIcon className="h-6 w-6 text-white" />
+                    <MenuIcon className="h-6 w-6 text-white " />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80">
@@ -412,8 +412,8 @@ const Header = () => {
                           onClick={() => setOpen(false)}
                           className={`font-medium py-2 px-4 rounded-lg transition-colors ${
                             isActive
-                              ? "text-[#F2B31D] bg-[#F2B31D]/10"
-                              : "text-gray-700 hover:text-[#F2B31D] hover:bg-gray-100"
+                              ? "text-[#000] bg-[#0000ff0a]/10"
+                              : "text-gray-700 hover:text-[#000] hover:bg-gray-100"
                           }`}
                         >
                           {menu.title}
