@@ -148,7 +148,7 @@ const FindYourJob = () => {
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
               <h2 className="text-3xl font-semibold text-[#151515]">
                 Find Your Job
               </h2>
@@ -342,7 +342,7 @@ const FindYourJob = () => {
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-3 space-y-4">
+          <div className="lg:col-span-3 space-y-6">
             {/* Job Spotlight */}
             <div className=" border ">
               <div className="bg-[#0a1551] flex items-center justify-between py-3 px-4">
@@ -410,35 +410,32 @@ const FindYourJob = () => {
                           </span>
                         </div>
                       </div>
-                      
 
-                      <div className="flex items-center gap-2 mb-3 mt-2">
-                              <Building2 className="w-4 h-4 text-[#ffb400]" />
+                      <div className="flex items-center gap-2 mb-5 mt-2">
+                        <Building2 className="w-4 h-4 text-[#ffb400]" />
 
-                              <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
-                                {job?.department
-                                  ?.slice(0, 1)
-                                  .map((item, index) => (
-                                    <span
-                                      key={index}
-                                      className="cursor-pointer  "
-                                      // onClick={(e) => {
-                                      //   e.stopPropagation();
-                                      //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                      // }}
-                                    >
-                                      {CharSlice(item.name, 23)}
-                                    </span>
-                                  ))}
+                        <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+                          {job?.department?.slice(0, 1).map((item, index) => (
+                            <span
+                              key={index}
+                              className="cursor-pointer  "
+                              // onClick={(e) => {
+                              //   e.stopPropagation();
+                              //   onDepartmentClick && onDepartmentClick(e, item.id);
+                              // }}
+                            >
+                              {CharSlice(item.name, 23)}
+                            </span>
+                          ))}
 
-                                {/* If more than 2 departments */}
-                                {job?.department?.length > 2 && (
-                                  <div className="w-6 h-6 px-3  mt-[-4px] flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
-                                    +{job.department.length - 2}
-                                  </div>
-                                )}
-                              </span>
+                          {/* If more than 2 departments */}
+                          {job?.department?.length > 2 && (
+                            <div className="w-6 h-6 px-3  mt-[-4px] flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                              +{job.department.length - 2}
                             </div>
+                          )}
+                        </span>
+                      </div>
 
                       <div className="relative flex items-center justify-end">
                         <button
