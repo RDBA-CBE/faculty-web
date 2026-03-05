@@ -204,11 +204,11 @@ const FindYourJob = () => {
                   <div
                     key={job.id}
                     className="p-3 md:p-5 border border-[#c7c7c787]
-             transition-all duration-300 bg-white cursor-pointer
-             hover:bg-white
-             hover:border-none
+             transition-all duration-300 bg-white cursor-pointer group
+             hover:bg-[#01014b]
+             hover:border-gray-400
              hover:-translate-y-1
-             hover:shadow-2xl hover:shadow-gray-300 h-full"
+             hover:shadow-2xl hover:shadow-gray-500 h-full "
                     onClick={() => router.push(`/jobs?id=${job.id}`)}
                   >
                     <div className="flex items-start justify-between mb-3 h-full">
@@ -236,10 +236,10 @@ const FindYourJob = () => {
                         <div className="w-full">
                           <div className="flex justify-between">
                             <div>
-                              <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 ">
+                              <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 group-hover:!text-white">
                                 {capitalizeFLetter(job.job_title)}
                               </h3>
-                              <p className="text-sm text-gray-600">
+                              <p className="text-sm text-gray-600 group-hover:!text-white">
                                 {job.college?.name}
                               </p>
                             </div>
@@ -253,7 +253,7 @@ const FindYourJob = () => {
                                 console.log("shared successfully!")
                               }
                             >
-                              <button className="text-gray-800 hover:text-black transition h-fit">
+                              <button className="text-gray-800 hover:text-black transition h-fit group-hover:!text-white">
                                 <Share2 className="w-5 h-5" />
                               </button>
                             </RWebShare>
@@ -262,11 +262,11 @@ const FindYourJob = () => {
                             <div className="flex items-center gap-4  text-xs text-gray-600 mt-4 mb-2">
                               <div className="flex items-center gap-1.5">
                                 <Briefcase className="w-4 h-4 text-[#ffb400]" />
-                                <span>{job.experiences?.name}</span>
+                                <span className="group-hover:!text-white">{job.experiences?.name}</span>
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-[#ffb400]" />
-                                <span>
+                                <span className="group-hover:!text-white">
                                   {job.locations
                                     ?.map((item) => item.city)
                                     .join(", ")}
@@ -285,13 +285,13 @@ const FindYourJob = () => {
                             <div className="flex items-center gap-1.5 mb-3 mt-2">
                               <Building2 className="w-4 h-4 text-[#ffb400]" />
 
-                              <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+                              <span className="flex items-center gap-3 text-sm text-[#6D6C6C] ">
                                 {job?.department
                                   ?.slice(0, 1)
                                   .map((item, index) => (
                                     <span
                                       key={index}
-                                      className="cursor-pointer  "
+                                      className="cursor-pointer group-hover:!text-white "
                                       // onClick={(e) => {
                                       //   e.stopPropagation();
                                       //   onDepartmentClick && onDepartmentClick(e, item.id);
@@ -303,7 +303,7 @@ const FindYourJob = () => {
 
                                 {/* If more than 2 departments */}
                                 {job?.department?.length > 2 && (
-                                  <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                                  <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57]  text-white  group-hover:bg-[#fff] group-hover:!text-[#1d1d57] text-[12px] font-medium">
                                     +{job.department.length - 2}
                                   </div>
                                 )}
@@ -314,14 +314,14 @@ const FindYourJob = () => {
                                 onClick={() =>
                                   router.push(`/jobs?id=${job.id}`)
                                 }
-                                className="border border-[#01014B] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#01014B]  hover:bg-[#01014B]/90 hover:text-white transition"
+                                className="border border-[#01014B] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#01014B] group-hover:bg-[#fff] group-hover:!text-[#01014B] transition"
                               >
                                 View Job
                               </button>
 
                               <div className="flex items-center justify-end text-end gap-1 text-xs text-gray-500">
-                                <Clock className="w-3 h-3" />
-                                <span>
+                                <Clock className="w-3 h-3 group-hover:!text-white" />
+                                <span className="group-hover:!text-white">
                                   {moment(job.created_at).isValid() &&
                                   moment(job.created_at).year() > 1900
                                     ? moment(job.created_at).fromNow()
