@@ -149,7 +149,7 @@ const FindYourJob = () => {
           <div className="lg:col-span-9">
             {/* Header with Search in Single Row */}
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
-              <h2 className="text-2xl md:text-3xl font-semibold text-[#151515]">
+              <h2 className="text-2xl md:text-2xl font-medium text-[#151515]">
                 Find Your Job
               </h2>
 
@@ -346,7 +346,7 @@ const FindYourJob = () => {
             {/* Job Spotlight */}
             <div className=" border ">
               <div className="bg-[#01014B] flex items-center justify-between py-3 px-4">
-                <h3 className="text-xl md:text-2xl font-medium text-white">
+                <h3 className="text-xl md:text-xl font-medium text-white">
                   Job spotlight
                 </h3>
                 <div className="flex gap-2">
@@ -389,7 +389,7 @@ const FindYourJob = () => {
                         )}
                       </div>
 
-                      <h4 className="sub-ti !font-semibold !text-[#313131] mb-2 line-clamp-1">
+                      <h4 className="sub-ti !font-medium !text-[#313131] mb-2 line-clamp-1">
                         {job.job_title}
                       </h4>
                       <p className="text-base text-gray-600 mb-4 line-clamp-1">
@@ -454,7 +454,7 @@ const FindYourJob = () => {
             {/* Jobs By Category */}
             <div className="bg-[#01014B] border ">
               <div className="py-3 px-4">
-                <h3 className="text-xl md:text-2xl font-medium text-white">
+                <h3 className="text-xl md:text-xl font-medium text-white">
                   Jobs By Category
                 </h3>
               </div>

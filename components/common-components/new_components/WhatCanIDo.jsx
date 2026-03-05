@@ -49,7 +49,7 @@ const WhatCanIDo = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9 ">
-            <h2 className="text-2xl md:text-3xl  font-semibold  mb-3 text-[#151515]">
+            <h2 className="text-2xl md:text-2xl  font-medium  mb-3 text-[#151515]">
               What can I do With Faculty Pro?
             </h2>
             <p className="text-gray-600 mb-8">
@@ -127,7 +127,7 @@ const WhatCanIDo = () => {
             {/* Jobs By Location */}
             <div className="bg-[#01014B] border ">
               <div className="py-3 px-4">
-                <h3 className="text-xl md:text-2xl font-medium text-white">
+                <h3 className="text-xl md:text-xl font-medium text-white">
                   Jobs By Colleges
                 </h3>
               </div>
@@ -148,7 +148,7 @@ const WhatCanIDo = () => {
                         />
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-md font-semibold text-gray-800">
+                        <h4 className="text-md font-medium text-gray-800">
                           {college.college_name}
                         </h4>
                         <p className="text-sm text-gray-500">

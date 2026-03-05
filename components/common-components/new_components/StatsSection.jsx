@@ -46,7 +46,7 @@ const StatsSection = () => {
             <h3 className="text-5xl lg:text-8xl font-bold text-white mb-2" style={{ WebkitTextStroke: '2px white', WebkitTextFillColor: 'transparent' }}>
               {state?.dataCount?.total_jobs}+
             </h3>
-            <p className="text-white text-lg lg:text-2xl font-medium">Jobs Available</p>
+            <p className="text-white text-lg lg:text-xl font-medium">Jobs Available</p>
           </div>
 
           <div className="hidden lg:block absolute left-1/4 top-1/2 -translate-y-1/2 w-px h-24 bg-white/30"></div>
@@ -56,7 +56,7 @@ const StatsSection = () => {
             <h3 className="text-5xl lg:text-8xl font-bold text-white mb-2" style={{ WebkitTextStroke: '2px white', WebkitTextFillColor: 'transparent' }}>
               {state?.dataCount?.total_applications}+
             </h3>
-            <p className="text-white text-lg lg:text-2xl lg:text-2xl font-medium">Applications</p>
+            <p className="text-white text-lg lg:text-2xl lg:text-xl font-medium">Applications</p>
           </div>
 
           <div className="hidden lg:block absolute left-1/2 top-1/2 -translate-y-1/2 w-px h-24 bg-white/30"></div>
@@ -66,7 +66,7 @@ const StatsSection = () => {
             <h3 className="text-5xl lg:text-8xl font-bold text-white mb-2" style={{ WebkitTextStroke: '2px white', WebkitTextFillColor: 'transparent' }}>
               {state?.dataCount?.total_resumes}+
             </h3>
-            <p className="text-white text-lg lg:text-2xl font-medium">Resumes</p>
+            <p className="text-white text-lg lg:text-xl font-medium">Resumes</p>
           </div>
 
           <div className="hidden lg:block absolute left-3/4 top-1/2 -translate-y-1/2 w-px h-24 bg-white/30"></div>
@@ -76,7 +76,7 @@ const StatsSection = () => {
             <h3 className="text-5xl lg:text-8xl font-bold text-white mb-2" style={{ WebkitTextStroke: '2px white', WebkitTextFillColor: 'transparent' }}>
                {state?.dataCount?.total_users}+
             </h3>
-            <p className="text-white text-lg lg:text-2xl font-medium">Members</p>
+            <p className="text-white text-lg lg:text-xl font-medium">Members</p>
           </div>
         </div>
       </div>

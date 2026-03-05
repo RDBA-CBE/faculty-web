@@ -279,7 +279,7 @@ const Header = () => {
                   alt="Logo"
                   className="w-10 h-10 object-contain"
                 />
-                <span className="font-bold text-2xl tracking-tight text-white">
+                <span className="font-medium text-2xl tracking-tight text-white">
                   Faculty Pro
                 </span>
               </Link>

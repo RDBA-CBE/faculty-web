@@ -79,7 +79,7 @@ export default function InstitutionPartners() {
                 </div> */}
 
                 {/* <h1 className="text-4xl lg:text-[48px] font-bold text-black leading-[1.1]"> */}
-                <h2 className="text-2xl md:text-3xl  font-semibold text-[#151515] mb-3">
+                <h2 className="text-2xl md:text-2xl  font-medium text-[#151515] mb-3">
                   Institution Partners
                 </h2>
 

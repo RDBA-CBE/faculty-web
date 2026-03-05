@@ -92,7 +92,7 @@ const TopHiringColleges = () => {
           <div className="lg:col-span-9">
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl md:text-3xl  font-semibold text-[#151515]">
+              <h2 className="text-2xl md:text-2xl  font-medium text-[#151515]">
                 Top Hiring Colleges
               </h2>
 

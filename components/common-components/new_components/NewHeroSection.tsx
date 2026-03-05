@@ -73,7 +73,7 @@ const NewHeroSection = () => {
           <div className="space-y-6 lg:space-y-8 flex flex-col justify-center">
             {/* Heading */}
             <div className="space-y-5">
-              <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[50px] leading-[50px] lg:leading-[66px] xl:leading-[74px] font-bold text-white">
+              <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
                Find Your Dream Job Today <br /> Opportunities Await You!
               </h1>
               <p className="text-[#F0F0F0CC] max-w-xl text-base lg:text-lg leading-relaxed">
@@ -120,14 +120,14 @@ const NewHeroSection = () => {
             {/* Stats */}
             <div className="flex flex-wrap items-start gap-4 md:gap-8 lg:gap-12 pt-8 md:pt-2">
               <div>
-                <div className="text-2xl md:text-4xl lg:text-4xl font-bold text-white mb-1">
+                <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
                   125K+
                 </div>
                 <div className="text-white text-sm">People joined</div>
               </div>
 
               <div>
-                <div className="text-2xl md:text-4xl lg:text-4xl font-bold text-white mb-1">
+                <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
                   9,99%
                 </div>
                 <div className="text-white text-sm">Success Probability</div>
@@ -135,7 +135,7 @@ const NewHeroSection = () => {
 
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
-                  <div className="text-2xl md:text-4xl lg:text-4xl font-bold text-white">
+                  <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white">
                     5.0
                   </div>
                   <div className="flex text-xl">

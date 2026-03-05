@@ -77,7 +77,7 @@ const Footer = () => {
         <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between  p-6 md:p-10 min-h-[180px] relative shadow-xl md:translate-y-[30%]">
           {/* Text & Input Content */}
           <div className="w-full md:w-1/2 text-black z-10">
-            <h2 className="text-2xl md:text-3xl font-semibold text-[#1C1C1C] mb-2">
+            <h2 className="text-2xl md:text-2xl font-medium text-[#1C1C1C] mb-2">
               Subscribe Newsletter
             </h2>
             <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
@@ -137,7 +137,7 @@ const Footer = () => {
                     height={30}
                   />
                 </div>
-                <span className="text-2xl font-bold text-[#fff]">
+                <span className="text-2xl font-medium text-[#fff]">
                   Faculty Pro
                 </span>
               </div>
@@ -149,7 +149,7 @@ const Footer = () => {
 
             {/* Links Columns */}
             <div className="md:col-span-2">
-              <h3 className="text-lg font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider text-[#fff]">
+              <h3 className="text-lg font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider text-[#fff]">
                 Useful links
               </h3>
               <ul className="space-y-3 text-xs text-gray-400">
@@ -181,7 +181,7 @@ const Footer = () => {
             </div>
 
             <div className="md:col-span-4">
-              <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+              <h3 className="text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
                 Recent Jobs
               </h3>
               <div
@@ -206,7 +206,7 @@ const Footer = () => {
             </div>
 
             <div className="md:col-span-2">
-              <h3 className="text-lg text-[#fff] font-bold mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+              <h3 className="text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
                 Official links
               </h3>
               <ul className="space-y-3 text-md text-gray-400">

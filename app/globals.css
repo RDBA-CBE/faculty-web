@@ -73,9 +73,9 @@ h6 {
 }
 
 .sub-ti {
-  font-size: 22px;
+  font-size: 18px;
   color: #000;
-  font-weight: 700;
+  font-weight: 500;
 }
 
 @media (max-width: 1024px) {
@@ -88,7 +88,7 @@ h6 {
   }
 
   .sub-ti {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 
@@ -102,7 +102,7 @@ h6 {
   }
 
   .sub-ti {
-    font-size: 20px;
+    font-size: 18px;
   }
 }
 

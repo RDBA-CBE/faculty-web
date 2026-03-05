@@ -39,7 +39,7 @@ const FaqResumeSection = () => {
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#1F1F1F] mb-3">
+          <h2 className="text-2xl md:text-2xl font-medium text-[#1F1F1F] mb-3">
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">
