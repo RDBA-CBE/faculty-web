@@ -8,9 +8,11 @@ export default function AboutPage() {
     <main className="bg-gray-50">
       {/* ================= HERO SECTION ================= */}
 
-      <div className="bg-[#1d1d57] py-[50px] px-4 ">
+      <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
-          <h1 className="!text-white text-[40px] font-semibold">About Us</h1>
+          <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+            About Us
+          </h1>
         </div>
       </div>
 
@@ -69,12 +71,12 @@ export default function AboutPage() {
             {/* RIGHT COLUMN */}
             <div className="order-1 lg:order-2">
               {/* Small Label */}
-              <p className="uppercase text-sm tracking-widest font-medium text-[#6C757D] mb-3">
+              <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-3">
                 About Us
               </p>
 
               {/* Heading */}
-              <h2 className="text-3xl  font-semibold text-[#151515] leading-snug">
+              <h2 className="text-2xl  font-medium text-[#151515] leading-snug">
                 Empowering Institutions To Hire <br />
                 Exceptional Faculty Faster
               </h2>
@@ -129,11 +131,11 @@ export default function AboutPage() {
       <section className="bg-white pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <p className="uppercase text-sm tracking-widest font-medium text-[#6C757D] mb-5">
+            <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-5">
               What we do
             </p>
           </div>
-          <h2 className="text-3xl font-semibold text-[#151515] text-center mb-12">
+          <h2 className="text-2xl font-medium text-[#151515] text-center mb-12">
             Lorem ipsum dolor sit amet <br /> consectetur. Tortor
           </h2>
 
@@ -262,7 +264,7 @@ export default function AboutPage() {
         <div className="absolute "></div>
 
         <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0 relative z-10">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 ">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 ">
             <div className="text-center gap-2 flex flex-col justify-center items-center">
               <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
                 <img
@@ -324,7 +326,7 @@ export default function AboutPage() {
 
       <section className="section-wid pt-20 pb-16">
         <div className="lg:col-span-9 ">
-          <h2 className="text-3xl  font-semibold  mb-3 text-[#151515]">
+          <h2 className="text-2xl md:text-2xl  font-medium  mb-3 text-[#151515]">
             What can I do With Faculty Pro?
           </h2>
           <p className="text-gray-600 mb-8">

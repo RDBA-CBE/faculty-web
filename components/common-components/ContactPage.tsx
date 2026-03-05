@@ -38,9 +38,12 @@ export default function ContactPage() {
   return (
     <main className="bg-gray-50">
       {/* ================= HERO ================= */}
-      <div className="bg-[#1d1d57] py-[50px] px-4 ">
+
+      <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
-          <h1 className="!text-white text-[40px] font-semibold">Contact Us</h1>
+          <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+            Contact Us
+          </h1>
         </div>
       </div>
 
@@ -50,7 +53,7 @@ export default function ContactPage() {
             {/* LEFT CONTENT */}
             <div>
               {/* Heading */}
-              <h2 className="text-3xl font-semibold text-[#151515]  mb-6">
+              <h2 className="text-2xl font-medium text-[#151515]  mb-6">
                 You Will Grow, You Will <br />
                 Succeed. We Promise That
               </h2>
@@ -82,9 +85,7 @@ export default function ContactPage() {
                     <h4 className="text-lg mb-2 font-semibold text-[#313131]">
                       Send us email
                     </h4>
-                    <p className=" text-sm">
-                      kramulous@sbcglobal.net
-                    </p>
+                    <p className=" text-sm">kramulous@sbcglobal.net</p>
                   </div>
                 </div>
 
@@ -95,9 +96,7 @@ export default function ContactPage() {
                     <h4 className="text-lg mb-2 font-semibold text-[#313131]">
                       Opening hours
                     </h4>
-                    <p className=" text-sm">
-                      Mon - Fri: 10AM - 10PM
-                    </p>
+                    <p className=" text-sm">Mon - Fri: 10AM - 10PM</p>
                   </div>
                 </div>
 
@@ -105,7 +104,9 @@ export default function ContactPage() {
                 <div className="flex flex-col items-start gap-3">
                   <MapPin className="text-[#ffb400] mt-1" size={20} />
                   <div>
-                    <h4 className="text-lg mb-2 font-semibold text-[#313131]">Office</h4>
+                    <h4 className="text-lg mb-2 font-semibold text-[#313131]">
+                      Office
+                    </h4>
                     <p className=" text-sm">
                       19 North Road Piscataway, NY 08854
                     </p>
@@ -192,7 +193,7 @@ export default function ContactPage() {
         <div className="absolute "></div>
 
         <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0 relative z-10">
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-10 ">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 ">
             <div className="text-center gap-2 flex flex-col justify-center items-center">
               <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
                 <img
@@ -254,7 +255,7 @@ export default function ContactPage() {
 
       <section className="section-wid py-16">
         <div className="lg:col-span-2">
-          <h2 className="text-3xl font-semibold text-[#151515] mb-3">
+          <h2 className="text-2xl md:text-2xl font-medium text-[#1F1F1F] mb-3">
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">

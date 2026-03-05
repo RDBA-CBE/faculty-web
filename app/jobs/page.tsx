@@ -804,9 +804,9 @@ export default function JobsPage() {
     <>
       {" "}
       <div className=" bg-clr1">
-        <div className="bg-[#1d1d57] py-[50px] px-4 ">
+        <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <h1 className="!text-white text-[40px] font-semibold">Jobs</h1>
+            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">Jobs</h1>
           </div>
         </div>
 
