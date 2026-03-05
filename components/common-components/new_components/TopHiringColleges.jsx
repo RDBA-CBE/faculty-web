@@ -174,7 +174,7 @@ const TopHiringColleges = () => {
                 priority
               />
             </div>
-            <div className="relative z-10 rounded-xl p-6 text-center text-white overflow-hidden h-full flex flex-col ">
+            <div className="relative z-10 rounded-xl p-6 text-center text-white overflow-hidden h-full flex flex-col items-center justify-center">
               <div className="relative z-10 ">
                 <div className="mb-4 flex items-center justify-center gap-2 py-1 pt-3">
                   <div className="w-10 h-10 flex items-center justify-center">

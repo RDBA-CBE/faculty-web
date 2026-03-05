@@ -25,6 +25,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import {
   capitalizeFLetter,
+  CharSlice,
   Dropdown,
   Failure,
   getAvatarColor,
@@ -153,7 +154,7 @@ const FindYourJob = () => {
               </h2>
 
               {/* Search Bar */}
-              <div className="bg-white   rounded-full shadow-md border border-gray-200 p-1.5 flex items-center gap-1 max-w-2xl">
+              <div className="bg-white   rounded-full  border border-[#E4E4E4] p-1.5 flex items-center gap-3 max-w-[500px]">
                 <div className="flex items-center flex-1 px-3 py-1.5">
                   <Search className="w-4 h-4 text-gray-400 mr-2" />
                   <input
@@ -202,8 +203,8 @@ const FindYourJob = () => {
                 {state?.jobList.slice(0, 6)?.map((job) => (
                   <div
                     key={job.id}
-                    className="p-3 md:p-5 border border-gray-200 
-             transition-all duration-300 bg-white shadow-xl
+                    className="p-3 md:p-5 border border-[#E4E4E4]
+             transition-all duration-300 bg-white 
              hover:bg-white
              hover:border-none
              hover:-translate-y-1
@@ -223,7 +224,7 @@ const FindYourJob = () => {
                           ) : (
                             <div
                               className={`w-full h-full rounded-lg ${getAvatarColor(
-                                job?.college?.name
+                                job?.college?.name,
                               )} flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
                             >
                               {job?.college?.name?.slice(0, 1).toUpperCase()}
@@ -281,30 +282,32 @@ const FindYourJob = () => {
                             </div> */}
 
                             <div className="flex items-center gap-1.5 mb-3 mt-2">
-                                    <Building2 className="w-4 h-4 text-[#ffb400]" />
-                            
-                                    <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
-                                      {job?.department?.slice(0, 1).map((item, index) => (
-                                        <span
-                                          key={index}
-                                          className="cursor-pointer  "
-                                          // onClick={(e) => {
-                                          //   e.stopPropagation();
-                                          //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                          // }}
-                                        >
-                                          {item.name}
-                                        </span>
-                                      ))}
-                            
-                                      {/* If more than 2 departments */}
-                                      {job?.department?.length > 2 && (
-                                        <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
-                                          +{job.department.length - 2}
-                                        </div>
-                                      )}
+                              <Building2 className="w-4 h-4 text-[#ffb400]" />
+
+                              <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+                                {job?.department
+                                  ?.slice(0, 1)
+                                  .map((item, index) => (
+                                    <span
+                                      key={index}
+                                      className="cursor-pointer  "
+                                      // onClick={(e) => {
+                                      //   e.stopPropagation();
+                                      //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                      // }}
+                                    >
+                                      {item.name}
                                     </span>
+                                  ))}
+
+                                {/* If more than 2 departments */}
+                                {job?.department?.length > 2 && (
+                                  <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                                    +{job.department.length - 2}
                                   </div>
+                                )}
+                              </span>
+                            </div>
                             <div className="flex items-center justify-between w-100 pt-3">
                               <button
                                 onClick={() =>
@@ -366,8 +369,8 @@ const FindYourJob = () => {
                 className="job-spotlight-swiper bg-white"
               >
                 {state.jobList?.slice(0, 6)?.map((job: any) => (
-                  <SwiperSlide key={job.id}>
-                    <div className=" px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
+                  <SwiperSlide key={job.id} className="w-full h-full">
+                    <div className=" px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] w-full h-full bg-cover bg-center bg-no-repeat">
                       <div className="mb-4 rounded-lg overflow-hidden h-16 w-full  flex items-center justify-center  ">
                         {job?.college?.college_logo ? (
                           <img
@@ -378,7 +381,7 @@ const FindYourJob = () => {
                         ) : (
                           <div
                             className={`w-full h-full ${getAvatarColor(
-                              job?.college?.name
+                              job?.college?.name,
                             )} flex items-center justify-center text-white font-bold text-4xl`}
                           >
                             {job?.college?.name?.charAt(0).toUpperCase()}
@@ -407,12 +410,35 @@ const FindYourJob = () => {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 mb-4 mt-1 ">
-                        <Building2 className="w-4 h-4 text-[#ffb400]" />
-                        <span>
-                          {job.department?.map((item) => item.name).join(", ")}
-                        </span>
-                      </div>
+                      
+
+                      <div className="flex items-center gap-2 mb-3 mt-2">
+                              <Building2 className="w-4 h-4 text-[#ffb400]" />
+
+                              <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+                                {job?.department
+                                  ?.slice(0, 1)
+                                  .map((item, index) => (
+                                    <span
+                                      key={index}
+                                      className="cursor-pointer  "
+                                      // onClick={(e) => {
+                                      //   e.stopPropagation();
+                                      //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                      // }}
+                                    >
+                                      {CharSlice(item.name, 23)}
+                                    </span>
+                                  ))}
+
+                                {/* If more than 2 departments */}
+                                {job?.department?.length > 2 && (
+                                  <div className="w-6 h-6 px-3  mt-[-4px] flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                                    +{job.department.length - 2}
+                                  </div>
+                                )}
+                              </span>
+                            </div>
 
                       <div className="relative flex items-center justify-end">
                         <button
@@ -443,7 +469,7 @@ const FindYourJob = () => {
                       key={index}
                       onClick={() =>
                         router.push(
-                          `/jobs?search=${encodeURIComponent(category.name)}`
+                          `/jobs?search=${encodeURIComponent(category.name)}`,
                         )
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#0a1551] cursor-pointer transition"
