@@ -65,7 +65,7 @@ export default function InstitutionPartners() {
   const rightPartners = [PARTNERS[0], PARTNERS[1], PARTNERS[4], PARTNERS[5]];
 
   return (
-    <section className="bg-gray-50 pb-16 pt-20">
+    <section className="bg-[#0000ff0a] pb-16 pt-20">
       <div className="section-wid">
         <div className="flex items-center justify-center">
           <div className=" w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
@@ -120,11 +120,11 @@ const PartnerCard = (props) => {
       className={`
         flex flex-col items-center justify-center p-6 rounded-[24px] transition-all duration-300
         min-h-[220px] border  group relative overflow-hidden
-        border border-gray-200 hover:bg-[#0a1551]
+        border border-[#C7C7C7] hover:bg-[#0a1551]
         ${
           p.isDark
-            ? "bg-[#1e1e1e] border-gray-800 !text-[#fff]  hover:scale-[1.02] border-1 "
-            : " border-gray-100 text-[#1a1a1a] hover:border-gray-300 hover:shadow-lg hover:scale-[1.02]"
+            ? "bg-[#1e1e1e] border-[#C7C7C7] !text-[#fff]  hover:scale-[1.02] border-1 "
+            : " border-[#C7C7C7] text-[#1a1a1a] hover:border-gray-300 hover:shadow-lg hover:scale-[1.02]"
         }
       `}
     >

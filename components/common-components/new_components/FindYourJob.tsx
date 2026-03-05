@@ -154,7 +154,7 @@ const FindYourJob = () => {
               </h2>
 
               {/* Search Bar */}
-              <div className="bg-white   rounded-full  border border-[#E4E4E4] p-1.5 flex items-center gap-3 max-w-[500px]">
+              <div className="bg-white   rounded-full  border border-[#c7c7c787] p-1.5 flex items-center gap-3 max-w-[500px]">
                 <div className="flex items-center flex-1 px-3 py-1.5">
                   <Search className="w-4 h-4 text-gray-400 mr-2" />
                   <input
@@ -203,7 +203,7 @@ const FindYourJob = () => {
                 {state?.jobList.slice(0, 6)?.map((job) => (
                   <div
                     key={job.id}
-                    className="p-3 md:p-5 border border-[#E4E4E4]
+                    className="p-3 md:p-5 border border-[#c7c7c787]
              transition-all duration-300 bg-white 
              hover:bg-white
              hover:border-none

@@ -1257,14 +1257,14 @@ export default function JobsPage() {
 
                 <div className="flex gap-6 py-4 ">
                   {/* Left Sidebar - Jobs List */}
-                  <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#E4E4E4]">
+                  <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#c7c7c787]">
                     <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
-                      <div className="flex-grow flex gap-3 items-center px-6 py-4 lg:py-0 w-full lg:w-auto border border-[#E4E4E4] mx-4 bg-[#F5F5F5]">
+                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-4 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
                         <Search color="#E4E4E4" size={22} />
                         <input
                           type="text"
                           placeholder="Search by: Job tittle, Position, Keyword..."
-                          className="w-full  py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                          className="w-full px-2 py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
                           value={state.search}
                           onChange={(e) => setState({ search: e.target.value })}
                         />
@@ -1288,7 +1288,7 @@ export default function JobsPage() {
                           className={`cursor-pointer px-2 py-5 transition-all   ${
                             selectedJob?.id === job.id
                               ? "border border-[#01014B] bg-[#fff]  "
-                              : "border-b border-[#E4E4E4]"
+                              : "border-b border-[#c7c7c787]"
                           }`}
                         >
                           <div className="flex flex-row gap-4 justify-between">
@@ -1636,7 +1636,7 @@ export default function JobsPage() {
                           >
                             <X size={25} className=" hover:text-gray-600" />
                           </button>
-                          <div className="flex flex-col items-end justify-between pt-4 gap-8  border-gray-100">
+                          <div className="flex flex-col items-end justify-between pt-6 gap-8  border-gray-100">
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() =>
@@ -1815,7 +1815,7 @@ export default function JobsPage() {
                       <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
                         <div className="sticky top-20 space-y-4 ">
                           {/* Job Details */}
-                          <div className="bg-clr2   border border-[#E4E4E4]  p-6">
+                          <div className="bg-clr2   border border-[#c7c7c787]  p-6">
                             <h3 className="text-lg font-semibold text-black mb-4">
                               Job Overview
                             </h3>
@@ -1902,7 +1902,7 @@ export default function JobsPage() {
 
                           {state?.jobDetail?.job_image && (
                             <div
-                              className="bg-white  border border-[#E4E4E4] cursor-pointer  p-6"
+                              className="bg-white  border border-[#c7c7c787] cursor-pointer  p-6"
                               onClick={() => setState({ imgOpen: true })}
                             >
                               <img
@@ -1912,7 +1912,7 @@ export default function JobsPage() {
                               />
                             </div>
                           )}
-                          <div className="bg-white  border border-[#E4E4E4]  p-6">
+                          <div className="bg-white  border border-[#c7c7c787]  p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">
                               About
                             </h3>
@@ -2005,7 +2005,7 @@ export default function JobsPage() {
                 </div>
 
                 {/* DESKTOP STICKY SIDEBAR */}
-                <div className="w-80 hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#E4E4E4]">
+                <div className="w-80 hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#c7c7c787]">
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div className="">
                     <Filterbar
@@ -2026,7 +2026,7 @@ export default function JobsPage() {
 
                 <div className="flex-grow">
                   {/* content input header start */}
-                  <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#E4E4E4] rounded-3xl">
+                  <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl">
                     <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
                       <div className="flex-grow flex items-center ps-3 md:px-6 py-4 lg:py-0 w-full lg:w-auto ">
                         <Search color="#5c5a5a93" size={22} />
@@ -2199,7 +2199,7 @@ export default function JobsPage() {
                                 : "grid-cols-1"
                             } ${
                               !isGridView &&
-                              "bg-white px-5 border border-[#E4E4E4]"
+                              "bg-white px-5 border border-[#c7c7c787]"
                             }`}
                             style={{
                               gap: "20px",

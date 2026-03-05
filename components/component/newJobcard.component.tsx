@@ -98,7 +98,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
 
   return (
     <div
-      className=" border-b  border-[#E4E4E4] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
+      className=" border-b  border-[#c7c7c787] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
       onClick={onClick}
     >
       <div className=" w-full md:w-4/5 flex flex-row gap-5">
