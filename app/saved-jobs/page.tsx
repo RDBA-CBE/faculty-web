@@ -83,11 +83,14 @@ export default function SavedJobsPage() {
           <h1 className="section-ti !text-white">Saved Jobs</h1>
         </div>
       </div> */}
-       <div className="bg-[#1d1d57] py-[50px] px-4 ">
-          <div className="max-w-7xl 0px] mx-auto text-center">
-            <h1 className="!text-white text-[40px] font-semibold">Saved Jobs</h1>
-          </div>
+
+      <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
+        <div className="max-w-7xl 0px] mx-auto text-center">
+          <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+            Saved Jobs
+          </h1>
         </div>
+      </div>
 
       <main className="section-wid py-8 lg:py-12 flex-grow w-full">
         {/* BACK BUTTON */}
@@ -115,7 +118,10 @@ export default function SavedJobsPage() {
                     className="cursor-pointer transition-transform hover:scale-105"
                     onClick={() => router.push(`/jobs?id=${item.id}`)}
                   >
-                    <JobCard job={item?.job} updateList={()=>getSavedJobs(state.page)} />
+                    <JobCard
+                      job={item?.job}
+                      updateList={() => getSavedJobs(state.page)}
+                    />
                   </div>
                 );
               })}
