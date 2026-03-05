@@ -271,14 +271,40 @@ const FindYourJob = () => {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 mb-4 ">
+                            {/* <div className="flex items-center gap-1.5 mb-4 ">
                               <Building2 className="w-4 h-4 text-[#ffb400]" />
                               <span>
                                 {job.department
                                   ?.map((item) => item.name)
                                   .join(", ")}
                               </span>
-                            </div>
+                            </div> */}
+
+                            <div className="flex items-center gap-1.5 mb-3 mt-2">
+                                    <Building2 className="w-4 h-4 text-[#ffb400]" />
+                            
+                                    <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
+                                      {job?.department?.slice(0, 1).map((item, index) => (
+                                        <span
+                                          key={index}
+                                          className="cursor-pointer  "
+                                          // onClick={(e) => {
+                                          //   e.stopPropagation();
+                                          //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                          // }}
+                                        >
+                                          {item.name}
+                                        </span>
+                                      ))}
+                            
+                                      {/* If more than 2 departments */}
+                                      {job?.department?.length > 2 && (
+                                        <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                                          +{job.department.length - 2}
+                                        </div>
+                                      )}
+                                    </span>
+                                  </div>
                             <div className="flex items-center justify-between w-100 pt-3">
                               <button
                                 onClick={() =>
