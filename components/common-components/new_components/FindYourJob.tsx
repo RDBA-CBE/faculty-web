@@ -243,26 +243,27 @@ const FindYourJob = () => {
                                 {job.college?.name}
                               </p>
                             </div>
-                            <RWebShare
-                              data={{
-                                title: "Faculty Plus",
-                                text: "Check this out!",
-                                url: window.location.href,
-                              }}
-                              onClick={() =>
-                                console.log("shared successfully!")
-                              }
-                            >
-                              <button className="text-gray-800 hover:text-black transition h-fit group-hover:!text-white">
-                                <Share2 className="w-5 h-5" />
-                              </button>
-                            </RWebShare>
+                            <div onClick={(e) => e.stopPropagation()}>
+                              <RWebShare
+                                data={{
+                                  title: "Faculty Plus",
+                                  text: "Check this out!",
+                                  url: window.location.href,
+                                }}
+                              >
+                                <button className="text-gray-800 hover:text-black transition h-fit group-hover:!text-white">
+                                  <Share2 className="w-5 h-5" />
+                                </button>
+                              </RWebShare>
+                            </div>
                           </div>
                           <div>
                             <div className="flex items-center gap-4  text-xs text-gray-600 mt-4 mb-2">
                               <div className="flex items-center gap-1.5">
                                 <Briefcase className="w-4 h-4 text-[#ffb400]" />
-                                <span className="group-hover:!text-white">{job.experiences?.name}</span>
+                                <span className="group-hover:!text-white">
+                                  {job.experiences?.name}
+                                </span>
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <MapPin className="w-4 h-4 text-[#ffb400]" />

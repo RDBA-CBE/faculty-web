@@ -3096,7 +3096,7 @@ export default function JobsPage() {
                                   key={index}
                                   className="flex items-start gap-2"
                                 >
-                                  <Award className="w-5 h-5 text-[#F2B31D] " />
+                                  <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                   {item.achievement}
                                 </li>
                               ),
@@ -3200,7 +3200,7 @@ export default function JobsPage() {
                                       key={index}
                                       className="flex items-start gap-2"
                                     >
-                                      <Award className="w-5 h-5 text-[#F2B31D] " />
+                                      <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                       {item.achievement}
                                     </li>
                                   ),
