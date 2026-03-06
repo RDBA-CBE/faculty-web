@@ -86,6 +86,7 @@ import ChipFilters from "@/components/component/chipFilters.component";
 import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
+import SkeletonLoader from "./SkeletonLoader";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
@@ -1553,6 +1554,23 @@ export default function JobsPage() {
 
                   <div className="flex-1 ">
                     {/* Job Header Card */}
+                    {state.loading ? (
+                      <div className="bg-white p-6 rounded-lg border border-[#c7c7c787] mb-6">
+                        <div className="flex gap-4 mb-6">
+                          <SkeletonLoader type="rect" width={64} height={64} className="rounded-3xl" />
+                          <div className="flex-1">
+                            <SkeletonLoader type="text" width="40%" height={32} className="mb-2" />
+                            <SkeletonLoader type="text" width="20%" height={20} />
+                          </div>
+                        </div>
+                        <div className="flex gap-4">
+                          <SkeletonLoader type="text" width={100} />
+                          <SkeletonLoader type="text" width={100} />
+                          <SkeletonLoader type="text" width={100} />
+                        </div>
+                      </div>
+                    ) : (
+                    <>
                     <div className=" border-b  px-2 py-2 pb-5">
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -1702,6 +1720,23 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
+                    </>
+                    )}
+
+                    {state.loading ? (
+                      <div className="flex gap-6 flex-col xl:flex-row">
+                        <div className="flex-1 space-y-4 p-3">
+                          <SkeletonLoader type="text" width="30%" height={24} />
+                          <SkeletonLoader type="text" count={10} />
+                        </div>
+                        <div className="w-full xl:w-80 flex-shrink-0 mt-5">
+                          <div className="bg-clr2 border border-[#c7c7c787] p-6 space-y-4">
+                            <SkeletonLoader type="text" width="50%" height={24} />
+                            <SkeletonLoader type="text" count={4} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
                     <div className="flex gap-6 flex-col xl:flex-row">
                       {/* Main Content */}
                       <div className="flex-1 space-y-1   p-3">
@@ -1977,6 +2012,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -2193,8 +2229,38 @@ export default function JobsPage() {
                   />
 
                   {state.loading ? (
-                    <div className="flex items-center justify-center h-[100vh] ">
-                      <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
+                    <div
+                      className={`grid mt-5 ${
+                        viewType === "grid" || !isWideScreen
+                          ? "grid-cols-1 xl:grid-cols-2"
+                          : "grid-cols-1"
+                      }`}
+                      style={{ gap: "20px" }}
+                    >
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-6 rounded-lg border border-[#c7c7c787]"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex gap-4 w-full">
+                              <SkeletonLoader type="circle" width={48} height={48} />
+                              <div className="flex-1">
+                                <SkeletonLoader type="text" width="60%" height={20} style={{ marginBottom: 8 }} />
+                                <SkeletonLoader type="text" width="40%" height={16} />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mb-4">
+                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                          </div>
+                          <div className="space-y-2">
+                            <SkeletonLoader type="text" width="100%" />
+                            <SkeletonLoader type="text" width="80%" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : state.jobList?.length > 0 ? (
                     <>
@@ -2929,8 +2995,22 @@ export default function JobsPage() {
               renderComponent={() => (
                 <div className="p-4 sm:p-5 md:p-6 space-y-5 md:space-y-6 max-h-[75vh] overflow-y-auto">
                   {state.loading ? (
-                    <div className="flex items-center justify-center h-40">
-                      <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                    <div className="space-y-6">
+                      <div className="flex gap-4 items-center border-b pb-4">
+                        <SkeletonLoader type="rect" width={80} height={80} className="rounded-xl" />
+                        <div className="flex-1">
+                          <SkeletonLoader type="text" width="60%" height={24} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader type="text" width="40%" height={16} />
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <SkeletonLoader type="text" count={3} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
+                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
+                      </div>
+                      <SkeletonLoader type="text" count={4} />
                     </div>
                   ) : (
                     <>
@@ -3145,8 +3225,19 @@ export default function JobsPage() {
                 renderComponent={() => (
                   <div className="p-5 sm:p-6 md:p-8 space-y-6 md:space-y-8 max-h-[75vh] overflow-y-auto">
                     {state.loading ? (
-                      <div className="flex items-center justify-center h-40">
-                        <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                      <div className="space-y-6">
+                        <div className="border-b pb-4">
+                          <SkeletonLoader type="text" width="70%" height={32} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader type="text" width="40%" height={16} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
+                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
+                        </div>
+                        <div className="space-y-2">
+                          <SkeletonLoader type="text" width="30%" height={24} style={{ marginBottom: 12 }} />
+                          <SkeletonLoader type="text" count={3} />
+                        </div>
                       </div>
                     ) : (
                       state.departmentDetail && (
