@@ -85,6 +85,7 @@ import { RWebShare } from "react-web-share";
 import ChipFilters from "@/components/component/chipFilters.component";
 import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
+import PaginationComTwo from "@/components/component/PaginationComTwo";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
@@ -558,7 +559,10 @@ export default function JobsPage() {
       // Manual validation for department
       if (state.jobDetail?.department?.length > 1 && !state.department_id) {
         setState({
-          errors: { ...state.errors, department_id: "Please select a department." },
+          errors: {
+            ...state.errors,
+            department_id: "Please select a department.",
+          },
           btnLoading: false,
         });
         return;
@@ -797,8 +801,10 @@ export default function JobsPage() {
     setState({ search: "" });
   };
 
-
-  
+  const handlePageChange = (pageNumber: number) => {
+    setState({ page: pageNumber });
+    jobList(pageNumber);
+  };
 
   return (
     <>
@@ -806,7 +812,9 @@ export default function JobsPage() {
       <div className=" bg-clr1">
         <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">Jobs</h1>
+            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+              Jobs
+            </h1>
           </div>
         </div>
 
@@ -2227,8 +2235,7 @@ export default function JobsPage() {
                                     setSelectedJob(job);
                                     setState({ jobID: job.id });
                                     jobDetail(job.id);
-                                    if (isDesktopScreen)
-                                      setShowJobDetail(true);
+                                    if (isDesktopScreen) setShowJobDetail(true);
                                     window.scrollTo({
                                       top: 0,
                                       behavior: "smooth",
@@ -2267,13 +2274,12 @@ export default function JobsPage() {
                       })()}
 
                       {(state.next || state?.prev) && (
-                        <div className="flex justify-center items-center mt-10">
-                          <PaginationCom
-                            page={state.page}
-                            next={state.next}
-                            prev={state.prev}
-                            onNext={handleNext}
-                            onPrev={handlePrev}
+                        <div className="flex justify-end items-center mt-10">
+                          <PaginationComTwo
+                            activeNumber={handlePageChange}
+                            totalPage={state.count}
+                            currentPages={state.page}
+                            pageSize={state.pageSize}
                           />
                         </div>
                       )}
@@ -2574,7 +2580,10 @@ export default function JobsPage() {
                               <p className="text-md text-gray-500 ps-6">
                                 {state?.jobDetail?.department?.map(
                                   (item, index) => (
-                                    <div key={index} className="text-sm text-gray-500">
+                                    <div
+                                      key={index}
+                                      className="text-sm text-gray-500"
+                                    >
                                       <span
                                         className="text-sm text-gray-500 hover:text-[#1d1d57] cursor-pointer hover:underline"
                                         onClick={(e) =>
@@ -2707,7 +2716,7 @@ export default function JobsPage() {
               </Sheet>
             )}
 
-             <Modal
+            <Modal
               isOpen={showApplicationModal}
               setIsOpen={() => {
                 setState({ errors: {} });
@@ -2780,7 +2789,6 @@ export default function JobsPage() {
                     />
                   </div>
 
-                 
                   <div className="space-y-2">
                     <CustomSelect
                       // title="Experience"
@@ -2980,12 +2988,14 @@ export default function JobsPage() {
                             <span className="line-clamp-2">
                               {state.collegeDetail?.college_address}
                             </span>
-                          </div> 
+                          </div>
 
                           <div className="flex items-start gap-2">
                             <Building className="w-4 h-4 text-[#F2B31D] " />
                             <span className="line-clamp-2">
-                              {state.collegeDetail?.college_types?.map((item )=>(item?.name))?.join( " ,")}
+                              {state.collegeDetail?.college_types
+                                ?.map((item) => item?.name)
+                                ?.join(" ,")}
                             </span>
                           </div>
                         </div>
