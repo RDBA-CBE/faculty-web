@@ -60,6 +60,12 @@ export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
   const [isManualScroll, setIsManualScroll] = useState(false);
 
+  const [expandedDesc, setExpandedDesc] = useState({});
+  const [expandedProjectDesc, setExpandedProjectDesc] = useState({});
+  const [expandedPublicationDesc, setExpandedPublicationDesc] = useState({});
+  const [expandedAchievementDesc, setExpandedAchievementDesc] = useState({});
+  const [expandedAbout, setExpandedAbout] = useState(false);
+
   const [state, setState] = useSetState({
     // Profile Data
     current_location: "",
@@ -94,7 +100,7 @@ export default function NaukriProfilePage() {
       publications: true,
       achievements: true,
     },
-    newsletter:false
+    newsletter: false,
   });
 
   useEffect(() => {
@@ -132,7 +138,7 @@ export default function NaukriProfilePage() {
       {
         threshold: 0.3,
         rootMargin: "-20% 0px -70% 0px",
-      }
+      },
     );
 
     sections.forEach((section) => {
@@ -180,7 +186,7 @@ export default function NaukriProfilePage() {
         current_company: state?.current_company || "",
         current_position: state?.current_position || "",
         profile_logo: state?.profile_logo,
-        newsletter: state?.newsletter
+        newsletter: state?.newsletter,
       };
 
       // ✅ Create FormData
@@ -745,7 +751,7 @@ export default function NaukriProfilePage() {
 
       const res = await Models.achievements.update(
         formData,
-        state.achievement_id
+        state.achievement_id,
       );
       console.log("res", res);
 
@@ -895,7 +901,7 @@ export default function NaukriProfilePage() {
   const handleRemoveTechnology = (techToRemove: string) => {
     setState({
       technologies: state.technologies.filter(
-        (tech: string) => tech !== techToRemove
+        (tech: string) => tech !== techToRemove,
       ),
     });
   };
@@ -965,7 +971,7 @@ export default function NaukriProfilePage() {
                               profile_logo: null,
                               profile_logo_preview:
                                 state.userDetail?.profile_logo_url || null,
-                                newsletter: state.userDetail?.newsletter || false
+                              newsletter: state.userDetail?.newsletter || false,
                             });
                           }}
                         >
@@ -1481,11 +1487,30 @@ export default function NaukriProfilePage() {
 
                           {/* Headline Display */}
                           <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div>
+                            {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div> */}
                             <div className="flex-1 px-3">
-                              <p className="text-md text-gray-500">
-                                {state.userDetail?.about}
-                              </p>
+                              <div className="text-md text-gray-500 leading-relaxed whitespace-pre-line">
+                                <p>
+                                  {expandedAbout
+                                    ? state?.userDetail?.about
+                                    : state?.userDetail?.about?.slice(0, 280)}
+                                  {!expandedAbout &&
+                                    state?.userDetail?.about?.length > 280 &&
+                                    "..."}
+                                  {state?.userDetail?.about?.length > 280 && (
+                                    <button
+                                      onClick={() =>
+                                        setExpandedAbout((prev) => !prev)
+                                      }
+                                      className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
+                                    >
+                                      {expandedAbout
+                                        ? "Read Less"
+                                        : "Read More"}
+                                    </button>
+                                  )}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </motion.div>
@@ -1578,7 +1603,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "skill",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -1791,7 +1816,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "company",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -1807,7 +1832,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "designation",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -1851,7 +1876,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "job_description",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -1886,7 +1911,7 @@ export default function NaukriProfilePage() {
                             {state.userDetail?.experiences?.map(
                               (emp, index) => (
                                 <motion.div
-                                  key={index}
+                                  key={emp.id}
                                   initial={{ opacity: 0, y: 20 }}
                                   animate={{ opacity: 1, y: 0 }}
                                   transition={{ delay: index * 0.1 }}
@@ -1931,12 +1956,12 @@ export default function NaukriProfilePage() {
                                               <span className="ml-1">
                                                 {DateFormat(
                                                   emp.start_date,
-                                                  "date"
+                                                  "date",
                                                 )}{" "}
                                                 to{" "}
                                                 {DateFormat(
                                                   emp.end_date,
-                                                  "date"
+                                                  "date",
                                                 )}
                                               </span>
                                               {/* <span className="ml-1">
@@ -1984,15 +2009,34 @@ export default function NaukriProfilePage() {
                                         {/* Job Description */}
                                         <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-2">
                                           <p className="text-gray-700 leading-relaxed text-sm">
-                                            {emp.job_description}
+                                            {expandedDesc[emp.id]
+                                              ? emp.job_description
+                                              : emp.job_description?.slice(
+                                                  0,
+                                                  280,
+                                                )}
+                                            {!expandedDesc[emp.id] &&
+                                              emp.job_description?.length >
+                                                280 &&
+                                              "..."}
+                                            {emp.job_description &&
+                                              emp.job_description.length >
+                                                280 && (
+                                                <button
+                                                  onClick={() =>
+                                                    setExpandedDesc((prev) => ({
+                                                      ...prev,
+                                                      [emp.id]: !prev[emp.id],
+                                                    }))
+                                                  }
+                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                >
+                                                  {expandedDesc[emp.id]
+                                                    ? "Read Less"
+                                                    : "Read More"}
+                                                </button>
+                                              )}
                                           </p>
-                                          {emp.job_description &&
-                                            emp.job_description.length >
-                                              200 && (
-                                              <button className="text-blue-600 text-sm font-medium mt-2 hover:underline">
-                                                Read More
-                                              </button>
-                                            )}
                                         </div>
 
                                         {/* Key Skills */}
@@ -2067,7 +2111,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              )
+                              ),
                             )}
                           </div>
 
@@ -2204,7 +2248,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "institution",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2220,7 +2264,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "degree",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2236,7 +2280,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "field",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2252,7 +2296,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "cgpa",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2268,7 +2312,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "start_year",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2284,7 +2328,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "end_year",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2421,7 +2465,7 @@ export default function NaukriProfilePage() {
                                               })
                                             }
                                           >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
                                           </Button>
                                           <Button
                                             variant="outline"
@@ -2445,7 +2489,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              )
+                              ),
                             )}
                           </div>
 
@@ -2587,7 +2631,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_title",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2603,7 +2647,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "duration",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2619,7 +2663,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "status",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2635,7 +2679,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_link",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2690,7 +2734,7 @@ export default function NaukriProfilePage() {
                                           onChange={(e) =>
                                             handleFormChange(
                                               "technology",
-                                              e.target.value
+                                              e.target.value,
                                             )
                                           }
                                           onKeyDown={(e) => {
@@ -2727,7 +2771,7 @@ export default function NaukriProfilePage() {
                                                 <X className="w-3 h-3" />
                                               </button>
                                             </div>
-                                          )
+                                          ),
                                         )}
                                       </div>
                                     </div>
@@ -2743,7 +2787,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "project_description",
-                                          e.target.value
+                                          e.target.value,
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -2870,9 +2914,41 @@ export default function NaukriProfilePage() {
 
                                         {/* Project Description */}
                                         <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm">
-                                            {project.project_description}
+                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                            {expandedProjectDesc[project.id]
+                                              ? project.project_description
+                                              : project.project_description?.slice(
+                                                  0,
+                                                  280,
+                                                )}
+                                            {!expandedProjectDesc[project.id] &&
+                                              project.project_description
+                                                ?.length > 280 &&
+                                              "..."}
+                                            {project.project_description &&
+                                              project.project_description
+                                                .length > 280 && (
+                                                <button
+                                                  onClick={() =>
+                                                    setExpandedProjectDesc(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [project.id]:
+                                                          !prev[project.id],
+                                                      }),
+                                                    )
+                                                  }
+                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                >
+                                                  {expandedProjectDesc[
+                                                    project.id
+                                                  ]
+                                                    ? "Read Less"
+                                                    : "Read More"}
+                                                </button>
+                                              )}
                                           </p>
+
                                           {project.funding_details && (
                                             <div className="mt-4">
                                               <h5 className="text-sm font-semibold text-gray-700 mb-1">
@@ -2901,7 +2977,7 @@ export default function NaukriProfilePage() {
                                                     >
                                                       {tech}
                                                     </span>
-                                                  )
+                                                  ),
                                                 )}
                                               </div>
                                             </div>
@@ -2933,7 +3009,7 @@ export default function NaukriProfilePage() {
                                               });
                                             }}
                                           >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
                                           </Button>
                                           <Button
                                             variant="outline"
@@ -2957,7 +3033,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              )
+                              ),
                             )}
                           </div>
 
@@ -3303,8 +3379,38 @@ export default function NaukriProfilePage() {
 
                                         {/* Publication Description */}
                                         <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm">
-                                            {pub.publication_description}
+                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                            {expandedPublicationDesc[pub.id]
+                                              ? pub.publication_description
+                                              : pub.publication_description?.slice(
+                                                  0,
+                                                  280,
+                                                )}
+                                            {!expandedPublicationDesc[pub.id] &&
+                                              pub.publication_description
+                                                ?.length > 280 &&
+                                              "..."}
+                                            {pub.publication_description &&
+                                              pub.publication_description
+                                                .length > 280 && (
+                                                <button
+                                                  onClick={() =>
+                                                    setExpandedPublicationDesc(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [pub.id]: !prev[pub.id],
+                                                      }),
+                                                    )
+                                                  }
+                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                >
+                                                  {expandedPublicationDesc[
+                                                    pub.id
+                                                  ]
+                                                    ? "Read Less"
+                                                    : "Read More"}
+                                                </button>
+                                              )}
                                           </p>
                                         </div>
 
@@ -3333,7 +3439,7 @@ export default function NaukriProfilePage() {
                                               });
                                             }}
                                           >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
                                           </Button>
                                           <Button
                                             variant="outline"
@@ -3495,7 +3601,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "achievement_title",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3511,7 +3617,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "organization",
-                                            e.target.value
+                                            e.target.value,
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3653,7 +3759,7 @@ export default function NaukriProfilePage() {
                                               size="sm"
                                               onClick={() =>
                                                 deleteAchievement(
-                                                  achievement.id
+                                                  achievement.id,
                                                 )
                                               }
                                               className="hover:bg-red-50 border-red-200 group/btn"
@@ -3665,10 +3771,45 @@ export default function NaukriProfilePage() {
 
                                         {/* Achievement Description */}
                                         <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm">
-                                            {
-                                              achievement.achievement_description
-                                            }
+                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                            {expandedAchievementDesc[
+                                              achievement.id
+                                            ]
+                                              ? achievement.achievement_description
+                                              : achievement.achievement_description?.slice(
+                                                  0,
+                                                  280,
+                                                )}
+                                            {!expandedAchievementDesc[
+                                              achievement.id
+                                            ] &&
+                                              achievement
+                                                .achievement_description
+                                                ?.length > 280 &&
+                                              "..."}
+                                            {achievement.achievement_description &&
+                                              achievement
+                                                .achievement_description
+                                                .length > 280 && (
+                                                <button
+                                                  onClick={() =>
+                                                    setExpandedAchievementDesc(
+                                                      (prev) => ({
+                                                        ...prev,
+                                                        [achievement.id]:
+                                                          !prev[achievement.id],
+                                                      }),
+                                                    )
+                                                  }
+                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                >
+                                                  {expandedAchievementDesc[
+                                                    achievement.id
+                                                  ]
+                                                    ? "Read Less"
+                                                    : "Read More"}
+                                                </button>
+                                              )}
                                           </p>
 
                                           {achievement.achievement_file_url && (
@@ -3708,7 +3849,7 @@ export default function NaukriProfilePage() {
                                               });
                                             }}
                                           >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
                                           </Button>
                                           <Button
                                             variant="outline"
@@ -3725,7 +3866,7 @@ export default function NaukriProfilePage() {
                                     </div>
                                   </div>
                                 </motion.div>
-                              )
+                              ),
                             )}
                           </div>
 
@@ -3955,20 +4096,20 @@ export default function NaukriProfilePage() {
                         />
                       </div>
                       <div className="flex flex-col">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="mr-2"
-                    checked={state.newsletter || false}
-                    onChange={(e) =>
-                      handleFormChange("newsletter", e.target.checked)
-                    }
-                  />
-                  <span className="text-gray-600 text-sm">
-                    Accept to receive newsletter
-                  </span>
-                </div>
-              </div>
+                        <div className="flex items-center">
+                          <input
+                            type="checkbox"
+                            className="mr-2"
+                            checked={state.newsletter || false}
+                            onChange={(e) =>
+                              handleFormChange("newsletter", e.target.checked)
+                            }
+                          />
+                          <span className="text-gray-600 text-sm">
+                            Accept to receive newsletter
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
@@ -3979,10 +4120,7 @@ export default function NaukriProfilePage() {
                     >
                       Cancel
                     </Button>
-                    <Button
-                      onClick={profileUpdate}
-                      className="bg-[#1d1d57] "
-                    >
+                    <Button onClick={profileUpdate} className="bg-[#1d1d57] ">
                       Update
                     </Button>
                   </div>
@@ -4216,10 +4354,7 @@ export default function NaukriProfilePage() {
                     >
                       Cancel
                     </Button>
-                    <Button
-                      onClick={updateEducation}
-                      className="bg-[#1d1d57] "
-                    >
+                    <Button onClick={updateEducation} className="bg-[#1d1d57] ">
                       Update
                     </Button>
                   </div>
@@ -4355,7 +4490,7 @@ export default function NaukriProfilePage() {
                                 handleAddTechnology();
                               }
                             }}
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                           />
                           <Button
                             variant="outline"
@@ -4381,7 +4516,7 @@ export default function NaukriProfilePage() {
                                   <X className="w-3 h-3" />
                                 </button>
                               </div>
-                            )
+                            ),
                           )}
                         </div>
                       </div>
@@ -4395,7 +4530,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "project_description",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -4411,10 +4546,7 @@ export default function NaukriProfilePage() {
                     >
                       Cancel
                     </Button>
-                    <Button
-                      onClick={updateProjects}
-                      className="bg-[#1d1d57] "
-                    >
+                    <Button onClick={updateProjects} className="bg-[#1d1d57] ">
                       Update
                     </Button>
                   </div>
@@ -4594,7 +4726,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "achievement_title",
-                              e.target.value
+                              e.target.value,
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
