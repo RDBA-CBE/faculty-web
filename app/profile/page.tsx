@@ -276,19 +276,30 @@ export default function NaukriProfilePage() {
     }
   };
 
-  const downloadResume = () => {
-    if (state.userDetail?.resume_url) {
-      const link = document.createElement("a");
-      link.href = state.userDetail.resume_url;
-      const filename = getFileNameFromUrl(state.userDetail.resume_url);
-      link.setAttribute("download", filename);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      Failure("No resume available to download.");
-    }
-  };
+  // const downloadResume = () => {
+  //   if (state.userDetail?.resume_url) {
+  //     const link = document.createElement("a");
+  //     link.href = state.userDetail.resume_url;
+  //     const filename = getFileNameFromUrl(state.userDetail.resume_url);
+  //     link.setAttribute("download", filename);
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   } else {
+  //     Failure("No resume available to download.");
+  //   }
+  // };
+
+    const downloadResume = (e) => {
+  e.preventDefault(); // prevent same tab navigation
+  e.stopPropagation();
+
+  if (state.userDetail?.resume_url) {
+    window.open(state.userDetail.resume_url, "_blank", "noopener,noreferrer");
+  } else {
+    Failure("No resume available to download.");
+  }
+};
 
   const deleteResume = async () => {
     Swal.fire({

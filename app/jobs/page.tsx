@@ -1259,7 +1259,7 @@ export default function JobsPage() {
                   {/* Left Sidebar - Jobs List */}
                   <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#c7c7c787]">
                     <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
-                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-4 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
+                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
                         <Search color="#E4E4E4" size={22} />
                         <input
                           type="text"
