@@ -38,6 +38,12 @@ export default function NaukriProfilePage() {
   const [isManualScroll, setIsManualScroll] = useState(false);
   const params = useParams();
 
+  const [expandedDesc, setExpandedDesc] = useState({});
+  const [expandedProjectDesc, setExpandedProjectDesc] = useState({});
+  const [expandedPublicationDesc, setExpandedPublicationDesc] = useState({});
+  const [expandedAchievementDesc, setExpandedAchievementDesc] = useState({});
+  const [expandedAbout, setExpandedAbout] = useState(false);
+
   const [state, setState] = useSetState({
     // Accordion States
     expandedSections: {
@@ -553,9 +559,28 @@ const downloadResume = (e) => {
                         {/* Headline Display */}
                         <div className="relative">
                           <div className="flex-1 px-3">
-                            <p className="text-md text-gray-500">
-                              {state.userDetail?.about}
-                            </p>
+                            <div className="text-md text-gray-500 leading-relaxed ">
+                              <p>
+                                {expandedAbout
+                                  ? state?.userDetail?.about
+                                  : state?.userDetail?.about?.slice(0, 280)}
+                                {!expandedAbout &&
+                                  state?.userDetail?.about?.length > 280 &&
+                                  "..."}
+                                {state?.userDetail?.about?.length > 280 && (
+                                  <button
+                                    onClick={() =>
+                                      setExpandedAbout((prev) => !prev)
+                                    }
+                                    className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
+                                  >
+                                    {expandedAbout
+                                      ? "Read Less"
+                                      : "Read More"}
+                                  </button>
+                                )}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
@@ -758,15 +783,35 @@ const downloadResume = (e) => {
 
                                     {/* Job Description */}
                                     <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-2">
-                                      <p className="text-gray-700 leading-relaxed text-sm">
-                                        {emp.job_description}
+                                      <p className="text-gray-700 leading-relaxed text-sm ">
+                                        {expandedDesc[emp.id]
+                                          ? emp.job_description
+                                          : emp.job_description?.slice(
+                                              0,
+                                              280,
+                                            )}
+                                        {!expandedDesc[emp.id] &&
+                                          emp.job_description?.length >
+                                            280 &&
+                                          "..."}
+                                        {emp.job_description &&
+                                          emp.job_description.length >
+                                            280 && (
+                                            <button
+                                              onClick={() =>
+                                                setExpandedDesc((prev) => ({
+                                                  ...prev,
+                                                  [emp.id]: !prev[emp.id],
+                                                }))
+                                              }
+                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                            >
+                                              {expandedDesc[emp.id]
+                                                ? "Read Less"
+                                                : "Read More"}
+                                            </button>
+                                          )}
                                       </p>
-                                      {emp.job_description &&
-                                        emp.job_description.length > 200 && (
-                                          <button className="text-blue-600 text-sm font-medium mt-2 hover:underline">
-                                            Read More
-                                          </button>
-                                        )}
                                     </div>
 
                                     {/* Key Skills */}
@@ -1071,15 +1116,46 @@ const downloadResume = (e) => {
 
                                     {/* Project Description */}
                                     <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                      <p className="text-gray-700 leading-relaxed text-sm">
-                                        {project.project_description}
+                                      <p className="text-gray-700 leading-relaxed text-sm ">
+                                        {expandedProjectDesc[project.id]
+                                          ? project.project_description
+                                          : project.project_description?.slice(
+                                              0,
+                                              280,
+                                            )}
+                                        {!expandedProjectDesc[project.id] &&
+                                          project.project_description
+                                            ?.length > 280 &&
+                                          "..."}
+                                        {project.project_description &&
+                                          project.project_description
+                                            .length > 280 && (
+                                            <button
+                                              onClick={() =>
+                                                setExpandedProjectDesc(
+                                                  (prev) => ({
+                                                    ...prev,
+                                                    [project.id]:
+                                                      !prev[project.id],
+                                                  }),
+                                                )
+                                              }
+                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                            >
+                                              {expandedProjectDesc[
+                                                project.id
+                                              ]
+                                                ? "Read Less"
+                                                : "Read More"}
+                                            </button>
+                                          )}
                                       </p>
                                       {project.funding_details && (
                                         <div className="mt-4">
                                           <h5 className="text-sm font-semibold text-gray-700 mb-1">
                                             Funding Details
                                           </h5>
-                                          <p className="text-gray-700 leading-relaxed text-sm">
+                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                             {project.funding_details}
                                           </p>
                                         </div>
@@ -1243,8 +1319,38 @@ const downloadResume = (e) => {
 
                                     {/* Publication Description */}
                                     <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                      <p className="text-gray-700 leading-relaxed text-sm">
-                                        {pub.publication_description}
+                                      <p className="text-gray-700 leading-relaxed text-sm ">
+                                        {expandedPublicationDesc[pub.id]
+                                          ? pub.publication_description
+                                          : pub.publication_description?.slice(
+                                              0,
+                                              280,
+                                            )}
+                                        {!expandedPublicationDesc[pub.id] &&
+                                          pub.publication_description
+                                            ?.length > 280 &&
+                                          "..."}
+                                        {pub.publication_description &&
+                                          pub.publication_description
+                                            .length > 280 && (
+                                            <button
+                                              onClick={() =>
+                                                setExpandedPublicationDesc(
+                                                  (prev) => ({
+                                                    ...prev,
+                                                    [pub.id]: !prev[pub.id],
+                                                  }),
+                                                )
+                                              }
+                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                            >
+                                              {expandedPublicationDesc[
+                                                pub.id
+                                              ]
+                                                ? "Read Less"
+                                                : "Read More"}
+                                            </button>
+                                          )}
                                       </p>
                                     </div>
                                   </div>
@@ -1371,8 +1477,45 @@ const downloadResume = (e) => {
 
                                       {/* Achievement Description */}
                                       <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                        <p className="text-gray-700 leading-relaxed text-sm">
-                                          {achievement.achievement_description}
+                                        <p className="text-gray-700 leading-relaxed text-sm ">
+                                          {expandedAchievementDesc[
+                                            achievement.id
+                                          ]
+                                            ? achievement.achievement_description
+                                            : achievement.achievement_description?.slice(
+                                                0,
+                                                280,
+                                              )}
+                                          {!expandedAchievementDesc[
+                                            achievement.id
+                                          ] &&
+                                            achievement
+                                              .achievement_description
+                                              ?.length > 280 &&
+                                            "..."}
+                                          {achievement.achievement_description &&
+                                            achievement
+                                              .achievement_description
+                                              .length > 280 && (
+                                              <button
+                                                onClick={() =>
+                                                  setExpandedAchievementDesc(
+                                                    (prev) => ({
+                                                      ...prev,
+                                                      [achievement.id]:
+                                                        !prev[achievement.id],
+                                                    }),
+                                                  )
+                                                }
+                                                className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                              >
+                                                {expandedAchievementDesc[
+                                                  achievement.id
+                                                ]
+                                                  ? "Read Less"
+                                                  : "Read More"}
+                                              </button>
+                                            )}
                                         </p>
 
                                         {achievement.achievement_file_url && (
