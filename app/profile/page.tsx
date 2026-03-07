@@ -55,6 +55,7 @@ import { DatePicker } from "@/components/common-components/datePicker";
 import { start } from "repl";
 import Footer from "@/components/common-components/new_components/Footer";
 import TextArea from "@/components/common-components/textArea";
+import SkeletonLoader from "../jobs/SkeletonLoader";
 
 export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
@@ -101,6 +102,7 @@ export default function NaukriProfilePage() {
       achievements: true,
     },
     newsletter: false,
+    loading: true,
   });
 
   useEffect(() => {
@@ -109,13 +111,17 @@ export default function NaukriProfilePage() {
 
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem("user") || "null");
-    setState({ userId: profile?.id || null });
-  }, [state.userDetail]);
+    if (profile?.id) {
+      setState({ userId: profile.id });
+    } else {
+      setState({ loading: false });
+    }
+  }, []);
 
   useEffect(() => {
-    if (!state.userId) return;
-
-    userDetail(state.userId);
+    if (state.userId) {
+      userDetail(state.userId);
+    }
   }, [state.userId]);
 
   // Intersection Observer for active tab tracking
@@ -150,7 +156,6 @@ export default function NaukriProfilePage() {
 
   const userDetail = async (userId) => {
     try {
-      setState({ loading: true });
       const res: any = await Models.profile.details(userId);
 
       setState({
@@ -921,8 +926,100 @@ export default function NaukriProfilePage() {
     <>
       <div className="min-h-screen bg-clr1 py-4">
         <div className="max-w-7xl mx-auto p-4">
-          {/* Profile Header - Will hide on scroll */}
-          <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
+          {state.loading ? (
+            <>
+              <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
+                <CardContent className="relative p-4 md:p-6">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
+                    <SkeletonLoader
+                      type="rect"
+                      width={128}
+                      height={128}
+                      className="rounded-3xl flex-shrink-0"
+                    />
+                    <div className="flex-1 w-full">
+                      <div className="flex flex-col gap-2 mb-4">
+                        <SkeletonLoader type="text" width="40%" height={32} />
+                        <SkeletonLoader type="text" width="60%" height={20} />
+                        <SkeletonLoader type="text" width="30%" height={16} />
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <SkeletonLoader
+                          type="rect"
+                          height={40}
+                          count={5}
+                          className="rounded-xl"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="flex flex-col lg:flex-row gap-6">
+                <div className="lg:w-1/4 quick-links-sidebar">
+                  <Card className="!rounded-none bg-clr2 border-0">
+                    <CardContent className="p-4">
+                      <SkeletonLoader
+                        type="text"
+                        width="60%"
+                        height={24}
+                        className="mb-6"
+                      />
+                      <div className="space-y-4">
+                        <SkeletonLoader
+                          type="rect"
+                          height={48}
+                          count={8}
+                          className="rounded-xl"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                <div className="quick-links-content flex-1 space-y-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} className="border-0">
+                      <CardContent className="p-6">
+                        <div className="flex justify-between mb-6">
+                          <div className="flex gap-4 w-full">
+                            <SkeletonLoader
+                              type="rect"
+                              width={40}
+                              height={40}
+                              className="rounded-xl"
+                            />
+                            <div className="flex-1">
+                              <SkeletonLoader
+                                type="text"
+                                width={150}
+                                height={24}
+                                className="mb-2"
+                              />
+                              <SkeletonLoader
+                                type="text"
+                                width={100}
+                                height={16}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <SkeletonLoader
+                          type="rect"
+                          height={100}
+                          className="rounded-3xl"
+                        />
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Profile Header - Will hide on scroll */}
+              <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
             <div className="absolute"></div>
             <CardContent className="relative p-4 md:p-6">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
@@ -4835,6 +4932,8 @@ export default function NaukriProfilePage() {
               </div>
             )}
           </AnimatePresence>
+            </>
+          )}
         </div>
       </div>
 
