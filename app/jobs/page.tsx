@@ -106,6 +106,7 @@ export default function JobsPage() {
     resume: null,
     congratsOpen: false,
     loading: true,
+    isFetchingMore: false,
     page: 1,
     count: 0,
     jobList: [],
@@ -352,20 +353,25 @@ export default function JobsPage() {
     }
   };
 
-  const jobList = async (page = 1) => {
+  const jobList = async (page = 1, append = false) => {
     try {
-      setState({ loading: true });
+      if (append) {
+        setState({ isFetchingMore: true });
+      } else {
+        setState({ loading: true });
+      }
 
       const body = bodyData();
 
       const res: any = await Models.job.list(page, body);
       setState({
         loading: false,
-        // page: state.page,
+        isFetchingMore: false,
         count: res?.count,
-        jobList: res?.results,
+        jobList: append ? [...state.jobList, ...(res?.results || [])] : (res?.results || []),
         next: res?.next,
         prev: res?.previous,
+        page: page,
       });
     } catch (error) {
       setState({ loading: false });
@@ -805,6 +811,15 @@ export default function JobsPage() {
   const handlePageChange = (pageNumber: number) => {
     setState({ page: pageNumber });
     jobList(pageNumber);
+  };
+
+  const handleSidebarScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, clientHeight, scrollHeight } = e.currentTarget;
+    if (scrollHeight - scrollTop <= clientHeight + 50) {
+      if (state.next && !state.isFetchingMore && !state.loading) {
+        jobList(state.page + 1, true);
+      }
+    }
   };
 
   return (
@@ -1284,7 +1299,10 @@ export default function JobsPage() {
 
                       {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
                     </div>
-                    <div className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3">
+                    <div 
+                      className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
+                      onScroll={handleSidebarScroll}
+                    >
                       {state.jobList?.map((job) => (
                         <div
                           key={job.id}
@@ -1549,6 +1567,25 @@ export default function JobsPage() {
                           </div>
                         </div>
                       ))}
+                      {state.isFetchingMore && (
+                        <div className="space-y-4 px-2">
+                          {[1, 2].map((i) => (
+                            <div key={i} className="py-5 border-b border-[#c7c7c787]">
+                              <div className="flex gap-4">
+                                <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
+                                <div className="flex-1">
+                                  <SkeletonLoader type="text" width="80%" height={16} className="mb-2" />
+                                  <SkeletonLoader type="text" width="50%" height={14} className="mb-3" />
+                                  <div className="flex gap-3">
+                                    <SkeletonLoader type="text" width={50} height={10} />
+                                    <SkeletonLoader type="text" width={50} height={10} />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
 
