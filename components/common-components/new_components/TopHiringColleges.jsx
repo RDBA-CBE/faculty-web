@@ -11,6 +11,7 @@ import "swiper/css/pagination";
 import { useRouter } from "next/navigation";
 import { useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
+import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 
 const colleges = [
   {
@@ -108,6 +109,20 @@ const TopHiringColleges = () => {
             </div>
 
             {/* Swiper */}
+            {state.loading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-[300px] border border-[#c7c7c787] p-6 flex flex-col items-center justify-between bg-white rounded-lg">
+                    <SkeletonLoader type="circle" width={80} height={80} className="mb-3" />
+                    <div className="w-full flex flex-col items-center gap-2">
+                      <SkeletonLoader type="text" width="80%" height={24} />
+                      <SkeletonLoader type="text" width="60%" height={16} />
+                    </div>
+                    <SkeletonLoader type="rect" width={120} height={36} className="rounded-full" />
+                  </div>
+                ))}
+              </div>
+            ) : (
             <Swiper
               modules={[Navigation, Pagination, Autoplay]}
               spaceBetween={20}
@@ -161,6 +176,7 @@ const TopHiringColleges = () => {
                 </SwiperSlide>
               ))}
             </Swiper>
+            )}
           </div>
 
           {/* Right CTA Card */}

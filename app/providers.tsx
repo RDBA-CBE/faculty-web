@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import PageTransition from "@/components/common-components/PageTransition";
 import { usePathname } from "next/navigation";
+import { Loader, Loader2 } from "lucide-react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -20,7 +21,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <Suspense
         fallback={
           <div className="flex items-center justify-center min-h-screen">
-            Loading...
+           <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
           </div>
         }
       >

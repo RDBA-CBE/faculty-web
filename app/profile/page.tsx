@@ -55,6 +55,7 @@ import { DatePicker } from "@/components/common-components/datePicker";
 import { start } from "repl";
 import Footer from "@/components/common-components/new_components/Footer";
 import TextArea from "@/components/common-components/textArea";
+import SkeletonLoader from "../jobs/SkeletonLoader";
 
 export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
@@ -107,6 +108,7 @@ export default function NaukriProfilePage() {
     },
     newsletter: false,
     funded: false,
+    loading: true,
   });
 
   useEffect(() => {
@@ -115,14 +117,83 @@ export default function NaukriProfilePage() {
 
   useEffect(() => {
     const profile = JSON.parse(localStorage.getItem("user") || "null");
-    setState({ userId: profile?.id || null });
-  }, [state.userDetail]);
+    if (profile?.id) {
+      setState({ userId: profile.id });
+    } else {
+      setState({ loading: false });
+    }
+  }, []);
 
   useEffect(() => {
-    if (!state.userId) return;
-
-    userDetail(state.userId);
+    if (state.userId) {
+      userDetail(state.userId);
+    }
   }, [state.userId]);
+
+  const sections = [
+    "resume-section",
+    "headline-section",
+    "skills-section",
+    "employment-section",
+    "education-section",
+    "projects-section",
+    "publications-section",
+    "achievements-section",
+  ];
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isManualScroll) return;
+  
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id.replace("-section", "");
+            setActiveTab(id);
+          }
+        });
+      },
+      {
+        rootMargin: "-30% 0px -60% 0px",
+        threshold: 0.3,
+      }
+    );
+  
+    sections.forEach((id) => {
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
+    });
+  
+    return () => observer.disconnect();
+  }, [isManualScroll]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isManualScroll) return;
+  
+      const scrollPosition = window.scrollY + 120;
+  
+      links.forEach((link) => {
+        const section = document.getElementById(link.section);
+  
+        if (section) {
+          const offsetTop = section.offsetTop;
+          const offsetHeight = section.offsetHeight;
+  
+          if (
+            scrollPosition >= offsetTop &&
+            scrollPosition < offsetTop + offsetHeight
+          ) {
+            setActiveTab(link.id);
+          }
+        }
+      });
+    };
+  
+    window.addEventListener("scroll", handleScroll);
+  
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isManualScroll]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -166,7 +237,6 @@ export default function NaukriProfilePage() {
 
   const userDetail = async (userId) => {
     try {
-      setState({ loading: true });
       const res: any = await Models.profile.details(userId);
 
       setState({
@@ -859,37 +929,47 @@ export default function NaukriProfilePage() {
     const tabId = sectionId.replace("-section", "");
     setActiveTab(tabId);
     setIsManualScroll(true);
-
+  
     const element = document.getElementById(sectionId);
-
+  
     if (element) {
-      const headerOffset = 100; // உங்கள் header height
+      const headerOffset = 100;
       const elementPosition =
         element.getBoundingClientRect().top + window.pageYOffset;
-
+  
       const offsetPosition = elementPosition - headerOffset;
-
+  
       window.scrollTo({
         top: offsetPosition,
         behavior: "smooth",
       });
     }
-
+  
     setTimeout(() => {
       setIsManualScroll(false);
     }, 1200);
   };
 
-  const tabItems = [
-    { id: "resume", label: "Resume", icon: FileText },
-    { id: "headline", label: "Summary", icon: Edit3 },
-    { id: "skills", label: "Skills", icon: Code },
-    { id: "employment", label: "Experience", icon: Briefcase },
-    { id: "education", label: "Education", icon: GraduationCap },
-    { id: "projects", label: "Projects", icon: FolderOpen },
-    { id: "publications", label: "Publications", icon: Book },
-    { id: "achievements", label: "Awards", icon: Award },
+  const links = [
+    { id: "resume", label: "Resume/login", section: "resume-section" },
+    { id: "headline", label: "Profile Summary", section: "headline-section" },
+    { id: "skills", label: "Skills", section: "skills-section" },
+    { id: "employment", label: "Experience", section: "employment-section" },
+    { id: "education", label: "Education", section: "education-section" },
+    { id: "projects", label: "Projects", section: "projects-section" },
+    {
+      id: "publications",
+      label: "Publications",
+      section: "publications-section",
+    },
+    {
+      id: "achievements",
+      label: "Achievements",
+      section: "achievements-section",
+    },
   ];
+
+
 
   const toggleSection = (section: string) => {
     setState({
@@ -941,517 +1021,594 @@ export default function NaukriProfilePage() {
         <div className="max-w-7xl mx-auto p-4">
           {/* Profile Header - Will hide on scroll */}
           <Card className="!rounded-none bg-clr2 border-0 mb-8 ">
-            <div className="absolute"></div>
-            <CardContent className="relative p-4 md:p-6">
-              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
-                {/* Profile Image - Enhanced */}
-                <div className="relative flex-shrink-0">
-                  <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
-                    <img
-                      src={
-                        state.userDetail?.profile_logo_url ||
-                        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                      }
-                      alt="Profile"
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  {/* <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold whitespace-nowrap">
-                  {state.profileCompletion}%
-                </div> */}
-                </div>
-
-                {/* Profile Info - Enhanced */}
-                <div className="flex-1 w-full">
-                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                    <div className="text-center sm:text-left">
-                      <div className="flex items-center gap-2 justify-center sm:justify-start">
-                        <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
-                          {state.userDetail?.first_name &&
-                          state.userDetail?.last_name
-                            ? `${state.userDetail.first_name} ${state.userDetail.last_name}`
-                            : state.userDetail?.username || ""}
-                        </h1>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-1.5 hover:bg-[#1d1d57]/10 rounded-full"
-                          onClick={() => {}}
-                        >
-                          <Edit className="w-4 h-4 text-[#f2b31d]" />
-                        </Button>
-                      </div>
-                      {state?.userDetail?.short_desc && (
-                        <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                          {state?.userDetail?.short_desc}
-                        </p>
-                      )}
-                      {(state?.userDetail?.current_company ||
-                        state?.userDetail?.current_location) && (
-                        <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                          <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
-
-                          <span className="text-sm">
-                            {state?.userDetail?.current_company} -{" "}
-                            {state?.userDetail?.current_location}
-                          </span>
+            {state.loading ? (
+              <>
+                <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
+                  <CardContent className="relative p-4 md:p-6">
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
+                      <SkeletonLoader
+                        type="rect"
+                        width={128}
+                        height={128}
+                        className="rounded-3xl flex-shrink-0"
+                      />
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col gap-2 mb-4">
+                          <SkeletonLoader type="text" width="40%" height={32} />
+                          <SkeletonLoader type="text" width="60%" height={20} />
+                          <SkeletonLoader type="text" width="30%" height={16} />
                         </div>
-                      )}
-                    </div>
-                    <div className="flex-shrink-0">
-                      <div className="bg-white/100 rounded-lg px-3 py-2 shadow-sm border">
-                        <p className="text-xs text-gray-500 whitespace-nowrap">
-                          Last Updated:{" "}
-                          <span className="font-semibold text-gray-700">
-                            {DateFormat(state.userDetail?.updated_at, "date")}
-                          </span>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Profile Details Grid - Enhanced */}
-                  <div
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  mt-4"
-                    style={{ gap: "5px" }}
-                  >
-                    {[
-                      {
-                        icon: MapPin,
-                        label:
-                          state?.userDetail?.current_location ||
-                          "Not specified",
-                        color: "text-[#f2b31d]",
-                      },
-                      {
-                        icon: Phone,
-                        label: state?.userDetail?.phone || "Not specified",
-                        color: "text-[#f2b31d]",
-                        verified: true,
-                      },
-                      {
-                        icon: Calendar,
-                        label: state?.userDetail?.experience || "Not specified",
-                        color: "text-[#f2b31d]",
-                      },
-                      {
-                        icon: Mail,
-                        label: state?.userDetail?.email || "Not specified",
-                        color: "text-[#f2b31d]",
-                        verified: true,
-                      },
-                      {
-                        icon: User,
-                        label: state?.userDetail?.gender || "Not specified",
-                        color: "text-[#f2b31d]",
-                      },
-                    ].map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-2 p-2 sm:p-3 bg-white/100 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
-                      >
-                        <item.icon
-                          className={`w-4 h-4 ${item.color} flex-shrink-0`}
-                        />
-                        <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
-                          {item.label}
-                        </span>
-                        {item.verified && (
-                          <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* Main Content Container */}
-
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Left Sidebar - Quick Links */}
-            <div
-              className="lg:w-1/4 relative hidden lg:block "
-              ref={wrapperRef}
-            >
-              <div ref={sidebarRef}>
-                <Card className="!rounded-none bg-clr2  border-0 ">
-                  <CardContent className="relative p-4">
-                    <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                      <div className="w-2 h-2 bg-[#1d1d57] "></div>
-                      Quick Links
-                    </h3>
-
-                    <div className="space-y-4">
-                      {[
-                        {
-                          label: "Resume/login",
-                          // action: "Update",
-                          onClick: () => scrollToSection("resume-section"),
-                        },
-                        {
-                          label: "Profile Summary",
-                          action: null,
-                          onClick: () => scrollToSection("headline-section"),
-                        },
-                        {
-                          label: "Skills",
-                          // action: null,
-                          onClick: () => scrollToSection("skills-section"),
-                        },
-                        {
-                          label: "Experience",
-                          // action: "Add",
-                          onClick: () => scrollToSection("employment-section"),
-                        },
-                        {
-                          label: "Education",
-                          // action: "Add",
-                          onClick: () => scrollToSection("education-section"),
-                        },
-                        {
-                          label: "Projects",
-                          // action: null,
-                          onClick: () => scrollToSection("projects-section"),
-                        },
-                        {
-                          label: "Publications",
-                          // action: null,
-                          onClick: () =>
-                            scrollToSection("publications-section"),
-                        },
-                        {
-                          label: "Achievements",
-                          // action: null,
-                          onClick: () =>
-                            scrollToSection("achievements-section"),
-                        },
-                      ].map((item, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between px-2 py-3 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-xl  hover:bg-white/80 transition-all duration-200 group cursor-pointer"
-                          onClick={item.onClick}
-                        >
-                          <span className="text-gray-700 font-medium group-hover:text-gray-900">
-                            {item.label}
-                          </span>
-                          {/* {item.action && (
-                          <Button
-                            variant="link"
-                            className="text-blue-600 hover:text-[#1d1d57] p-0 h-auto font-semibold text-sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (item.label === "Experience")
-                                setState({ isEditingEmployment: true });
-                              if (item.label === "Education")
-                                setState({ isEditingEducation: true });
-                            }}
-                          >
-                            {item.action}
-                          </Button>
-                        )} */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                          <SkeletonLoader
+                            type="rect"
+                            height={40}
+                            count={5}
+                            className="rounded-xl"
+                          />
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
-            </div>
 
-            {/* Right Content Area - Scrollable */}
-            <div className="quick-links-content flex-1">
-              <div className="space-y-4">
-                {/* Naukri Pro Banner */}
+                <div className="flex flex-col lg:flex-row gap-6">
+                  <div className="lg:w-1/4 quick-links-sidebar">
+                    <Card className="!rounded-none bg-clr2 border-0">
+                      <CardContent className="p-4">
+                        <SkeletonLoader
+                          type="text"
+                          width="60%"
+                          height={24}
+                          className="mb-6"
+                        />
+                        <div className="space-y-4">
+                          <SkeletonLoader
+                            type="rect"
+                            height={48}
+                            count={8}
+                            className="rounded-xl"
+                          />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
 
-                {/* Resume Section */}
-                <Card
-                  id="resume-section"
-                  className="bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
-
+                  <div className="quick-links-content flex-1 space-y-4">
+                    {[1, 2, 3, 4].map((i) => (
+                      <Card key={i} className="border-0">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between mb-6">
+                            <div className="flex gap-4 w-full">
+                              <SkeletonLoader
+                                type="rect"
+                                width={40}
+                                height={40}
+                                className="rounded-xl"
+                              />
+                              <div className="flex-1">
+                                <SkeletonLoader
+                                  type="text"
+                                  width={150}
+                                  height={24}
+                                  className="mb-2"
+                                />
+                                <SkeletonLoader
+                                  type="text"
+                                  width={100}
+                                  height={16}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <SkeletonLoader
+                            type="rect"
+                            height={100}
+                            className="rounded-3xl"
+                          />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Profile Header - Will hide on scroll */}
+                <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
+                  <div className="absolute"></div>
                   <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("resume")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57]  rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <FileText className="w-4 h-4 text-white transform -rotate-3" />
+                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
+                      {/* Profile Image - Enhanced */}
+                      <div className="relative flex-shrink-0">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                          <img
+                            src={
+                              state.userDetail?.profile_logo_url ||
+                              "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                            }
+                            alt="Profile"
+                            width={128}
+                            height={128}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Resume Manager
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Manage your professional documents
-                          </p>
-                        </div>
+                        {/* <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold whitespace-nowrap">
+                  {state.profileCompletion}%
+                </div> */}
                       </div>
-                      <div className="flex items-center gap-3">
-                        {state.expandedSections.resume ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
+
+                      {/* Profile Info - Enhanced */}
+                      <div className="flex-1 w-full">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="text-center sm:text-left">
+                            <div className="flex items-center gap-2 justify-center sm:justify-start">
+                              <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                                {state.userDetail?.first_name &&
+                                state.userDetail?.last_name
+                                  ? `${state.userDetail.first_name} ${state.userDetail.last_name}`
+                                  : state.userDetail?.username || ""}
+                              </h1>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="p-1.5 hover:bg-[#1d1d57]/10 rounded-full"
+                                onClick={() => {}}
+                              >
+                                <Edit className="w-4 h-4 text-[#f2b31d]" />
+                              </Button>
+                            </div>
+                            {state?.userDetail?.short_desc && (
+                              <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
+                                {state?.userDetail?.short_desc}
+                              </p>
+                            )}
+                            {(state?.userDetail?.current_company ||
+                              state?.userDetail?.current_location) && (
+                              <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
+                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+
+                                <span className="text-sm">
+                                  {state?.userDetail?.current_company} -{" "}
+                                  {state?.userDetail?.current_location}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-shrink-0">
+                            <div className="bg-white/100 rounded-lg px-3 py-2 shadow-sm border">
+                              <p className="text-xs text-gray-500 whitespace-nowrap">
+                                Last Updated:{" "}
+                                <span className="font-semibold text-gray-700">
+                                  {DateFormat(
+                                    state.userDetail?.updated_at,
+                                    "date"
+                                  )}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Profile Details Grid - Enhanced */}
+                        <div
+                          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  mt-4"
+                          style={{ gap: "5px" }}
+                        >
+                          {[
+                            {
+                              icon: MapPin,
+                              label:
+                                state?.userDetail?.current_location ||
+                                "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                            {
+                              icon: Phone,
+                              label:
+                                state?.userDetail?.phone || "Not specified",
+                              color: "text-[#f2b31d]",
+                              verified: true,
+                            },
+                            {
+                              icon: Calendar,
+                              label:
+                                state?.userDetail?.experience ||
+                                "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                            {
+                              icon: Mail,
+                              label:
+                                state?.userDetail?.email || "Not specified",
+                              color: "text-[#f2b31d]",
+                              verified: true,
+                            },
+                            {
+                              icon: User,
+                              label:
+                                state?.userDetail?.gender || "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                          ].map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 p-2 sm:p-3 bg-white/100 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
+                            >
+                              <item.icon
+                                className={`w-4 h-4 ${item.color} flex-shrink-0`}
+                              />
+                              <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
+                                {item.label}
+                              </span>
+                              {item.verified && (
+                                <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
+                  </CardContent>
+                </Card>
+                {/* Main Content Container */}
 
-                    <AnimatePresence>
-                      {state.expandedSections.resume && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Edit Resume Form */}
+                <div className="flex flex-col lg:flex-row gap-6">
+                  {/* Left Sidebar - Quick Links */}
+                  <div
+                    className="lg:w-1/4 relative hidden lg:block "
+                    ref={wrapperRef}
+                  >
+                    <div ref={sidebarRef}>
+                      <Card className="!rounded-none bg-clr2  border-0 ">
+                        <CardContent className="relative p-4">
+                          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-[#1d1d57] "></div>
+                            Quick Links
+                          </h3>
+
+                          <div className="space-y-4">
+  {links.map((item) => (
+    <div
+      key={item.id}
+      onClick={() => scrollToSection(item.section)}
+      className={`flex items-center justify-between px-2 py-3 rounded-xl cursor-pointer transition-all
+        ${
+          activeTab === item.id
+            ? "bg-[#1d1d57] text-white"
+            : "bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 hover:bg-white/80"
+        }`}
+    >
+      <span
+        className={`font-medium ${
+          activeTab === item.id ? "text-white" : "text-gray-700"
+        }`}
+      >
+        {item.label}
+      </span>
+    </div>
+  ))}
+</div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Right Content Area - Scrollable */}
+                  <div className="quick-links-content flex-1">
+                    <div className="space-y-4">
+                      {/* Naukri Pro Banner */}
+
+                      {/* Resume Section */}
+                      <Card
+                        id="resume-section"
+                        className="bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
+
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("resume")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57]  rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <FileText className="w-4 h-4 text-white transform -rotate-3" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Resume Manager
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Manage your professional documents
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              {state.expandedSections.resume ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
+
                           <AnimatePresence>
-                            {state.isEditingResume && (
+                            {state.expandedSections.resume && (
                               <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-6 relative"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Upload className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900">
-                                      Upload Resume
-                                    </h4>
-                                  </div>
-
-                                  <div className="space-y-4 mb-4">
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#3b82f6] transition-colors bg-white/100">
-                                      <Input
-                                        type="file"
-                                        accept=".pdf,.doc,.docx"
-                                        onChange={handleResumeFileChange}
-                                        className="hidden"
-                                        id="resume-upload"
-                                      />
-                                      <label
-                                        htmlFor="resume-upload"
-                                        className="cursor-pointer flex flex-col items-center gap-2 w-full h-full"
-                                      >
-                                        <div className="w-12 h-12 bg-[#1d1d57]/10 rounded-full flex items-center justify-center">
-                                          <Upload className="w-6 h-6 text-[#1d1d57]" />
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-700">
-                                          Click to upload or drag and drop
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                          PDF, DOC, DOCX (Max 5MB)
-                                        </span>
-                                      </label>
-                                      {state.resume_url && (
-                                        <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium break-all">
-                                          <CheckCircle className="w-4 h-4" />
-                                          {state.resume_url.name}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={resumeUpdate}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
-                                      disabled={!state.resume_url}
+                                {/* Edit Resume Form */}
+                                <AnimatePresence>
+                                  {state.isEditingResume && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-6 relative"
                                     >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Upload
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({
-                                          isEditingResume: false,
-                                          resume_url: null,
-                                        })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-4">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Upload className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-lg font-bold text-gray-900">
+                                            Upload Resume
+                                          </h4>
+                                        </div>
+
+                                        <div className="space-y-4 mb-4">
+                                          <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-[#3b82f6] transition-colors bg-white/100">
+                                            <Input
+                                              type="file"
+                                              accept=".pdf,.doc,.docx"
+                                              onChange={handleResumeFileChange}
+                                              className="hidden"
+                                              id="resume-upload"
+                                            />
+                                            <label
+                                              htmlFor="resume-upload"
+                                              className="cursor-pointer flex flex-col items-center gap-2 w-full h-full"
+                                            >
+                                              <div className="w-12 h-12 bg-[#1d1d57]/10 rounded-full flex items-center justify-center">
+                                                <Upload className="w-6 h-6 text-[#1d1d57]" />
+                                              </div>
+                                              <span className="text-sm font-medium text-gray-700">
+                                                Click to upload or drag and drop
+                                              </span>
+                                              <span className="text-xs text-gray-500">
+                                                PDF, DOC, DOCX (Max 5MB)
+                                              </span>
+                                            </label>
+                                            {state.resume_url && (
+                                              <div className="mt-4 flex items-center justify-center gap-2 text-sm text-green-600 font-medium break-all">
+                                                <CheckCircle className="w-4 h-4" />
+                                                {state.resume_url.name}
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={resumeUpdate}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                            disabled={!state.resume_url}
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Upload
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isEditingResume: false,
+                                                resume_url: null,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Current Resume Card */}
+                                <div className="relative">
+                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                  <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-[1.02]">
+                                    <div className="flex items-start gap-6">
+                                      {/* Resume Icon */}
+                                      <div className="flex-shrink-0">
+                                        <div className="w-14 h-14 bg-[#1d1d57]  shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
+                                          <div className="text-white">
+                                            <div className="text-xs text-white font-bold mb-1">
+                                              PDF
+                                            </div>
+                                            <div className="w-8 h-0.5 bg-white/100 mb-1"></div>
+                                            <div className="w-6 h-0.5 bg-white/40 mb-1"></div>
+                                            <div className="w-7 h-0.5 bg-white/100"></div>
+                                          </div>
+                                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#1d1d57] rounded-full flex items-center justify-center shadow-lg">
+                                            <span className="text-white text-sm font-bold">
+                                              ✓
+                                            </span>
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      {/* Resume Details */}
+                                      <div className="flex-1 min-w-0">
+                                        <div className="flex items-start justify-between md:mb-3">
+                                          <div className="flex-1">
+                                            <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
+                                              <span className="flex items-center gap-1">
+                                                <div className="w-2 h-2 bg-[#1d1d57] rounded-full"></div>
+                                                {state?.userDetail?.resume_url
+                                                  ? "Uploaded"
+                                                  : "No Resume Uploaded"}
+                                              </span>
+                                            </div>
+                                          </div>
+
+                                          {/* Desktop Action Buttons - Top Right */}
+                                          <div className="hidden md:flex gap-2">
+                                            {state?.userDetail?.resume_url ? (
+                                              <>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                  onClick={downloadResume}
+                                                  title="Download Resume"
+                                                >
+                                                  <Download className="w-4 h-4 text-[#1d1d57]   group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  onClick={deleteResume}
+                                                  size="sm"
+                                                  className="hover:bg-red-50 border-red-200 group/btn"
+                                                  title="Delete Resume"
+                                                >
+                                                  <Trash className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                              </>
+                                            ) : (
+                                              <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                title="Upload Resume"
+                                                onClick={() =>
+                                                  setState({
+                                                    isEditingResume: true,
+                                                  })
+                                                }
+                                              >
+                                                <PlusIcon className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                              </Button>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {state?.userDetail?.resume_url && (
+                                          <div className="flex flex-wrap items-center gap-3 mb-4">
+                                            <div className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 px-3 py-1 rounded-full">
+                                              <span className="text-[#1d1d57] font-semibold text-sm">
+                                                Latest Version
+                                              </span>
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Current Resume Card */}
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                            <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-[1.02]">
-                              <div className="flex items-start gap-6">
-                                {/* Resume Icon */}
-                                <div className="flex-shrink-0">
-                                  <div className="w-14 h-14 bg-[#1d1d57]  shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
-                                    <div className="text-white">
-                                      <div className="text-xs text-white font-bold mb-1">
-                                        PDF
-                                      </div>
-                                      <div className="w-8 h-0.5 bg-white/100 mb-1"></div>
-                                      <div className="w-6 h-0.5 bg-white/40 mb-1"></div>
-                                      <div className="w-7 h-0.5 bg-white/100"></div>
-                                    </div>
-                                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#1d1d57] rounded-full flex items-center justify-center shadow-lg">
-                                      <span className="text-white text-sm font-bold">
-                                        ✓
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
+                      {/* Resume Headline Section */}
+                      <Card
+                        id="headline-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                                {/* Resume Details */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-start justify-between md:mb-3">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
-                                        <span className="flex items-center gap-1">
-                                          <div className="w-2 h-2 bg-[#1d1d57] rounded-full"></div>
-                                          {state?.userDetail?.resume_url
-                                            ? "Uploaded"
-                                            : "No Resume Uploaded"}
-                                        </span>
-                                      </div>
-                                    </div>
-
-                                    {/* Desktop Action Buttons - Top Right */}
-                                    <div className="hidden md:flex gap-2">
-                                      {state?.userDetail?.resume_url ? (
-                                        <>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                            onClick={downloadResume}
-                                            title="Download Resume"
-                                          >
-                                            <Download className="w-4 h-4 text-[#1d1d57]   group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            onClick={deleteResume}
-                                            size="sm"
-                                            className="hover:bg-red-50 border-red-200 group/btn"
-                                            title="Delete Resume"
-                                          >
-                                            <Trash className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                        </>
-                                      ) : (
-                                        <Button
-                                          variant="outline"
-                                          size="sm"
-                                          className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                          title="Upload Resume"
-                                          onClick={() =>
-                                            setState({ isEditingResume: true })
-                                          }
-                                        >
-                                          <PlusIcon className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                        </Button>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  {state?.userDetail?.resume_url && (
-                                    <div className="flex flex-wrap items-center gap-3 mb-4">
-                                      <div className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 px-3 py-1 rounded-full">
-                                        <span className="text-[#1d1d57] font-semibold text-sm">
-                                          Latest Version
-                                        </span>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-6 cursor-pointer"
+                            onClick={() => toggleSection("headline")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <Edit3 className="w-4 h-4 text-white transform -rotate-3" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Profile Summary
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your professional summary
+                                </p>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-
-                {/* Resume Headline Section */}
-                <Card
-                  id="headline-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-6 cursor-pointer"
-                      onClick={() => toggleSection("headline")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <Edit3 className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Profile Summary
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your professional summary
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="w-8 h-8 bg-[#1d1d57]  text-white  rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setState({
-                              isEditingHeadline: true,
-                              about: state.userDetail?.about || "",
-                            });
-                          }}
-                        >
-                          <Edit3 className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.headline ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.headline && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Edit Headline Form */}
-                          <AnimatePresence>
-                            {state.isEditingHeadline && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-6 relative"
+                            <div className="flex items-center gap-3">
+                              <button
+                                className="w-8 h-8 bg-[#1d1d57]  text-white  rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setState({
+                                    isEditingHeadline: true,
+                                    about: state.userDetail?.about || "",
+                                  });
+                                }}
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
-                                  {/* <div className="flex items-center gap-3 mb-4">
+                                <Edit3 className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.headline ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {state.expandedSections.headline && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {/* Edit Headline Form */}
+                                <AnimatePresence>
+                                  {state.isEditingHeadline && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-6 relative"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
+                                        {/* <div className="flex items-center gap-3 mb-4">
                                                 <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-blue-600 rounded-xl flex items-center justify-center">
                                                   <Edit3 className="w-4 h-4 text-white" />
                                                 </div>
@@ -1460,163 +1617,184 @@ export default function NaukriProfilePage() {
                                                 </h4>
                                               </div> */}
 
-                                  <Textarea
-                                    placeholder="Write a compelling headline that summarizes your professional experience and key skills..."
-                                    value={state.about}
-                                    onChange={(e) =>
-                                      setState({ about: e.target.value })
-                                    }
-                                    className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px] mb-4"
-                                  />
+                                        <Textarea
+                                          placeholder="Write a compelling headline that summarizes your professional experience and key skills..."
+                                          value={state.about}
+                                          onChange={(e) =>
+                                            setState({ about: e.target.value })
+                                          }
+                                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px] mb-4"
+                                        />
 
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={aboutUpdate}
-                                      className="bg-[#1d1d57]  text-white shadow-lg"
-                                    >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Update
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({ isEditingHeadline: false })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={aboutUpdate}
+                                            className="bg-[#1d1d57]  text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Update
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isEditingHeadline: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Headline Display */}
+                                <div className="relative">
+                                  {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div> */}
+                                  <div className="flex-1 px-3">
+                                    <div className="text-md text-gray-500 leading-relaxed whitespace-pre-line">
+                                      <p>
+                                        {expandedAbout
+                                          ? state?.userDetail?.about
+                                          : state?.userDetail?.about?.slice(
+                                              0,
+                                              280
+                                            )}
+                                        {!expandedAbout &&
+                                          state?.userDetail?.about?.length >
+                                            280 &&
+                                          "..."}
+                                        {state?.userDetail?.about?.length >
+                                          280 && (
+                                          <button
+                                            onClick={() =>
+                                              setExpandedAbout((prev) => !prev)
+                                            }
+                                            className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
+                                          >
+                                            {expandedAbout
+                                              ? "Read Less"
+                                              : "Read More"}
+                                          </button>
+                                        )}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Headline Display */}
-                          <div className="relative">
-                            {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div> */}
-                            <div className="flex-1 px-3">
-                              <div className="text-md text-gray-500 leading-relaxed whitespace-pre-line">
-                                <p>
-                                  {expandedAbout
-                                    ? state?.userDetail?.about
-                                    : state?.userDetail?.about?.slice(0, 280)}
-                                  {!expandedAbout &&
-                                    state?.userDetail?.about?.length > 280 &&
-                                    "..."}
-                                  {state?.userDetail?.about?.length > 280 && (
-                                    <button
-                                      onClick={() =>
-                                        setExpandedAbout((prev) => !prev)
-                                      }
-                                      className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
-                                    >
-                                      {expandedAbout
-                                        ? "Read Less"
-                                        : "Read More"}
-                                    </button>
-                                  )}
+                      {/* Skills Section */}
+                      <Card
+                        id="skills-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-8 cursor-pointer"
+                            onClick={() => toggleSection("skills")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <Code className="w-4 h-4 text-white transform -rotate-3" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Skills
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your technical expertise
                                 </p>
                               </div>
                             </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-
-                {/* Skills Section */}
-                <Card
-                  id="skills-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-8 cursor-pointer"
-                      onClick={() => toggleSection("skills")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <Code className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Skills
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your technical expertise
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setState({ isEditingSkills: true, skill: "" });
-                          }}
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.skills ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.skills && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Skill Form */}
-                          <AnimatePresence>
-                            {state.isEditingSkills && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setState({
+                                    isEditingSkills: true,
+                                    skill: "",
+                                  });
+                                }}
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl"></div>
-                                <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add New Skill
-                                    </h4>
-                                  </div>
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.skills ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
 
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Skill Name
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., JavaScript"
-                                        value={state.skill || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "skill",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    {/* <div className="space-y-2">
+                          <AnimatePresence>
+                            {state.expandedSections.skills && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {/* Add Skill Form */}
+                                <AnimatePresence>
+                                  {state.isEditingSkills && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl"></div>
+                                      <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add New Skill
+                                          </h4>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Skill Name
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., JavaScript"
+                                              value={state.skill || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "skill",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          {/* <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
                                                   Experience 
                                                 </label>
@@ -1634,420 +1812,448 @@ export default function NaukriProfilePage() {
                                                   className="border-gray-200 focus:border-green-500 focus:ring-green-500"
                                                 />
                                               </div> */}
-                                  </div>
+                                        </div>
 
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={addSkill}
-                                      // onClick={() => {
-                                      //   if (
-                                      //     state.userDetail?.skills?.length === 0
-                                      //   ) {
-                                      //     addSkill();
-                                      //   } else {
-                                      //     updateSkill();
-                                      //   }
-                                      // }}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
-                                    >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Save Skill
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({ isEditingSkills: false })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addSkill}
+                                            // onClick={() => {
+                                            //   if (
+                                            //     state.userDetail?.skills?.length === 0
+                                            //   ) {
+                                            //     addSkill();
+                                            //   } else {
+                                            //     updateSkill();
+                                            //   }
+                                            // }}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Save Skill
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isEditingSkills: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
 
-                          {/* Skills List - Chip Format */}
-                          <div className="flex flex-wrap gap-3">
-                            {state?.userDetail?.skills?.map((skill, index) => (
-                              <motion.div
-                                key={skill.id}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{ delay: index * 0.05 }}
-                                className="group relative"
-                              >
-                                <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
-                                  <span className="text-[#1d1d57] font-medium text-sm">
-                                    {skill.name}
-                                  </span>
-                                  {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
+                                {/* Skills List - Chip Format */}
+                                <div className="flex flex-wrap gap-3">
+                                  {state?.userDetail?.skills?.map(
+                                    (skill, index) => (
+                                      <motion.div
+                                        key={skill.id}
+                                        initial={{ opacity: 0, scale: 0.8 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="group relative"
+                                      >
+                                        <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                          <span className="text-[#1d1d57] font-medium text-sm">
+                                            {skill.name}
+                                          </span>
+                                          {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
                                               {skill.experience}
                                             </span> */}
-                                  <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
-                                    <button
-                                      onClick={() => deleteSkill(skill.id)}
-                                      className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
-                                    >
-                                      <X className="w-3 h-3  font-semibold" />
-                                    </button>
-                                  </div>
+                                          <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
+                                            <button
+                                              onClick={() =>
+                                                deleteSkill(skill.id)
+                                              }
+                                              className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
+                                            >
+                                              <X className="w-3 h-3  font-semibold" />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  )}
                                 </div>
-                              </motion.div>
-                            ))}
-                          </div>
 
-                          {/* Empty State */}
-                          {(state.userDetail?.skills?.length === 0 ||
-                            !state.userDetail?.skills?.length) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-8"
-                            >
-                              <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                <Code className="w-8 h-8 text-[#1d1d57]/60" />
-                              </div>
-                              <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                                No Skills Added
-                              </h4>
-                              <p className="text-gray-500 mb-4">
-                                Add your technical skills as chips
-                              </p>
-                              <Button
-                                onClick={() =>
-                                  setState({ isEditingSkills: true, skill: "" })
-                                }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                              >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Skills
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-
-                {/* Employment Section */}
-                <Card
-                  id="employment-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("employment")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <Briefcase className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Experience
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your professional journey
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                          onClick={(e) => {
-                            setState({
-                              isCreateExperience: true,
-                              company: "",
-                              designation: "",
-                              start_date: "",
-                              end_date: "",
-                              job_description: "",
-                            });
-                          }}
-                          title="Add Experience"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.employment ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.employment && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Employment Form */}
-                          <AnimatePresence>
-                            {state.isCreateExperience && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
+                                {/* Empty State */}
+                                {(state.userDetail?.skills?.length === 0 ||
+                                  !state.userDetail?.skills?.length) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-8"
+                                  >
+                                    <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                      <Code className="w-8 h-8 text-[#1d1d57]/60" />
                                     </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add New Experience
+                                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                      No Skills Added
                                     </h4>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Company Name
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Google Inc."
-                                        value={state.company || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "company",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Job Title
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Senior Software Engineer"
-                                        value={state.designation || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "designation",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <DatePicker
-                                        placeholder="Start Date"
-                                        title="Start Date"
-                                        closeIcon={true}
-                                        selectedDate={state.start_date}
-                                        onChange={(date) => {
-                                          setState({
-                                            start_date: date,
-                                          });
-                                        }}
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <DatePicker
-                                        placeholder="End Date"
-                                        title="End Date"
-                                        closeIcon={true}
-                                        selectedDate={state.end_date}
-                                        onChange={(date) => {
-                                          setState({
-                                            end_date: date,
-                                          });
-                                        }}
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div className="space-y-2 mb-6">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Job Description
-                                    </label>
-                                    <Textarea
-                                      placeholder="Describe your key responsibilities and achievements..."
-                                      value={state.job_description}
-                                      onChange={(e) =>
-                                        handleFormChange(
-                                          "job_description",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                                    />
-                                  </div>
-
-                                  <div className="flex gap-3">
+                                    <p className="text-gray-500 mb-4">
+                                      Add your technical skills as chips
+                                    </p>
                                     <Button
-                                      onClick={addEmployment}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
-                                    >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Create Experience
-                                    </Button>
-                                    <Button
-                                      variant="outline"
                                       onClick={() =>
-                                        setState({ isCreateExperience: false })
+                                        setState({
+                                          isEditingSkills: true,
+                                          skill: "",
+                                        })
                                       }
-                                      className="border-gray-300 hover:bg-gray-50"
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                     >
-                                      Cancel
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Skills
                                     </Button>
-                                  </div>
-                                </div>
+                                  </motion.div>
+                                )}
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Employment List */}
-                          <div className="space-y-4">
-                            {state.userDetail?.experiences?.map(
-                              (emp, index) => (
-                                <motion.div
-                                  key={emp.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="relative group"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                  <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex items-start gap-3">
-                                      {/* Company Logo Placeholder */}
-                                      <div className="flex-shrink-0 pt-1">
-                                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <span className="text-white font-bold text-md">
-                                            {emp.company
-                                              .charAt(0)
-                                              .toUpperCase()}
-                                          </span>
+                      {/* Employment Section */}
+                      <Card
+                        id="employment-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("employment")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <Briefcase className="w-4 h-4 text-white transform -rotate-3" />
+                              </div>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Experience
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your professional journey
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                onClick={(e) => {
+                                  setState({
+                                    isCreateExperience: true,
+                                    company: "",
+                                    designation: "",
+                                    start_date: "",
+                                    end_date: "",
+                                    job_description: "",
+                                  });
+                                }}
+                                title="Add Experience"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.employment ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {state.expandedSections.employment && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {/* Add Employment Form */}
+                                <AnimatePresence>
+                                  {state.isCreateExperience && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add New Experience
+                                          </h4>
                                         </div>
-                                        {/* {emp.current && (
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Company Name
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Google Inc."
+                                              value={state.company || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "company",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Job Title
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Senior Software Engineer"
+                                              value={state.designation || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "designation",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <DatePicker
+                                              placeholder="Start Date"
+                                              title="Start Date"
+                                              closeIcon={true}
+                                              selectedDate={state.start_date}
+                                              onChange={(date) => {
+                                                setState({
+                                                  start_date: date,
+                                                });
+                                              }}
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <DatePicker
+                                              placeholder="End Date"
+                                              title="End Date"
+                                              closeIcon={true}
+                                              selectedDate={state.end_date}
+                                              onChange={(date) => {
+                                                setState({
+                                                  end_date: date,
+                                                });
+                                              }}
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <div className="space-y-2 mb-6">
+                                          <label className="text-sm font-semibold text-gray-700">
+                                            Job Description
+                                          </label>
+                                          <Textarea
+                                            placeholder="Describe your key responsibilities and achievements..."
+                                            value={state.job_description}
+                                            onChange={(e) =>
+                                              handleFormChange(
+                                                "job_description",
+                                                e.target.value
+                                              )
+                                            }
+                                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                          />
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addEmployment}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Create Experience
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isCreateExperience: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Employment List */}
+                                <div className="space-y-4">
+                                  {state.userDetail?.experiences?.map(
+                                    (emp, index) => (
+                                      <motion.div
+                                        key={emp.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="relative group"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                        <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                          <div className="flex items-start gap-3">
+                                            {/* Company Logo Placeholder */}
+                                            <div className="flex-shrink-0 pt-1">
+                                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <span className="text-white font-bold text-md">
+                                                  {emp.company
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                                </span>
+                                              </div>
+                                              {/* {emp.current && (
                                                   <div className="mt-2 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 px-2 py-1 rounded-full text-xs font-semibold text-center">
                                                     Current
                                                   </div>
                                                 )} */}
-                                      </div>
-
-                                      {/* Job Details */}
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between md:mb-1">
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
-                                                {emp.designation}
-                                              </h4>
                                             </div>
-                                            <p className="text-md font-semibold text-[#1d1d57] mb-1">
-                                              {emp.company}
-                                            </p>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                              {/* <span className="font-medium">
+
+                                            {/* Job Details */}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between md:mb-1">
+                                                <div className="flex-1">
+                                                  <div className="flex items-center gap-2">
+                                                    <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
+                                                      {emp.designation}
+                                                    </h4>
+                                                  </div>
+                                                  <p className="text-md font-semibold text-[#1d1d57] mb-1">
+                                                    {emp.company}
+                                                  </p>
+                                                  <div className="text-sm text-gray-600 mb-2">
+                                                    {/* <span className="font-medium">
                                                         {emp.jobType || "Full-time"}
                                                       </span>{" "}
                                                       | */}
-                                              <span className="ml-1">
-                                                {DateFormat(
-                                                  emp.start_date,
-                                                  "date"
-                                                )}{" "}
-                                                to{" "}
-                                                {DateFormat(
-                                                  emp.end_date,
-                                                  "date"
-                                                )}
-                                              </span>
-                                              {/* <span className="ml-1">
+                                                    <span className="ml-1">
+                                                      {DateFormat(
+                                                        emp.start_date,
+                                                        "date"
+                                                      )}{" "}
+                                                      to{" "}
+                                                      {DateFormat(
+                                                        emp.end_date,
+                                                        "date"
+                                                      )}
+                                                    </span>
+                                                    {/* <span className="ml-1">
                                                         (
                                                         {emp.duration || "2 years 3 months"}
                                                         )
                                                       </span> */}
-                                            </div>
-                                          </div>
+                                                  </div>
+                                                </div>
 
-                                          {/* Desktop Action Buttons - Top Right */}
-                                          <div className="hidden md:flex gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() =>
-                                                setState({
-                                                  isEditingExperience: true,
-                                                  company: emp.company,
-                                                  designation: emp.designation,
-                                                  start_date: emp.start_date,
-                                                  end_date: emp.end_date,
-                                                  job_description:
-                                                    emp.job_description,
-                                                  editingId: emp.id,
-                                                })
-                                              }
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deleteEmployment(emp.id)
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                          </div>
-                                        </div>
+                                                {/* Desktop Action Buttons - Top Right */}
+                                                <div className="hidden md:flex gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() =>
+                                                      setState({
+                                                        isEditingExperience:
+                                                          true,
+                                                        company: emp.company,
+                                                        designation:
+                                                          emp.designation,
+                                                        start_date:
+                                                          emp.start_date,
+                                                        end_date: emp.end_date,
+                                                        job_description:
+                                                          emp.job_description,
+                                                        editingId: emp.id,
+                                                      })
+                                                    }
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deleteEmployment(emp.id)
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
 
-                                        {/* Job Description */}
-                                        <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-2">
-                                          <p className="text-gray-700 leading-relaxed text-sm">
-                                            {expandedDesc[emp.id]
-                                              ? emp.job_description
-                                              : emp.job_description?.slice(
-                                                  0,
-                                                  280
-                                                )}
-                                            {!expandedDesc[emp.id] &&
-                                              emp.job_description?.length >
-                                                280 &&
-                                              "..."}
-                                            {emp.job_description &&
-                                              emp.job_description.length >
-                                                280 && (
-                                                <button
-                                                  onClick={() =>
-                                                    setExpandedDesc((prev) => ({
-                                                      ...prev,
-                                                      [emp.id]: !prev[emp.id],
-                                                    }))
-                                                  }
-                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                >
+                                              {/* Job Description */}
+                                              <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-2">
+                                                <p className="text-gray-700 leading-relaxed text-sm">
                                                   {expandedDesc[emp.id]
-                                                    ? "Read Less"
-                                                    : "Read More"}
-                                                </button>
-                                              )}
-                                          </p>
-                                        </div>
+                                                    ? emp.job_description
+                                                    : emp.job_description?.slice(
+                                                        0,
+                                                        280
+                                                      )}
+                                                  {!expandedDesc[emp.id] &&
+                                                    emp.job_description
+                                                      ?.length > 280 &&
+                                                    "..."}
+                                                  {emp.job_description &&
+                                                    emp.job_description.length >
+                                                      280 && (
+                                                      <button
+                                                        onClick={() =>
+                                                          setExpandedDesc(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              [emp.id]:
+                                                                !prev[emp.id],
+                                                            })
+                                                          )
+                                                        }
+                                                        className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                      >
+                                                        {expandedDesc[emp.id]
+                                                          ? "Read Less"
+                                                          : "Read More"}
+                                                      </button>
+                                                    )}
+                                                </p>
+                                              </div>
 
-                                        {/* Key Skills */}
-                                        {/* {emp.keySkills &&
+                                              {/* Key Skills */}
+                                              {/* {emp.keySkills &&
                                                   emp.keySkills.length > 0 && (
                                                     <div className="mb-4">
                                                       <h5 className="text-sm font-semibold text-gray-700 mb-2">
@@ -2072,454 +2278,131 @@ export default function NaukriProfilePage() {
                                                     </div>
                                                   )} */}
 
-                                        {/* Salary Badge */}
-                                        <div className="flex items-center justify-between">
-                                          {/* Mobile Action Buttons - Bottom Right */}
-                                          <div className="flex md:hidden gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() =>
-                                                setState({
-                                                  isEditingExperience: true,
-                                                  company: emp.company,
-                                                  designation: emp.designation,
-                                                  start_date: emp.startDate,
-                                                  end_date: emp.endDate,
-                                                  job_description:
-                                                    emp.description,
-                                                  editingId: emp.id,
-                                                })
-                                              }
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deleteEmployment(emp.id)
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
+                                              {/* Salary Badge */}
+                                              <div className="flex items-center justify-between">
+                                                {/* Mobile Action Buttons - Bottom Right */}
+                                                <div className="flex md:hidden gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() =>
+                                                      setState({
+                                                        isEditingExperience:
+                                                          true,
+                                                        company: emp.company,
+                                                        designation:
+                                                          emp.designation,
+                                                        start_date:
+                                                          emp.startDate,
+                                                        end_date: emp.endDate,
+                                                        job_description:
+                                                          emp.description,
+                                                        editingId: emp.id,
+                                                      })
+                                                    }
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deleteEmployment(emp.id)
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                            </div>
                                           </div>
+
+                                          {/* Timeline Connector */}
+                                          {index <
+                                            state?.userDetail?.experiences
+                                              .length -
+                                              1 && (
+                                            <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                          )}
                                         </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Timeline Connector */}
-                                    {index <
-                                      state?.userDetail?.experiences.length -
-                                        1 && (
-                                      <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                    )}
-                                  </div>
-                                </motion.div>
-                              )
-                            )}
-                          </div>
-
-                          {/* Empty State */}
-                          {(state.userDetail?.experiences?.length === 0 ||
-                            !state.userDetail?.experiences?.length) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-12"
-                            >
-                              <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-4xl">💼</span>
-                              </div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Employment History
-                              </h4>
-                              <p className="text-gray-500 mb-6">
-                                Add your work experience to showcase your
-                                professional journey
-                              </p>
-                              <Button
-                                onClick={() =>
-                                  setState({
-                                    isCreateExperience: true,
-                                    company: "",
-                                    designation: "",
-                                    start_date: "",
-                                    end_date: "",
-                                    job_description: "",
-                                  })
-                                }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                              >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Job
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-
-                {/* Education Section */}
-                <Card
-                  id="education-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("education")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <GraduationCap className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Education
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your academic background
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            setState({
-                              isCreateEducation: true,
-                              institution: "",
-                              degree: "",
-                              field: "",
-                              start_year: "",
-                              end_year: "",
-                              cgpa: "",
-                            });
-                          }}
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.education ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.education && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Education Form */}
-                          <AnimatePresence>
-                            {state.isCreateEducation && (
-                              <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
-                              >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add Education Details
-                                    </h4>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Institution Name
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Harvard University"
-                                        value={state.institution || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "institution",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Degree
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Bachelor of Technology"
-                                        value={state.degree || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "degree",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Field of Study
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Computer Science"
-                                        value={state.field || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "field",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Grade/CGPA
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 8.5 CGPA"
-                                        value={state.cgpa || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "cgpa",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Start Year
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 2016"
-                                        value={state.start_year || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "start_year",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        End Year
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 2020"
-                                        value={state.end_year || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "end_year",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={addEducation}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
-                                    >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Create Education
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({ isCreateEducation: false })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
+                                      </motion.div>
+                                    )
+                                  )}
                                 </div>
+
+                                {/* Empty State */}
+                                {(state.userDetail?.experiences?.length === 0 ||
+                                  !state.userDetail?.experiences?.length) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                  >
+                                    <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                                      <span className="text-4xl">💼</span>
+                                    </div>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                      No Employment History
+                                    </h4>
+                                    <p className="text-gray-500 mb-6">
+                                      Add your work experience to showcase your
+                                      professional journey
+                                    </p>
+                                    <Button
+                                      onClick={() =>
+                                        setState({
+                                          isCreateExperience: true,
+                                          company: "",
+                                          designation: "",
+                                          start_date: "",
+                                          end_date: "",
+                                          job_description: "",
+                                        })
+                                      }
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Your First Job
+                                    </Button>
+                                  </motion.div>
+                                )}
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Education List */}
-                          <div className="space-y-4">
-                            {state?.userDetail?.educations?.map(
-                              (edu, index) => (
-                                <motion.div
-                                  key={edu.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="relative group"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                  <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex items-start gap-3">
-                                      {/* Institution Logo Placeholder */}
-                                      <div className="flex-shrink-0 pt-1">
-                                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <span className="text-white font-bold text-md">
-                                            {edu.institution
-                                              .charAt(0)
-                                              .toUpperCase()}
-                                          </span>
-                                        </div>
-                                      </div>
+                      {/* Education Section */}
+                      <Card
+                        id="education-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
 
-                                      {/* Education Details */}
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between md:mb-1">
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                              <h4 className="text-xl font-bold text-gray-900 group-hover:text-black transition-colors">
-                                                {edu.degree}
-                                              </h4>
-                                            </div>
-                                            <p className="text-md font-semibold text-[#1d1d57]">
-                                              {edu.institution}
-                                            </p>
-                                            <div className="text-sm text-gray-600">
-                                              <span className="font-medium">
-                                                {edu.field}
-                                              </span>
-                                            </div>
-                                          </div>
-
-                                          {/* Desktop Action Buttons - Top Right */}
-                                          <div className="hidden md:flex gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() =>
-                                                setState({
-                                                  isEditingEducation: true,
-                                                  institution: edu.institution,
-                                                  degree: edu.degree,
-                                                  field: edu.field,
-                                                  cgpa: edu.cgpa,
-                                                  start_year: edu.start_year,
-                                                  end_year: edu.end_year,
-                                                  education_id: edu.id,
-                                                })
-                                              }
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deleteEducation(edu.id)
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                          </div>
-                                        </div>
-                                        <div className="text-sm text-gray-600 mb-2">
-                                          <span className="font-medium">
-                                            {edu.start_year} - {edu.end_year}
-                                          </span>{" "}
-                                          |
-                                          <span className="ml-1">
-                                            {edu.cgpa}
-                                          </span>
-                                        </div>
-
-                                        {/* Mobile Action Buttons - Bottom Right */}
-                                        <div className="flex md:hidden justify-end gap-2 mt-4">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                            onClick={() =>
-                                              setState({
-                                                isEditingEducation: true,
-                                                institution: edu.institution,
-                                                degree: edu.degree,
-                                                field: edu.field,
-                                                cgpa: edu.cgpa,
-                                                start_year: edu.start_year,
-                                                end_year: edu.end_year,
-                                                education_id: edu.id,
-                                              })
-                                            }
-                                          >
-                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                              deleteEducation(edu.id)
-                                            }
-                                            className="hover:bg-red-50 border-red-200 group/btn"
-                                          >
-                                            <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Timeline Connector */}
-                                    {index <
-                                      state?.userDetail?.educations?.length -
-                                        1 && (
-                                      <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                    )}
-                                  </div>
-                                </motion.div>
-                              )
-                            )}
-                          </div>
-
-                          {/* Empty State */}
-                          {(state?.userDetail?.educations?.length === 0 ||
-                            !state?.userDetail?.educations) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-12"
-                            >
-                              <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <GraduationCap className="w-12 h-12 text-[#1d1d57]/60" />
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("education")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <GraduationCap className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Education History
-                              </h4>
-                              <p className="text-gray-500 mb-6">
-                                Add your educational background to showcase your
-                                qualifications
-                              </p>
-                              <Button
-                                onClick={() =>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Education
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your academic background
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => {
                                   setState({
                                     isCreateEducation: true,
                                     institution: "",
@@ -2528,542 +2411,398 @@ export default function NaukriProfilePage() {
                                     start_year: "",
                                     end_year: "",
                                     cgpa: "",
-                                  })
-                                }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                  });
+                                }}
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Education
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.education ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
 
-                {/* Projects Section */}
-                <Card
-                  id="projects-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("projects")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <FolderOpen className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Projects
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your portfolio showcase
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setState({
-                              isCreateProjects: true,
-                              project_title: "",
-                              project_description: "",
-                              technologies: [],
-                              duration: "",
-                              status: "",
-                              project_link: "",
-                              technology: "",
-                              funded: false,
-                              funding_details: "",
-                            });
-                          }}
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.projects ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.projects && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Project Form */}
                           <AnimatePresence>
-                            {state.isCreateProjects && (
+                            {state.expandedSections.education && (
                               <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add New Project
-                                    </h4>
-                                  </div>
+                                {/* Add Education Form */}
+                                <AnimatePresence>
+                                  {state.isCreateEducation && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add Education Details
+                                          </h4>
+                                        </div>
 
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Project Title
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., E-Commerce Platform"
-                                        value={state.project_title || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "project_title",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Duration
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 3 months"
-                                        value={state.duration || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "duration",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Status
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Completed"
-                                        value={state.status || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "status",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Project Link
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., https://github.com/username/project"
-                                        value={state.project_link || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "project_link",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2 flex items-center gap-2">
-                                      <input
-                                        type="checkbox"
-                                        id="funded-create"
-                                        className="h-4 w-4 rounded border-gray-300 text-[#1d1d57] focus:ring-[#3b82f6]"
-                                        checked={state.funded}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "funded",
-                                            e.target.checked
-                                          )
-                                        }
-                                      />
-                                      <label
-                                        htmlFor="funded-create"
-                                        className="text-sm font-semibold text-gray-700"
-                                      >
-                                        Is this project funded?
-                                      </label>
-                                    </div>
-                                    {state.funded && (
-                                      <div className="space-y-2 md:col-span-2">
-                                        <label className="text-sm font-semibold text-gray-700">
-                                          Funding Details
-                                        </label>
-                                        <Textarea
-                                          placeholder="Enter funding details..."
-                                          value={state.funding_details || ""}
-                                          onChange={(e) =>
-                                            handleFormChange(
-                                              "funding_details",
-                                              e.target.value
-                                            )
-                                          }
-                                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                                        />
-                                      </div>
-                                    )}
-                                    <div className="space-y-2 md:col-span-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Technologies
-                                      </label>
-                                      <div className="flex gap-2">
-                                        <Input
-                                          placeholder="e.g., React.js"
-                                          value={state.technology || ""}
-                                          onChange={(e) =>
-                                            handleFormChange(
-                                              "technology",
-                                              e.target.value
-                                            )
-                                          }
-                                          onKeyDown={(e) => {
-                                            if (e.key === "Enter") {
-                                              e.preventDefault();
-                                              handleAddTechnology();
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Institution Name
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Harvard University"
+                                              value={state.institution || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "institution",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Degree
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Bachelor of Technology"
+                                              value={state.degree || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "degree",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Field of Study
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Computer Science"
+                                              value={state.field || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "field",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Grade/CGPA
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 8.5 CGPA"
+                                              value={state.cgpa || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "cgpa",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Start Year
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 2016"
+                                              value={state.start_year || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "start_year",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              End Year
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 2020"
+                                              value={state.end_year || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "end_year",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addEducation}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Create Education
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isCreateEducation: false,
+                                              })
                                             }
-                                          }}
-                                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                        />
-                                        <Button
-                                          variant="outline"
-                                          type="button"
-                                          onClick={handleAddTechnology}
-                                        >
-                                          Add
-                                        </Button>
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
                                       </div>
-                                      <div className="flex flex-wrap gap-2 mt-2">
-                                        {state.technologies?.map(
-                                          (tech: string, index: number) => (
-                                            <div
-                                              key={index}
-                                              className="bg-[#1d1d57]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
-                                            >
-                                              {tech}
-                                              <button
-                                                type="button"
-                                                onClick={() =>
-                                                  handleRemoveTechnology(tech)
-                                                }
-                                                className="text-blue-800 hover:text-blue-900"
-                                              >
-                                                <X className="w-3 h-3" />
-                                              </button>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Education List */}
+                                <div className="space-y-4">
+                                  {state?.userDetail?.educations?.map(
+                                    (edu, index) => (
+                                      <motion.div
+                                        key={edu.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="relative group"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                        <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                          <div className="flex items-start gap-3">
+                                            {/* Institution Logo Placeholder */}
+                                            <div className="flex-shrink-0 pt-1">
+                                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <span className="text-white font-bold text-md">
+                                                  {edu.institution
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                                </span>
+                                              </div>
                                             </div>
-                                          )
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
 
-                                  <div className="space-y-2 mb-6">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Project Description
-                                    </label>
-                                    <Textarea
-                                      placeholder="Describe your project, its features, and your role..."
-                                      value={state.project_description || ""}
-                                      onChange={(e) =>
-                                        handleFormChange(
-                                          "project_description",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                                    />
-                                  </div>
+                                            {/* Education Details */}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between md:mb-1">
+                                                <div className="flex-1">
+                                                  <div className="flex items-center gap-2">
+                                                    <h4 className="text-xl font-bold text-gray-900 group-hover:text-black transition-colors">
+                                                      {edu.degree}
+                                                    </h4>
+                                                  </div>
+                                                  <p className="text-md font-semibold text-[#1d1d57]">
+                                                    {edu.institution}
+                                                  </p>
+                                                  <div className="text-sm text-gray-600">
+                                                    <span className="font-medium">
+                                                      {edu.field}
+                                                    </span>
+                                                  </div>
+                                                </div>
 
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={addProject}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
-                                    >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Create Project
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({ isCreateProjects: false })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
+                                                {/* Desktop Action Buttons - Top Right */}
+                                                <div className="hidden md:flex gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() =>
+                                                      setState({
+                                                        isEditingEducation:
+                                                          true,
+                                                        institution:
+                                                          edu.institution,
+                                                        degree: edu.degree,
+                                                        field: edu.field,
+                                                        cgpa: edu.cgpa,
+                                                        start_year:
+                                                          edu.start_year,
+                                                        end_year: edu.end_year,
+                                                        education_id: edu.id,
+                                                      })
+                                                    }
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deleteEducation(edu.id)
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+                                              <div className="text-sm text-gray-600 mb-2">
+                                                <span className="font-medium">
+                                                  {edu.start_year} -{" "}
+                                                  {edu.end_year}
+                                                </span>{" "}
+                                                |
+                                                <span className="ml-1">
+                                                  {edu.cgpa}
+                                                </span>
+                                              </div>
+
+                                              {/* Mobile Action Buttons - Bottom Right */}
+                                              <div className="flex md:hidden justify-end gap-2 mt-4">
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                  onClick={() =>
+                                                    setState({
+                                                      isEditingEducation: true,
+                                                      institution:
+                                                        edu.institution,
+                                                      degree: edu.degree,
+                                                      field: edu.field,
+                                                      cgpa: edu.cgpa,
+                                                      start_year:
+                                                        edu.start_year,
+                                                      end_year: edu.end_year,
+                                                      education_id: edu.id,
+                                                    })
+                                                  }
+                                                >
+                                                  <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() =>
+                                                    deleteEducation(edu.id)
+                                                  }
+                                                  className="hover:bg-red-50 border-red-200 group/btn"
+                                                >
+                                                  <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* Timeline Connector */}
+                                          {index <
+                                            state?.userDetail?.educations
+                                              ?.length -
+                                              1 && (
+                                            <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  )}
                                 </div>
+
+                                {/* Empty State */}
+                                {(state?.userDetail?.educations?.length === 0 ||
+                                  !state?.userDetail?.educations) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                  >
+                                    <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                                      <GraduationCap className="w-12 h-12 text-[#1d1d57]/60" />
+                                    </div>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                      No Education History
+                                    </h4>
+                                    <p className="text-gray-500 mb-6">
+                                      Add your educational background to
+                                      showcase your qualifications
+                                    </p>
+                                    <Button
+                                      onClick={() =>
+                                        setState({
+                                          isCreateEducation: true,
+                                          institution: "",
+                                          degree: "",
+                                          field: "",
+                                          start_year: "",
+                                          end_year: "",
+                                          cgpa: "",
+                                        })
+                                      }
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Your First Education
+                                    </Button>
+                                  </motion.div>
+                                )}
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Projects List */}
-                          <div className="space-y-4">
-                            {state.userDetail?.projects?.map(
-                              (project, index) => (
-                                <motion.div
-                                  key={project.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="relative group"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                  <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex items-start gap-3">
-                                      {/* Project Icon */}
-                                      <div className="flex-shrink-0 pt-1">
-                                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <span className="text-white font-bold text-md">
-                                            {project.project_title
-                                              .charAt(0)
-                                              .toUpperCase()}
-                                          </span>
-                                        </div>
-                                      </div>
+                      {/* Projects Section */}
+                      <Card
+                        id="projects-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                                      {/* Project Details */}
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between md:mb-1">
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
-                                                {project.project_title}
-                                              </h4>
-                                            </div>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                              <span className="font-medium">
-                                                Duration: {project.duration}
-                                              </span>
-                                              {project.Project_link && (
-                                                <span className="ml-2">
-                                                  |{" "}
-                                                  <a
-                                                    href={project.project_link}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="text-[#1d1d57] hover:underline"
-                                                  >
-                                                    View Project
-                                                  </a>
-                                                </span>
-                                              )}
-                                            </div>
-                                          </div>
-
-                                          {/* Desktop Action Buttons - Top Right */}
-                                          <div className="hidden md:flex gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() => {
-                                                setState({
-                                                  isEditingProject: true,
-                                                  project_title:
-                                                    project.project_title,
-                                                  duration: project.duration,
-                                                  status: project.status,
-                                                  project_link:
-                                                    project.project_link,
-                                                  project_description:
-                                                    project.project_description,
-                                                  technologies:
-                                                    project.technologies,
-                                                  funded: project.funded,
-                                                  funding_details:
-                                                    project.funding_details,
-                                                  project_id: project.id,
-                                                });
-                                              }}
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deleteProject(project.id)
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                          </div>
-                                        </div>
-
-                                        {/* Project Description */}
-                                        <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                            {expandedProjectDesc[project.id]
-                                              ? project.project_description
-                                              : project.project_description?.slice(
-                                                  0,
-                                                  280
-                                                )}
-                                            {!expandedProjectDesc[project.id] &&
-                                              project.project_description
-                                                ?.length > 280 &&
-                                              "..."}
-                                            {project.project_description &&
-                                              project.project_description
-                                                .length > 280 && (
-                                                <button
-                                                  onClick={() =>
-                                                    setExpandedProjectDesc(
-                                                      (prev) => ({
-                                                        ...prev,
-                                                        [project.id]:
-                                                          !prev[project.id],
-                                                      })
-                                                    )
-                                                  }
-                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                >
-                                                  {expandedProjectDesc[
-                                                    project.id
-                                                  ]
-                                                    ? "Read Less"
-                                                    : "Read More"}
-                                                </button>
-                                              )}
-                                          </p>
-
-                                          {project.funding_details && (
-                                            <div className="mt-4">
-                                              <h5 className="text-sm font-semibold text-gray-700 mb-1">
-                                                Funding Details
-                                              </h5>
-                                              <p className="text-gray-700 leading-relaxed text-sm">
-                                                {project.funding_details}
-                                              </p>
-                                            </div>
-                                          )}
-                                        </div>
-
-                                        {/* Technologies */}
-                                        {project.technologies &&
-                                          project.technologies.length > 0 && (
-                                            <div className="mb-4">
-                                              <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                                                Technologies Used:
-                                              </h5>
-                                              <div className="flex flex-wrap gap-2">
-                                                {project.technologies.map(
-                                                  (tech, techIndex) => (
-                                                    <span
-                                                      key={techIndex}
-                                                      className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 text-[#1d1d57] px-3 py-1 rounded-full text-sm font-medium"
-                                                    >
-                                                      {tech}
-                                                    </span>
-                                                  )
-                                                )}
-                                              </div>
-                                            </div>
-                                          )}
-
-                                        {/* Mobile Action Buttons - Bottom Right */}
-                                        <div className="flex md:hidden justify-end gap-2 mt-4">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                            onClick={() => {
-                                              setState({
-                                                isEditingProject: true,
-                                                project_title:
-                                                  project.project_title,
-                                                duration: project.duration,
-                                                status: project.status,
-                                                project_link:
-                                                  project.Project_link,
-                                                project_description:
-                                                  project.project_description,
-                                                technologies:
-                                                  project.technologies,
-                                                funded: project.funded,
-                                                funding_details:
-                                                  project.funding_details,
-                                                project_id: project.id,
-                                              });
-                                            }}
-                                          >
-                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                              deleteProject(project.id)
-                                            }
-                                            className="hover:bg-red-50 border-red-200 group/btn"
-                                          >
-                                            <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Timeline Connector */}
-                                    {index <
-                                      state.userDetail?.projects?.length -
-                                        1 && (
-                                      <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                    )}
-                                  </div>
-                                </motion.div>
-                              )
-                            )}
-                          </div>
-
-                          {/* Empty State */}
-                          {(state.userDetail?.projects?.length === 0 ||
-                            !state.userDetail?.projects) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-12"
-                            >
-                              <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <FolderOpen className="w-12 h-12 text-[#1d1d57]/60" />
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("projects")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <FolderOpen className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Projects Added
-                              </h4>
-                              <p className="text-gray-500 mb-6">
-                                Showcase your work by adding your projects and
-                                achievements
-                              </p>
-                              <Button
-                                onClick={() =>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Projects
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your portfolio showcase
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setState({
                                     isCreateProjects: true,
                                     project_title: "",
@@ -3073,427 +2812,576 @@ export default function NaukriProfilePage() {
                                     status: "",
                                     project_link: "",
                                     technology: "",
-                                  })
-                                }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                    funded: false,
+                                    funding_details: "",
+                                  });
+                                }}
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Project
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.projects ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
 
-                {/* Publications Section */}
-                <Card
-                  id="publications-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("publications")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <Book className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Publications
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your research and publications
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setState({
-                              isCreatePublication: true,
-                              publication_title: "",
-                              publication_description: "",
-                              publication_journal: "",
-                              publication_volume: "",
-                              publication_issue: "",
-                              publication_year: "",
-                            });
-                          }}
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.publications ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.publications && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Publication Form */}
                           <AnimatePresence>
-                            {state.isCreatePublication && (
+                            {state.expandedSections.projects && (
                               <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add New Publication
-                                    </h4>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Publication Title
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Advanced AI Research"
-                                        value={state.publication_title || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "publication_title",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Journal
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., IEEE Transactions"
-                                        value={state.publication_journal || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "publication_journal",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Volume
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 42"
-                                        value={state.publication_volume || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "publication_volume",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Issue
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 3"
-                                        value={state.publication_issue || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "publication_issue",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Year
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., 2023"
-                                        value={state.publication_year || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "publication_year",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                  </div>
-
-                                  <div className="space-y-2 mb-6">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Description
-                                    </label>
-                                    <Textarea
-                                      placeholder="Brief description of the publication..."
-                                      value={
-                                        state.publication_description || ""
-                                      }
-                                      onChange={(e) =>
-                                        handleFormChange(
-                                          "publication_description",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                                    />
-                                  </div>
-
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={addPublication}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                {/* Add Project Form */}
+                                <AnimatePresence>
+                                  {state.isCreateProjects && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
                                     >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Create Publication
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      onClick={() =>
-                                        setState({ isCreatePublication: false })
-                                      }
-                                      className="border-gray-300 hover:bg-gray-50"
-                                    >
-                                      Cancel
-                                    </Button>
-                                  </div>
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add New Project
+                                          </h4>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Project Title
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., E-Commerce Platform"
+                                              value={state.project_title || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "project_title",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Duration
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 3 months"
+                                              value={state.duration || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "duration",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Status
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Completed"
+                                              value={state.status || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "status",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Project Link
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., https://github.com/username/project"
+                                              value={state.project_link || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "project_link",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2 flex items-center gap-2">
+                                            <input
+                                              type="checkbox"
+                                              id="funded-create"
+                                              className="h-4 w-4 rounded border-gray-300 text-[#1d1d57] focus:ring-[#3b82f6]"
+                                              checked={state.funded}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "funded",
+                                                  e.target.checked
+                                                )
+                                              }
+                                            />
+                                            <label
+                                              htmlFor="funded-create"
+                                              className="text-sm font-semibold text-gray-700"
+                                            >
+                                              Is this project funded?
+                                            </label>
+                                          </div>
+                                          {state.funded && (
+                                            <div className="space-y-2 md:col-span-2">
+                                              <label className="text-sm font-semibold text-gray-700">
+                                                Funding Details
+                                              </label>
+                                              <Textarea
+                                                placeholder="Enter funding details..."
+                                                value={
+                                                  state.funding_details || ""
+                                                }
+                                                onChange={(e) =>
+                                                  handleFormChange(
+                                                    "funding_details",
+                                                    e.target.value
+                                                  )
+                                                }
+                                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                              />
+                                            </div>
+                                          )}
+                                          <div className="space-y-2 md:col-span-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Technologies
+                                            </label>
+                                            <div className="flex gap-2">
+                                              <Input
+                                                placeholder="e.g., React.js"
+                                                value={state.technology || ""}
+                                                onChange={(e) =>
+                                                  handleFormChange(
+                                                    "technology",
+                                                    e.target.value
+                                                  )
+                                                }
+                                                onKeyDown={(e) => {
+                                                  if (e.key === "Enter") {
+                                                    e.preventDefault();
+                                                    handleAddTechnology();
+                                                  }
+                                                }}
+                                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                              />
+                                              <Button
+                                                variant="outline"
+                                                type="button"
+                                                onClick={handleAddTechnology}
+                                              >
+                                                Add
+                                              </Button>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                              {state.technologies?.map(
+                                                (
+                                                  tech: string,
+                                                  index: number
+                                                ) => (
+                                                  <div
+                                                    key={index}
+                                                    className="bg-[#1d1d57]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                                                  >
+                                                    {tech}
+                                                    <button
+                                                      type="button"
+                                                      onClick={() =>
+                                                        handleRemoveTechnology(
+                                                          tech
+                                                        )
+                                                      }
+                                                      className="text-blue-800 hover:text-blue-900"
+                                                    >
+                                                      <X className="w-3 h-3" />
+                                                    </button>
+                                                  </div>
+                                                )
+                                              )}
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="space-y-2 mb-6">
+                                          <label className="text-sm font-semibold text-gray-700">
+                                            Project Description
+                                          </label>
+                                          <Textarea
+                                            placeholder="Describe your project, its features, and your role..."
+                                            value={
+                                              state.project_description || ""
+                                            }
+                                            onChange={(e) =>
+                                              handleFormChange(
+                                                "project_description",
+                                                e.target.value
+                                              )
+                                            }
+                                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                          />
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addProject}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Create Project
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isCreateProjects: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Projects List */}
+                                <div className="space-y-4">
+                                  {state.userDetail?.projects?.map(
+                                    (project, index) => (
+                                      <motion.div
+                                        key={project.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="relative group"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                        <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                          <div className="flex items-start gap-3">
+                                            {/* Project Icon */}
+                                            <div className="flex-shrink-0 pt-1">
+                                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <span className="text-white font-bold text-md">
+                                                  {project.project_title
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            {/* Project Details */}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between md:mb-1">
+                                                <div className="flex-1">
+                                                  <div className="flex items-center gap-2">
+                                                    <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
+                                                      {project.project_title}
+                                                    </h4>
+                                                  </div>
+                                                  <div className="text-sm text-gray-600 mb-2">
+                                                    <span className="font-medium">
+                                                      Duration:{" "}
+                                                      {project.duration}
+                                                    </span>
+                                                    {project.Project_link && (
+                                                      <span className="ml-2">
+                                                        |{" "}
+                                                        <a
+                                                          href={
+                                                            project.project_link
+                                                          }
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                          className="text-[#1d1d57] hover:underline"
+                                                        >
+                                                          View Project
+                                                        </a>
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                </div>
+
+                                                {/* Desktop Action Buttons - Top Right */}
+                                                <div className="hidden md:flex gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() => {
+                                                      setState({
+                                                        isEditingProject: true,
+                                                        project_title:
+                                                          project.project_title,
+                                                        duration:
+                                                          project.duration,
+                                                        status: project.status,
+                                                        project_link:
+                                                          project.project_link,
+                                                        project_description:
+                                                          project.project_description,
+                                                        technologies:
+                                                          project.technologies,
+                                                        funded: project.funded,
+                                                        funding_details:
+                                                          project.funding_details,
+                                                        project_id: project.id,
+                                                      });
+                                                    }}
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deleteProject(project.id)
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+
+                                              {/* Project Description */}
+                                              <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
+                                                <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                  {expandedProjectDesc[
+                                                    project.id
+                                                  ]
+                                                    ? project.project_description
+                                                    : project.project_description?.slice(
+                                                        0,
+                                                        280
+                                                      )}
+                                                  {!expandedProjectDesc[
+                                                    project.id
+                                                  ] &&
+                                                    project.project_description
+                                                      ?.length > 280 &&
+                                                    "..."}
+                                                  {project.project_description &&
+                                                    project.project_description
+                                                      .length > 280 && (
+                                                      <button
+                                                        onClick={() =>
+                                                          setExpandedProjectDesc(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              [project.id]:
+                                                                !prev[
+                                                                  project.id
+                                                                ],
+                                                            })
+                                                          )
+                                                        }
+                                                        className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                      >
+                                                        {expandedProjectDesc[
+                                                          project.id
+                                                        ]
+                                                          ? "Read Less"
+                                                          : "Read More"}
+                                                      </button>
+                                                    )}
+                                                </p>
+
+                                                {project.funding_details && (
+                                                  <div className="mt-4">
+                                                    <h5 className="text-sm font-semibold text-gray-700 mb-1">
+                                                      Funding Details
+                                                    </h5>
+                                                    <p className="text-gray-700 leading-relaxed text-sm">
+                                                      {project.funding_details}
+                                                    </p>
+                                                  </div>
+                                                )}
+                                              </div>
+
+                                              {/* Technologies */}
+                                              {project.technologies &&
+                                                project.technologies.length >
+                                                  0 && (
+                                                  <div className="mb-4">
+                                                    <h5 className="text-sm font-semibold text-gray-700 mb-2">
+                                                      Technologies Used:
+                                                    </h5>
+                                                    <div className="flex flex-wrap gap-2">
+                                                      {project.technologies.map(
+                                                        (tech, techIndex) => (
+                                                          <span
+                                                            key={techIndex}
+                                                            className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 text-[#1d1d57] px-3 py-1 rounded-full text-sm font-medium"
+                                                          >
+                                                            {tech}
+                                                          </span>
+                                                        )
+                                                      )}
+                                                    </div>
+                                                  </div>
+                                                )}
+
+                                              {/* Mobile Action Buttons - Bottom Right */}
+                                              <div className="flex md:hidden justify-end gap-2 mt-4">
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                  onClick={() => {
+                                                    setState({
+                                                      isEditingProject: true,
+                                                      project_title:
+                                                        project.project_title,
+                                                      duration:
+                                                        project.duration,
+                                                      status: project.status,
+                                                      project_link:
+                                                        project.Project_link,
+                                                      project_description:
+                                                        project.project_description,
+                                                      technologies:
+                                                        project.technologies,
+                                                      funded: project.funded,
+                                                      funding_details:
+                                                        project.funding_details,
+                                                      project_id: project.id,
+                                                    });
+                                                  }}
+                                                >
+                                                  <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() =>
+                                                    deleteProject(project.id)
+                                                  }
+                                                  className="hover:bg-red-50 border-red-200 group/btn"
+                                                >
+                                                  <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* Timeline Connector */}
+                                          {index <
+                                            state.userDetail?.projects?.length -
+                                              1 && (
+                                            <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  )}
                                 </div>
+
+                                {/* Empty State */}
+                                {(state.userDetail?.projects?.length === 0 ||
+                                  !state.userDetail?.projects) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                  >
+                                    <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                      <FolderOpen className="w-12 h-12 text-[#1d1d57]/60" />
+                                    </div>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                      No Projects Added
+                                    </h4>
+                                    <p className="text-gray-500 mb-6">
+                                      Showcase your work by adding your projects
+                                      and achievements
+                                    </p>
+                                    <Button
+                                      onClick={() =>
+                                        setState({
+                                          isCreateProjects: true,
+                                          project_title: "",
+                                          project_description: "",
+                                          technologies: [],
+                                          duration: "",
+                                          status: "",
+                                          project_link: "",
+                                          technology: "",
+                                        })
+                                      }
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Your First Project
+                                    </Button>
+                                  </motion.div>
+                                )}
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Publications List */}
-                          <div className="space-y-4">
-                            {state.userDetail?.publications?.map(
-                              (pub, index) => (
-                                <motion.div
-                                  key={pub.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="relative group"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                  <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex items-start gap-3">
-                                      {/* Publication Icon */}
-                                      <div className="flex-shrink-0 pt-1">
-                                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <span className="text-white font-bold text-md">
-                                            {pub.publication_title
-                                              .charAt(0)
-                                              .toUpperCase()}
-                                          </span>
-                                        </div>
-                                      </div>
+                      {/* Publications Section */}
+                      <Card
+                        id="publications-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                                      {/* Publication Details */}
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between md:mb-1">
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
-                                                {pub.publication_title}
-                                              </h4>
-                                            </div>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                              <span className="font-medium">
-                                                {pub.publication_journal}
-                                              </span>
-                                              <span className="ml-2">
-                                                | Year: {pub.publication_year}
-                                              </span>
-                                            </div>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                              Vol: {pub.publication_volume}
-                                            </div>
-                                            <div className="text-sm text-gray-600 mb-2">
-                                              Issue: {pub.publication_issue}
-                                            </div>
-                                          </div>
-
-                                          {/* Desktop Action Buttons - Top Right */}
-                                          <div className="hidden md:flex gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() => {
-                                                setState({
-                                                  isEditingPublication: true,
-                                                  publication_title:
-                                                    pub.publication_title,
-                                                  publication_description:
-                                                    pub.publication_description,
-                                                  publication_journal:
-                                                    pub.publication_journal,
-                                                  publication_volume:
-                                                    pub.publication_volume,
-                                                  publication_issue:
-                                                    pub.publication_issue,
-                                                  publication_year:
-                                                    pub.publication_year,
-                                                  publication_id: pub.id,
-                                                });
-                                              }}
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deletePublication(pub.id)
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                          </div>
-                                        </div>
-
-                                        {/* Publication Description */}
-                                        <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                            {expandedPublicationDesc[pub.id]
-                                              ? pub.publication_description
-                                              : pub.publication_description?.slice(
-                                                  0,
-                                                  280
-                                                )}
-                                            {!expandedPublicationDesc[pub.id] &&
-                                              pub.publication_description
-                                                ?.length > 280 &&
-                                              "..."}
-                                            {pub.publication_description &&
-                                              pub.publication_description
-                                                .length > 280 && (
-                                                <button
-                                                  onClick={() =>
-                                                    setExpandedPublicationDesc(
-                                                      (prev) => ({
-                                                        ...prev,
-                                                        [pub.id]: !prev[pub.id],
-                                                      })
-                                                    )
-                                                  }
-                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                >
-                                                  {expandedPublicationDesc[
-                                                    pub.id
-                                                  ]
-                                                    ? "Read Less"
-                                                    : "Read More"}
-                                                </button>
-                                              )}
-                                          </p>
-                                        </div>
-
-                                        {/* Mobile Action Buttons - Bottom Right */}
-                                        <div className="flex md:hidden justify-end gap-2 mt-4">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                            onClick={() => {
-                                              setState({
-                                                isEditingPublication: true,
-                                                publication_title:
-                                                  pub.publication_title,
-                                                publication_description:
-                                                  pub.publication_description,
-                                                publication_journal:
-                                                  pub.publication_journal,
-                                                publication_volume:
-                                                  pub.publication_volume,
-                                                publication_issue:
-                                                  pub.publication_issue,
-                                                publication_year:
-                                                  pub.publication_year,
-                                                publication_id: pub.id,
-                                              });
-                                            }}
-                                          >
-                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                              deletePublication(pub.id)
-                                            }
-                                            className="hover:bg-red-50 border-red-200 group/btn"
-                                          >
-                                            <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </div>
-
-                                    {/* Timeline Connector */}
-                                    {index <
-                                      state.userDetail?.publications?.length -
-                                        1 && (
-                                      <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                    )}
-                                  </div>
-                                </motion.div>
-                              )
-                            )}
-                          </div>
-
-                          {/* Empty State */}
-                          {(state.userDetail?.publications?.length === 0 ||
-                            !state.userDetail?.publications) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-12"
-                            >
-                              <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Book className="w-12 h-12 text-[#1d1d57]/60" />
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("publications")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <Book className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Publications Added
-                              </h4>
-                              <p className="text-gray-500 mb-6">
-                                Showcase your research work by adding your
-                                publications
-                              </p>
-                              <Button
-                                onClick={() =>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Publications
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your research and publications
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setState({
                                     isCreatePublication: true,
                                     publication_title: "",
@@ -3502,1334 +3390,1848 @@ export default function NaukriProfilePage() {
                                     publication_volume: "",
                                     publication_issue: "",
                                     publication_year: "",
-                                  })
-                                }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                  });
+                                }}
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Publication
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.publications ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
 
-                {/* Achievements Section */}
-                <Card
-                  id="achievements-section"
-                  className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
-                >
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
-
-                  <CardContent className="relative p-4 md:p-6">
-                    <div
-                      className="flex items-center justify-between mb-3 cursor-pointer"
-                      onClick={() => toggleSection("achievements")}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                          <Award className="w-4 h-4 text-white transform -rotate-3" />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
-                            Achievements & Awards
-                          </h3>
-                          <p className="text-sm text-gray-500">
-                            Your recognitions and honors
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setState({
-                              isCreateAchievements: true,
-                              achievement_title: "",
-                              organization: "",
-                              achievement_file: null,
-
-                              achievement_description: "",
-                            });
-                          }}
-                          className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                        >
-                          <Plus className="w-4 h-4" />
-                        </button>
-                        {state.expandedSections.achievements ? (
-                          <ChevronUp className="w-5 h-5 text-gray-500" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-gray-500" />
-                        )}
-                      </div>
-                    </div>
-
-                    <AnimatePresence>
-                      {state.expandedSections.achievements && (
-                        <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: "auto" }}
-                          exit={{ opacity: 0, height: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          {/* Add Achievement Form */}
                           <AnimatePresence>
-                            {state.isCreateAchievements && (
+                            {state.expandedSections.publications && (
                               <motion.div
-                                initial={{ opacity: 0, height: 0, y: -20 }}
-                                animate={{ opacity: 1, height: "auto", y: 0 }}
-                                exit={{ opacity: 0, height: 0, y: -20 }}
-                                transition={{ duration: 0.3, ease: "easeOut" }}
-                                className="mb-8 relative"
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
                               >
-                                <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
-                                  <div className="flex items-center gap-3 mb-6">
-                                    <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
-                                      <Plus className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-xl font-bold text-gray-900">
-                                      Add New Achievement
-                                    </h4>
-                                  </div>
-
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Achievement Title
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Employee of the Year"
-                                        value={state.achievement_title || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "achievement_title",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Organization
-                                      </label>
-                                      <Input
-                                        placeholder="e.g., Tech Solutions Inc"
-                                        value={state.organization || ""}
-                                        onChange={(e) =>
-                                          handleFormChange(
-                                            "organization",
-                                            e.target.value
-                                          )
-                                        }
-                                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                      />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-semibold text-gray-700">
-                                        Achievement File (PDF)
-                                      </label>
-
-                                      <div className="flex items-center gap-3">
-                                        <Input
-                                          type="file"
-                                          accept="pdf/*"
-                                          onChange={(e) => {
-                                            const file = e.target.files?.[0];
-                                            if (file) {
-                                              setState({
-                                                achievement_file: file,
-                                                achievement_file_preview:
-                                                  URL.createObjectURL(file),
-                                              });
-                                            }
-                                          }}
-                                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                        />
-                                        <Upload className="w-5 h-5 text-gray-400" />
-                                      </div>
-                                    </div>
-                                  </div>
-
-                                  <div className="space-y-2 mb-6">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Description
-                                    </label>
-                                    <Textarea
-                                      placeholder="Describe your achievement and its significance..."
-                                      value={
-                                        state.achievement_description || ""
-                                      }
-                                      onChange={(e) =>
-                                        setState({
-                                          ...state,
-                                          achievement_description:
-                                            e.target.value,
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                                    />
-                                  </div>
-
-                                  <div className="flex gap-3">
-                                    <Button
-                                      onClick={addAchievement}
-                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                {/* Add Publication Form */}
+                                <AnimatePresence>
+                                  {state.isCreatePublication && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
                                     >
-                                      <CheckCircle className="w-4 h-4 mr-2" />
-                                      Save Achievement
-                                    </Button>
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add New Publication
+                                          </h4>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Publication Title
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Advanced AI Research"
+                                              value={
+                                                state.publication_title || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "publication_title",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Journal
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., IEEE Transactions"
+                                              value={
+                                                state.publication_journal || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "publication_journal",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Volume
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 42"
+                                              value={
+                                                state.publication_volume || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "publication_volume",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Issue
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 3"
+                                              value={
+                                                state.publication_issue || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "publication_issue",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Year
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., 2023"
+                                              value={
+                                                state.publication_year || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "publication_year",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                        </div>
+
+                                        <div className="space-y-2 mb-6">
+                                          <label className="text-sm font-semibold text-gray-700">
+                                            Description
+                                          </label>
+                                          <Textarea
+                                            placeholder="Brief description of the publication..."
+                                            value={
+                                              state.publication_description ||
+                                              ""
+                                            }
+                                            onChange={(e) =>
+                                              handleFormChange(
+                                                "publication_description",
+                                                e.target.value
+                                              )
+                                            }
+                                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                          />
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addPublication}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Create Publication
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isCreatePublication: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Publications List */}
+                                <div className="space-y-4">
+                                  {state.userDetail?.publications?.map(
+                                    (pub, index) => (
+                                      <motion.div
+                                        key={pub.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="relative group"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                        <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                          <div className="flex items-start gap-3">
+                                            {/* Publication Icon */}
+                                            <div className="flex-shrink-0 pt-1">
+                                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <span className="text-white font-bold text-md">
+                                                  {pub.publication_title
+                                                    .charAt(0)
+                                                    .toUpperCase()}
+                                                </span>
+                                              </div>
+                                            </div>
+
+                                            {/* Publication Details */}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between md:mb-1">
+                                                <div className="flex-1">
+                                                  <div className="flex items-center gap-2">
+                                                    <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
+                                                      {pub.publication_title}
+                                                    </h4>
+                                                  </div>
+                                                  <div className="text-sm text-gray-600 mb-2">
+                                                    <span className="font-medium">
+                                                      {pub.publication_journal}
+                                                    </span>
+                                                    <span className="ml-2">
+                                                      | Year:{" "}
+                                                      {pub.publication_year}
+                                                    </span>
+                                                  </div>
+                                                  <div className="text-sm text-gray-600 mb-2">
+                                                    Vol:{" "}
+                                                    {pub.publication_volume}
+                                                  </div>
+                                                  <div className="text-sm text-gray-600 mb-2">
+                                                    Issue:{" "}
+                                                    {pub.publication_issue}
+                                                  </div>
+                                                </div>
+
+                                                {/* Desktop Action Buttons - Top Right */}
+                                                <div className="hidden md:flex gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() => {
+                                                      setState({
+                                                        isEditingPublication:
+                                                          true,
+                                                        publication_title:
+                                                          pub.publication_title,
+                                                        publication_description:
+                                                          pub.publication_description,
+                                                        publication_journal:
+                                                          pub.publication_journal,
+                                                        publication_volume:
+                                                          pub.publication_volume,
+                                                        publication_issue:
+                                                          pub.publication_issue,
+                                                        publication_year:
+                                                          pub.publication_year,
+                                                        publication_id: pub.id,
+                                                      });
+                                                    }}
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deletePublication(pub.id)
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+
+                                              {/* Publication Description */}
+                                              <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
+                                                <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                  {expandedPublicationDesc[
+                                                    pub.id
+                                                  ]
+                                                    ? pub.publication_description
+                                                    : pub.publication_description?.slice(
+                                                        0,
+                                                        280
+                                                      )}
+                                                  {!expandedPublicationDesc[
+                                                    pub.id
+                                                  ] &&
+                                                    pub.publication_description
+                                                      ?.length > 280 &&
+                                                    "..."}
+                                                  {pub.publication_description &&
+                                                    pub.publication_description
+                                                      .length > 280 && (
+                                                      <button
+                                                        onClick={() =>
+                                                          setExpandedPublicationDesc(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              [pub.id]:
+                                                                !prev[pub.id],
+                                                            })
+                                                          )
+                                                        }
+                                                        className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                      >
+                                                        {expandedPublicationDesc[
+                                                          pub.id
+                                                        ]
+                                                          ? "Read Less"
+                                                          : "Read More"}
+                                                      </button>
+                                                    )}
+                                                </p>
+                                              </div>
+
+                                              {/* Mobile Action Buttons - Bottom Right */}
+                                              <div className="flex md:hidden justify-end gap-2 mt-4">
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                  onClick={() => {
+                                                    setState({
+                                                      isEditingPublication:
+                                                        true,
+                                                      publication_title:
+                                                        pub.publication_title,
+                                                      publication_description:
+                                                        pub.publication_description,
+                                                      publication_journal:
+                                                        pub.publication_journal,
+                                                      publication_volume:
+                                                        pub.publication_volume,
+                                                      publication_issue:
+                                                        pub.publication_issue,
+                                                      publication_year:
+                                                        pub.publication_year,
+                                                      publication_id: pub.id,
+                                                    });
+                                                  }}
+                                                >
+                                                  <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() =>
+                                                    deletePublication(pub.id)
+                                                  }
+                                                  className="hover:bg-red-50 border-red-200 group/btn"
+                                                >
+                                                  <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </div>
+
+                                          {/* Timeline Connector */}
+                                          {index <
+                                            state.userDetail?.publications
+                                              ?.length -
+                                              1 && (
+                                            <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                          )}
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  )}
+                                </div>
+
+                                {/* Empty State */}
+                                {(state.userDetail?.publications?.length ===
+                                  0 ||
+                                  !state.userDetail?.publications) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                  >
+                                    <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                      <Book className="w-12 h-12 text-[#1d1d57]/60" />
+                                    </div>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                      No Publications Added
+                                    </h4>
+                                    <p className="text-gray-500 mb-6">
+                                      Showcase your research work by adding your
+                                      publications
+                                    </p>
                                     <Button
-                                      variant="outline"
                                       onClick={() =>
                                         setState({
-                                          isCreateAchievements: false,
+                                          isCreatePublication: true,
+                                          publication_title: "",
+                                          publication_description: "",
+                                          publication_journal: "",
+                                          publication_volume: "",
+                                          publication_issue: "",
+                                          publication_year: "",
                                         })
                                       }
-                                      className="border-gray-300 hover:bg-gray-50"
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                     >
-                                      Cancel
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Your First Publication
                                     </Button>
-                                  </div>
-                                </div>
+                                  </motion.div>
+                                )}
                               </motion.div>
                             )}
                           </AnimatePresence>
+                        </CardContent>
+                      </Card>
 
-                          {/* Achievements List */}
-                          <div className="space-y-4">
-                            {state.userDetail?.achievements?.map(
-                              (achievement, index) => (
-                                <motion.div
-                                  key={achievement.id}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ delay: index * 0.1 }}
-                                  className="relative group"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                  <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex items-start gap-6">
-                                      {/* Achievement Icon */}
-                                      <div className="flex-shrink-0">
-                                        <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                          <Award className="w-4 h-4 text-white" />
-                                        </div>
-                                      </div>
+                      {/* Achievements Section */}
+                      <Card
+                        id="achievements-section"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                      >
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                                      {/* Achievement Details */}
-                                      <div className="flex-1 min-w-0">
-                                        <div className="flex items-start justify-between md:mb-1">
-                                          <div className="flex-1">
-                                            <div className="flex items-center gap-2">
-                                              <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
-                                                {achievement.achievement_title}
-                                              </h4>
-                                            </div>
-                                            <p className="text-md font-semibold text-[#1d1d57] mb-1">
-                                              {achievement.organization}
-                                            </p>
-                                          </div>
-
-                                          {/* Desktop Action Buttons - Top Right */}
-                                          <div className="hidden md:flex gap-2">
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                              onClick={() => {
-                                                setState({
-                                                  isEditingAchievements: true,
-                                                  achievement_title:
-                                                    achievement.achievement_title,
-                                                  organization:
-                                                    achievement.organization,
-                                                  achievement_file:
-                                                    achievement.achievement_file_url,
-                                                  achievement_description:
-                                                    achievement.achievement_description,
-                                                  achievement_id:
-                                                    achievement.id,
-                                                });
-                                              }}
-                                            >
-                                              <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                            <Button
-                                              variant="outline"
-                                              size="sm"
-                                              onClick={() =>
-                                                deleteAchievement(
-                                                  achievement.id
-                                                )
-                                              }
-                                              className="hover:bg-red-50 border-red-200 group/btn"
-                                            >
-                                              <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                            </Button>
-                                          </div>
-                                        </div>
-
-                                        {/* Achievement Description */}
-                                        <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
-                                          <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                            {expandedAchievementDesc[
-                                              achievement.id
-                                            ]
-                                              ? achievement.achievement_description
-                                              : achievement.achievement_description?.slice(
-                                                  0,
-                                                  280
-                                                )}
-                                            {!expandedAchievementDesc[
-                                              achievement.id
-                                            ] &&
-                                              achievement
-                                                .achievement_description
-                                                ?.length > 280 &&
-                                              "..."}
-                                            {achievement.achievement_description &&
-                                              achievement
-                                                .achievement_description
-                                                .length > 280 && (
-                                                <button
-                                                  onClick={() =>
-                                                    setExpandedAchievementDesc(
-                                                      (prev) => ({
-                                                        ...prev,
-                                                        [achievement.id]:
-                                                          !prev[achievement.id],
-                                                      })
-                                                    )
-                                                  }
-                                                  className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                >
-                                                  {expandedAchievementDesc[
-                                                    achievement.id
-                                                  ]
-                                                    ? "Read Less"
-                                                    : "Read More"}
-                                                </button>
-                                              )}
-                                          </p>
-
-                                          {achievement.achievement_file_url && (
-                                            <a
-                                              className="flex items-center text-gray-700 leading-relaxed text-sm"
-                                              href={
-                                                achievement.achievement_file_url
-                                              }
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                            >
-                                              {" "}
-                                              View file
-                                              <File className="w-3 h-3 ml-2" />
-                                            </a>
-                                          )}
-                                        </div>
-
-                                        {/* Mobile Action Buttons - Bottom Right */}
-                                        <div className="flex md:hidden justify-end gap-2">
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
-                                            onClick={() => {
-                                              setState({
-                                                isEditingAchievements: true,
-                                                achievement_title:
-                                                  achievement.achievement_title,
-                                                organization:
-                                                  achievement.organization,
-                                                achievement_file:
-                                                  achievement.achievement_file_url,
-                                                achievement_description:
-                                                  achievement.achievement_description,
-                                                achievement_id: achievement.id,
-                                              });
-                                            }}
-                                          >
-                                            <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() =>
-                                              deleteAchievement(achievement.id)
-                                            }
-                                            className="hover:bg-red-50 border-red-200 group/btn"
-                                          >
-                                            <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </motion.div>
-                              )
-                            )}
-                          </div>
-
-                          {/* Empty State */}
-                          {(state.userDetail?.achievements?.length === 0 ||
-                            !state.userDetail?.achievements) && (
-                            <motion.div
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              className="text-center py-12"
-                            >
-                              <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <Award className="w-12 h-12 text-[#1d1d57]/60" />
+                        <CardContent className="relative p-4 md:p-6">
+                          <div
+                            className="flex items-center justify-between mb-3 cursor-pointer"
+                            onClick={() => toggleSection("achievements")}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                                <Award className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
-                              <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                No Achievements Added
-                              </h4>
-                              <p className="text-gray-500 mb-6">
-                                Showcase your awards and recognitions
-                              </p>
-                              <Button
-                                onClick={() =>
+                              <div>
+                                <h3 className="text-xl font-bold bg-[#1d1d57] bg-clip-text text-transparent">
+                                  Achievements & Awards
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                  Your recognitions and honors
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setState({
                                     isCreateAchievements: true,
                                     achievement_title: "",
                                     organization: "",
                                     achievement_file: null,
+
                                     achievement_description: "",
+                                  });
+                                }}
+                                className="w-8 h-8 bg-[#1d1d57]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
+                              {state.expandedSections.achievements ? (
+                                <ChevronUp className="w-5 h-5 text-gray-500" />
+                              ) : (
+                                <ChevronDown className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {state.expandedSections.achievements && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                exit={{ opacity: 0, height: 0 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {/* Add Achievement Form */}
+                                <AnimatePresence>
+                                  {state.isCreateAchievements && (
+                                    <motion.div
+                                      initial={{
+                                        opacity: 0,
+                                        height: 0,
+                                        y: -20,
+                                      }}
+                                      animate={{
+                                        opacity: 1,
+                                        height: "auto",
+                                        y: 0,
+                                      }}
+                                      exit={{ opacity: 0, height: 0, y: -20 }}
+                                      transition={{
+                                        duration: 0.3,
+                                        ease: "easeOut",
+                                      }}
+                                      className="mb-8 relative"
+                                    >
+                                      <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                      <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
+                                        <div className="flex items-center gap-3 mb-6">
+                                          <div className="w-8 h-8 bg-[#1d1d57] rounded-xl flex items-center justify-center">
+                                            <Plus className="w-4 h-4 text-white" />
+                                          </div>
+                                          <h4 className="text-xl font-bold text-gray-900">
+                                            Add New Achievement
+                                          </h4>
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Achievement Title
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Employee of the Year"
+                                              value={
+                                                state.achievement_title || ""
+                                              }
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "achievement_title",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Organization
+                                            </label>
+                                            <Input
+                                              placeholder="e.g., Tech Solutions Inc"
+                                              value={state.organization || ""}
+                                              onChange={(e) =>
+                                                handleFormChange(
+                                                  "organization",
+                                                  e.target.value
+                                                )
+                                              }
+                                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                            />
+                                          </div>
+
+                                          <div className="space-y-2">
+                                            <label className="text-sm font-semibold text-gray-700">
+                                              Achievement File (PDF)
+                                            </label>
+
+                                            <div className="flex items-center gap-3">
+                                              <Input
+                                                type="file"
+                                                accept="pdf/*"
+                                                onChange={(e) => {
+                                                  const file =
+                                                    e.target.files?.[0];
+                                                  if (file) {
+                                                    setState({
+                                                      achievement_file: file,
+                                                      achievement_file_preview:
+                                                        URL.createObjectURL(
+                                                          file
+                                                        ),
+                                                    });
+                                                  }
+                                                }}
+                                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                              />
+                                              <Upload className="w-5 h-5 text-gray-400" />
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="space-y-2 mb-6">
+                                          <label className="text-sm font-semibold text-gray-700">
+                                            Description
+                                          </label>
+                                          <Textarea
+                                            placeholder="Describe your achievement and its significance..."
+                                            value={
+                                              state.achievement_description ||
+                                              ""
+                                            }
+                                            onChange={(e) =>
+                                              setState({
+                                                ...state,
+                                                achievement_description:
+                                                  e.target.value,
+                                              })
+                                            }
+                                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                          />
+                                        </div>
+
+                                        <div className="flex gap-3">
+                                          <Button
+                                            onClick={addAchievement}
+                                            className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                          >
+                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                            Save Achievement
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setState({
+                                                isCreateAchievements: false,
+                                              })
+                                            }
+                                            className="border-gray-300 hover:bg-gray-50"
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+
+                                {/* Achievements List */}
+                                <div className="space-y-4">
+                                  {state.userDetail?.achievements?.map(
+                                    (achievement, index) => (
+                                      <motion.div
+                                        key={achievement.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: index * 0.1 }}
+                                        className="relative group"
+                                      >
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                        <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
+                                          <div className="flex items-start gap-6">
+                                            {/* Achievement Icon */}
+                                            <div className="flex-shrink-0">
+                                              <div className="w-10 h-10 bg-[#1d1d57] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                <Award className="w-4 h-4 text-white" />
+                                              </div>
+                                            </div>
+
+                                            {/* Achievement Details */}
+                                            <div className="flex-1 min-w-0">
+                                              <div className="flex items-start justify-between md:mb-1">
+                                                <div className="flex-1">
+                                                  <div className="flex items-center gap-2">
+                                                    <h4 className="text-lg font-bold text-gray-900 group-hover:text-black transition-colors">
+                                                      {
+                                                        achievement.achievement_title
+                                                      }
+                                                    </h4>
+                                                  </div>
+                                                  <p className="text-md font-semibold text-[#1d1d57] mb-1">
+                                                    {achievement.organization}
+                                                  </p>
+                                                </div>
+
+                                                {/* Desktop Action Buttons - Top Right */}
+                                                <div className="hidden md:flex gap-2">
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                    onClick={() => {
+                                                      setState({
+                                                        isEditingAchievements:
+                                                          true,
+                                                        achievement_title:
+                                                          achievement.achievement_title,
+                                                        organization:
+                                                          achievement.organization,
+                                                        achievement_file:
+                                                          achievement.achievement_file_url,
+                                                        achievement_description:
+                                                          achievement.achievement_description,
+                                                        achievement_id:
+                                                          achievement.id,
+                                                      });
+                                                    }}
+                                                  >
+                                                    <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                  <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    onClick={() =>
+                                                      deleteAchievement(
+                                                        achievement.id
+                                                      )
+                                                    }
+                                                    className="hover:bg-red-50 border-red-200 group/btn"
+                                                  >
+                                                    <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                  </Button>
+                                                </div>
+                                              </div>
+
+                                              {/* Achievement Description */}
+                                              <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
+                                                <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                  {expandedAchievementDesc[
+                                                    achievement.id
+                                                  ]
+                                                    ? achievement.achievement_description
+                                                    : achievement.achievement_description?.slice(
+                                                        0,
+                                                        280
+                                                      )}
+                                                  {!expandedAchievementDesc[
+                                                    achievement.id
+                                                  ] &&
+                                                    achievement
+                                                      .achievement_description
+                                                      ?.length > 280 &&
+                                                    "..."}
+                                                  {achievement.achievement_description &&
+                                                    achievement
+                                                      .achievement_description
+                                                      .length > 280 && (
+                                                      <button
+                                                        onClick={() =>
+                                                          setExpandedAchievementDesc(
+                                                            (prev) => ({
+                                                              ...prev,
+                                                              [achievement.id]:
+                                                                !prev[
+                                                                  achievement.id
+                                                                ],
+                                                            })
+                                                          )
+                                                        }
+                                                        className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                      >
+                                                        {expandedAchievementDesc[
+                                                          achievement.id
+                                                        ]
+                                                          ? "Read Less"
+                                                          : "Read More"}
+                                                      </button>
+                                                    )}
+                                                </p>
+
+                                                {achievement.achievement_file_url && (
+                                                  <a
+                                                    className="flex items-center text-gray-700 leading-relaxed text-sm"
+                                                    href={
+                                                      achievement.achievement_file_url
+                                                    }
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                  >
+                                                    {" "}
+                                                    View file
+                                                    <File className="w-3 h-3 ml-2" />
+                                                  </a>
+                                                )}
+                                              </div>
+
+                                              {/* Mobile Action Buttons - Bottom Right */}
+                                              <div className="flex md:hidden justify-end gap-2">
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  className="hover:bg-[#1d1d57]/10 border-[#3b82f6]/30 group/btn"
+                                                  onClick={() => {
+                                                    setState({
+                                                      isEditingAchievements:
+                                                        true,
+                                                      achievement_title:
+                                                        achievement.achievement_title,
+                                                      organization:
+                                                        achievement.organization,
+                                                      achievement_file:
+                                                        achievement.achievement_file_url,
+                                                      achievement_description:
+                                                        achievement.achievement_description,
+                                                      achievement_id:
+                                                        achievement.id,
+                                                    });
+                                                  }}
+                                                >
+                                                  <Edit className="w-4 h-4 text-[#1d1d57] group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                                <Button
+                                                  variant="outline"
+                                                  size="sm"
+                                                  onClick={() =>
+                                                    deleteAchievement(
+                                                      achievement.id
+                                                    )
+                                                  }
+                                                  className="hover:bg-red-50 border-red-200 group/btn"
+                                                >
+                                                  <Trash2 className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  )}
+                                </div>
+
+                                {/* Empty State */}
+                                {(state.userDetail?.achievements?.length ===
+                                  0 ||
+                                  !state.userDetail?.achievements) && (
+                                  <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="text-center py-12"
+                                  >
+                                    <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                      <Award className="w-12 h-12 text-[#1d1d57]/60" />
+                                    </div>
+                                    <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                      No Achievements Added
+                                    </h4>
+                                    <p className="text-gray-500 mb-6">
+                                      Showcase your awards and recognitions
+                                    </p>
+                                    <Button
+                                      onClick={() =>
+                                        setState({
+                                          isCreateAchievements: true,
+                                          achievement_title: "",
+                                          organization: "",
+                                          achievement_file: null,
+                                          achievement_description: "",
+                                        })
+                                      }
+                                      className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                                    >
+                                      <Plus className="w-4 h-4 mr-2" />
+                                      Add Your First Achievement
+                                    </Button>
+                                  </motion.div>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </div>
+                {/* Edit Profile Modal */}
+                <AnimatePresence>
+                  {state.isEditingProfile && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Profile
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingProfile: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2 md:col-span-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Profile Photo
+                              </label>
+                              <div className="flex items-center gap-3">
+                                <Input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      setState({
+                                        profile_logo: file,
+                                        profile_logo_preview:
+                                          URL.createObjectURL(file),
+                                      });
+                                    }
+                                  }}
+                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                />
+                                <Upload className="w-5 h-5 text-gray-400" />
+                              </div>
+                              {state.profile_logo_preview && (
+                                <div className="mt-3">
+                                  <img
+                                    src={state.profile_logo_preview}
+                                    alt="Profile Preview"
+                                    className="w-20 h-20 rounded-full object-cover border border-gray-200"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                            <div className="space-y-2">
+                              <Input
+                                title="First Name"
+                                value={state.first_name}
+                                required
+                                onChange={(e) =>
+                                  handleFormChange("first_name", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.first_name}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Input
+                                title="Last Name"
+                                required
+                                value={state.last_name}
+                                onChange={(e) =>
+                                  handleFormChange("last_name", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.last_name}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Input
+                                title="Email"
+                                required
+                                value={state.email}
+                                onChange={(e) =>
+                                  handleFormChange("email", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.email}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Input
+                                title="Phone"
+                                required
+                                value={state.phone}
+                                onChange={(e) =>
+                                  handleFormChange("phone", e.target.value)
+                                }
+                                error={state?.errors?.phone}
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Input
+                                title="Gender"
+                                required
+                                value={state.gender}
+                                onChange={(e) =>
+                                  handleFormChange("gender", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.gender}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <CustomSelect
+                                title="Experience"
+                                required
+                                className="border border-gray-200 "
+                                options={state.experienceList}
+                                value={state?.experience || ""}
+                                onChange={(selected) =>
+                                  setState({
+                                    ...state,
+                                    experience: selected ? selected.value : "",
                                   })
                                 }
-                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
-                              >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Add Your First Achievement
-                              </Button>
-                            </motion.div>
-                          )}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-          {/* Edit Profile Modal */}
-          <AnimatePresence>
-            {state.isEditingProfile && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Profile
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingProfile: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
+                                error={state?.errors?.experience}
+                                // placeholder="Experience"
+                              />
+                            </div>
 
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Profile Photo
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setState({
-                                  profile_logo: file,
-                                  profile_logo_preview:
-                                    URL.createObjectURL(file),
-                                });
-                              }
-                            }}
-                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          />
-                          <Upload className="w-5 h-5 text-gray-400" />
-                        </div>
-                        {state.profile_logo_preview && (
-                          <div className="mt-3">
-                            <img
-                              src={state.profile_logo_preview}
-                              alt="Profile Preview"
-                              className="w-20 h-20 rounded-full object-cover border border-gray-200"
-                            />
+                            <div className="space-y-2">
+                              <Input
+                                title=" Current Company"
+                                value={state.current_company}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "current_company",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Input
+                                title="Current Position"
+                                value={state.current_position}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "current_position",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <Input
+                                title="Location"
+                                required
+                                value={state.current_location}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "current_location",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.current_location}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <TextArea
+                                title="Short Description"
+                                value={state.short_desc}
+                                onChange={(e) =>
+                                  handleFormChange("short_desc", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="flex flex-col">
+                              <div className="flex items-center">
+                                <input
+                                  type="checkbox"
+                                  className="mr-2"
+                                  checked={state.newsletter || false}
+                                  onChange={(e) =>
+                                    handleFormChange(
+                                      "newsletter",
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <span className="text-gray-600 text-sm">
+                                  Accept to receive newsletter
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                        )}
-                      </div>
-                      <div className="space-y-2">
-                        <Input
-                          title="First Name"
-                          value={state.first_name}
-                          required
-                          onChange={(e) =>
-                            handleFormChange("first_name", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          error={state?.errors?.first_name}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Last Name"
-                          required
-                          value={state.last_name}
-                          onChange={(e) =>
-                            handleFormChange("last_name", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          error={state?.errors?.last_name}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Input
-                          title="Email"
-                          required
-                          value={state.email}
-                          onChange={(e) =>
-                            handleFormChange("email", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          error={state?.errors?.email}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Phone"
-                          required
-                          value={state.phone}
-                          onChange={(e) =>
-                            handleFormChange("phone", e.target.value)
-                          }
-                          error={state?.errors?.phone}
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Gender"
-                          required
-                          value={state.gender}
-                          onChange={(e) =>
-                            handleFormChange("gender", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          error={state?.errors?.gender}
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <CustomSelect
-                          title="Experience"
-                          required
-                          className="border border-gray-200 "
-                          options={state.experienceList}
-                          value={state?.experience || ""}
-                          onChange={(selected) =>
-                            setState({
-                              ...state,
-                              experience: selected ? selected.value : "",
-                            })
-                          }
-                          error={state?.errors?.experience}
-                          // placeholder="Experience"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title=" Current Company"
-                          value={state.current_company}
-                          onChange={(e) =>
-                            handleFormChange("current_company", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Current Position"
-                          value={state.current_position}
-                          onChange={(e) =>
-                            handleFormChange("current_position", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Input
-                          title="Location"
-                          required
-                          value={state.current_location}
-                          onChange={(e) =>
-                            handleFormChange("current_location", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          error={state?.errors?.current_location}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <TextArea
-                          title="Short Description"
-                          value={state.short_desc}
-                          onChange={(e) =>
-                            handleFormChange("short_desc", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            className="mr-2"
-                            checked={state.newsletter || false}
-                            onChange={(e) =>
-                              handleFormChange("newsletter", e.target.checked)
-                            }
-                          />
-                          <span className="text-gray-600 text-sm">
-                            Accept to receive newsletter
-                          </span>
                         </div>
-                      </div>
-                    </div>
-                  </div>
 
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingProfile: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={profileUpdate} className="bg-[#1d1d57] ">
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {state.isEditingExperience && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Experience
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingExperience: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Company Name
-                        </label>
-                        <Input
-                          placeholder="e.g., Google Inc."
-                          value={state.company || ""}
-                          onChange={(e) =>
-                            handleFormChange("company", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Job Title
-                        </label>
-                        <Input
-                          placeholder="e.g., Senior Software Engineer"
-                          value={state.designation || ""}
-                          onChange={(e) =>
-                            handleFormChange("designation", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <DatePicker
-                          placeholder="Start Date"
-                          title="Start Date"
-                          closeIcon={true}
-                          selectedDate={state.start_date}
-                          onChange={(date) => {
-                            setState({
-                              start_date: date,
-                            });
-                          }}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <DatePicker
-                          placeholder="End Date"
-                          title="End Date"
-                          closeIcon={true}
-                          selectedDate={state.end_date}
-                          onChange={(date) => {
-                            setState({
-                              end_date: date,
-                            });
-                          }}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Job Description
-                        </label>
-                        <Textarea
-                          placeholder="Describe your key responsibilities and achievements..."
-                          value={state.job_description}
-                          onChange={(e) =>
-                            handleFormChange("job_description", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingExperience: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={updateEmployment}
-                      className="bg-[#1d1d57] "
-                    >
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {state.isEditingEducation && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Education
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingEducation: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Institution Name
-                        </label>
-                        <Input
-                          placeholder="e.g., Harvard University"
-                          value={state.institution || ""}
-                          onChange={(e) =>
-                            handleFormChange("institution", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Degree
-                        </label>
-                        <Input
-                          placeholder="e.g., Bachelor of Technology"
-                          value={state.degree || ""}
-                          onChange={(e) =>
-                            handleFormChange("degree", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Field of Study
-                        </label>
-                        <Input
-                          placeholder="e.g., Computer Science"
-                          value={state.field || ""}
-                          onChange={(e) =>
-                            handleFormChange("field", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Grade/CGPA
-                        </label>
-                        <Input
-                          placeholder="e.g., 8.5 CGPA"
-                          value={state.cgpa || ""}
-                          onChange={(e) =>
-                            handleFormChange("cgpa", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Start Year
-                        </label>
-                        <Input
-                          placeholder="e.g., 2016"
-                          value={state.start_year || ""}
-                          onChange={(e) =>
-                            handleFormChange("start_year", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          End Year
-                        </label>
-                        <Input
-                          placeholder="e.g., 2020"
-                          value={state.end_year || ""}
-                          onChange={(e) =>
-                            handleFormChange("end_year", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingEducation: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={updateEducation} className="bg-[#1d1d57] ">
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {state.isEditingProject && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Project
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingProject: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Project Title
-                        </label>
-                        <Input
-                          placeholder="e.g., E-Commerce Platform"
-                          value={state.project_title || ""}
-                          onChange={(e) =>
-                            handleFormChange("project_title", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Duration
-                        </label>
-                        <Input
-                          placeholder="e.g., 3 months"
-                          value={state.duration || ""}
-                          onChange={(e) =>
-                            handleFormChange("duration", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Status
-                        </label>
-                        <Input
-                          placeholder="e.g., Completed"
-                          value={state.status || ""}
-                          onChange={(e) =>
-                            handleFormChange("status", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Project Link
-                        </label>
-                        <Input
-                          placeholder="e.g., https://github.com/username/project"
-                          value={state.project_link || ""}
-                          onChange={(e) =>
-                            handleFormChange("project_link", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2 flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="funded-edit"
-                          className="h-4 w-4 rounded border-gray-300 text-[#1d1d57] focus:ring-[#3b82f6]"
-                          checked={state.funded}
-                          onChange={(e) =>
-                            handleFormChange("funded", e.target.checked)
-                          }
-                        />
-                        <label
-                          htmlFor="funded-edit"
-                          className="text-sm font-semibold text-gray-700"
-                        >
-                          Is this project funded?
-                        </label>
-                      </div>
-                      {state.funded && (
-                        <div className="space-y-2 md:col-span-2">
-                          <label className="text-sm font-semibold text-gray-700">
-                            Funding Details
-                          </label>
-                          <Textarea
-                            placeholder="Enter funding details..."
-                            value={state.funding_details || ""}
-                            onChange={(e) =>
-                              handleFormChange(
-                                "funding_details",
-                                e.target.value
-                              )
-                            }
-                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                          />
-                        </div>
-                      )}
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Technologies
-                        </label>
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="e.g., React.js"
-                            value={state.technology || ""}
-                            onChange={(e) =>
-                              handleFormChange("technology", e.target.value)
-                            }
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
-                                e.preventDefault();
-                                handleAddTechnology();
-                              }
-                            }}
-                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          />
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
                           <Button
                             variant="outline"
-                            type="button"
-                            onClick={handleAddTechnology}
+                            onClick={() =>
+                              setState({ isEditingProfile: false })
+                            }
                           >
-                            Add
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={profileUpdate}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
                           </Button>
                         </div>
-                        <div className="flex flex-wrap gap-2 mt-2">
-                          {state.technologies?.map(
-                            (tech: string, index: number) => (
-                              <div
-                                key={index}
-                                className="bg-[#1d1d57]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
-                              >
-                                {tech}
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveTechnology(tech)}
-                                  className="text-blue-800 hover:text-blue-900"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Project Description
-                        </label>
-                        <Textarea
-                          placeholder="Describe your project, its features, and your role..."
-                          value={state.project_description || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "project_description",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                        />
-                      </div>
+                      </motion.div>
                     </div>
-                  </div>
+                  )}
+                </AnimatePresence>
 
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingProject: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button onClick={updateProjects} className="bg-[#1d1d57] ">
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {state.isEditingPublication && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Publication
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingPublication: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Publication Title
-                        </label>
-                        <Input
-                          placeholder="e.g., Advanced AI Research"
-                          value={state.publication_title || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "publication_title",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Journal
-                        </label>
-                        <Input
-                          placeholder="e.g., IEEE Transactions"
-                          value={state.publication_journal || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "publication_journal",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Volume
-                        </label>
-                        <Input
-                          placeholder="e.g., 42"
-                          value={state.publication_volume || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "publication_volume",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Issue
-                        </label>
-                        <Input
-                          placeholder="e.g., 3"
-                          value={state.publication_issue || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "publication_issue",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Year
-                        </label>
-                        <Input
-                          placeholder="e.g., 2023"
-                          value={state.publication_year || ""}
-                          onChange={(e) =>
-                            handleFormChange("publication_year", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2 md:col-span-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Description
-                        </label>
-                        <Textarea
-                          placeholder="Brief description of the publication..."
-                          value={state.publication_description || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "publication_description",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingPublication: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={updatePublication}
-                      className="bg-[#1d1d57] "
-                    >
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {state.isEditingAchievements && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-                >
-                  <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
-                    <h2 className="text-xl font-bold text-gray-900">
-                      Edit Achievements
-                    </h2>
-                    <button
-                      onClick={() => setState({ isEditingAchievements: false })}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-
-                  <div className="p-6 space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Achievement Title
-                        </label>
-                        <Input
-                          placeholder="e.g., Employee of the Year"
-                          value={state.achievement_title || ""}
-                          onChange={(e) =>
-                            handleFormChange(
-                              "achievement_title",
-                              e.target.value
-                            )
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Organization
-                        </label>
-                        <Input
-                          placeholder="e.g., Tech Solutions Inc"
-                          value={state.organization || ""}
-                          onChange={(e) =>
-                            handleFormChange("organization", e.target.value)
-                          }
-                          className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-sm font-semibold text-gray-700">
-                          Achievement File (PDF)
-                        </label>
-                        <div className="flex items-center gap-3">
-                          <Input
-                            type="file"
-                            accept=".pdf,application/pdf"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                setState({
-                                  achievement_file: file,
-                                  achievement_file_preview:
-                                    URL.createObjectURL(file),
-                                });
-                              }
-                            }}
-                            className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                          />
-                          <Upload className="w-5 h-5 text-gray-400" />
+                <AnimatePresence>
+                  {state.isEditingExperience && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Experience
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingExperience: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
                         </div>
-                        {state.achievement_file && (
-                          <div className="text-sm text-gray-600 mt-1">
-                            Current file:{" "}
-                            {typeof state.achievement_file === "string" ? (
-                              <a
-                                href={state.achievement_file}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-purple-600 hover:underline"
-                              >
-                                View File
-                              </a>
-                            ) : (
-                              state.achievement_file.name
-                            )}
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Company Name
+                              </label>
+                              <Input
+                                placeholder="e.g., Google Inc."
+                                value={state.company || ""}
+                                onChange={(e) =>
+                                  handleFormChange("company", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Job Title
+                              </label>
+                              <Input
+                                placeholder="e.g., Senior Software Engineer"
+                                value={state.designation || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "designation",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <DatePicker
+                                placeholder="Start Date"
+                                title="Start Date"
+                                closeIcon={true}
+                                selectedDate={state.start_date}
+                                onChange={(date) => {
+                                  setState({
+                                    start_date: date,
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <DatePicker
+                                placeholder="End Date"
+                                title="End Date"
+                                closeIcon={true}
+                                selectedDate={state.end_date}
+                                onChange={(date) => {
+                                  setState({
+                                    end_date: date,
+                                  });
+                                }}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Job Description
+                              </label>
+                              <Textarea
+                                placeholder="Describe your key responsibilities and achievements..."
+                                value={state.job_description}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "job_description",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                              />
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
+                        </div>
 
-                    <div className="space-y-2 mb-6">
-                      <label className="text-sm font-semibold text-gray-700">
-                        Description
-                      </label>
-                      <Textarea
-                        placeholder="Describe your achievement and its significance..."
-                        value={state.achievement_description || ""}
-                        onChange={(e) =>
-                          setState({
-                            ...state,
-                            achievement_description: e.target.value,
-                          })
-                        }
-                        className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
-                      />
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setState({ isEditingExperience: false })
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={updateEmployment}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      </motion.div>
                     </div>
-                  </div>
+                  )}
+                </AnimatePresence>
 
-                  <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
-                    <Button
-                      variant="outline"
-                      onClick={() => setState({ isEditingAchievements: false })}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={updateAchievement}
-                      className="bg-[#1d1d57] "
-                    >
-                      Update
-                    </Button>
-                  </div>
-                </motion.div>
-              </div>
+                <AnimatePresence>
+                  {state.isEditingEducation && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Education
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingEducation: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Institution Name
+                              </label>
+                              <Input
+                                placeholder="e.g., Harvard University"
+                                value={state.institution || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "institution",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Degree
+                              </label>
+                              <Input
+                                placeholder="e.g., Bachelor of Technology"
+                                value={state.degree || ""}
+                                onChange={(e) =>
+                                  handleFormChange("degree", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Field of Study
+                              </label>
+                              <Input
+                                placeholder="e.g., Computer Science"
+                                value={state.field || ""}
+                                onChange={(e) =>
+                                  handleFormChange("field", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Grade/CGPA
+                              </label>
+                              <Input
+                                placeholder="e.g., 8.5 CGPA"
+                                value={state.cgpa || ""}
+                                onChange={(e) =>
+                                  handleFormChange("cgpa", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Start Year
+                              </label>
+                              <Input
+                                placeholder="e.g., 2016"
+                                value={state.start_year || ""}
+                                onChange={(e) =>
+                                  handleFormChange("start_year", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                End Year
+                              </label>
+                              <Input
+                                placeholder="e.g., 2020"
+                                value={state.end_year || ""}
+                                onChange={(e) =>
+                                  handleFormChange("end_year", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setState({ isEditingEducation: false })
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={updateEducation}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {state.isEditingProject && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Project
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingProject: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Project Title
+                              </label>
+                              <Input
+                                placeholder="e.g., E-Commerce Platform"
+                                value={state.project_title || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "project_title",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Duration
+                              </label>
+                              <Input
+                                placeholder="e.g., 3 months"
+                                value={state.duration || ""}
+                                onChange={(e) =>
+                                  handleFormChange("duration", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Status
+                              </label>
+                              <Input
+                                placeholder="e.g., Completed"
+                                value={state.status || ""}
+                                onChange={(e) =>
+                                  handleFormChange("status", e.target.value)
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Project Link
+                              </label>
+                              <Input
+                                placeholder="e.g., https://github.com/username/project"
+                                value={state.project_link || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "project_link",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2 flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                id="funded-edit"
+                                className="h-4 w-4 rounded border-gray-300 text-[#1d1d57] focus:ring-[#3b82f6]"
+                                checked={state.funded}
+                                onChange={(e) =>
+                                  handleFormChange("funded", e.target.checked)
+                                }
+                              />
+                              <label
+                                htmlFor="funded-edit"
+                                className="text-sm font-semibold text-gray-700"
+                              >
+                                Is this project funded?
+                              </label>
+                            </div>
+                            {state.funded && (
+                              <div className="space-y-2 md:col-span-2">
+                                <label className="text-sm font-semibold text-gray-700">
+                                  Funding Details
+                                </label>
+                                <Textarea
+                                  placeholder="Enter funding details..."
+                                  value={state.funding_details || ""}
+                                  onChange={(e) =>
+                                    handleFormChange(
+                                      "funding_details",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                                />
+                              </div>
+                            )}
+                            <div className="space-y-2 md:col-span-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Technologies
+                              </label>
+                              <div className="flex gap-2">
+                                <Input
+                                  placeholder="e.g., React.js"
+                                  value={state.technology || ""}
+                                  onChange={(e) =>
+                                    handleFormChange(
+                                      "technology",
+                                      e.target.value
+                                    )
+                                  }
+                                  onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                      e.preventDefault();
+                                      handleAddTechnology();
+                                    }
+                                  }}
+                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                />
+                                <Button
+                                  variant="outline"
+                                  type="button"
+                                  onClick={handleAddTechnology}
+                                >
+                                  Add
+                                </Button>
+                              </div>
+                              <div className="flex flex-wrap gap-2 mt-2">
+                                {state.technologies?.map(
+                                  (tech: string, index: number) => (
+                                    <div
+                                      key={index}
+                                      className="bg-[#1d1d57]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                                    >
+                                      {tech}
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleRemoveTechnology(tech)
+                                        }
+                                        className="text-blue-800 hover:text-blue-900"
+                                      >
+                                        <X className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  )
+                                )}
+                              </div>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Project Description
+                              </label>
+                              <Textarea
+                                placeholder="Describe your project, its features, and your role..."
+                                value={state.project_description || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "project_description",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setState({ isEditingProject: false })
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={updateProjects}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {state.isEditingPublication && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Publication
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingPublication: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Publication Title
+                              </label>
+                              <Input
+                                placeholder="e.g., Advanced AI Research"
+                                value={state.publication_title || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_title",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Journal
+                              </label>
+                              <Input
+                                placeholder="e.g., IEEE Transactions"
+                                value={state.publication_journal || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_journal",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Volume
+                              </label>
+                              <Input
+                                placeholder="e.g., 42"
+                                value={state.publication_volume || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_volume",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Issue
+                              </label>
+                              <Input
+                                placeholder="e.g., 3"
+                                value={state.publication_issue || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_issue",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Year
+                              </label>
+                              <Input
+                                placeholder="e.g., 2023"
+                                value={state.publication_year || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_year",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Description
+                              </label>
+                              <Textarea
+                                placeholder="Brief description of the publication..."
+                                value={state.publication_description || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "publication_description",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setState({ isEditingPublication: false })
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={updatePublication}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence>
+                  {state.isEditingAchievements && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+                      >
+                        <div className="p-6 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                          <h2 className="text-xl font-bold text-gray-900">
+                            Edit Achievements
+                          </h2>
+                          <button
+                            onClick={() =>
+                              setState({ isEditingAchievements: false })
+                            }
+                            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                          >
+                            <X className="w-5 h-5 text-gray-500" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Achievement Title
+                              </label>
+                              <Input
+                                placeholder="e.g., Employee of the Year"
+                                value={state.achievement_title || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "achievement_title",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Organization
+                              </label>
+                              <Input
+                                placeholder="e.g., Tech Solutions Inc"
+                                value={state.organization || ""}
+                                onChange={(e) =>
+                                  handleFormChange(
+                                    "organization",
+                                    e.target.value
+                                  )
+                                }
+                                className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-gray-700">
+                                Achievement File (PDF)
+                              </label>
+                              <div className="flex items-center gap-3">
+                                <Input
+                                  type="file"
+                                  accept=".pdf,application/pdf"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+                                    if (file) {
+                                      setState({
+                                        achievement_file: file,
+                                        achievement_file_preview:
+                                          URL.createObjectURL(file),
+                                      });
+                                    }
+                                  }}
+                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                />
+                                <Upload className="w-5 h-5 text-gray-400" />
+                              </div>
+                              {state.achievement_file && (
+                                <div className="text-sm text-gray-600 mt-1">
+                                  Current file:{" "}
+                                  {typeof state.achievement_file ===
+                                  "string" ? (
+                                    <a
+                                      href={state.achievement_file}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-purple-600 hover:underline"
+                                    >
+                                      View File
+                                    </a>
+                                  ) : (
+                                    state.achievement_file.name
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="space-y-2 mb-6">
+                            <label className="text-sm font-semibold text-gray-700">
+                              Description
+                            </label>
+                            <Textarea
+                              placeholder="Describe your achievement and its significance..."
+                              value={state.achievement_description || ""}
+                              onChange={(e) =>
+                                setState({
+                                  ...state,
+                                  achievement_description: e.target.value,
+                                })
+                              }
+                              className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-6 border-t border-gray-100 flex justify-end gap-3 sticky bottom-0 bg-white z-10">
+                          <Button
+                            variant="outline"
+                            onClick={() =>
+                              setState({ isEditingAchievements: false })
+                            }
+                          >
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={updateAchievement}
+                            className="bg-[#1d1d57] "
+                          >
+                            Update
+                          </Button>
+                        </div>
+                      </motion.div>
+                    </div>
+                  )}
+                </AnimatePresence>
+              </>
             )}
-          </AnimatePresence>
+          </Card>
         </div>
       </div>
       <div ref={footerRef}>
