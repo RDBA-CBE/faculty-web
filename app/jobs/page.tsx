@@ -85,6 +85,8 @@ import { RWebShare } from "react-web-share";
 import ChipFilters from "@/components/component/chipFilters.component";
 import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
+import PaginationComTwo from "@/components/component/PaginationComTwo";
+import SkeletonLoader from "./SkeletonLoader";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
@@ -558,7 +560,10 @@ export default function JobsPage() {
       // Manual validation for department
       if (state.jobDetail?.department?.length > 1 && !state.department_id) {
         setState({
-          errors: { ...state.errors, department_id: "Please select a department." },
+          errors: {
+            ...state.errors,
+            department_id: "Please select a department.",
+          },
           btnLoading: false,
         });
         return;
@@ -797,8 +802,10 @@ export default function JobsPage() {
     setState({ search: "" });
   };
 
-
-  
+  const handlePageChange = (pageNumber: number) => {
+    setState({ page: pageNumber });
+    jobList(pageNumber);
+  };
 
   return (
     <>
@@ -806,7 +813,9 @@ export default function JobsPage() {
       <div className=" bg-clr1">
         <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">Jobs</h1>
+            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+              Jobs
+            </h1>
           </div>
         </div>
 
@@ -1259,7 +1268,7 @@ export default function JobsPage() {
                   {/* Left Sidebar - Jobs List */}
                   <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#c7c7c787]">
                     <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
-                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-4 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
+                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
                         <Search color="#E4E4E4" size={22} />
                         <input
                           type="text"
@@ -1545,6 +1554,23 @@ export default function JobsPage() {
 
                   <div className="flex-1 ">
                     {/* Job Header Card */}
+                    {state.loading ? (
+                      <div className="bg-white p-6 rounded-lg border border-[#c7c7c787] mb-6">
+                        <div className="flex gap-4 mb-6">
+                          <SkeletonLoader type="rect" width={64} height={64} className="rounded-3xl" />
+                          <div className="flex-1">
+                            <SkeletonLoader type="text" width="40%" height={32} className="mb-2" />
+                            <SkeletonLoader type="text" width="20%" height={20} />
+                          </div>
+                        </div>
+                        <div className="flex gap-4">
+                          <SkeletonLoader type="text" width={100} />
+                          <SkeletonLoader type="text" width={100} />
+                          <SkeletonLoader type="text" width={100} />
+                        </div>
+                      </div>
+                    ) : (
+                    <>
                     <div className=" border-b  px-2 py-2 pb-5">
                       <div className="flex items-start justify-between mb-2">
                         <div>
@@ -1694,6 +1720,23 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
+                    </>
+                    )}
+
+                    {state.loading ? (
+                      <div className="flex gap-6 flex-col xl:flex-row">
+                        <div className="flex-1 space-y-4 p-3">
+                          <SkeletonLoader type="text" width="30%" height={24} />
+                          <SkeletonLoader type="text" count={10} />
+                        </div>
+                        <div className="w-full xl:w-80 flex-shrink-0 mt-5">
+                          <div className="bg-clr2 border border-[#c7c7c787] p-6 space-y-4">
+                            <SkeletonLoader type="text" width="50%" height={24} />
+                            <SkeletonLoader type="text" count={4} />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
                     <div className="flex gap-6 flex-col xl:flex-row">
                       {/* Main Content */}
                       <div className="flex-1 space-y-1   p-3">
@@ -1969,6 +2012,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                     </div>
+                    )}
                   </div>
                 </div>
               </>
@@ -2185,8 +2229,38 @@ export default function JobsPage() {
                   />
 
                   {state.loading ? (
-                    <div className="flex items-center justify-center h-[100vh] ">
-                      <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
+                    <div
+                      className={`grid mt-5 ${
+                        viewType === "grid" || !isWideScreen
+                          ? "grid-cols-1 xl:grid-cols-2"
+                          : "grid-cols-1"
+                      }`}
+                      style={{ gap: "20px" }}
+                    >
+                      {Array.from({ length: 6 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="bg-white p-6 rounded-lg border border-[#c7c7c787]"
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex gap-4 w-full">
+                              <SkeletonLoader type="circle" width={48} height={48} />
+                              <div className="flex-1">
+                                <SkeletonLoader type="text" width="60%" height={20} style={{ marginBottom: 8 }} />
+                                <SkeletonLoader type="text" width="40%" height={16} />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 mb-4">
+                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                          </div>
+                          <div className="space-y-2">
+                            <SkeletonLoader type="text" width="100%" />
+                            <SkeletonLoader type="text" width="80%" />
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   ) : state.jobList?.length > 0 ? (
                     <>
@@ -2227,8 +2301,7 @@ export default function JobsPage() {
                                     setSelectedJob(job);
                                     setState({ jobID: job.id });
                                     jobDetail(job.id);
-                                    if (isDesktopScreen)
-                                      setShowJobDetail(true);
+                                    if (isDesktopScreen) setShowJobDetail(true);
                                     window.scrollTo({
                                       top: 0,
                                       behavior: "smooth",
@@ -2267,13 +2340,12 @@ export default function JobsPage() {
                       })()}
 
                       {(state.next || state?.prev) && (
-                        <div className="flex justify-center items-center mt-10">
-                          <PaginationCom
-                            page={state.page}
-                            next={state.next}
-                            prev={state.prev}
-                            onNext={handleNext}
-                            onPrev={handlePrev}
+                        <div className="flex justify-end items-center mt-10">
+                          <PaginationComTwo
+                            activeNumber={handlePageChange}
+                            totalPage={state.count}
+                            currentPages={state.page}
+                            pageSize={state.pageSize}
                           />
                         </div>
                       )}
@@ -2574,7 +2646,10 @@ export default function JobsPage() {
                               <p className="text-md text-gray-500 ps-6">
                                 {state?.jobDetail?.department?.map(
                                   (item, index) => (
-                                    <div key={index} className="text-sm text-gray-500">
+                                    <div
+                                      key={index}
+                                      className="text-sm text-gray-500"
+                                    >
                                       <span
                                         className="text-sm text-gray-500 hover:text-[#1d1d57] cursor-pointer hover:underline"
                                         onClick={(e) =>
@@ -2707,7 +2782,7 @@ export default function JobsPage() {
               </Sheet>
             )}
 
-             <Modal
+            <Modal
               isOpen={showApplicationModal}
               setIsOpen={() => {
                 setState({ errors: {} });
@@ -2780,7 +2855,6 @@ export default function JobsPage() {
                     />
                   </div>
 
-                 
                   <div className="space-y-2">
                     <CustomSelect
                       // title="Experience"
@@ -2921,8 +2995,22 @@ export default function JobsPage() {
               renderComponent={() => (
                 <div className="p-4 sm:p-5 md:p-6 space-y-5 md:space-y-6 max-h-[75vh] overflow-y-auto">
                   {state.loading ? (
-                    <div className="flex items-center justify-center h-40">
-                      <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                    <div className="space-y-6">
+                      <div className="flex gap-4 items-center border-b pb-4">
+                        <SkeletonLoader type="rect" width={80} height={80} className="rounded-xl" />
+                        <div className="flex-1">
+                          <SkeletonLoader type="text" width="60%" height={24} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader type="text" width="40%" height={16} />
+                        </div>
+                      </div>
+                      <div className="bg-gray-50 p-4 rounded-xl">
+                        <SkeletonLoader type="text" count={3} />
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
+                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
+                      </div>
+                      <SkeletonLoader type="text" count={4} />
                     </div>
                   ) : (
                     <>
@@ -2980,12 +3068,14 @@ export default function JobsPage() {
                             <span className="line-clamp-2">
                               {state.collegeDetail?.college_address}
                             </span>
-                          </div> 
+                          </div>
 
                           <div className="flex items-start gap-2">
                             <Building className="w-4 h-4 text-[#F2B31D] " />
                             <span className="line-clamp-2">
-                              {state.collegeDetail?.college_types?.map((item )=>(item?.name))?.join( " ,")}
+                              {state.collegeDetail?.college_types
+                                ?.map((item) => item?.name)
+                                ?.join(" ,")}
                             </span>
                           </div>
                         </div>
@@ -3135,8 +3225,19 @@ export default function JobsPage() {
                 renderComponent={() => (
                   <div className="p-5 sm:p-6 md:p-8 space-y-6 md:space-y-8 max-h-[75vh] overflow-y-auto">
                     {state.loading ? (
-                      <div className="flex items-center justify-center h-40">
-                        <Loader className="animate-spin h-8 w-8 md:h-10 md:w-10 text-[#1d1d57]" />
+                      <div className="space-y-6">
+                        <div className="border-b pb-4">
+                          <SkeletonLoader type="text" width="70%" height={32} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader type="text" width="40%" height={16} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
+                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
+                        </div>
+                        <div className="space-y-2">
+                          <SkeletonLoader type="text" width="30%" height={24} style={{ marginBottom: 12 }} />
+                          <SkeletonLoader type="text" count={3} />
+                        </div>
                       </div>
                     ) : (
                       state.departmentDetail && (
