@@ -6,6 +6,7 @@ import { Check, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
+import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 
 const WhatCanIDo = () => {
   const router = useRouter();
@@ -134,7 +135,20 @@ const WhatCanIDo = () => {
 
               <div className="bg-white px-6 pb-6 pt-4 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className=" mb-6">
-                  {state?.collegesList?.slice(0, 4)?.map((college, index) => (
+                  {state.loading ? (
+                    <div className="space-y-4">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="flex items-center gap-3">
+                          <SkeletonLoader type="circle" width={32} height={32} />
+                          <div className="flex-1">
+                            <SkeletonLoader type="text" width="70%" height={16} className="mb-1" />
+                            <SkeletonLoader type="text" width="40%" height={12} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    state?.collegesList?.slice(0, 4)?.map((college, index) => (
                     <div
                       key={index}
                       className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
@@ -156,7 +170,8 @@ const WhatCanIDo = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 <button

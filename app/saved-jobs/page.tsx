@@ -4,16 +4,17 @@ import React, { useEffect } from "react";
 import { useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
-import { Loader, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import PaginationCom from "@/components/component/PaginationCom";
 import Footer from "@/components/common-components/new_components/Footer";
+import SkeletonLoader from "../jobs/SkeletonLoader";
 
 export default function SavedJobsPage() {
   const router = useRouter();
 
   const [state, setState] = useSetState({
-    loading: false,
+    loading: true,
     jobList: [],
     page: 1,
     count: 0,
@@ -29,6 +30,9 @@ export default function SavedJobsPage() {
     const profile = JSON.parse(localStorage.getItem("user") || "null");
     if (profile?.id) {
       setState({ userId: profile.id });
+    } else {
+      // If no user, stop loading and show empty state
+      setState({ loading: false });
     }
   }, []);
 
@@ -104,8 +108,36 @@ export default function SavedJobsPage() {
 
         {/* LOADING */}
         {state.loading ? (
-          <div className="flex items-center justify-center h-[50vh]">
-            <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white p-6 rounded-lg border border-slate-100"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex gap-4 w-full">
+                    <SkeletonLoader type="circle" width={48} height={48} />
+                    <div className="flex-1">
+                      <SkeletonLoader
+                        type="text"
+                        width="60%"
+                        height={20}
+                        style={{ marginBottom: 8 }}
+                      />
+                      <SkeletonLoader type="text" width="40%" height={16} />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2 mb-4">
+                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                </div>
+                <div className="space-y-2">
+                  <SkeletonLoader type="text" width="100%" />
+                  <SkeletonLoader type="text" width="80%" />
+                </div>
+              </div>
+            ))}
           </div>
         ) : state.jobList.length > 0 ? (
           <>

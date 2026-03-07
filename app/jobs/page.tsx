@@ -105,7 +105,7 @@ export default function JobsPage() {
     message: "",
     resume: null,
     congratsOpen: false,
-    loading: false,
+    loading: true,
     page: 1,
     count: 0,
     jobList: [],
@@ -862,7 +862,7 @@ export default function JobsPage() {
                           <img
                             src={state?.jobDetail?.college?.college_logo}
                             alt={state?.jobDetail?.college?.name}
-                            className="w-14 h-14  object-cover"
+                            className="w-14 h-14  object-contain"
                             onClick={(e) =>
                               getCollege(e, state?.jobDetail.college?.id)
                             }
@@ -1212,7 +1212,7 @@ export default function JobsPage() {
                       <img
                         src={selectedJob.college?.college_logo}
                         alt={selectedJob.college?.name}
-                        className="w-12 h-12 rounded-lg object-cover"
+                        className="w-12 h-12 rounded-lg object-contain"
                         onClick={(e) =>
                           getCollege(e, state?.jobDetail.college?.id)
                         }
@@ -1273,7 +1273,7 @@ export default function JobsPage() {
                         <input
                           type="text"
                           placeholder="Search by: Job tittle, Position, Keyword..."
-                          className="w-full px-2 py-4  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                          className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
                           value={state.search}
                           onChange={(e) => setState({ search: e.target.value })}
                         />
@@ -1307,7 +1307,7 @@ export default function JobsPage() {
                                   <img
                                     src={job?.college?.college_logo}
                                     alt={job?.college?.name}
-                                    className="w-6 h-6  object-cover"
+                                    className="w-6 h-6  object-contain"
                                   />
                                 ) : (
                                   <div
@@ -1586,7 +1586,7 @@ export default function JobsPage() {
                               <img
                                 src={state?.jobDetail?.college?.college_logo}
                                 alt={state?.jobDetail?.college?.name}
-                                className="w-12 h-12  object-cover  rounded-3xl"
+                                className="w-12 h-12  object-contain  rounded-3xl"
                                 onClick={(e) =>
                                   getCollege(e, state?.jobDetail.college?.id)
                                 }
@@ -1964,7 +1964,7 @@ export default function JobsPage() {
                                 <img
                                   src={selectedJob.college.college_logo}
                                   alt={selectedJob.college.name}
-                                  className="w-12 h-12 rounded-3xl object-cover"
+                                  className="w-12 h-12 rounded-3xl object-contain"
                                 />
                               ) : (
                                 <div
@@ -2045,6 +2045,7 @@ export default function JobsPage() {
                     datePostedList={state?.datePostedList}
                     salaryRangeList={state?.salaryRangeList}
                     tagsList={state?.tagsList}
+                    loading={state.loading}
                   />
                 </div>
 
@@ -2064,6 +2065,7 @@ export default function JobsPage() {
                       salaryRangeList={state?.salaryRangeList}
                       tagsList={state?.tagsList}
                       deptList={state?.deptList}
+                      loading={state.loading}
                     />
                   </div>
                 </div>
@@ -2207,6 +2209,7 @@ export default function JobsPage() {
                               tagsList={state?.tagsList}
                               collegeList={state?.collegeList}
                               deptList={state?.deptList}
+                              loading={state.loading}
                             />
                           </div>
                         </SheetContent>
@@ -2350,7 +2353,7 @@ export default function JobsPage() {
                         </div>
                       )}
                     </>
-                  ) : !state.loading && state.jobList?.length === 0 ? (
+                  ) : (
                     <div className="flex flex-col items-center justify-center py-20 bg-clr1 rounded-2xl border border-slate-100">
                       <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
                         <svg
@@ -2392,10 +2395,6 @@ export default function JobsPage() {
                       >
                         Clear all filters
                       </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-[100vh] ">
-                      <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
                     </div>
                   )}
                 </div>
@@ -2708,7 +2707,7 @@ export default function JobsPage() {
                               <img
                                 src={state.jobDetail?.college?.college_logo}
                                 alt={state.jobDetail?.college?.name}
-                                className="w-12 h-12 rounded-lg object-cover"
+                                className="w-12 h-12 rounded-lg object-contain"
                                 onClick={(e) =>
                                   getCollege(e, state?.jobDetail.college?.id)
                                 }

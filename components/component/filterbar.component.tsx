@@ -16,6 +16,7 @@ import {
 } from "@/utils/constant.utils";
 import PriceRangeSlider from "../common-components/priceRange";
 import { CharSlice } from "@/utils/function.utils";
+import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 
 interface CategoryItem {
   value: number;
@@ -43,6 +44,7 @@ interface SidebarProps {
   tagsList?: any[];
   collegeList?: any[];
   deptList?: any[];
+  loading?: boolean;
 }
 
 const FilterSection: React.FC<{
@@ -164,6 +166,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   salaryRangeList,
   tagsList,
   deptList,
+  loading,
 }) => {
 
   const [showAllColleges, setShowAllColleges] = useState(false);
@@ -322,6 +325,31 @@ const Filterbar: React.FC<SidebarProps> = ({
     });
   };
 
+  if (loading) {
+    return (
+      <aside className="w-full h-full">
+        <div className="flex w-full justify-between items-center px-4 mt-4">
+          <SkeletonLoader type="text" width={80} height={20} />
+          <SkeletonLoader type="text" width={60} height={16} />
+        </div>
+        <div className="lg:p-[19px] lg:py-[10px] space-y-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i}>
+              <SkeletonLoader type="text" width={120} height={20} className="mb-3 pt-[15px]" />
+              <div className="space-y-2">
+                {[1, 2, 3, 4, 5].map((j) => (
+                  <div key={j} className="flex items-center gap-3">
+                    <SkeletonLoader type="rect" width={16} height={16} className="rounded" />
+                    <SkeletonLoader type="text" width="60%" height={16} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </aside>
+    );
+  }
 
   return (
     <aside className="w-full h-full">
