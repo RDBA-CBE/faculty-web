@@ -1020,7 +1020,7 @@ export default function NaukriProfilePage() {
       <div className="min-h-screen bg-clr1 py-4">
         <div className="max-w-7xl mx-auto p-4">
           {/* Profile Header - Will hide on scroll */}
-          <Card className="!rounded-none bg-clr2 border-0 mb-8 ">
+          <Card className="!rounded-none bg-transparent !shadow-none border-0 mb-8 ">
             {state.loading ? (
               <>
                 <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
@@ -1301,7 +1301,7 @@ export default function NaukriProfilePage() {
                       {/* Resume Section */}
                       <Card
                         id="resume-section"
-                        className="bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                        className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                       >
                         <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>

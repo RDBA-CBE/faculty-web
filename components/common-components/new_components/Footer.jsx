@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, X } from "lucide-react";
 import { Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { useRouter, usePathname } from "next/navigation";
@@ -233,7 +233,7 @@ const Footer = () => {
           {/* Socials and Copyright */}
           <div className="mt-8 flex flex-col items-center gap-6">
             <div className="flex gap-4">
-              {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+              {/* {[Facebook, X, Instagram, Linkedin].map((Icon, i) => (
                 <a
                   key={i}
                   href="#"
@@ -241,7 +241,38 @@ const Footer = () => {
                 >
                   <Icon className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
-              ))}
+              ))} */}
+               <a
+                  // key={i}
+                  href="#"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                >
+                  <Facebook className="w-5 h-5 md:w-15 md:h-15" />
+                </a>
+
+                 <a
+                  // key={i}
+                  href="#"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                > 𝕏
+                  {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
+                </a>
+
+                 <a
+                  // key={i}
+                  href="#"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                >
+                  <Instagram className="w-5 h-5 md:w-15 md:h-15" />
+                </a>
+
+                 <a
+                  // key={i}
+                  href="#"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                >
+                  <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
+                </a>
             </div>
             <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
               Copyright 2026 © Faculty Pro. Concept by{" "}
