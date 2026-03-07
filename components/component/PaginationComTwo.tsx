@@ -31,7 +31,7 @@ const PaginationComTwo = (props) => {
   };
 
   const renderPageNumbers = () => {
-    let pageNumbers = [];
+    const pageNumbers = [];
     const pageBuffer = 1;
 
     if (totalPages <= 5) {
