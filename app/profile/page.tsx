@@ -66,6 +66,11 @@ export default function NaukriProfilePage() {
   const [expandedAchievementDesc, setExpandedAchievementDesc] = useState({});
   const [expandedAbout, setExpandedAbout] = useState(false);
 
+  const sidebarRef = useRef(null);
+  const sidebarWrapperRef = useRef(null);
+  const footerRef = useRef(null);
+  const wrapperRef = useRef(null);
+
   const [state, setState] = useSetState({
     // Profile Data
     current_location: "",
@@ -101,6 +106,7 @@ export default function NaukriProfilePage() {
       achievements: true,
     },
     newsletter: false,
+    funded: false,
   });
 
   useEffect(() => {
@@ -118,35 +124,45 @@ export default function NaukriProfilePage() {
     userDetail(state.userId);
   }, [state.userId]);
 
-  // Intersection Observer for active tab tracking
   useEffect(() => {
-    const sections = tabItems
-      .map((item) => document.getElementById(`${item.id}-section`))
-      .filter(Boolean);
+    const handleScroll = () => {
+      const sidebar = sidebarRef.current;
+      const wrapper = wrapperRef.current;
+      const footer = footerRef.current;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (!isManualScroll) {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const sectionId = entry.target.id.replace("-section", "");
-              setActiveTab(sectionId);
-            }
-          });
-        }
-      },
-      {
-        threshold: 0.3,
-        rootMargin: "-20% 0px -70% 0px",
-      },
-    );
+      if (!sidebar || !wrapper || !footer) return;
 
-    sections.forEach((section) => {
-      if (section) observer.observe(section);
-    });
+      const offset = 100;
 
-    return () => observer.disconnect();
-  }, [isManualScroll]);
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const footerRect = footer.getBoundingClientRect();
+
+      const sidebarHeight = sidebar.offsetHeight;
+
+      const startSticky = wrapperRect.top <= offset;
+      const reachFooter = footerRect.top <= sidebarHeight + offset;
+
+      if (startSticky && !reachFooter) {
+        // sticky
+        sidebar.style.position = "fixed";
+        sidebar.style.top = offset + "px";
+        sidebar.style.width = wrapper.offsetWidth + "px";
+      } else if (reachFooter) {
+        // stop before footer
+        sidebar.style.position = "absolute";
+        sidebar.style.top = wrapper.offsetHeight - sidebarHeight + "px";
+      } else {
+        // normal
+        sidebar.style.position = "relative";
+        sidebar.style.top = "0px";
+        sidebar.style.width = "auto";
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const userDetail = async (userId) => {
     try {
@@ -290,16 +306,16 @@ export default function NaukriProfilePage() {
   //   }
   // };
 
-    const downloadResume = (e) => {
-  e.preventDefault(); // prevent same tab navigation
-  e.stopPropagation();
+  const downloadResume = (e) => {
+    e.preventDefault(); // prevent same tab navigation
+    e.stopPropagation();
 
-  if (state.userDetail?.resume_url) {
-    window.open(state.userDetail.resume_url, "_blank", "noopener,noreferrer");
-  } else {
-    Failure("No resume available to download.");
-  }
-};
+    if (state.userDetail?.resume_url) {
+      window.open(state.userDetail.resume_url, "_blank", "noopener,noreferrer");
+    } else {
+      Failure("No resume available to download.");
+    }
+  };
 
   const deleteResume = async () => {
     Swal.fire({
@@ -762,7 +778,7 @@ export default function NaukriProfilePage() {
 
       const res = await Models.achievements.update(
         formData,
-        state.achievement_id,
+        state.achievement_id
       );
       console.log("res", res);
 
@@ -844,20 +860,24 @@ export default function NaukriProfilePage() {
     setActiveTab(tabId);
     setIsManualScroll(true);
 
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-          inline: "nearest",
-        });
-      }
+    const element = document.getElementById(sectionId);
 
-      setTimeout(() => {
-        setIsManualScroll(false);
-      }, 1500);
-    }, 100);
+    if (element) {
+      const headerOffset = 100; // உங்கள் header height
+      const elementPosition =
+        element.getBoundingClientRect().top + window.pageYOffset;
+
+      const offsetPosition = elementPosition - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth",
+      });
+    }
+
+    setTimeout(() => {
+      setIsManualScroll(false);
+    }, 1200);
   };
 
   const tabItems = [
@@ -870,8 +890,6 @@ export default function NaukriProfilePage() {
     { id: "publications", label: "Publications", icon: Book },
     { id: "achievements", label: "Awards", icon: Award },
   ];
-
-  console.log("resume", state?.resume);
 
   const toggleSection = (section: string) => {
     setState({
@@ -912,7 +930,7 @@ export default function NaukriProfilePage() {
   const handleRemoveTechnology = (techToRemove: string) => {
     setState({
       technologies: state.technologies.filter(
-        (tech: string) => tech !== techToRemove,
+        (tech: string) => tech !== techToRemove
       ),
     });
   };
@@ -922,7 +940,7 @@ export default function NaukriProfilePage() {
       <div className="min-h-screen bg-clr1 py-4">
         <div className="max-w-7xl mx-auto p-4">
           {/* Profile Header - Will hide on scroll */}
-          <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
+          <Card className="!rounded-none bg-clr2 border-0 mb-8 ">
             <div className="absolute"></div>
             <CardContent className="relative p-4 md:p-6">
               <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
@@ -960,31 +978,7 @@ export default function NaukriProfilePage() {
                           variant="ghost"
                           size="sm"
                           className="p-1.5 hover:bg-[#1d1d57]/10 rounded-full"
-                          onClick={() => {
-                            setState({
-                              isEditingProfile: true,
-                              first_name: state.userDetail?.first_name || "",
-                              last_name: state.userDetail?.last_name || "",
-                              username: state.userDetail?.username || "",
-                              short_desc: state.userDetail?.short_desc || "",
-                              about: state.userDetail?.about || "",
-
-                              current_location:
-                                state.userDetail?.current_location || "",
-                              experience: state.userDetail?.experience || "",
-                              gender: state?.userDetail?.gender || "",
-                              phone: state.userDetail?.phone || "",
-                              email: state.userDetail?.email || "",
-                              current_company:
-                                state.userDetail?.current_company || "",
-                              current_position:
-                                state.userDetail?.current_position || "",
-                              profile_logo: null,
-                              profile_logo_preview:
-                                state.userDetail?.profile_logo_url || null,
-                              newsletter: state.userDetail?.newsletter || false,
-                            });
-                          }}
+                          onClick={() => {}}
                         >
                           <Edit className="w-4 h-4 text-[#f2b31d]" />
                         </Button>
@@ -1078,10 +1072,12 @@ export default function NaukriProfilePage() {
 
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Left Sidebar - Quick Links */}
-            <div className="lg:w-1/4 quick-links-sidebar">
-              <div className="sticky top-24 z-10">
-                <Card className="!rounded-none bg-clr2  border-0 overflow-hidden">
-                  <div className=""></div>
+            <div
+              className="lg:w-1/4 relative hidden lg:block "
+              ref={wrapperRef}
+            >
+              <div ref={sidebarRef}>
+                <Card className="!rounded-none bg-clr2  border-0 ">
                   <CardContent className="relative p-4">
                     <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                       <div className="w-2 h-2 bg-[#1d1d57] "></div>
@@ -1456,13 +1452,13 @@ export default function NaukriProfilePage() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                 <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                   {/* <div className="flex items-center gap-3 mb-4">
-                                    <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-blue-600 rounded-xl flex items-center justify-center">
-                                      <Edit3 className="w-4 h-4 text-white" />
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900">
-                                      Edit Resume Headline
-                                    </h4>
-                                  </div> */}
+                                                <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-blue-600 rounded-xl flex items-center justify-center">
+                                                  <Edit3 className="w-4 h-4 text-white" />
+                                                </div>
+                                                <h4 className="text-lg font-bold text-gray-900">
+                                                  Edit Resume Headline
+                                                </h4>
+                                              </div> */}
 
                                   <Textarea
                                     placeholder="Write a compelling headline that summarizes your professional experience and key skills..."
@@ -1614,30 +1610,30 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "skill",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                       />
                                     </div>
                                     {/* <div className="space-y-2">
-                                    <label className="text-sm font-semibold text-gray-700">
-                                      Experience 
-                                    </label>
-                                    <Input
-                                      placeholder="e.g., 3 years"
-                                      value={state.skillForm.experience}
-                                      onChange={(e) =>
-                                        setState({
-                                          skillForm: {
-                                            ...state.skillForm,
-                                            experience: e.target.value,
-                                          },
-                                        })
-                                      }
-                                      className="border-gray-200 focus:border-green-500 focus:ring-green-500"
-                                    />
-                                  </div> */}
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Experience 
+                                                </label>
+                                                <Input
+                                                  placeholder="e.g., 3 years"
+                                                  value={state.skillForm.experience}
+                                                  onChange={(e) =>
+                                                    setState({
+                                                      skillForm: {
+                                                        ...state.skillForm,
+                                                        experience: e.target.value,
+                                                      },
+                                                    })
+                                                  }
+                                                  className="border-gray-200 focus:border-green-500 focus:ring-green-500"
+                                                />
+                                              </div> */}
                                   </div>
 
                                   <div className="flex gap-3">
@@ -1687,8 +1683,8 @@ export default function NaukriProfilePage() {
                                     {skill.name}
                                   </span>
                                   {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
-                                  {skill.experience}
-                                </span> */}
+                                              {skill.experience}
+                                            </span> */}
                                   <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
                                     <button
                                       onClick={() => deleteSkill(skill.id)}
@@ -1827,7 +1823,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "company",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -1843,7 +1839,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "designation",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -1887,7 +1883,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "job_description",
-                                          e.target.value,
+                                          e.target.value
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -1941,10 +1937,10 @@ export default function NaukriProfilePage() {
                                           </span>
                                         </div>
                                         {/* {emp.current && (
-                                      <div className="mt-2 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 px-2 py-1 rounded-full text-xs font-semibold text-center">
-                                        Current
-                                      </div>
-                                    )} */}
+                                                  <div className="mt-2 bg-gradient-to-r from-purple-100 to-indigo-100 text-purple-700 px-2 py-1 rounded-full text-xs font-semibold text-center">
+                                                    Current
+                                                  </div>
+                                                )} */}
                                       </div>
 
                                       {/* Job Details */}
@@ -1961,25 +1957,25 @@ export default function NaukriProfilePage() {
                                             </p>
                                             <div className="text-sm text-gray-600 mb-2">
                                               {/* <span className="font-medium">
-                                            {emp.jobType || "Full-time"}
-                                          </span>{" "}
-                                          | */}
+                                                        {emp.jobType || "Full-time"}
+                                                      </span>{" "}
+                                                      | */}
                                               <span className="ml-1">
                                                 {DateFormat(
                                                   emp.start_date,
-                                                  "date",
+                                                  "date"
                                                 )}{" "}
                                                 to{" "}
                                                 {DateFormat(
                                                   emp.end_date,
-                                                  "date",
+                                                  "date"
                                                 )}
                                               </span>
                                               {/* <span className="ml-1">
-                                            (
-                                            {emp.duration || "2 years 3 months"}
-                                            )
-                                          </span> */}
+                                                        (
+                                                        {emp.duration || "2 years 3 months"}
+                                                        )
+                                                      </span> */}
                                             </div>
                                           </div>
 
@@ -2024,7 +2020,7 @@ export default function NaukriProfilePage() {
                                               ? emp.job_description
                                               : emp.job_description?.slice(
                                                   0,
-                                                  280,
+                                                  280
                                                 )}
                                             {!expandedDesc[emp.id] &&
                                               emp.job_description?.length >
@@ -2052,29 +2048,29 @@ export default function NaukriProfilePage() {
 
                                         {/* Key Skills */}
                                         {/* {emp.keySkills &&
-                                      emp.keySkills.length > 0 && (
-                                        <div className="mb-4">
-                                          <h5 className="text-sm font-semibold text-gray-700 mb-2">
-                                            Top 5 key skills:
-                                          </h5>
-                                          <div className="flex flex-wrap gap-2">
-                                            {emp.keySkills.map(
-                                              (skill, skillIndex) => (
-                                                <span
-                                                  key={skillIndex}
-                                                  className="text-purple-600 text-sm hover:underline cursor-pointer"
-                                                >
-                                                  {skill}
-                                                  {skillIndex <
-                                                  emp.keySkills.length - 1
-                                                    ? ","
-                                                    : ""}
-                                                </span>
-                                              ),
-                                            )}
-                                          </div>
-                                        </div>
-                                      )} */}
+                                                  emp.keySkills.length > 0 && (
+                                                    <div className="mb-4">
+                                                      <h5 className="text-sm font-semibold text-gray-700 mb-2">
+                                                        Top 5 key skills:
+                                                      </h5>
+                                                      <div className="flex flex-wrap gap-2">
+                                                        {emp.keySkills.map(
+                                                          (skill, skillIndex) => (
+                                                            <span
+                                                              key={skillIndex}
+                                                              className="text-purple-600 text-sm hover:underline cursor-pointer"
+                                                            >
+                                                              {skill}
+                                                              {skillIndex <
+                                                              emp.keySkills.length - 1
+                                                                ? ","
+                                                                : ""}
+                                                            </span>
+                                                          ),
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  )} */}
 
                                         {/* Salary Badge */}
                                         <div className="flex items-center justify-between">
@@ -2122,7 +2118,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -2259,7 +2255,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "institution",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2275,7 +2271,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "degree",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2291,7 +2287,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "field",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2307,7 +2303,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "cgpa",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2323,7 +2319,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "start_year",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2339,7 +2335,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "end_year",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2500,7 +2496,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -2642,7 +2638,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_title",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2658,7 +2654,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "duration",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2674,7 +2670,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "status",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2690,7 +2686,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "project_link",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -2705,7 +2701,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "funded",
-                                            e.target.checked,
+                                            e.target.checked
                                           )
                                         }
                                       />
@@ -2727,7 +2723,7 @@ export default function NaukriProfilePage() {
                                           onChange={(e) =>
                                             handleFormChange(
                                               "funding_details",
-                                              e.target.value,
+                                              e.target.value
                                             )
                                           }
                                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -2745,7 +2741,7 @@ export default function NaukriProfilePage() {
                                           onChange={(e) =>
                                             handleFormChange(
                                               "technology",
-                                              e.target.value,
+                                              e.target.value
                                             )
                                           }
                                           onKeyDown={(e) => {
@@ -2782,7 +2778,7 @@ export default function NaukriProfilePage() {
                                                 <X className="w-3 h-3" />
                                               </button>
                                             </div>
-                                          ),
+                                          )
                                         )}
                                       </div>
                                     </div>
@@ -2798,7 +2794,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "project_description",
-                                          e.target.value,
+                                          e.target.value
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -2930,7 +2926,7 @@ export default function NaukriProfilePage() {
                                               ? project.project_description
                                               : project.project_description?.slice(
                                                   0,
-                                                  280,
+                                                  280
                                                 )}
                                             {!expandedProjectDesc[project.id] &&
                                               project.project_description
@@ -2946,7 +2942,7 @@ export default function NaukriProfilePage() {
                                                         ...prev,
                                                         [project.id]:
                                                           !prev[project.id],
-                                                      }),
+                                                      })
                                                     )
                                                   }
                                                   className="text-blue-600 text-sm font-medium hover:underline ml-1"
@@ -2988,7 +2984,7 @@ export default function NaukriProfilePage() {
                                                     >
                                                       {tech}
                                                     </span>
-                                                  ),
+                                                  )
                                                 )}
                                               </div>
                                             </div>
@@ -3044,7 +3040,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -3184,7 +3180,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "publication_title",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3200,7 +3196,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "publication_journal",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3216,7 +3212,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "publication_volume",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3232,7 +3228,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "publication_issue",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3248,7 +3244,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "publication_year",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3268,7 +3264,7 @@ export default function NaukriProfilePage() {
                                       onChange={(e) =>
                                         handleFormChange(
                                           "publication_description",
-                                          e.target.value,
+                                          e.target.value
                                         )
                                       }
                                       className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -3395,7 +3391,7 @@ export default function NaukriProfilePage() {
                                               ? pub.publication_description
                                               : pub.publication_description?.slice(
                                                   0,
-                                                  280,
+                                                  280
                                                 )}
                                             {!expandedPublicationDesc[pub.id] &&
                                               pub.publication_description
@@ -3410,7 +3406,7 @@ export default function NaukriProfilePage() {
                                                       (prev) => ({
                                                         ...prev,
                                                         [pub.id]: !prev[pub.id],
-                                                      }),
+                                                      })
                                                     )
                                                   }
                                                   className="text-blue-600 text-sm font-medium hover:underline ml-1"
@@ -3474,7 +3470,7 @@ export default function NaukriProfilePage() {
                                     )}
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -3612,7 +3608,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "achievement_title",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3628,7 +3624,7 @@ export default function NaukriProfilePage() {
                                         onChange={(e) =>
                                           handleFormChange(
                                             "organization",
-                                            e.target.value,
+                                            e.target.value
                                           )
                                         }
                                         className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3770,7 +3766,7 @@ export default function NaukriProfilePage() {
                                               size="sm"
                                               onClick={() =>
                                                 deleteAchievement(
-                                                  achievement.id,
+                                                  achievement.id
                                                 )
                                               }
                                               className="hover:bg-red-50 border-red-200 group/btn"
@@ -3789,7 +3785,7 @@ export default function NaukriProfilePage() {
                                               ? achievement.achievement_description
                                               : achievement.achievement_description?.slice(
                                                   0,
-                                                  280,
+                                                  280
                                                 )}
                                             {!expandedAchievementDesc[
                                               achievement.id
@@ -3809,7 +3805,7 @@ export default function NaukriProfilePage() {
                                                         ...prev,
                                                         [achievement.id]:
                                                           !prev[achievement.id],
-                                                      }),
+                                                      })
                                                     )
                                                   }
                                                   className="text-blue-600 text-sm font-medium hover:underline ml-1"
@@ -3877,7 +3873,7 @@ export default function NaukriProfilePage() {
                                     </div>
                                   </div>
                                 </motion.div>
-                              ),
+                              )
                             )}
                           </div>
 
@@ -3923,7 +3919,6 @@ export default function NaukriProfilePage() {
               </div>
             </div>
           </div>
-
           {/* Edit Profile Modal */}
           <AnimatePresence>
             {state.isEditingProfile && (
@@ -4477,7 +4472,7 @@ export default function NaukriProfilePage() {
                             onChange={(e) =>
                               handleFormChange(
                                 "funding_details",
-                                e.target.value,
+                                e.target.value
                               )
                             }
                             className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -4527,7 +4522,7 @@ export default function NaukriProfilePage() {
                                   <X className="w-3 h-3" />
                                 </button>
                               </div>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
@@ -4541,7 +4536,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "project_description",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -4599,7 +4594,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "publication_title",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -4615,7 +4610,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "publication_journal",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -4631,7 +4626,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "publication_volume",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -4647,7 +4642,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "publication_issue",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -4676,7 +4671,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "publication_description",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
@@ -4737,7 +4732,7 @@ export default function NaukriProfilePage() {
                           onChange={(e) =>
                             handleFormChange(
                               "achievement_title",
-                              e.target.value,
+                              e.target.value
                             )
                           }
                           className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -4837,8 +4832,9 @@ export default function NaukriProfilePage() {
           </AnimatePresence>
         </div>
       </div>
-
-      <Footer />
+      <div ref={footerRef}>
+        <Footer />
+      </div>
     </>
   );
 }
