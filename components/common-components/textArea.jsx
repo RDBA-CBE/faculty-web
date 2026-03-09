@@ -29,6 +29,7 @@ export default function TextArea(props) {
     required,
     className,
     disabled,
+    rows,
   } = props;
   return (
     <div className="w-full space-y-2">
@@ -38,6 +39,7 @@ export default function TextArea(props) {
         </label>
       )}
       <Textarea
+        rows={rows ?? 4}
         id="email"
         placeholder={placeholder}
         required={required}

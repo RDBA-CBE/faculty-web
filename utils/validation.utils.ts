@@ -25,7 +25,7 @@ export const jobApplicationSchema = Yup.object().shape({
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ];
         return allowedTypes.includes(value.type);
-      },
+      }
     )
     .test("fileSize", "File size must be less than 12MB", (value: any) => {
       if (!value) return false;
@@ -71,7 +71,7 @@ export const userResume = Yup.object({
           "application/msword",
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         ].includes(file.type) &&
-        file.size <= 12 * 1024 * 1024,
+        file.size <= 12 * 1024 * 1024
     ),
 });
 
@@ -85,8 +85,8 @@ export const changePassword = Yup.object().shape({
 
 export const forgotPassword = Yup.object().shape({
   email: Yup.string()
-  .email("Enter a valid email address")
-  .required("Email is required"),
+    .email("Enter a valid email address")
+    .required("Email is required"),
 });
 
 export const resetPassword = Yup.object().shape({
@@ -94,4 +94,20 @@ export const resetPassword = Yup.object().shape({
   confirm_password: Yup.string()
     .required("Confirm Password is required")
     .oneOf([Yup.ref("new_password")], "Passwords must match"),
+});
+
+export const interview_feedback = Yup.object().shape({
+  score: Yup.string().required("Score is required"),
+  feedback_text: Yup.string().required("Feedback is required"),
+});
+
+export const applicant_feedback = Yup.object().shape({
+  availableTime: Yup.string().when(["isAvailable", "response_from_applicant"], {
+    is: (isAvailable, response_from_applicant) =>
+      isAvailable === false && response_from_applicant === true,
+
+    then: (schema) => schema.required("Available time is required"),
+
+    otherwise: (schema) => schema.notRequired(),
+  }),
 });

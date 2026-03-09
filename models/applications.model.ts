@@ -58,5 +58,86 @@ const applications = {
     });
     return promise;
   },
+
+  interview_feedback: (hashtoken: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `interview-slots/hashtoken/${hashtoken}`;
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  create_interview_feedback: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `interview-feedbacks/`;
+      instance()
+        .post(url, data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  get_applicant_feedback: (hashtoken: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `interview-slots/`;
+      url += `hashtoken/${hashtoken}`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  create_applicant_feedback: (data,hashtoken: any) => {
+console.log('✌️hashtoken --->', hashtoken);
+    let promise = new Promise((resolve, reject) => {
+      let url = `interview-slots/`;
+      url += `hashtoken/${hashtoken}/submit-feedback`;
+
+      instance()
+        .post(url,data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 };
 export default applications;
