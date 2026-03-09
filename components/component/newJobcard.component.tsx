@@ -131,7 +131,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 {capitalizeFLetter(job?.job_title)}
               </h3>
               <p
-                className="font-medium font-normal text-[#848282] text-md hover:underline"
+                className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
                 onClick={(e) => onCollegeClick(e, job?.college?.id)}
               >
                 {capitalizeFLetter(job?.college?.name)}
