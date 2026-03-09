@@ -15,7 +15,12 @@ import {
   Building2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSetState, Failure, Success } from "@/utils/function.utils";
+import {
+  useSetState,
+  Failure,
+  Success,
+  capitalizeFLetter,
+} from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import TextArea from "./textArea";
 import { TextInput } from "./textInput";
@@ -55,7 +60,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       setState({
         job: res?.applications?.length > 0 ? res?.applications?.[0] : null,
         loading: false,
-        detail:res
+        detail: res,
       });
       if (res?.applications?.length > 0) {
         if (res?.applications?.[0]?.interview_slots?.length > 0) {
@@ -71,8 +76,6 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       setState({ loading: false });
     }
   };
-
-  console.log("✌️detail --->", state.detail);
 
   const handleSubmit = async () => {
     try {
@@ -94,17 +97,18 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
           state.isAvailable && state.response_from_applicant
             ? ""
             : state.availableTime,
-            pannel_id:state.detail?.panel_ids?.[0]
+        pannel_id: state.detail?.panel_ids?.[0],
       };
-      console.log('✌️body --->', body);
+      console.log("✌️body --->", body);
 
-      const res = await Models.applications.create_applicant_feedback(body,propToken);
-console.log('✌️res --->', res);
+      const res = await Models.applications.create_applicant_feedback(
+        body,
+        propToken
+      );
 
       Success("Availability updated successfully!");
       // router.push("/");
       setState({ btnLoading: false, errors: {} });
-
     } catch (error) {
       setState({ btnLoading: false });
       if (error instanceof Yup.ValidationError) {
@@ -116,9 +120,10 @@ console.log('✌️res --->', res);
 
         setState({ errors: validationErrors });
       } else {
-        console.log("error", error);
-
-        Failure(error.error || "An error occurred. Please try again.");
+        if (error?.data?.error) {
+          Failure(capitalizeFLetter(error?.data?.error));
+          console.log("error", error);
+        }
       }
     }
   };
@@ -133,11 +138,6 @@ console.log('✌️res --->', res);
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const getDepartmentNames = () => {
-    if (!state.job?.department) return "";
-    return state.job.department.map((dept) => dept.name).join(", ");
   };
 
   const getLocationNames = () => {
