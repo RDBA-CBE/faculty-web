@@ -49,7 +49,7 @@ import {
   Award,
   Building,
 } from "lucide-react";
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -106,6 +106,7 @@ export default function JobsPage() {
     resume: null,
     congratsOpen: false,
     loading: true,
+    jobListLoading: false,
     isFetchingMore: false,
     page: 1,
     count: 0,
@@ -154,6 +155,234 @@ export default function JobsPage() {
 
   const debouncedSearch = useDebounce(state.search, 500);
 
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const sidebarWrapperRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
+  const jobListContainerRef = useRef<HTMLDivElement>(null);
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const searchBarWrapperRef = useRef<HTMLDivElement>(null);
+  const jobListSidebarRef = useRef<HTMLDivElement>(null);
+  const jobListSidebarWrapperRef = useRef<HTMLDivElement>(null);
+  const jobDetailContainerRef = useRef<HTMLDivElement>(null);
+  const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sidebar = sidebarRef.current;
+      const wrapper = sidebarWrapperRef.current;
+      const footer = footerRef.current;
+      const jobListContainer = jobListContainerRef.current;
+      const searchBar = searchBarRef.current;
+      const searchBarWrapper = searchBarWrapperRef.current;
+
+      if (!sidebar || !wrapper || !footer || !jobListContainer || !searchBar)
+        return;
+
+      // Ensure the job list container is at least as tall as the sidebar
+      // to prevent the footer from coming up too early on short content.
+      jobListContainer.style.minHeight = `${sidebar.offsetHeight}px`;
+
+      const offset = 100;
+
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const footerRect = footer.getBoundingClientRect();
+
+      const sidebarHeight = sidebar.offsetHeight;
+
+      const startSticky = wrapperRect.top <= offset;
+      const reachFooter = footerRect.top <= sidebarHeight + offset;
+
+      if (startSticky && !reachFooter) {
+        sidebar.style.position = "fixed";
+        sidebar.style.top = offset + "px";
+        sidebar.style.width = wrapper.offsetWidth + "px";
+      } else if (reachFooter) {
+        sidebar.style.position = "absolute";
+        sidebar.style.top = wrapper.offsetHeight - sidebarHeight + "px";
+        sidebar.style.width = wrapper.offsetWidth + "px";
+      } else {
+        sidebar.style.position = "relative";
+        sidebar.style.top = "0px";
+        sidebar.style.width = "auto";
+      }
+
+      // Search Bar Sticky Logic
+      if (searchBar && searchBarWrapper) {
+        const searchBarHeight = searchBar.offsetHeight;
+        const containerRect = jobListContainer.getBoundingClientRect();
+
+        // Use the same offset or adjust as needed
+        const startStickySearch = containerRect.top <= offset;
+        const reachFooterSearch = footerRect.top <= searchBarHeight + offset;
+
+        if (startStickySearch) {
+          searchBarWrapper.style.height = `${searchBarHeight}px`; // Prevent layout shift
+          if (!reachFooterSearch) {
+            searchBar.style.position = "fixed";
+            searchBar.style.top = `${offset}px`;
+            searchBar.style.width = `${searchBarWrapper.offsetWidth}px`;
+            searchBar.style.backgroundColor = "white";
+
+            // Fade out job cards scrolling behind the search bar
+            const searchBarHeight = searchBar.offsetHeight;
+            const searchBarTop = offset - 30;
+            const searchBarBottom = searchBarTop + searchBarHeight;
+
+            const jobCards =
+              jobListContainer.querySelectorAll(".job-card-item");
+            jobCards.forEach((card) => {
+              const cardEl = card as HTMLElement;
+              const cardRect = cardEl.getBoundingClientRect();
+              const startFadePosition = searchBarTop;
+              const endFadePosition = searchBarTop - searchBarHeight; // Fade out as it goes behind the search bar
+              const transitionZone = startFadePosition - endFadePosition;
+
+              if (cardRect.top < startFadePosition) {
+                const opacity = Math.max(
+                  0.6,
+                  Math.min(
+                    1,
+                    (cardRect.top - endFadePosition) / transitionZone,
+                  ),
+                );
+                const blur = (1 - opacity) * 4;
+
+                cardEl.style.opacity = opacity.toString();
+                cardEl.style.filter = `blur(${blur}px)`;
+                cardEl.style.transition =
+                  "opacity 0.09s linear, filter 0.05s linear";
+
+                if (opacity < 0.1) {
+                  cardEl.style.pointerEvents = "none";
+                } else {
+                  cardEl.style.pointerEvents = "auto";
+                }
+              } else {
+                cardEl.style.opacity = "1";
+                cardEl.style.filter = "none";
+                cardEl.style.pointerEvents = "auto";
+              }
+            });
+          } else {
+            searchBar.style.position = "absolute";
+            searchBar.style.top = `${jobListContainer.offsetHeight - searchBarHeight}px`;
+            searchBar.style.width = `${searchBarWrapper.offsetWidth}px`;
+            searchBar.style.backgroundColor = "white";
+          }
+        } else {
+          searchBarWrapper.style.height = "auto";
+          searchBar.style.position = "relative";
+          searchBar.style.top = "0px";
+          searchBar.style.width = "auto";
+          searchBar.style.backgroundColor = "";
+
+          // Reset job card styles when search bar is not sticky
+          const jobCards = jobListContainer.querySelectorAll(".job-card-item");
+          jobCards.forEach((card) => {
+            const cardEl = card as HTMLElement;
+            cardEl.style.opacity = "1";
+            cardEl.style.filter = "none";
+            cardEl.style.pointerEvents = "auto";
+          });
+        }
+      }
+    };
+
+    // Using ResizeObserver to handle sidebar height changes (e.g. accordion collapse/expand)
+    // and recalculate scroll logic.
+    const resizeObserver = new ResizeObserver(handleScroll);
+    if (sidebarRef.current) {
+      resizeObserver.observe(sidebarRef.current);
+    }
+    if (searchBarWrapperRef.current) {
+      resizeObserver.observe(searchBarWrapperRef.current);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial call to set position correctly
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
+  }, [state.loading]);
+
+  useEffect(() => {
+    // This effect is for the two-column layout (desktop, job selected)
+    if (!isDesktopScreen || !selectedJob) return;
+
+    const handleStickyJobList = () => {
+      const sidebar = jobListSidebarRef.current;
+      const wrapper = jobListSidebarWrapperRef.current;
+      const footer = footerRef.current;
+      const jobDetailContainer = jobDetailContainerRef.current;
+
+      if (!sidebar || !wrapper || !footer || !jobDetailContainer) return;
+
+      // This is important for the absolute positioning at the end.
+      wrapper.style.minHeight = `${jobDetailContainer.offsetHeight}px`;
+
+      const offset = 100; // As requested for "top 100"
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const footerRect = footer.getBoundingClientRect();
+      const sidebarHeight = sidebar.offsetHeight;
+
+      const startSticky = wrapperRect.top <= offset;
+      const reachFooter = footerRect.top <= sidebarHeight + offset;
+
+      if (startSticky && !reachFooter) {
+        sidebar.style.position = "fixed";
+        sidebar.style.top = `${offset}px`;
+        sidebar.style.bottom = "auto";
+        sidebar.style.width = `${wrapper.offsetWidth}px`;
+      } else if (reachFooter) {
+        sidebar.style.position = "absolute";
+        sidebar.style.top = "auto";
+        sidebar.style.bottom = "0px";
+        sidebar.style.width = `${wrapper.offsetWidth}px`;
+      } else {
+        sidebar.style.position = "relative";
+        sidebar.style.top = "0px";
+        sidebar.style.bottom = "auto";
+        sidebar.style.width = "auto";
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(handleStickyJobList);
+    if (jobListSidebarRef.current)
+      resizeObserver.observe(jobListSidebarRef.current);
+    if (jobDetailContainerRef.current)
+      resizeObserver.observe(jobDetailContainerRef.current);
+    if (footerRef.current) resizeObserver.observe(footerRef.current);
+
+    window.addEventListener("scroll", handleStickyJobList);
+    handleStickyJobList();
+
+    return () => {
+      window.removeEventListener("scroll", handleStickyJobList);
+      resizeObserver.disconnect();
+    };
+  }, [isDesktopScreen, selectedJob, state.loading]);
+
+  useLayoutEffect(() => {
+    if (isDesktopScreen && selectedJob && showJobDetail) {
+      const scrollContainer = jobListSidebarScrollContainerRef.current;
+      const jobElement = document.getElementById(
+        `job-list-item-${selectedJob.id}`,
+      );
+
+      if (scrollContainer && jobElement) {
+        const containerRect = scrollContainer.getBoundingClientRect();
+        const elementRect = jobElement.getBoundingClientRect();
+        const offset = elementRect.top - containerRect.top;
+
+        scrollContainer.scrollTo({
+          top: scrollContainer.scrollTop + offset,
+          behavior: "smooth",
+        });
+      }
+    }
+  }, [selectedJob, showJobDetail, isDesktopScreen]);
   const initialFiltersRef = useRef(filters);
 
   const isFilterApplied = () => {
@@ -358,26 +587,45 @@ export default function JobsPage() {
       if (append) {
         setState({ isFetchingMore: true });
       } else {
-        setState({ loading: true });
+        setState({ jobListLoading: true });
       }
 
       const body = bodyData();
 
       const res: any = await Models.job.list(page, body);
       setState({
-        loading: false,
+        loading: false, // For initial load
+        jobListLoading: false,
         isFetchingMore: false,
         count: res?.count,
-        jobList: append ? [...state.jobList, ...(res?.results || [])] : (res?.results || []),
+        jobList: append
+          ? [...state.jobList, ...(res?.results || [])]
+          : res?.results || [],
         next: res?.next,
         prev: res?.previous,
         page: page,
       });
     } catch (error) {
-      setState({ loading: false });
+      setState({ loading: false, jobListLoading: false });
       Failure("Failed to fetch jobs");
     }
   };
+
+  useEffect(() => {
+    const handleInfiniteScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 800
+      ) {
+        if (state.next && !state.isFetchingMore && !state.loading) {
+          jobList(state.page + 1, true);
+        }
+      }
+    };
+
+    window.addEventListener("scroll", handleInfiniteScroll);
+    return () => window.removeEventListener("scroll", handleInfiniteScroll);
+  }, [state.next, state.isFetchingMore, state.loading, state.page]);
 
   const jobDetail = async (jobId) => {
     try {
@@ -991,7 +1239,7 @@ export default function JobsPage() {
                           </div>
                         ) : (
                           <>
-                            <Bookmark className="w-5 h-5 " />
+                            <Bookmark className="w-5 h-5" />
                           </>
                         )}
                       </button>
@@ -1279,140 +1527,151 @@ export default function JobsPage() {
               <>
                 <Breadcrumb />
 
-                <div className="flex gap-6 py-4 ">
+                <div className="flex gap-6 py-4 items-start">
                   {/* Left Sidebar - Jobs List */}
-                  <div className="w-80 flex-shrink-0 bg-white py-5 border border-[#c7c7c787]">
-                    <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 ">
-                      <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
-                        <Search color="#E4E4E4" size={22} />
-                        <input
-                          type="text"
-                          placeholder="Search by: Job tittle, Position, Keyword..."
-                          className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
-                          value={state.search}
-                          onChange={(e) => setState({ search: e.target.value })}
-                        />
-                      </div>
-                      <h3 className="text-black px-6 font-semibold mt-4">
-                        Job List
-                      </h3>
-
-                      {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
-                    </div>
-                    <div 
-                      className="sticky top-16 space-y-4 max-h-[calc(100vh+130px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
-                      onScroll={handleSidebarScroll}
+                  <div
+                    ref={jobListSidebarWrapperRef}
+                    className="w-80 flex-shrink-0 relative"
+                  >
+                    <div
+                      ref={jobListSidebarRef}
+                      className="bg-white py-5 border border-[#c7c7c787] rounded-lg flex flex-col max-h-[calc(100vh-100px)]"
                     >
-                      {state.jobList?.map((job) => (
-                        <div
-                          key={job.id}
-                          onClick={() => {
-                            setSelectedJob(job);
-                            setState({ jobID: job.id });
-                            jobDetail(job.id);
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          className={`cursor-pointer px-2 py-5 transition-all   ${
-                            selectedJob?.id === job.id
-                              ? "border border-[#01014B] bg-[#fff]  "
-                              : "border-b border-[#c7c7c787]"
-                          }`}
-                        >
-                          <div className="flex flex-row gap-4 justify-between">
-                            <div className="flex flex-row gap-4">
-                              <div>
-                                {job?.college?.college_logo ? (
-                                  <img
-                                    src={job?.college?.college_logo}
-                                    alt={job?.college?.name}
-                                    className="w-6 h-6  object-contain"
-                                  />
-                                ) : (
-                                  <div
-                                    className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                      job.college?.name,
-                                    )} flex items-center justify-center ${
-                                      selectedJob?.id === job.id
-                                        ? "text-white bg-gray-400"
-                                        : " ext-white bg-gray-400"
-                                    }  font-semibold flex-shrink-0`}
-                                  >
-                                    {job.college?.name
-                                      ?.slice(0, 1)
-                                      .toUpperCase()}
-                                  </div>
-                                )}
-                              </div>
-                              <div>
-                                <div className="flex items-start gap-3">
-                                  <div className="min-w-0 flex-1">
-                                    <h3
-                                      className={`font-semibold  leading-tight mb-1 ${
-                                        selectedJob?.id === job.id
-                                          ? ""
-                                          : "text-gray-900"
-                                      }`}
-                                    >
-                                      {capitalizeFLetter(job.job_title)}
-                                    </h3>
-                                    <p
-                                      className={`cursor-pointer ${
-                                        selectedJob?.id === job.id
-                                          ? ""
-                                          : "text-gray-600 hover:underline"
-                                      } text-sm font-normal`}
-                                      // onClick={(e) => getCollege(e, job.college?.id)}
-                                    >
-                                      {job.college?.name}
-                                    </p>
-                                  </div>
-                                </div>
-                                {/* Header */}
-                                {/* Experience and Salary */}
-                                <div
-                                  className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
-                                    selectedJob?.id === job.id
-                                      ? ""
-                                      : "text-gray-600"
-                                  }`}
-                                >
-                                  <div className="flex gap-2">
-                                    <Briefcase
-                                      className={`${
-                                        selectedJob?.id === job.id && ""
-                                      } w-3 h-3 text-[#E6AB1D]`}
-                                    />
-                                    <span
-                                      className={`text-[12px] pt-[-2px] ${
-                                        selectedJob?.id === job.id && ""
-                                      }`}
-                                    >
-                                      {job.experiences?.name}
-                                    </span>
-                                  </div>
+                      <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 flex-shrink-0">
+                        <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
+                          <Search color="#E4E4E4" size={22} />
+                          <input
+                            type="text"
+                            placeholder="Search by: Job tittle, Position, Keyword..."
+                            className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                            value={state.search}
+                            onChange={(e) =>
+                              setState({ search: e.target.value })
+                            }
+                          />
+                        </div>
+                        <h3 className="text-black px-6 font-semibold mt-4">
+                          Job List
+                        </h3>
 
-                                  {job?.college?.address && (
-                                    <div className="flex  gap-1">
-                                      <MapPin
+                        {/* <div className="hidden lg:block w-px h-10 bg-slate-100"></div> */}
+                      </div>
+
+                      <div
+                        ref={jobListSidebarScrollContainerRef}
+                        className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
+                        onScroll={handleSidebarScroll}
+                      >
+                        {state.jobList?.map((job) => (
+                          <div
+                            key={job.id}
+                            id={`job-list-item-${job.id}`}
+                            onClick={() => {
+                              setSelectedJob(job);
+                              setState({ jobID: job.id });
+                              jobDetail(job.id);
+                            }}
+                            className={`cursor-pointer px-2 py-5 transition-all   ${
+                              selectedJob?.id === job.id
+                                ? "border border-[#01014B] bg-[#fff]  "
+                                : "border-b border-[#c7c7c787]"
+                            }`}
+                          >
+                            <div className="flex flex-row gap-4 justify-between">
+                              <div className="flex flex-row gap-4">
+                                <div>
+                                  {job?.college?.college_logo ? (
+                                    <img
+                                      src={job?.college?.college_logo}
+                                      alt={job?.college?.name}
+                                      className="w-6 h-6  object-contain"
+                                    />
+                                  ) : (
+                                    <div
+                                      className={`w-6 h-6 rounded-lg ${getAvatarColor(
+                                        job.college?.name,
+                                      )} flex items-center justify-center ${
+                                        selectedJob?.id === job.id
+                                          ? "text-white bg-gray-400"
+                                          : " ext-white bg-gray-400"
+                                      }  font-semibold flex-shrink-0`}
+                                    >
+                                      {job.college?.name
+                                        ?.slice(0, 1)
+                                        .toUpperCase()}
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="flex items-start gap-3">
+                                    <div className="min-w-0 flex-1">
+                                      <h3
+                                        className={`font-semibold  leading-tight mb-1 ${
+                                          selectedJob?.id === job.id
+                                            ? ""
+                                            : "text-gray-900"
+                                        }`}
+                                      >
+                                        {capitalizeFLetter(job.job_title)}
+                                      </h3>
+                                      <p
+                                        className={`cursor-pointer ${
+                                          selectedJob?.id === job.id
+                                            ? ""
+                                            : "text-gray-600 hover:underline"
+                                        } text-sm font-normal`}
+                                        // onClick={(e) => getCollege(e, job.college?.id)}
+                                      >
+                                        {job.college?.name}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  {/* Header */}
+                                  {/* Experience and Salary */}
+                                  <div
+                                    className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
+                                      selectedJob?.id === job.id
+                                        ? ""
+                                        : "text-gray-600"
+                                    }`}
+                                  >
+                                    <div className="flex gap-2">
+                                      <Briefcase
                                         className={`${
                                           selectedJob?.id === job.id && ""
                                         } w-3 h-3 text-[#E6AB1D]`}
                                       />
                                       <span
                                         className={`text-[12px] pt-[-2px] ${
-                                          selectedJob?.id === job.id &&
-                                          "text-[12px]"
+                                          selectedJob?.id === job.id && ""
                                         }`}
                                       >
-                                        {job.locations
-                                          ?.map((item) => item.city)
-                                          .join(", ")}
-                                        {/* {job?.college?.address} */}
+                                        {job.experiences?.name}
                                       </span>
                                     </div>
-                                  )}
 
-                                  {/* <div className="flex items-center gap-1">
+                                    {job?.college?.address && (
+                                      <div className="flex  gap-1">
+                                        <MapPin
+                                          className={`${
+                                            selectedJob?.id === job.id && ""
+                                          } w-3 h-3 text-[#E6AB1D]`}
+                                        />
+                                        <span
+                                          className={`text-[12px] pt-[-2px] ${
+                                            selectedJob?.id === job.id &&
+                                            "text-[12px]"
+                                          }`}
+                                        >
+                                          {job.locations
+                                            ?.map((item) => item.city)
+                                            .join(", ")}
+                                          {/* {job?.college?.address} */}
+                                        </span>
+                                      </div>
+                                    )}
+
+                                    {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -1436,35 +1695,35 @@ export default function JobsPage() {
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                                </div>
-                                <div className="flex gap-2">
-                                  <Building2 className="w-4 h-4 text-[#ffb400]" />
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <Building2 className="w-4 h-4 text-[#ffb400]" />
 
-                                  <span className="flex items-center ">
-                                    {job?.department
-                                      ?.slice(0, 1)
-                                      .map((item, index) => (
-                                        <span
-                                          key={index}
-                                          className="cursor-pointer text-[12px]"
-                                          // onClick={(e) => {
-                                          //   e.stopPropagation();
-                                          //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                          // }}
-                                        >
-                                          {item.name}
-                                        </span>
-                                      ))}
+                                    <span className="flex items-center ">
+                                      {job?.department
+                                        ?.slice(0, 1)
+                                        .map((item, index) => (
+                                          <span
+                                            key={index}
+                                            className="cursor-pointer text-[12px]"
+                                            // onClick={(e) => {
+                                            //   e.stopPropagation();
+                                            //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                            // }}
+                                          >
+                                            {item.name}
+                                          </span>
+                                        ))}
 
-                                    {/* If more than 2 departments */}
-                                    {job?.department?.length > 2 && (
-                                      <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[10px] font-medium">
-                                        +{job.department.length - 2}
-                                      </div>
-                                    )}
-                                  </span>
-                                </div>
-                                {/* Location
+                                      {/* If more than 2 departments */}
+                                      {job?.department?.length > 2 && (
+                                        <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[10px] font-medium">
+                                          +{job.department.length - 2}
+                                        </div>
+                                      )}
+                                    </span>
+                                  </div>
+                                  {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -1487,18 +1746,18 @@ export default function JobsPage() {
                                   .join(", ")}
                               </span>
                             </div> */}
-                                {/* Footer */}
-                                {/* <div
+                                  {/* Footer */}
+                                  {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                                {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                  {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                                {/* <div
+                                  {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -1521,35 +1780,35 @@ export default function JobsPage() {
                                     : "Just now"}
                                 </span>
                               </div> */}
-                                {/* </div> */}
+                                  {/* </div> */}
+                                </div>
                               </div>
-                            </div>
 
-                            <div>
-                              <div className="flex justify-between items-start mb-3">
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => handleSaveToggle(job)}
-                                    disabled={isSaving === job.id}
-                                    className="p-1 -m-1"
-                                    // aria-label={
-                                    //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                    // }
-                                  >
-                                    {job?.is_saved ? (
-                                      <div className="flex items-center ">
-                                        <BookmarkCheck
-                                          className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
-                                        />
-                                      </div>
-                                    ) : (
-                                      <>
-                                        <Bookmark className="w-5 h-5 " />
-                                      </>
-                                    )}
-                                  </button>
+                              <div>
+                                <div className="flex justify-between items-start mb-3">
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => handleSaveToggle(job)}
+                                      disabled={isSaving === job.id}
+                                      className="p-1 -m-1"
+                                      // aria-label={
+                                      //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                      // }
+                                    >
+                                      {job?.is_saved ? (
+                                        <div className="flex items-center ">
+                                          <BookmarkCheck
+                                            className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
+                                          />
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <Bookmark className="w-5 h-5 " />
+                                        </>
+                                      )}
+                                    </button>
 
-                                  {/* <RWebShare
+                                    {/* <RWebShare
                               data={{
                                 title: "Faculty Plus",
                                 text: "Check this out!",
@@ -1561,43 +1820,84 @@ export default function JobsPage() {
                             >
                               <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                             </RWebShare> */}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      {state.isFetchingMore && (
-                        <div className="space-y-4 px-2">
-                          {[1, 2].map((i) => (
-                            <div key={i} className="py-5 border-b border-[#c7c7c787]">
-                              <div className="flex gap-4">
-                                <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
-                                <div className="flex-1">
-                                  <SkeletonLoader type="text" width="80%" height={16} className="mb-2" />
-                                  <SkeletonLoader type="text" width="50%" height={14} className="mb-3" />
-                                  <div className="flex gap-3">
-                                    <SkeletonLoader type="text" width={50} height={10} />
-                                    <SkeletonLoader type="text" width={50} height={10} />
                                   </div>
                                 </div>
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      )}
+                          </div>
+                        ))}
+                        {state.isFetchingMore && (
+                          <div className="space-y-4 px-2">
+                            {[1, 2].map((i) => (
+                              <div
+                                key={i}
+                                className="py-5 border-b border-[#c7c7c787]"
+                              >
+                                <div className="flex gap-4">
+                                  <SkeletonLoader
+                                    type="rect"
+                                    width={24}
+                                    height={24}
+                                    className="rounded-lg flex-shrink-0"
+                                  />
+                                  <div className="flex-1">
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="80%"
+                                      height={16}
+                                      className="mb-2"
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="50%"
+                                      height={14}
+                                      className="mb-3"
+                                    />
+                                    <div className="flex gap-3">
+                                      <SkeletonLoader
+                                        type="text"
+                                        width={50}
+                                        height={10}
+                                      />
+                                      <SkeletonLoader
+                                        type="text"
+                                        width={50}
+                                        height={10}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex-1 ">
+                  <div className="flex-1 space-y-6" ref={jobDetailContainerRef}>
                     {/* Job Header Card */}
                     {state.loading ? (
                       <div className="bg-white p-6 rounded-lg border border-[#c7c7c787] mb-6">
                         <div className="flex gap-4 mb-6">
-                          <SkeletonLoader type="rect" width={64} height={64} className="rounded-3xl" />
+                          <SkeletonLoader
+                            type="rect"
+                            width={64}
+                            height={64}
+                            className="rounded-3xl"
+                          />
                           <div className="flex-1">
-                            <SkeletonLoader type="text" width="40%" height={32} className="mb-2" />
-                            <SkeletonLoader type="text" width="20%" height={20} />
+                            <SkeletonLoader
+                              type="text"
+                              width="40%"
+                              height={32}
+                              className="mb-2"
+                            />
+                            <SkeletonLoader
+                              type="text"
+                              width="20%"
+                              height={20}
+                            />
                           </div>
                         </div>
                         <div className="flex gap-4">
@@ -1607,157 +1907,170 @@ export default function JobsPage() {
                         </div>
                       </div>
                     ) : (
-                    <>
-                    <div className=" border-b  px-2 py-2 pb-5">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
-                            {/* • Posted{" "} */}
-                            {moment(state?.jobDetail?.created_at).isValid() &&
-                            moment(state?.jobDetail?.created_at).year() > 1900
-                              ? moment(state?.jobDetail?.created_at).fromNow()
-                              : "Just now"}
-                          </div>
-                          <div className="flex items-start gap-4 h-full mb-4">
-                            {state?.jobDetail?.college?.college_logo ? (
-                              <img
-                                src={state?.jobDetail?.college?.college_logo}
-                                alt={state?.jobDetail?.college?.name}
-                                className="w-12 h-12  object-contain  rounded-3xl"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              />
-                            ) : (
-                              <div
-                                className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                  state?.jobDetail?.college?.name,
-                                )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {state?.jobDetail?.college?.name
-                                  ?.slice(0, 1)
-                                  .toUpperCase()}
+                      <>
+                        <div className=" border-b  px-2 py-2 pb-5">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                                {/* • Posted{" "} */}
+                                {moment(
+                                  state?.jobDetail?.created_at,
+                                ).isValid() &&
+                                moment(state?.jobDetail?.created_at).year() >
+                                  1900
+                                  ? moment(
+                                      state?.jobDetail?.created_at,
+                                    ).fromNow()
+                                  : "Just now"}
                               </div>
-                            )}
-                            <div className="flex-1 flex-col">
-                              <h1 className="text-3xl font-semibold text-gray-900 mb-1">
-                                {capitalizeFLetter(state?.jobDetail?.job_title)}
-                              </h1>
-                              <p
-                                className="text-md text-gray-700 mb-2 cursor-pointer hover:underline"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {capitalizeFLetter(
-                                  state?.jobDetail?.college?.name,
+                              <div className="flex items-start gap-4 h-full mb-4">
+                                {state?.jobDetail?.college?.college_logo ? (
+                                  <img
+                                    src={
+                                      state?.jobDetail?.college?.college_logo
+                                    }
+                                    alt={state?.jobDetail?.college?.name}
+                                    className="w-12 h-12  object-contain  rounded-3xl"
+                                    onClick={(e) =>
+                                      getCollege(
+                                        e,
+                                        state?.jobDetail.college?.id,
+                                      )
+                                    }
+                                  />
+                                ) : (
+                                  <div
+                                    className={`w-12 h-12 rounded-3xl ${getAvatarColor(
+                                      state?.jobDetail?.college?.name,
+                                    )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
+                                    onClick={(e) =>
+                                      getCollege(
+                                        e,
+                                        state?.jobDetail.college?.id,
+                                      )
+                                    }
+                                  >
+                                    {state?.jobDetail?.college?.name
+                                      ?.slice(0, 1)
+                                      .toUpperCase()}
+                                  </div>
                                 )}
-                              </p>
-                            </div>
-                          </div>
+                                <div className="flex-1 flex-col">
+                                  <h1 className="text-3xl font-semibold text-gray-900 mb-1">
+                                    {capitalizeFLetter(
+                                      state?.jobDetail?.job_title,
+                                    )}
+                                  </h1>
+                                  <p
+                                    className="text-md text-gray-700 mb-2 cursor-pointer hover:underline"
+                                    onClick={(e) =>
+                                      getCollege(
+                                        e,
+                                        state?.jobDetail.college?.id,
+                                      )
+                                    }
+                                  >
+                                    {capitalizeFLetter(
+                                      state?.jobDetail?.college?.name,
+                                    )}
+                                  </p>
+                                </div>
+                              </div>
 
-                          <div className=" ">
-                            <div className="flex items-center gap-5 text-sm text-gray-600">
-                              <span className="flex items-center gap-3">
-                                <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
-                                {state?.jobDetail?.experiences?.name}
-                              </span>
-                              {/* <span className="flex items-center gap-1">
+                              <div className=" ">
+                                <div className="flex items-center gap-5 text-sm text-gray-600">
+                                  <span className="flex items-center gap-3">
+                                    <Briefcase className="w-4 h-4 text-[#E6AB1D]" />
+                                    {state?.jobDetail?.experiences?.name}
+                                  </span>
+                                  {/* <span className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
                           {state?.jobDetail?.job_type_obj?.name}
                         </span> */}
-                              <span className="flex items-center gap-3">
-                                {selectedJob.salary_range?.includes("$") ? (
-                                  <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
-                                ) : (
-                                  <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
-                                )}
-                                {state?.jobDetail?.salary_range_obj?.name}
-                              </span>
-                              {state?.jobDetail?.college?.address && (
-                                <span className="flex items-center gap-3">
-                                  <MapPin className="w-4 h-4 text-[#E6AB1D]" />
-                                  {capitalizeFLetter(
-                                    state?.jobDetail?.locations
-                                      ?.map((item) => item.city)
-                                      .join(", "),
-                                  )}{" "}
-                                  {/* {state?.jobDetail?.college?.address} */}
-                                </span>
-                              )}
+                                  <span className="flex items-center gap-3">
+                                    {selectedJob.salary_range?.includes("$") ? (
+                                      <DollarSign className="w-4 h-4 text-[#E6AB1D]" />
+                                    ) : (
+                                      <IndianRupee className="w-4 h-4 text-[#E6AB1D]" />
+                                    )}
+                                    {state?.jobDetail?.salary_range_obj?.name}
+                                  </span>
+                                  {state?.jobDetail?.college?.address && (
+                                    <span className="flex items-center gap-3">
+                                      <MapPin className="w-4 h-4 text-[#E6AB1D]" />
+                                      {capitalizeFLetter(
+                                        state?.jobDetail?.locations
+                                          ?.map((item) => item.city)
+                                          .join(", "),
+                                      )}{" "}
+                                      {/* {state?.jobDetail?.college?.address} */}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
-                          </div>
-                        </div>
 
-                        <div className="flex flex-col gap-5 justify-between items-end h-full">
-                          <button
-                            className="p-1"
-                            onClick={() => setSelectedJob(null)}
-                          >
-                            <X size={25} className=" hover:text-gray-600" />
-                          </button>
-                          <div className="flex flex-col items-end justify-between pt-6 gap-8  border-gray-100">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-col gap-5 justify-between items-end h-full">
                               <button
-                                onClick={() =>
-                                  handleSaveToggle(
-                                    state.jobDetail,
-
-                                    // !!state.jobDetail.is_saved,
-                                    // state.jobDetail.save_id,
-                                  )
-                                }
-                                disabled={isSaving == state?.jobDetail?.id}
-                                className="p-1 -m-1"
-                                // aria-label={
-                                //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                // }
+                                className="p-1"
+                                onClick={() => setSelectedJob(null)}
                               >
-                                {state.jobDetail?.is_saved ? (
-                                  <div className="flex items-center ">
-                                    <BookmarkCheck
-                                      className={`w-6 h-6 fill-[#1d1d57] text-white cursor-pointer `}
-                                    />
-                                  </div>
-                                ) : (
-                                  <>
-                                    <Bookmark className="w- h-5 " />
-                                  </>
-                                )}
+                                <X size={25} className=" hover:text-gray-600" />
                               </button>
-                              <RWebShare
-                                data={{
-                                  title: "Faculty Plus",
-                                  text: "Check this out!",
-                                  url: window.location.href,
-                                }}
-                                onClick={() =>
-                                  console.log("shared successfully!")
-                                }
-                              >
-                                <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
-                              </RWebShare>
-                            </div>
+                              <div className="flex flex-col items-end justify-between pt-6 gap-8  border-gray-100">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() =>
+                                      handleSaveToggle(state.jobDetail)
+                                    }
+                                    disabled={isSaving == state?.jobDetail?.id}
+                                    className="p-1 -m-1"
+                                    // aria-label={
+                                    //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                    // }
+                                  >
+                                    {state.jobDetail?.is_saved ? (
+                                      <div className="flex items-center ">
+                                        <BookmarkCheck
+                                          className={`w-6 h-6 fill-[#1d1d57] text-white cursor-pointer `}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <>
+                                        <Bookmark className="w-5 h-5" />
+                                      </>
+                                    )}
+                                  </button>
+                                  <RWebShare
+                                    data={{
+                                      title: "Faculty Plus",
+                                      text: "Check this out!",
+                                      url: window.location.href,
+                                    }}
+                                    onClick={() =>
+                                      console.log("shared successfully!")
+                                    }
+                                  >
+                                    <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
+                                  </RWebShare>
+                                </div>
 
-                            <button
-                              onClick={() => {
-                                setState({ jobID: state?.jobDetail?.id });
-                                handleApply();
-                              }}
-                              className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
-                            >
-                              {state.jobDetail?.apply_link
-                                ? " Apply on company's site"
-                                : " Apply Now"}
-                            </button>
+                                <button
+                                  onClick={() => {
+                                    setState({ jobID: state?.jobDetail?.id });
+                                    handleApply();
+                                  }}
+                                  className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                                >
+                                  {state.jobDetail?.apply_link
+                                    ? " Apply on company's site"
+                                    : " Apply Now"}
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    </>
+                      </>
                     )}
 
                     {state.loading ? (
@@ -1768,88 +2081,94 @@ export default function JobsPage() {
                         </div>
                         <div className="w-full xl:w-80 flex-shrink-0 mt-5">
                           <div className="bg-clr2 border border-[#c7c7c787] p-6 space-y-4">
-                            <SkeletonLoader type="text" width="50%" height={24} />
+                            <SkeletonLoader
+                              type="text"
+                              width="50%"
+                              height={24}
+                            />
                             <SkeletonLoader type="text" count={4} />
                           </div>
                         </div>
                       </div>
                     ) : (
-                    <div className="flex gap-6 flex-col xl:flex-row">
-                      {/* Main Content */}
-                      <div className="flex-1 space-y-1   p-3">
-                        <div>
-                          {/* Job Description */}
-                          <div className="border-b  px-2 py-2 pb-5">
-                            <h2 className="text-lg font-semibold text-black mb-4">
-                              About the job
-                            </h2>
-                            {/* Department Section */}
-                            <div className="leading-relaxed space-y-6">
-                              {state?.jobDetail?.department?.length > 0 && (
-                                <div>
-                                  <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
-                                    Departments
-                                  </h3>
+                      <div className="flex gap-6 flex-col xl:flex-row">
+                        {/* Main Content */}
+                        <div className="flex-1 space-y-1   p-3">
+                          <div>
+                            {/* Job Description */}
+                            <div className="border-b  px-2 py-2 pb-5">
+                              <h2 className="text-lg font-semibold text-black mb-4">
+                                About the job
+                              </h2>
+                              {/* Department Section */}
+                              <div className="leading-relaxed space-y-6">
+                                {state?.jobDetail?.department?.length > 0 && (
+                                  <div>
+                                    <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                      Departments
+                                    </h3>
 
-                                  <div className="flex flex-wrap gap-3">
-                                    {state?.jobDetail?.department?.map(
-                                      (item, index) => (
-                                        <button
-                                          key={index}
-                                          onClick={(e) =>
-                                            getDepartment(e, item.id)
-                                          }
-                                          className="px-4 py-2 text-sm font-medium rounded-full 
+                                    <div className="flex flex-wrap gap-3">
+                                      {state?.jobDetail?.department?.map(
+                                        (item, index) => (
+                                          <button
+                                            key={index}
+                                            onClick={(e) =>
+                                              getDepartment(e, item.id)
+                                            }
+                                            className="px-4 py-2 text-sm font-medium rounded-full 
                        bg-blue-50 text-[#1d1d57] 
                        border border-blue-100
                        hover:bg-[#1d1d57] hover:text-white
                        transition-all duration-200"
-                                        >
-                                          {item.name}
-                                        </button>
-                                      ),
-                                    )}
+                                          >
+                                            {item.name}
+                                          </button>
+                                        ),
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              )}
-                              {/* Job Description Section */}
-                              {state?.jobDetail?.job_description && (
-                                <div>
-                                  <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
-                                    Job Description
-                                  </h3>
+                                )}
+                                {/* Job Description Section */}
+                                {state?.jobDetail?.job_description && (
+                                  <div>
+                                    <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                      Job Description
+                                    </h3>
 
-                                  <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                                    {state?.jobDetail?.job_description}
-                                  </p>
-                                </div>
-                              )}
+                                    <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                      {state?.jobDetail?.job_description}
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                          </div>
 
-                          {/* Responsibilities */}
-                          {state?.responsibilities?.length > 0 && (
-                            <div className="border-b  px-2 py-2 pb-5">
-                              <h2 className="text-lg font-semibold text-black mb-4">
-                                Key responsibilities
-                              </h2>
-                              <ul className="space-y-3">
-                                {state?.responsibilities?.map((item, index) => (
-                                  <li
-                                    key={index}
-                                    className="flex items-start gap-3"
-                                  >
-                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                            {/* Responsibilities */}
+                            {state?.responsibilities?.length > 0 && (
+                              <div className="border-b  px-2 py-2 pb-5">
+                                <h2 className="text-lg font-semibold text-black mb-4">
+                                  Key responsibilities
+                                </h2>
+                                <ul className="space-y-3">
+                                  {state?.responsibilities?.map(
+                                    (item, index) => (
+                                      <li
+                                        key={index}
+                                        className="flex items-start gap-3"
+                                      >
+                                        <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                                    <span className="">{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                                        <span className="">{item}</span>
+                                      </li>
+                                    ),
+                                  )}
+                                </ul>
+                              </div>
+                            )}
 
-                          {/* Requirements */}
-                          {/* {state?.jobDetail?.requirements && (
+                            {/* Requirements */}
+                            {/* {state?.jobDetail?.requirements && (
                           <div className="border-b  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-black mb-4">
                               Requirements
@@ -1870,8 +2189,8 @@ export default function JobsPage() {
                           </div>
                         )} */}
 
-                          {/* Skills */}
-                          {/* {state?.jobDetail?.skills && (
+                            {/* Skills */}
+                            {/* {state?.jobDetail?.skills && (
                           <div className="  px-2 py-2 pb-5">
                             <h2 className="text-lg font-semibold text-gray-900 mb-4">
                               Skills
@@ -1888,173 +2207,179 @@ export default function JobsPage() {
                             </div>
                           </div>
                         )} */}
+                          </div>
                         </div>
-                      </div>
 
-                      {/* Right Sidebar */}
-                      <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
-                        <div className="sticky top-20 space-y-4 ">
-                          {/* Job Details */}
-                          <div className="bg-clr2   border border-[#c7c7c787]  p-6">
-                            <h3 className="text-lg font-semibold text-black mb-4">
-                              Job Overview
-                            </h3>
-                            <div className="space-y-4">
-                              {/* <div>
+                        {/* Right Sidebar */}
+                        <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
+                          <div className="sticky top-20 space-y-4 ">
+                            {/* Job Details */}
+                            <div className="bg-clr2   border border-[#c7c7c787]  p-6">
+                              <h3 className="text-lg font-semibold text-black mb-4">
+                                Job Overview
+                              </h3>
+                              <div className="space-y-4">
+                                {/* <div>
                           <p className="text-md font-medium  pb-1">Job type</p>
                           <p className="text-md text-black">
                             {state?.jobDetail?.job_type_obj?.name}
                           </p>
                         </div> */}
-                              <div>
-                                <span className=" flex gap-2 text-md font-medium  pb-1">
-                                  <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Job Title
-                                </span>
-                                <p className="text-md text-gray-500  ps-6">
-                                  {state?.jobDetail?.job_title}
-                                </p>
-                              </div>
-
-                              <div>
-                                <span className=" flex gap-2 text-md font-medium  pb-1">
-                                  <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Experience level
-                                </span>
-                                <p className="text-md text-gray-500  ps-6">
-                                  {state?.jobDetail?.experiences?.name}
-                                </p>
-                              </div>
-                              <div>
-                                <span className="flex gap-2 text-md font-medium  pb-1">
-                                  <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Salary
-                                </span>
-                                <p className="text-md text-gray-500 ps-6">
-                                  {state?.jobDetail?.salary_range_obj?.name}
-                                </p>
-                              </div>
-
-                              <div>
-                                <span className="flex gap-2 text-md font-medium  pb-1">
-                                  <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Department
-                                </span>
-                                <p className="text-md text-gray-500 ps-6">
-                                  {state?.jobDetail?.department?.map(
-                                    (item, index) => (
-                                      <div key={index}>
-                                        <span
-                                          className="hover:text-[#1d1d57] cursor-pointer hover:underline"
-                                          onClick={(e) =>
-                                            getDepartment(e, item.id)
-                                          }
-                                        >
-                                          {item.name}
-                                        </span>
-                                        {index <
-                                          state.jobDetail.department.length -
-                                            1 && ", "}
-                                      </div>
-                                    ),
-                                  )}
-                                </p>
-                              </div>
-
-                              {state?.jobDetail?.college?.address && (
                                 <div>
-                                  <span className="flex gap-2 text-md font-medium  pb-1">
-                                    <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                    Location
+                                  <span className=" flex gap-2 text-md font-medium  pb-1">
+                                    <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Job Title
                                   </span>
                                   <p className="text-md text-gray-500  ps-6">
-                                    {state?.jobDetail?.locations
-                                      ?.map((item) => item.city)
-                                      .join(", ")}
-                                    {/* {state?.jobDetail?.college?.address} */}
+                                    {state?.jobDetail?.job_title}
                                   </p>
                                 </div>
-                              )}
-                            </div>
-                          </div>
 
-                          {/* Company Info */}
-
-                          {state?.jobDetail?.job_image && (
-                            <div
-                              className="bg-white  border border-[#c7c7c787] cursor-pointer  p-6"
-                              onClick={() => setState({ imgOpen: true })}
-                            >
-                              <img
-                                src={state?.jobDetail?.job_image}
-                                alt={state?.jobDetail?.job_title}
-                                className="w-100 max-h-[400px]"
-                              />
-                            </div>
-                          )}
-                          <div className="bg-white  border border-[#c7c7c787]  p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                              About
-                            </h3>
-                            <div className="flex items-start gap-3 mb-4">
-                              {selectedJob?.college?.college_logo ? (
-                                <img
-                                  src={selectedJob.college.college_logo}
-                                  alt={selectedJob.college.name}
-                                  className="w-12 h-12 rounded-3xl object-contain"
-                                />
-                              ) : (
-                                <div
-                                  className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                    selectedJob.college?.name,
-                                  )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
-                                >
-                                  {selectedJob.college?.name
-                                    ?.slice(0, 1)
-                                    .toUpperCase()}
+                                <div>
+                                  <span className=" flex gap-2 text-md font-medium  pb-1">
+                                    <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Experience level
+                                  </span>
+                                  <p className="text-md text-gray-500  ps-6">
+                                    {state?.jobDetail?.experiences?.name}
+                                  </p>
                                 </div>
-                              )}
-                              <div>
-                                <h4
-                                  className="font-medium text-gray-900 cursor-pointer hover:underline"
-                                  onClick={(e) =>
-                                    getCollege(e, state?.jobDetail.college?.id)
-                                  }
-                                >
-                                  {state?.jobDetail?.college?.name}
-                                </h4>
-                                {/* <p className="text-sm text-gray-500">
-                                Technology Company
-                              </p> */}
+                                <div>
+                                  <span className="flex gap-2 text-md font-medium  pb-1">
+                                    <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Salary
+                                  </span>
+                                  <p className="text-md text-gray-500 ps-6">
+                                    {state?.jobDetail?.salary_range_obj?.name}
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <span className="flex gap-2 text-md font-medium  pb-1">
+                                    <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Department
+                                  </span>
+                                  <p className="text-md text-gray-500 ps-6">
+                                    {state?.jobDetail?.department?.map(
+                                      (item, index) => (
+                                        <div key={index}>
+                                          <span
+                                            className="hover:text-[#1d1d57] cursor-pointer hover:underline"
+                                            onClick={(e) =>
+                                              getDepartment(e, item.id)
+                                            }
+                                          >
+                                            {item.name}
+                                          </span>
+                                          {index <
+                                            state.jobDetail.department.length -
+                                              1 && ", "}
+                                        </div>
+                                      ),
+                                    )}
+                                  </p>
+                                </div>
+
+                                {state?.jobDetail?.college?.address && (
+                                  <div>
+                                    <span className="flex gap-2 text-md font-medium  pb-1">
+                                      <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                      Location
+                                    </span>
+                                    <p className="text-md text-gray-500  ps-6">
+                                      {state?.jobDetail?.locations
+                                        ?.map((item) => item.city)
+                                        .join(", ")}
+                                      {/* {state?.jobDetail?.college?.address} */}
+                                    </p>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            <button
-                              onClick={() => {
-                                setSelectedJob(null);
-                                window.scrollTo({ top: 0, behavior: "smooth" });
 
-                                router.push(
-                                  `/jobs?college=${state?.jobDetail?.college?.id}`,
-                                );
-                              }}
-                              className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
-                            >
-                              {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                              Openings
-                            </button>
-                            <p className="leading-relaxed">
-                              {state?.jobDetail?.college_detail}
-                            </p>
+                            {/* Company Info */}
+
+                            {state?.jobDetail?.job_image && (
+                              <div
+                                className="bg-white  border border-[#c7c7c787] cursor-pointer  p-6"
+                                onClick={() => setState({ imgOpen: true })}
+                              >
+                                <img
+                                  src={state?.jobDetail?.job_image}
+                                  alt={state?.jobDetail?.job_title}
+                                  className="w-100 max-h-[400px]"
+                                />
+                              </div>
+                            )}
+                            <div className="bg-white  border border-[#c7c7c787]  p-6">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                About
+                              </h3>
+                              <div className="flex items-start gap-3 mb-4">
+                                {selectedJob?.college?.college_logo ? (
+                                  <img
+                                    src={selectedJob.college.college_logo}
+                                    alt={selectedJob.college.name}
+                                    className="w-12 h-12 rounded-3xl object-contain"
+                                  />
+                                ) : (
+                                  <div
+                                    className={`w-12 h-12 rounded-3xl ${getAvatarColor(
+                                      selectedJob.college?.name,
+                                    )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                                  >
+                                    {selectedJob.college?.name
+                                      ?.slice(0, 1)
+                                      .toUpperCase()}
+                                  </div>
+                                )}
+                                <div>
+                                  <h4
+                                    className="font-medium text-gray-900 cursor-pointer hover:underline"
+                                    onClick={(e) =>
+                                      getCollege(
+                                        e,
+                                        state?.jobDetail.college?.id,
+                                      )
+                                    }
+                                  >
+                                    {state?.jobDetail?.college?.name}
+                                  </h4>
+                                  {/* <p className="text-sm text-gray-500">
+                                Technology Company
+                              </p> */}
+                                </div>
+                              </div>
+                              <button
+                                onClick={() => {
+                                  setSelectedJob(null);
+                                  window.scrollTo({
+                                    top: 0,
+                                    behavior: "smooth",
+                                  });
+
+                                  router.push(
+                                    `/jobs?college=${state?.jobDetail?.college?.id}`,
+                                  );
+                                }}
+                                className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                              >
+                                {state?.jobDetail?.college?.total_jobs || 0}{" "}
+                                Openings
+                              </button>
+                              <p className="leading-relaxed">
+                                {state?.jobDetail?.college_detail}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
                     )}
                   </div>
                 </div>
               </>
             ) : (
-              <div className="relative flex flex-col lg:flex-row gap-8 items-start">
+              <div className="relative flex flex-col lg:flex-row gap-8">
                 <div
                   className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
                     isSidebarOpen
@@ -2087,9 +2412,15 @@ export default function JobsPage() {
                 </div>
 
                 {/* DESKTOP STICKY SIDEBAR */}
-                <div className="w-80 hidden lg:block shrink-0  bg-clr2 self-start lg:sticky lg:top-8 border border-[#c7c7c787]">
+                <div
+                  className="w-80 hidden lg:block shrink-0 relative"
+                  ref={sidebarWrapperRef}
+                >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
-                  <div className="">
+                  <div
+                    className="bg-clr2 border border-[#c7c7c787]"
+                    ref={sidebarRef}
+                  >
                     <Filterbar
                       filters={filters}
                       onFilterChange={setFilters}
@@ -2107,42 +2438,48 @@ export default function JobsPage() {
                   </div>
                 </div>
 
-                <div className="flex-grow">
+                <div className="flex-grow relative" ref={jobListContainerRef}>
                   {/* content input header start */}
-                  <div className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl">
-                    <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
-                      <div className="flex-grow flex items-center ps-3 md:px-6 py-2  lg:py-0 w-full lg:w-auto ">
-                        <Search color="#5c5a5a93" size={22} />
-                        <input
-                          type="text"
-                          placeholder="Search by: Job tittle, Position, Keyword..."
-                          className="w-full pl-4 bg-transparent text-sm  focus:outline-none placeholder:text-[#313131] placeholder:font-normal font-medium  text-black"
-                          value={state.search}
-                          onChange={(e) => setState({ search: e.target.value })}
-                        />
-                      </div>
-
-                      {isWideScreen && (
-                        <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                      )}
-
-                      <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
-                        <div className="flex items-center px-4 flex-grow lg:w-64 ">
-                          <MapPin color="#5c5a5a93" size={22} />
-
-                          <CustomSelect
-                            options={state.locationList}
-                            value={filters.location}
-                            onChange={(selected) =>
-                              setFilters({
-                                ...filters,
-                                location: selected ? selected.value : null,
-                              })
+                  <div ref={searchBarWrapperRef}>
+                    <div
+                      ref={searchBarRef}
+                      className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
+                    >
+                      <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
+                        <div className="flex-grow flex items-center ps-3 md:px-6 py-2  lg:py-0 w-full lg:w-auto ">
+                          <Search color="#5c5a5a93" size={22} />
+                          <input
+                            type="text"
+                            placeholder="Search by: Job tittle, Position, Keyword..."
+                            className="w-full pl-4 bg-transparent text-sm  focus:outline-none placeholder:text-[#313131] placeholder:font-normal font-medium  text-black"
+                            value={state.search}
+                            onChange={(e) =>
+                              setState({ search: e.target.value })
                             }
-                            className="py-0 border-none"
-                            placeholder="Location"
                           />
-                          {/* <input
+                        </div>
+
+                        {isWideScreen && (
+                          <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
+                        )}
+
+                        <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
+                          <div className="flex items-center px-4 flex-grow lg:w-64 ">
+                            <MapPin color="#5c5a5a93" size={22} />
+
+                            <CustomSelect
+                              options={state.locationList}
+                              value={filters.location}
+                              onChange={(selected) =>
+                                setFilters({
+                                  ...filters,
+                                  location: selected ? selected.value : null,
+                                })
+                              }
+                              className="py-0 border-none"
+                              placeholder="Location"
+                            />
+                            {/* <input
                         type="text"
                         placeholder="City, state or zip code"
                         className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
@@ -2151,49 +2488,50 @@ export default function JobsPage() {
                           setFilters({ ...filters, location: e.target.value })
                         }
                       /> */}
-                          <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
-                        </div>
-
-                        {isWideScreen && (
-                          <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                        )}
-
-                        {isWideScreen && (
-                          <div className="hidden lg:flex items-center gap-1 px-2 ">
-                            <button
-                              onClick={() => setViewType("grid")}
-                              className={`p-2 rounded-md transition-colors ${
-                                viewType === "grid"
-                                  ? "bg-[#1d1d57] text-white"
-                                  : "text-gray-400 hover:bg-gray-100"
-                              }`}
-                            >
-                              <LayoutGrid size={15} />
-                            </button>
-
-                            <button
-                              onClick={() => setViewType("list")}
-                              className={`p-2 rounded-md transition-colors ${
-                                viewType === "list"
-                                  ? "bg-[#1d1d57] text-white"
-                                  : "text-gray-400 hover:bg-gray-100"
-                              }`}
-                            >
-                              <List size={15} />
-                            </button>
+                            <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
                           </div>
-                        )}
 
-                        {/* <button
+                          {isWideScreen && (
+                            <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
+                          )}
+
+                          {isWideScreen && (
+                            <div className="hidden lg:flex items-center gap-1 px-2 ">
+                              <button
+                                onClick={() => setViewType("grid")}
+                                className={`p-2 rounded-md transition-colors ${
+                                  viewType === "grid"
+                                    ? "bg-[#1d1d57] text-white"
+                                    : "text-gray-400 hover:bg-gray-100"
+                                }`}
+                              >
+                                <LayoutGrid size={15} />
+                              </button>
+
+                              <button
+                                onClick={() => setViewType("list")}
+                                className={`p-2 rounded-md transition-colors ${
+                                  viewType === "list"
+                                    ? "bg-[#1d1d57] text-white"
+                                    : "text-gray-400 hover:bg-gray-100"
+                                }`}
+                              >
+                                <List size={15} />
+                              </button>
+                            </div>
+                          )}
+
+                          {/* <button
                       className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
                       onClick={() => jobList(state?.page)}
                     >
                       Find Job
                     </button> */}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* content body job list */}
+                      {/* content body job list */}
+                    </div>
                   </div>
 
                   <div className="py-4 lg:hidden flex items-center justify-between">
@@ -2268,7 +2606,7 @@ export default function JobsPage() {
                     locationList={state?.locationList}
                   />
 
-                  {state.loading ? (
+                  {state.loading || state.jobListLoading ? (
                     <div
                       className={`grid mt-5 ${
                         viewType === "grid" || !isWideScreen
@@ -2284,16 +2622,39 @@ export default function JobsPage() {
                         >
                           <div className="flex justify-between items-start mb-4">
                             <div className="flex gap-4 w-full">
-                              <SkeletonLoader type="circle" width={48} height={48} />
+                              <SkeletonLoader
+                                type="circle"
+                                width={48}
+                                height={48}
+                              />
                               <div className="flex-1">
-                                <SkeletonLoader type="text" width="60%" height={20} style={{ marginBottom: 8 }} />
-                                <SkeletonLoader type="text" width="40%" height={16} />
+                                <SkeletonLoader
+                                  type="text"
+                                  width="60%"
+                                  height={20}
+                                  style={{ marginBottom: 8 }}
+                                />
+                                <SkeletonLoader
+                                  type="text"
+                                  width="40%"
+                                  height={16}
+                                />
                               </div>
                             </div>
                           </div>
                           <div className="flex gap-2 mb-4">
-                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
-                            <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                            <SkeletonLoader
+                              type="rect"
+                              width={80}
+                              height={24}
+                              className="rounded-full"
+                            />
+                            <SkeletonLoader
+                              type="rect"
+                              width={80}
+                              height={24}
+                              className="rounded-full"
+                            />
                           </div>
                           <div className="space-y-2">
                             <SkeletonLoader type="text" width="100%" />
@@ -2348,7 +2709,7 @@ export default function JobsPage() {
                                     });
                                   }
                                 }}
-                                className="cursor-pointer transition-transform hover:scale-10"
+                                className="cursor-pointer transition-transform hover:scale-10 job-card-item"
                               >
                                 {isGridView ? (
                                   <JobCard
@@ -2379,7 +2740,7 @@ export default function JobsPage() {
                         );
                       })()}
 
-                      {(state.next || state?.prev) && (
+                      {/* {(state.next || state?.prev) && (
                         <div className="flex justify-end items-center mt-10">
                           <PaginationComTwo
                             activeNumber={handlePageChange}
@@ -2387,6 +2748,65 @@ export default function JobsPage() {
                             currentPages={state.page}
                             pageSize={state.pageSize}
                           />
+                        </div>
+                      )} */}
+
+                      {state.isFetchingMore && (
+                        <div
+                          className={`grid mt-5 ${
+                            viewType === "grid" || !isWideScreen
+                              ? "grid-cols-1 xl:grid-cols-2"
+                              : "grid-cols-1"
+                          }`}
+                          style={{ gap: "20px" }}
+                        >
+                          {Array.from({ length: 2 }).map((_, index) => (
+                            <div
+                              key={index}
+                              className="bg-white p-6 rounded-lg border border-[#c7c7c787]"
+                            >
+                              <div className="flex justify-between items-start mb-4">
+                                <div className="flex gap-4 w-full">
+                                  <SkeletonLoader
+                                    type="circle"
+                                    width={48}
+                                    height={48}
+                                  />
+                                  <div className="flex-1">
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="60%"
+                                      height={20}
+                                      style={{ marginBottom: 8 }}
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="40%"
+                                      height={16}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 mb-4">
+                                <SkeletonLoader
+                                  type="rect"
+                                  width={80}
+                                  height={24}
+                                  className="rounded-full"
+                                />
+                                <SkeletonLoader
+                                  type="rect"
+                                  width={80}
+                                  height={24}
+                                  className="rounded-full"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <SkeletonLoader type="text" width="100%" />
+                                <SkeletonLoader type="text" width="80%" />
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       )}
                     </>
@@ -3033,9 +3453,19 @@ export default function JobsPage() {
                   {state.loading ? (
                     <div className="space-y-6">
                       <div className="flex gap-4 items-center border-b pb-4">
-                        <SkeletonLoader type="rect" width={80} height={80} className="rounded-xl" />
+                        <SkeletonLoader
+                          type="rect"
+                          width={80}
+                          height={80}
+                          className="rounded-xl"
+                        />
                         <div className="flex-1">
-                          <SkeletonLoader type="text" width="60%" height={24} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader
+                            type="text"
+                            width="60%"
+                            height={24}
+                            style={{ marginBottom: 8 }}
+                          />
                           <SkeletonLoader type="text" width="40%" height={16} />
                         </div>
                       </div>
@@ -3043,8 +3473,16 @@ export default function JobsPage() {
                         <SkeletonLoader type="text" count={3} />
                       </div>
                       <div className="grid grid-cols-2 gap-4">
-                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
-                        <SkeletonLoader type="rect" height={80} className="rounded-xl" />
+                        <SkeletonLoader
+                          type="rect"
+                          height={80}
+                          className="rounded-xl"
+                        />
+                        <SkeletonLoader
+                          type="rect"
+                          height={80}
+                          className="rounded-xl"
+                        />
                       </div>
                       <SkeletonLoader type="text" count={4} />
                     </div>
@@ -3263,15 +3701,33 @@ export default function JobsPage() {
                     {state.loading ? (
                       <div className="space-y-6">
                         <div className="border-b pb-4">
-                          <SkeletonLoader type="text" width="70%" height={32} style={{ marginBottom: 8 }} />
+                          <SkeletonLoader
+                            type="text"
+                            width="70%"
+                            height={32}
+                            style={{ marginBottom: 8 }}
+                          />
                           <SkeletonLoader type="text" width="40%" height={16} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
-                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
-                          <SkeletonLoader type="rect" height={100} className="rounded-2xl" />
+                          <SkeletonLoader
+                            type="rect"
+                            height={100}
+                            className="rounded-2xl"
+                          />
+                          <SkeletonLoader
+                            type="rect"
+                            height={100}
+                            className="rounded-2xl"
+                          />
                         </div>
                         <div className="space-y-2">
-                          <SkeletonLoader type="text" width="30%" height={24} style={{ marginBottom: 12 }} />
+                          <SkeletonLoader
+                            type="text"
+                            width="30%"
+                            height={24}
+                            style={{ marginBottom: 12 }}
+                          />
                           <SkeletonLoader type="text" count={3} />
                         </div>
                       </div>
@@ -3368,7 +3824,9 @@ export default function JobsPage() {
           </main>
         </div>
       </div>
-      <Footer />
+      <div ref={footerRef}>
+        <Footer />
+      </div>
     </>
   );
 }
