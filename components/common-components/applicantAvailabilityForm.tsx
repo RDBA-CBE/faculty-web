@@ -168,9 +168,9 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
           {/* JOB DETAILS CARD */}
           <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-6 border border-amber-100">
             <div className="flex items-start gap-4">
-              {state.job?.college?.college_logo && (
+              {state.job?.job_detail?.college?.college_logo && (
                 <img
-                  src={state.job.college.college_logo}
+                  src={state.job?.job_detail?.college?.college_logo}
                   alt="College Logo"
                   className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-md"
                 />
