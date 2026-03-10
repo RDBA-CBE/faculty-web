@@ -61,7 +61,7 @@ const applications = {
 
   interview_feedback: (hashtoken: any) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `interview-slots/hashtoken/${hashtoken}`;
+      let url = `interview-slots/hashtokenpanel/${hashtoken}`;
 
       instance()
         .get(url)
