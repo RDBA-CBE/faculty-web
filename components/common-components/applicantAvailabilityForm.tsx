@@ -172,7 +172,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
                 <img
                   src={state.job?.job_detail?.college?.college_logo}
                   alt="College Logo"
-                  className="w-16 h-16 rounded-xl object-cover border-2 border-white shadow-md"
+                  className="w-16 h-16 rounded-xl bg-white object-contain border-2 border-white shadow-md"
                 />
               )}
               <div className="flex-1">
