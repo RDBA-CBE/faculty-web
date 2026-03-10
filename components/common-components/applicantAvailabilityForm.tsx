@@ -177,23 +177,25 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
               )}
               <div className="flex-1">
                 <h2 className="text-xl font-bold text-gray-900">
-                  {state.job?.job_title}
+                  {capitalizeFLetter(state.job?.job_title)}
                 </h2>
                 <p className="text-gray-600 font-medium mt-1">
-                  {state.job?.college?.name || state.job?.institution?.name}
+                  {capitalizeFLetter(state.job?.job_detail?.college?.name) || state.job?.institution?.name}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center justify-between gap-4 mt-4 flex-wrap">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
+              {/* <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Building2 className="h-4 w-4 text-[#F2B31D]" />
                 <span>{state.job?.job_detail?.college?.name}</span>
-              </div>
+              </div> */}
+              {state.job?.job_detail?.department?.department_name &&
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <Building className="h-4 w-4 text-[#F2B31D]" />
-                <span>{state.job?.department?.department_name}</span>
+                <span>{capitalizeFLetter(state.job?.job_detail?.department?.department_name)}</span>
               </div>
+              }
               <div className="flex items-center gap-2 text-sm text-gray-600">
                 <MapPin className="h-4 w-4 text-[#F2B31D]" />
                 <span>{getLocationNames()}</span>
