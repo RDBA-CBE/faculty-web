@@ -108,7 +108,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       );
 
       Success("Availability updated successfully!");
-      // router.push("/");
+      router.push("/jobs");
       setState({ btnLoading: false, errors: {} });
     } catch (error) {
       setState({ btnLoading: false });
