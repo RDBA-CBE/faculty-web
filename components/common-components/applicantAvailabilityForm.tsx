@@ -20,6 +20,7 @@ import {
   Failure,
   Success,
   capitalizeFLetter,
+  formatScheduleDateTime,
 } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import TextArea from "./textArea";
@@ -220,8 +221,9 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Date & Time:</span>
                     <span className="font-semibold text-gray-900">
-                      {formatDate(
-                        state.job?.interview_slots?.[0]?.scheduled_date
+                      {formatScheduleDateTime(
+                        state.job?.interview_slots?.[0]?.scheduled_date,
+                        state.job?.interview_slots?.[0]?.scheduled_time
                       )}
                     </span>
                   </div>
