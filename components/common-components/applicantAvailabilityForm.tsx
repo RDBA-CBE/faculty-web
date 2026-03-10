@@ -97,7 +97,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
           state.isAvailable && state.response_from_applicant
             ? ""
             : state.availableTime,
-        pannel_id: state.detail?.panel_ids?.[0],
+        panel_id: state.detail?.panel_ids?.[0],
       };
       console.log("✌️body --->", body);
 
