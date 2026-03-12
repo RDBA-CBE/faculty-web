@@ -19,6 +19,7 @@ import {
   Failure,
   Success,
   capitalizeFLetter,
+  formatScheduleDateTime,
 } from "@/utils/function.utils";
 
 import Models from "@/imports/models.import";
@@ -173,27 +174,36 @@ const FeedbackForm = ({ token }) => {
             </p>
           </div>
 
-          <div className="p-4 space-y-3">
-            <h2 className="text-xl font-bold text-gray-800">
-              {state.job?.job_title}
-            </h2>
-            <div className=" flex flex-wrap gap-4 text-sm text-gray-600">
-              <span className="flex items-center gap-2">
-                <Building className="h-4 w-4 text-[#ffb400]" />
-                {state.job?.job_detail?.college?.name}
-              </span>
+          <div className="p-4 items-center flex gap-4">
+            {state.job?.job_detail?.college?.college_logo && (
+              <img
+                src={state.job?.job_detail?.college?.college_logo}
+                alt="College Logo"
+                className="w-16 h-16 rounded-xl bg-white object-contain border-2 border-white shadow-md"
+              />
+            )}
+            <div className="space-y-1 ">
+              <h2 className="text-xl font-bold text-gray-800">
+                {state.job?.job_title}
+              </h2>
+              <div className=" flex flex-wrap gap-4 text-sm text-gray-600">
+                <span className="flex items-center gap-2">
+                  <Building className="h-4 w-4 text-[#ffb400]" />
+                  {state.job?.job_detail?.college?.name}
+                </span>
 
-              <span className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#ffb400]" />
-                {state.job?.job_detail?.locations
-                  ?.map((l) => l.city)
-                  .join(", ")}
-              </span>
+                <span className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[#ffb400]" />
+                  {state.job?.job_detail?.locations
+                    ?.map((l) => l.city)
+                    .join(", ")}
+                </span>
 
-              <span className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-[#ffb400]" />
-                {state.interview_slot?.scheduled_date}
-              </span>
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-[#ffb400]" />
+                  {formatScheduleDateTime(state.interview_slot?.scheduled_date,state.interview_slot?.scheduled_time)}
+                </span>
+              </div>
             </div>
           </div>
 
@@ -236,9 +246,9 @@ const FeedbackForm = ({ token }) => {
           {/* EVALUATOR DETAILS */}
 
           <div className=" p-4">
-            <h3 className="font-semibold text-indigo-900 mb-4">
-              Evaluator Details
-            </h3>
+         
+            <h3 className="font-semibold mb-3">Evaluator Details</h3>
+
 
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div>

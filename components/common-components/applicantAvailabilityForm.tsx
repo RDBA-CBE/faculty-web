@@ -59,7 +59,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       const res: any = await Models.applications.get_applicant_feedback(token);
       console.log("✌️res --->", res);
       setState({
-        job: res?.applications?.length > 0 ? res?.applications?.[0] : null,
+        job: res?.applications?.length > 0 ? res?.applications?.[1] : null,
         loading: false,
         detail: res,
       });
@@ -87,7 +87,6 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
         availableTime: state.availableTime,
         response_from_applicant: state.response_from_applicant,
       };
-
       await Validation.applicant_feedback.validate(validation, {
         abortEarly: false,
       });
@@ -100,7 +99,6 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
             : state.availableTime,
         panel_id: state.detail?.panel_ids?.[0],
       };
-      console.log("✌️body --->", body);
 
       const res = await Models.applications.create_applicant_feedback(
         body,
@@ -129,18 +127,6 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const getLocationNames = () => {
     if (!state.job?.job_detail?.locations) return "";
     return state.job?.job_detail?.locations.map((loc) => loc.city).join(", ");
@@ -155,165 +141,143 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-white to-yellow-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl overflow-hidden">
-        {/* HEADER */}
-        <div className="bg-gradient-to-r from-[#1d1d57] to-[#F2B31D] p-6 text-white">
-          <h1 className="text-2xl font-bold">Interview Availability</h1>
-          <p className="text-gray-100 mt-1">
-            Please confirm your availability for the scheduled interview
-          </p>
-        </div>
+    <div className="min-h-screen bg-gray-50 py-10 px-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-indigo-50 border rounded-xl shadow">
+          <div className="text-center  mt-4">
+            <h1 className="text-2xl font-bold text-[#1d1d57]">
+              Interview Availability
+            </h1>
 
-        <div className="p-6 space-y-6">
-          {/* JOB DETAILS CARD */}
-          <div className="bg-gradient-to-br from-amber-50 to-yellow-50 rounded-2xl p-6 border border-amber-100">
-            <div className="flex items-start gap-4">
-              {state.job?.job_detail?.college?.college_logo && (
-                <img
-                  src={state.job?.job_detail?.college?.college_logo}
-                  alt="College Logo"
-                  className="w-16 h-16 rounded-xl bg-white object-contain border-2 border-white shadow-md"
-                />
-              )}
-              <div className="flex-1">
-                <h2 className="text-xl font-bold text-gray-900">
-                  {capitalizeFLetter(state.job?.job_title)}
-                </h2>
-                <p className="text-gray-600 font-medium mt-1">
-                  {capitalizeFLetter(state.job?.job_detail?.college?.name) || state.job?.institution?.name}
-                </p>
-              </div>
-            </div>
+            <p className="text-sm text-gray-500">
+              Please confirm your availability for the scheduled interview
+            </p>
+          </div>
 
-            <div className="flex items-center justify-between gap-4 mt-4 flex-wrap">
-              {/* <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Building2 className="h-4 w-4 text-[#F2B31D]" />
-                <span>{state.job?.job_detail?.college?.name}</span>
-              </div> */}
-              {state.job?.job_detail?.department?.department_name &&
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <Building className="h-4 w-4 text-[#F2B31D]" />
-                <span>{capitalizeFLetter(state.job?.job_detail?.department?.department_name)}</span>
-              </div>
-              }
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <MapPin className="h-4 w-4 text-[#F2B31D]" />
-                <span>{getLocationNames()}</span>
+          <div className="p-4 items-center flex gap-4">
+            {state.job?.job_detail?.college?.college_logo && (
+              <img
+                src={state.job?.job_detail?.college?.college_logo}
+                alt="College Logo"
+                className="w-16 h-16 rounded-xl bg-white object-contain border-2 border-white shadow-md"
+              />
+            )}
+            <div className="space-y-1 ">
+              <h2 className="text-xl font-bold text-gray-800">
+                {state.job?.job_title}
+              </h2>
+              <div className=" flex flex-wrap gap-4 text-sm text-gray-600">
+                <span className="flex items-center gap-2">
+                  <Building className="h-4 w-4 text-[#ffb400]" />
+                  {state.job?.job_detail?.college?.name}
+                </span>
+
+                <span className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-[#ffb400]" />
+                  {state.job?.job_detail?.locations
+                    ?.map((l) => l.city)
+                    .join(", ")}
+                </span>
+
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-[#ffb400]" />
+                  {formatScheduleDateTime(
+                    state.job?.interview_slots?.[0]?.scheduled_date,
+                    state.job?.interview_slots?.[0]?.scheduled_time
+                  )}
+
+                  {/* {state.job?.interview_slots?.[0]?.scheduled_date} */}
+                </span>
               </div>
             </div>
           </div>
-
+          <div className="border-t"></div>
           {state.job?.interview_slots?.length > 0 &&
             state.job?.interview_slots?.[0] && (
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-[#1d1d57]" />
-                  Interview Schedule
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Round:</span>
-                    <span className="font-semibold text-gray-900">
+              <div className=" p-4">
+                <h3 className="font-semibold mb-3">Interview Schedule</h3>
+
+                <div className="grid md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500">Round</p>
+                    <p className="font-semibold">
                       {state.job?.interview_slots?.[0]?.round_name}
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Date & Time:</span>
-                    <span className="font-semibold text-gray-900">
+
+                  <div>
+                    <p className="text-gray-500">Date</p>
+                    <p className="font-semibold">
                       {formatScheduleDateTime(
                         state.job?.interview_slots?.[0]?.scheduled_date,
                         state.job?.interview_slots?.[0]?.scheduled_time
                       )}
-                    </span>
+                    </p>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Status:</span>
-                    <span className="px-3 py-1 bg-[#F2B31D] bg-opacity-20 text-[#1d1d57] rounded-full text-sm font-medium">
+
+                  <div>
+                    <p className="text-gray-500">Status</p>
+                    <p className="font-semibold">
+                      {" "}
                       {state.job?.interview_slots?.[0]?.status}
-                    </span>
+                    </p>
                   </div>
                 </div>
               </div>
             )}
 
-          {/* AVAILABILITY SECTION */}
-          <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">
-              Your Availability
-            </h3>
+          <div className=" p-4 space-y-2 ">
+            <h3 className="font-semibold">Your Availability</h3>
 
-            {/* TOGGLE BUTTONS */}
-            <div className="flex gap-4 mb-6">
-              <button
-                onClick={() => setState({ isAvailable: true, errors: {} })}
-                className={`flex-1 py-2 px-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                  state.isAvailable
-                    ? "bg-[#1d1d57] text-white shadow-lg scale-105"
-                    : "bg-white text-gray-600 border-2 border-gray-200 hover:border-[#F2B31D]"
-                }`}
-              >
-                <CheckCircle className="h-5 w-5" />
-                Available
-              </button>
-              <button
-                onClick={() => setState({ isAvailable: false, errors: {} })}
-                className={`flex-1   px-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                  !state.isAvailable
-                    ? "bg-[#F2B31D] text-white shadow-lg scale-105"
-                    : "bg-white text-gray-600 border-2 border-gray-200 hover:border-[#1d1d57]"
-                }`}
-              >
-                <XCircle className="h-5 w-5" />
-                Not Available
-              </button>
-            </div>
-
-            {/* CONDITIONAL FIELDS */}
-            {!state.isAvailable && state.response_from_applicant && (
-              <div className="space-y-4 animate-in fade-in duration-300">
-                <div>
-                  <TextArea
-                    title=" When are you available?"
-                    type="text"
-                    placeholder="e.g., Tomorrow 2 PM or Next Monday"
-                    value={state.availableTime}
-                    onChange={(e) =>
-                      setState({
-                        availableTime: e.target.value,
-                        errors: { ...state.errors, availableTime: undefined },
-                      })
-                    }
-                    className={`w-full px-4 py-3 rounded-xl border-2 focus:outline-none focus:ring-2 focus:ring-[#F2B31D] ${
-                      state.errors?.availableTime
-                        ? "border-red-500"
-                        : "border-gray-200"
-                    }`}
-                    required
-                    error={state.errors?.availableTime}
-                  />
-                </div>
-              </div>
-            )}
+            <select
+              value={state.isAvailable}
+              onChange={(e) => setState({ isAvailable: e.target.value })}
+              className="w-full border rounded-lg p-3"
+            >
+              <option value="">Are you available for this interview?</option>
+              <option>Yes</option>
+              <option>No</option>
+            </select>
           </div>
+          {state.isAvailable == "No" && state.response_from_applicant && (
+            <div className=" p-4 space-y-2">
+              <h3 className="font-semibold">
+                When are you available? <span className="text-red-500">*</span>
+              </h3>
 
-          {/* SUBMIT BUTTON */}
-          <Button
-            onClick={handleSubmit}
-            disabled={state.btnLoading}
-            className="w-full py-4 bg-[#1d1d57] hover:bg-amber-500 text-white font-bold rounded-3xl flex items-center justify-center gap-2"
+              <textarea
+                rows={3}
+                placeholder="Academic record remark"
+                className="w-full border rounded-lg p-3"
+                value={state.response_from_applicant}
+                onChange={(e) =>
+                  setState({ response_from_applicant: e.target.value })
+                }
+              />
+              {state.errors?.availableTime && (
+                <p className=" pl-1 text-sm text-red-600">
+                  {state.errors?.availableTime}{" "}
+                  {/* Display the error message if it exists */}
+                </p>
+              )}
+            </div>
+          )}
 
-            // className="w-full from-[#1d1d57]  text-white py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
-          >
-            {state.btnLoading ? (
-              <Loader className="animate-spin h-5 w-5" />
-            ) : (
-              <>
-                Submit Response
-                <ArrowRight className="h-5 w-5" />
-              </>
-            )}
-          </Button>
+          <div className=" flex items-center justify-end p-3">
+            <Button
+              onClick={handleSubmit}
+              disabled={state.btnLoading}
+              className="  py-3 bg-[#1d1d57] hover:bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+            >
+              {state.btnLoading ? (
+                <Loader className="animate-spin h-4 w-4" />
+              ) : (
+                "Submit Response"
+              )}
+
+              {!state.btnLoading && <ArrowRight className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
