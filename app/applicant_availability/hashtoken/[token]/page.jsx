@@ -4,7 +4,7 @@ import React from "react";
 const ApplicantAvailabilityPage = ({ params }) => {
   return (
     <main>
-      <ApplicantAvailabilityForm token={params.token} />
+      <ApplicantAvailabilityForm token={params?.token} />
     </main>
   );
 };

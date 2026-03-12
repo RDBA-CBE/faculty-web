@@ -9,6 +9,8 @@ import {
   Calendar,
   Mail,
   ArrowRight,
+  Building2,
+  Star,
 } from "lucide-react";
 
 import * as Yup from "yup";
@@ -192,6 +194,11 @@ const FeedbackForm = ({ token }) => {
                   {state.job?.job_detail?.college?.name}
                 </span>
 
+                {/* <span className="flex items-center gap-2">
+                  <Building2 className="h-4 w-4 text-[#ffb400]" />
+                  {state.job?.department?.department_name}
+                </span> */}
+
                 <span className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-[#ffb400]" />
                   {state.job?.job_detail?.locations
@@ -201,7 +208,10 @@ const FeedbackForm = ({ token }) => {
 
                 <span className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-[#ffb400]" />
-                  {formatScheduleDateTime(state.interview_slot?.scheduled_date,state.interview_slot?.scheduled_time)}
+                  {formatScheduleDateTime(
+                    state.interview_slot?.scheduled_date,
+                    state.interview_slot?.scheduled_time
+                  )}
                 </span>
               </div>
             </div>
@@ -243,12 +253,24 @@ const FeedbackForm = ({ token }) => {
           </div>
           <div className="border-t"></div>
 
+          <div className="p-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg">
+              <span className="text-md font-medium uppercase tracking-wide text-indigo-600">
+                Interview Round :
+              </span>
+
+              <span className="text-md font-bold">
+                {state.interview_slot?.round_name}
+              </span>
+            </div>
+          </div>
+
+          <div className="border-t"></div>
+
           {/* EVALUATOR DETAILS */}
 
           <div className=" p-4">
-         
             <h3 className="font-semibold mb-3">Evaluator Details</h3>
-
 
             <div className="grid md:grid-cols-3 gap-4 text-sm">
               <div>
