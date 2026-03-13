@@ -80,7 +80,7 @@ const Footer = () => {
             <h2 className="text-2xl md:text-2xl font-medium text-[#1C1C1C] mb-2">
               Stay Informed About Academic Opportunities
             </h2>
-            <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
+            <p className="text-sm opacity-90 mb-6 max-w-md leading-tight">
               Receive timely updates on the latest faculty openings, institutional recruitment announcements, and
 academic career opportunities.
             </p>
