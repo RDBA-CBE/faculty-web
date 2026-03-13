@@ -84,9 +84,8 @@ export default function InstitutionPartners() {
                 </h2>
 
                 <p className="">
-                  Classical Latin Literature From 45 BC, Making It Over 2000
-                  Years Old. Richard McClintock, A Latin Professor At Hampden
-                  Sydney College In Virginia.
+                 FacultyPro collaborates with reputable colleges and educational institutions to simplify academic
+recruitment and connect qualified educators with meaningful career opportunities. 
                 </p>
               </div>
 

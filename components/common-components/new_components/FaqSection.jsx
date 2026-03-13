@@ -4,30 +4,30 @@ import { Plus, X, Upload } from "lucide-react";
 const faqData = [
   {
     id: "01",
-    question: "Can I upload a CV?",
+    question: "What is FacultyPro?",
     answer:
-      "Nunc sed a nisl purus. Nibh dis faucibus proin lacus tristique. Sit congue non vitae odio sit erat in.",
+      "FacultyPro is an academic recruitment platform designed to connect qualified educators with colleges and institutions seeking faculty members and academic professionals.",
   },
   {
     id: "02",
-    question: "How long will the recruitment process take?",
-    answer: "Recruitment timeline depends on the role.",
+    question: "Who can use the FacultyPro platform?",
+    answer: "FacultyPro can be used by academic professionals such as lecturers, professors, researchers, andadministrators seeking opportunities, as well as educational institutions looking to recruit qualified faculty",
   },
   {
     id: "03",
-    question: "Do you recruit for Graduates, Apprentices and Students?",
-    answer: "Yes, based on job openings.",
+    question: "How can I apply for a faculty position?",
+    answer: "Candidates can create a profile, upload their resume, and apply directly to available faculty positions through the FacultyPro portal.",
   },
   {
     id: "04",
-    question: "What does the recruitment and selection process involve?",
-    answer: "Screening, interviews and final selection.",
+    question: "How can institutions post job vacancies?",
+    answer: "Institutions can register on the platform, create an institutional profile, and publish faculty job openings to attract qualified candidates.",
   },
   {
     id: "05",
     question:
-      "Can I receive notifications for any future jobs that may interest me?",
-    answer: "Yes, subscribe for alerts.",
+      "Is there a verification process for institutions and candidates?",
+    answer: "Yes. FacultyPro verifies registered institutions and reviews user registrations to ensure credibility and maintain the quality of the recruitment process.",
   },
 ];
 
@@ -43,7 +43,8 @@ const FaqResumeSection = () => {
             Frequently Asked Questions
           </h2>
           <p className=" mb-10">
-            There are many variations of passages of Lorem Ipsum available.
+            Find answers to common questions about FacultyPro and how it supports academic recruitment and
+career opportunities. 
           </p>
 
           <div className="space-y-8">

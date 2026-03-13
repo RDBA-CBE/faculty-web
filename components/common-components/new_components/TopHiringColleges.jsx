@@ -93,7 +93,7 @@ const TopHiringColleges = () => {
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl md:text-2xl  font-medium text-[#151515]">
-                Top Hiring Colleges
+                Leading Institutions Currently Hiring
               </h2>
 
               {/* Navigation Buttons - Desktop */}
@@ -215,44 +215,59 @@ const TopHiringColleges = () => {
             <div className="relative z-10 rounded-xl p-6 text-center text-white overflow-hidden h-full flex flex-col items-center justify-center">
               <div className="relative z-10 ">
                 <div className="mb-4 flex items-center justify-center gap-2 py-1 pt-3">
-                  <div className="w-10 h-10 flex items-center justify-center ">
-                    <Image
-                      src="/assets/images/Faculty/favicon.png"
+                  <div className=" flex items-center justify-center ">
+                    <img
+                      src="/assets/images/footer_logo.png"
                       alt="Logo"
-                      className="object-contain"
-                      priority
+                      className="w-[160px] h-8"
+                      // priority
                       height={40}
                       width={40}
                     />
                   </div>
-                  <h3 className="text-2xl  font-medium text-white">
+                  {/* <h3 className="text-2xl  font-medium text-white">
                     Faculty Pro
-                  </h3>
+                  </h3> */}
                 </div>
 
-                <h4 className="text-lg  font-normal text-white ">
-                  Get Best Matches Jobs
-                  <br />
-                  On Your Email.
-                </h4>
-                <p className="text-sm mb-4 py-4 text-white">Add Resume Now!</p>
-
                 {state?.token ? (
-                  <button
-                    className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
-                    onClick={() => router.push(`/profile`)}
-                  >
-                    Add your Resume
-                  </button>
+                  <>
+                    <h4 className="text-lg  font-normal text-white mb-4 ">
+                     Create your profile and upload your resume to stay informed about the latest faculty openings.
+                    </h4>
+                    {/* <p className="text-sm mb-4 py-4 text-white">
+                      Add Resume Now!
+                    </p> */}
+
+                    <button
+                      className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
+                      onClick={() => router.push(`/profile`)}
+                    >
+                      Add your Resume
+                    </button>
+                  </>
                 ) : (
-                  <button
-                    className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
-                    onClick={() =>
-                      window.dispatchEvent(new CustomEvent("openRegisterModal"))
-                    }
-                  >
-                    Register
-                  </button>
+                  <>
+                    <h4 className="text-lg  font-normal text-white mb-4 ">
+                      
+                      Receive the Most Relevant Job Opportunities Directly in Your Inbox
+                      
+                    </h4>
+                    {/* <p className="text-sm mb-4 py-4 text-white">
+                      Create your profile and upload your resume to stay
+                      informed about the latest faculty openings
+                    </p> */}
+                    <button
+                      className="bg-[#F2B31D] text-black px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#e0a519] transition"
+                      onClick={() =>
+                        window.dispatchEvent(
+                          new CustomEvent("openRegisterModal"),
+                        )
+                      }
+                    >
+                      Register
+                    </button>
+                  </>
                 )}
               </div>
             </div>

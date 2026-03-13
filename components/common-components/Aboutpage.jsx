@@ -55,12 +55,11 @@ export default function AboutPage() {
               {/* Bottom Paragraph */}
               <div className="mt-8">
                 <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Veritatis nulla laudantium sunt, beatae, officiis minima nihil
-                  eos vero quasi laboriosam doloremque aliquam! Iure quis ut
-                  amet natus eius cumque optio. Excepteur sint occaecat
-                  cupidatat non proident doloremque aliquam! Iure quis ut amet
-                  natus eius cumque optio.
+                 Institutions can efficiently publish vacancies, review applications, and manage recruitment through a
+structured system. At the same time, educators can explore opportunities, apply for positions, and track
+their application progress in one centralized platform.
+FacultyPro aims to support institutions in identifying the right academic talent while enabling educators
+to advance their professional careers.
                 </p>
                 {/* <p className="mt-4">
                   Excepteur sint occaecat cupidatat non proident doloremque aliquam! Iure quis ut amet natus eius cumque optio.
@@ -71,22 +70,20 @@ export default function AboutPage() {
             {/* RIGHT COLUMN */}
             <div className="order-1 lg:order-2">
               {/* Small Label */}
-              <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-3">
+              {/* <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-3">
                 About Us
-              </p>
+              </p> */}
 
               {/* Heading */}
               <h2 className="text-2xl  font-medium text-[#151515] leading-snug">
-                Empowering Institutions To Hire <br />
-                Exceptional Faculty Faster
+                About FacultyPro
               </h2>
 
               {/* Description */}
               <p className="mt-5 max-w-xl">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Veritatis nulla laudantium sunt, beatae, officiis minima nihil
-                eos vero quasi laboriosam doloremque aliquam! Iure quis ut amet
-                natus eius cumque optio.
+                FacultyPro is a specialized academic recruitment platform that connects qualified educators with
+reputable colleges and educational institutions. The platform is designed to simplify the faculty hiring
+process while providing academic professionals with access to verified career opportunities.
               </p>
 
               {/* Bottom Image */}
@@ -143,22 +140,22 @@ export default function AboutPage() {
             {[
               {
                 step: "01",
-                title: "Create Profile",
-                desc: "Faculty members create a profile with qualifications and experience.",
+                title: "Connect Educators with Opportunities",
+                desc: "Discover and apply for verified faculty positions across colleges and institutions.",
                 img: "/assets/images/user-1.png",
                 imghover: "/assets/images/userico-white.png",
               },
               {
                 step: "02",
-                title: "Explore Jobs",
-                desc: "Browse verified academic job opportunities from institutions.",
+                title: "Simplify Institutional Recruitment",
+                desc: "Institutions can publish vacancies and review applications efficiently.",
                 img: "/assets/images/opportunity-1.png",
                 imghover: "/assets/images/case-white.png",
               },
               {
                 step: "03",
-                title: "Apply & Connect",
-                desc: "Apply directly and connect with institutions easily.",
+                title: "Streamline Hiring Management",
+                desc: "Manage applications, track progress, and communicate with candidates in one platform.",
                 img: "/assets/images/hand-shake-1.png",
                 imghover: "/assets/images/hand-shake-white.png",
               },

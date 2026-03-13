@@ -74,12 +74,14 @@ const NewHeroSection = () => {
             {/* Heading */}
             <div className="space-y-5">
               <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
-               Find Your Dream Job Today <br /> Opportunities Await You!
+                Where Academic Talent <br /> Meets Institutional Excellence
               </h1>
               <p className="text-[#F0F0F0CC] max-w-xl text-base lg:text-lg leading-relaxed">
-                Ultrices purus dolor viverra mi laoreet at cursus justo.
-                Ultrices purus diam egestas amet faucibus tempor blandit. Elit
-                velit mauris aliquam est diam. Leo
+                FacultyPro connects qualified academic professionals with
+                reputed colleges and universities seeking excellence in
+                teaching, research, and institutional development. Explore
+                verified opportunities and take the next step in your
+                professional journey
               </p>
             </div>
 
@@ -123,14 +125,14 @@ const NewHeroSection = () => {
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
                   125K+
                 </div>
-                <div className="text-white text-sm">People joined</div>
+                <div className="text-white text-sm">Registered Academic <br /> Professionals</div>
               </div>
 
               <div>
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                  9,99%
+                  9000+
                 </div>
-                <div className="text-white text-sm">Success Probability</div>
+                <div className="text-white text-sm">Successful Faculty <br /> Appointments</div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -145,8 +147,10 @@ const NewHeroSection = () => {
                       </span>
                     ))}
                   </div>
+                  
                 </div>
-                <div className="flex -space-x-3 xl:-space-x-4">
+                <div className="text-white text-sm">Trusted by Institutions <br /> and Educators</div>
+                {/* <div className="flex -space-x-3 xl:-space-x-4">
                   {["image_1", "image_2", "image_3"].map((img, i) => (
                     <div
                       key={i}
@@ -164,7 +168,7 @@ const NewHeroSection = () => {
                   <div className="w-8 h-8 sm:w-12 sm:h-12 xl:w-12 xl:h-12  bg-black text-white rounded-full border-2 border-white flex items-center justify-center text-base sm:text-lg xl:text-xl 2xl:text-2xl font-bold shadow-lg">
                     +
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>

@@ -470,7 +470,7 @@ const Header = () => {
                 height={400}
                 width={200}
                 alt="Login Illustration"
-                className="object-contain"
+                className="w-[160px] h-8"
               />
             </div>
 
@@ -560,13 +560,13 @@ const Header = () => {
         width="500px"
         renderComponent={() => (
           <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg">
-            <div className="flex items-center justify-center w-full mb-6">
+            <div className="flex items-center justify-center w-full mb-6 ">
               <img
                 src="/assets/images/faculty-logo.png"
-                height={400}
-                width={200}
+                height={300}
+                width={100}
                 alt="Registration Illustration"
-                className="object-contain"
+                className="w-[160px] h-8"
               />
             </div>
 
