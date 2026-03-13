@@ -1535,7 +1535,7 @@ export default function JobsPage() {
                   >
                     <div
                       ref={jobListSidebarRef}
-                      className="bg-white py-5 border border-[#c7c7c787] rounded-lg flex flex-col max-h-[calc(100vh-100px)]"
+                      className="bg-white py-5 border border-[#c7c7c787]  flex flex-col max-h-[calc(100vh-100px)]"
                     >
                       <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 flex-shrink-0">
                         <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">

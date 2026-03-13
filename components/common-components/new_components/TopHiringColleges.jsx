@@ -84,7 +84,6 @@ const TopHiringColleges = () => {
     }
   };
 
-
   return (
     <section className="py-12 lg:py-20 bg-gray-50">
       <div className="section-wid w-full">
@@ -112,70 +111,93 @@ const TopHiringColleges = () => {
             {state.loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-[300px] border border-[#c7c7c787] p-6 flex flex-col items-center justify-between bg-white rounded-lg">
-                    <SkeletonLoader type="circle" width={80} height={80} className="mb-3" />
+                  <div
+                    key={i}
+                    className="h-[300px] border border-[#c7c7c787] p-6 flex flex-col items-center justify-between bg-white rounded-lg"
+                  >
+                    <SkeletonLoader
+                      type="circle"
+                      width={80}
+                      height={80}
+                      className="mb-3"
+                    />
                     <div className="w-full flex flex-col items-center gap-2">
                       <SkeletonLoader type="text" width="80%" height={24} />
                       <SkeletonLoader type="text" width="60%" height={16} />
                     </div>
-                    <SkeletonLoader type="rect" width={120} height={36} className="rounded-full" />
+                    <SkeletonLoader
+                      type="rect"
+                      width={120}
+                      height={36}
+                      className="rounded-full"
+                    />
                   </div>
                 ))}
               </div>
             ) : (
-            <Swiper
-              modules={[Navigation, Pagination, Autoplay]}
-              spaceBetween={20}
-              slidesPerView={1}
-              pagination={false}
-              navigation={{
-                prevEl: ".swiper-button-prev-custom",
-                nextEl: ".swiper-button-next-custom",
-              }}
-              // pagination={{ clickable: false }}
-              autoplay={{ delay: 3000, disableOnInteraction: false }}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                1024: {
-                  slidesPerView: 3,
-                  spaceBetween: 24,
-                },
-              }}
-              className="colleges-swiper"
-            >
-              {state?.collegesList.map((college) => (
-                <SwiperSlide key={college.id}>
-                  <div
-                    className="cursor-pointer group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[0.94]  hover:bg-[#01014B] transition-all duration-500 "
-                    onClick={() => router.push(`/jobs?college=${college.id}`)}
-                  >
-                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100 group-hover:scale-115">
-                      <img
-                        src={college.college_logo}
-                        alt={college.college_name}
-                        className="w-14 h-14 object-contain"
-                      />
-                    </div>
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={20}
+                slidesPerView={1}
+                pagination={false}
+                navigation={{
+                  prevEl: ".swiper-button-prev-custom",
+                  nextEl: ".swiper-button-next-custom",
+                }}
+                // pagination={{ clickable: false }}
+                autoplay={{ delay: 3000, disableOnInteraction: false }}
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 20,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 24,
+                  },
+                }}
+                className="colleges-swiper"
+              >
+                {state?.collegesList.map((college) => (
+                  <SwiperSlide key={college.id}>
+                    <div
+                      className="cursor-pointer group py-6 px-3 flex flex-col items-center text-center h-[300px] justify-between border border-[#c7c7c787] hover:scale-[0.94]  hover:bg-[#01014B] transition-all duration-500 "
+                      onClick={() => router.push(`/jobs?college=${college.id}`)}
+                    >
+                      <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mb-3 border border-gray-100 group-hover:scale-115">
+                        {college.college_logo ? (
+                          <img
+                            src={college.college_logo}
+                            alt={college.college_name}
+                            className="w-14 h-14 object-contain"
+                          />
+                        ) : (
+                          <div
+                            className={`w-6 h-6 rounded-lg ${getAvatarColor(
+                              college.college_name,
+                            )} flex items-center justify-center text-white bg-gray-400  font-semibold flex-shrink-0`}
+                          >
+                            {college.college_name?.slice(0, 1).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
 
-                    <div className="flex-1 flex flex-col justify-center px-2">
-                      <h3 className="sub-ti !font-medium mb-1 leading-tight line-clamp-2 !text-[#313131] group-hover:!text-white transition-colors">
-                        {college.college_name}
-                      </h3>
-                      <p className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors">
-                        {college.college_address}
-                      </p>
-                    </div>
+                      <div className="flex-1 flex flex-col justify-center px-2">
+                        <h3 className="sub-ti !font-medium mb-1 leading-tight line-clamp-2 !text-[#313131] group-hover:!text-white transition-colors">
+                          {college.college_name}
+                        </h3>
+                        <p className="text-sm mb-5 mt-3 text-gray-500 group-hover:text-white/70 transition-colors">
+                          {college.college_address}
+                        </p>
+                      </div>
 
-                    <button className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black">
-                      {college.total_jobs} Openings
-                    </button>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                      <button className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#01014B] text-white group-hover:bg-[#F2B31D] group-hover:text-black">
+                        {college.total_jobs} Openings
+                      </button>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             )}
           </div>
 

@@ -139,37 +139,62 @@ const WhatCanIDo = () => {
                     <div className="space-y-4">
                       {[1, 2, 3, 4].map((i) => (
                         <div key={i} className="flex items-center gap-3">
-                          <SkeletonLoader type="circle" width={32} height={32} />
+                          <SkeletonLoader
+                            type="circle"
+                            width={32}
+                            height={32}
+                          />
                           <div className="flex-1">
-                            <SkeletonLoader type="text" width="70%" height={16} className="mb-1" />
-                            <SkeletonLoader type="text" width="40%" height={12} />
+                            <SkeletonLoader
+                              type="text"
+                              width="70%"
+                              height={16}
+                              className="mb-1"
+                            />
+                            <SkeletonLoader
+                              type="text"
+                              width="40%"
+                              height={12}
+                            />
                           </div>
                         </div>
                       ))}
                     </div>
                   ) : (
                     state?.collegesList?.slice(0, 4)?.map((college, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
-                      onClick={() => router.push(`/jobs?college=${college.id}`)}
-                    >
-                      <div className="w-8 h-8 rounded-full  flex-shrink-0">
-                        <img
-                          className="rounded-full"
-                          src={college.college_logo}
-                          alt={college.college_name}
-                        />
+                      <div
+                        key={index}
+                        className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded cursor-pointer transition"
+                        onClick={() =>
+                          router.push(`/jobs?college=${college.id}`)
+                        }
+                      >
+                        <div className="w-8 h-8 rounded-full  flex-shrink-0">
+                          {college.college_logo ? (
+                            <img
+                              className="rounded-full"
+                              src={college.college_logo}
+                              alt={college.college_name}
+                            />
+                          ) : (
+                            <div
+                              className={`w-6 h-6 rounded-lg ${getAvatarColor(
+                                college.college_name,
+                              )} flex items-center justify-center text-white bg-gray-400  font-semibold flex-shrink-0`}
+                            >
+                              {college.college_name?.slice(0, 1).toUpperCase()}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-md font-medium text-gray-800">
+                            {college.college_name}
+                          </h4>
+                          <p className="text-sm text-gray-500">
+                            {college.total_jobs} Jobs
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <h4 className="text-md font-medium text-gray-800">
-                          {college.college_name}
-                        </h4>
-                        <p className="text-sm text-gray-500">
-                          {college.total_jobs} Jobs
-                        </p>
-                      </div>
-                    </div>
                     ))
                   )}
                 </div>
