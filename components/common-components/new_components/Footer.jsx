@@ -128,18 +128,14 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
             {/* Logo Column */}
             <div className="md:col-span-4 space-y-4">
-              <div className="flex items-center gap-3">
-                {/* <div className=" p-1 rounded">
-                  <Image
-                    src="/assets/images/Faculty/Logo.png"
-                    alt="Logo"
-                    width={30}
-                    height={30}
-                  />
-                </div> */}
-                <span className="text-2xl font-medium text-[#fff]">
-                  Faculty Pro
-                </span>
+              <div className="relative w-[180px] h-9">
+                <Image
+                  src="/assets/images/footer_logo.png"
+                  alt="Faculty Group"
+                  fill
+                  className="h-full  w-full"
+                  priority
+                />
               </div>
               <p className="text-md text-white leading-relaxed max-w-sm">
                 Lorem ipsum dolor sit amet consectetur. Ultricies ac
@@ -242,37 +238,39 @@ const Footer = () => {
                   <Icon className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
               ))} */}
-               <a
-                  // key={i}
-                  href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
-                >
-                  <Facebook className="w-5 h-5 md:w-15 md:h-15" />
-                </a>
+              <a
+                // key={i}
+                href="#"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                <Facebook className="w-5 h-5 md:w-15 md:h-15" />
+              </a>
 
-                 <a
-                  // key={i}
-                  href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
-                > 𝕏
-                  {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
-                </a>
+              <a
+                // key={i}
+                href="#"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                {" "}
+                𝕏
+                {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
+              </a>
 
-                 <a
-                  // key={i}
-                  href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
-                >
-                  <Instagram className="w-5 h-5 md:w-15 md:h-15" />
-                </a>
+              <a
+                // key={i}
+                href="#"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                <Instagram className="w-5 h-5 md:w-15 md:h-15" />
+              </a>
 
-                 <a
-                  // key={i}
-                  href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
-                >
-                  <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
-                </a>
+              <a
+                // key={i}
+                href="#"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
+              </a>
             </div>
             <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
               Copyright 2026 © Faculty Pro. Concept by{" "}
