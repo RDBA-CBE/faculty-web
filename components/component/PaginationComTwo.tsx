@@ -114,7 +114,7 @@ const PaginationComTwo = (props) => {
                 onClick={() => handlePageClick(pageNumber)}
                 className={`relative flex h-10 w-10 items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 ${
                   isActive
-                    ? "bg-[#1d1d57] text-white shadow-lg "
+                    ? "bg-[#1a43bf] text-white shadow-lg "
                     : "text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-white"
                 }`}
               >

@@ -117,26 +117,26 @@ const Footer = () => {
 
       {/* 2. Main Footer Section - This takes the full screen width */}
       <div
-        className="w-full bg-[#000033] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
-        style={{
-          backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        className="w-full bg-[#1a43bf] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
+        // style={{
+        //   backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
+        //   backgroundSize: "cover",
+        //   backgroundPosition: "center",
+        // }}
       >
         <div className="section-wid ">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
             {/* Logo Column */}
             <div className="md:col-span-4 space-y-4">
               <div className="flex items-center gap-3">
-                <div className=" p-1 rounded">
+                {/* <div className=" p-1 rounded">
                   <Image
                     src="/assets/images/Faculty/Logo.png"
                     alt="Logo"
                     width={30}
                     height={30}
                   />
-                </div>
+                </div> */}
                 <span className="text-2xl font-medium text-[#fff]">
                   Faculty Pro
                 </span>
@@ -237,7 +237,7 @@ const Footer = () => {
                 <a
                   key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
                 >
                   <Icon className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -245,7 +245,7 @@ const Footer = () => {
                <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
                 >
                   <Facebook className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -253,7 +253,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
                 > 𝕏
                   {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
                 </a>
@@ -261,7 +261,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
                 >
                   <Instagram className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -269,7 +269,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#000033] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
                 >
                   <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
                 </a>

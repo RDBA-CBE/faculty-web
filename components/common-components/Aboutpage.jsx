@@ -8,7 +8,7 @@ export default function AboutPage() {
     <main className="bg-gray-50">
       {/* ================= HERO SECTION ================= */}
 
-      <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
+      <div className="bg-[#1a43bf] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
           <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
             About Us
@@ -145,21 +145,21 @@ export default function AboutPage() {
                 step: "01",
                 title: "Create Profile",
                 desc: "Faculty members create a profile with qualifications and experience.",
-                img: "/assets/images/userico.png",
+                img: "/assets/images/user-1.png",
                 imghover: "/assets/images/userico-white.png",
               },
               {
                 step: "02",
                 title: "Explore Jobs",
                 desc: "Browse verified academic job opportunities from institutions.",
-                img: "/assets/images/case.png",
+                img: "/assets/images/opportunity-1.png",
                 imghover: "/assets/images/case-white.png",
               },
               {
                 step: "03",
                 title: "Apply & Connect",
                 desc: "Apply directly and connect with institutions easily.",
-                img: "/assets/images/hand-shake.png",
+                img: "/assets/images/hand-shake-1.png",
                 imghover: "/assets/images/hand-shake-white.png",
               },
             ].map((item, i) => (
@@ -258,7 +258,7 @@ export default function AboutPage() {
       <section
         className="py-20 bg-cover bg-center bg-no-repeat relative"
         style={{
-          backgroundImage: "url('/assets/images/Faculty/count_bg.png')",
+          backgroundImage: "url('/assets/images/Rectangle-1.png')",
         }}
       >
         <div className="absolute "></div>

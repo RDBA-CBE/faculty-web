@@ -52,7 +52,7 @@ const FaqResumeSection = () => {
                 key={item.id}
                 className={` p-6 transition ${
                   active === item.id
-                    ? "rounded-2xl bg-[#1d1d570D] shadow-md"
+                    ? "rounded-2xl bg-[#1a43bf0D] shadow-md"
                     : "border-b border-gray-300"
                 }`}
               >
@@ -61,7 +61,7 @@ const FaqResumeSection = () => {
                   onClick={() => setActive(active === item.id ? "" : item.id)}
                 >
                   <div className="flex gap-5 items-center">
-                    <span className={`text-2xl font-medium ${active === item.id ? "text-[#01014B]" : "text-[#6C757D]"}`}>
+                    <span className={`text-2xl font-medium ${active === item.id ? "text-[#1a43bf]" : "text-[#6C757D]"}`}>
                       {item.id}
                     </span>
                     <h4 className="sub-ti !font-medium !text-[#1F1F1F]">
@@ -70,12 +70,12 @@ const FaqResumeSection = () => {
                   </div>
 
                   {active === item.id ? (
-                    <div className="bg-[#01014B] rounded-full p-1">
+                    <div className="bg-[#1a43bf] rounded-full p-1">
                       <X className="text-white h-5 w-5" />
                     </div>
                   ) : (
-                    <div className="border border-[#01014B] rounded-full p-1">
-                      <Plus className="h-5 w-5 text-[#01014B]" />
+                    <div className="border border-[#1a43bf] rounded-full p-1">
+                      <Plus className="h-5 w-5 text-[#1a43bf]" />
                     </div>
                   )}
                 </div>

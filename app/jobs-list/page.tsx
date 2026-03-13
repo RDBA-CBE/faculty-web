@@ -693,7 +693,7 @@ export default function JobsPage() {
     <>
       {" "}
       <div className=" bg-clr1">
-        <div className="bg-[#1d1d57] py-[50px] px-4 ">
+        <div className="bg-[#1a43bf] py-[50px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
             <h1 className="!text-white text-[40px] font-semibold">Jobs</h1>
           </div>
@@ -729,7 +729,7 @@ export default function JobsPage() {
                 <div className="bg-clr2 rounded-lg   p-6 ">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
+                      <div className="w-fit bg-[#1a43bf1A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
                         {/* • Posted{" "} */}
                         {moment(state?.jobDetail?.created_at).isValid() &&
                         moment(state?.jobDetail?.created_at).year() > 1900
@@ -818,7 +818,7 @@ export default function JobsPage() {
                         setState({ jobID: state?.jobDetail?.id });
                         handleApply();
                       }}
-                      className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                      className="bg-[#1a43bf]  text-md border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
                     >
                       {state.jobDetail?.apply_link
                         ? " Apply on company's site"
@@ -837,7 +837,7 @@ export default function JobsPage() {
                         {state.jobDetail?.is_saved ? (
                           <div className="flex items-center ">
                             <BookmarkCheck
-                              className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
+                              className={`w-5 h-5 fill-[#1a43bf] text-white cursor-pointer `}
                             />
                           </div>
                         ) : (
@@ -1250,7 +1250,7 @@ export default function JobsPage() {
                                   {job?.is_saved ? (
                                     <div className="flex items-center ">
                                       <BookmarkCheck
-                                        className={`w-5 h-5 fill-[#1d1d57] text-white cursor-pointer `}
+                                        className={`w-5 h-5 fill-[#1a43bf] text-white cursor-pointer `}
                                       />
                                     </div>
                                   ) : (
@@ -1286,7 +1286,7 @@ export default function JobsPage() {
                   <div className=" border-b  px-2 py-2 pb-5">
                     <div className="flex items-start justify-between mb-2">
                       <div>
-                        <div className="w-fit bg-[#1d1d571A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                        <div className="w-fit bg-[#1a43bf1A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
                           {/* • Posted{" "} */}
                           {moment(state?.jobDetail?.created_at).isValid() &&
                           moment(state?.jobDetail?.created_at).year() > 1900
@@ -1380,7 +1380,7 @@ export default function JobsPage() {
                               {state.jobDetail?.is_saved ? (
                                 <div className="flex items-center ">
                                   <BookmarkCheck
-                                    className={`w-6 h-6 fill-[#1d1d57] text-white cursor-pointer `}
+                                    className={`w-6 h-6 fill-[#1a43bf] text-white cursor-pointer `}
                                   />
                                 </div>
                               ) : (
@@ -1408,7 +1408,7 @@ export default function JobsPage() {
                               setState({ jobID: state?.jobDetail?.id });
                               handleApply();
                             }}
-                            className="bg-[#1d1d57]  text-md border border-xl border-[#1d1d57] rounded rounded-3xl  px-6 py-1  hover:bg-[#1d1d57] transition-colors text-white hover:text-white"
+                            className="bg-[#1a43bf]  text-md border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
                           >
                             {state.jobDetail?.apply_link
                               ? " Apply on company's site"
@@ -1708,7 +1708,7 @@ export default function JobsPage() {
                             onClick={() => setViewType("list")}
                             className={`p-2 rounded-md transition-colors ${
                               viewType === "list"
-                                ? "bg-[#1d1d57] text-white"
+                                ? "bg-[#1a43bf] text-white"
                                 : "text-gray-400 hover:bg-gray-100"
                             }`}
                           >
@@ -1718,7 +1718,7 @@ export default function JobsPage() {
                             onClick={() => setViewType("grid")}
                             className={`p-2 rounded-md transition-colors ${
                               viewType === "grid"
-                                ? "bg-[#1d1d57] text-white"
+                                ? "bg-[#1a43bf] text-white"
                                 : "text-gray-400 hover:bg-gray-100"
                             }`}
                           >
@@ -1799,7 +1799,7 @@ export default function JobsPage() {
 
                   {state.loading ? (
                     <div className="flex items-center justify-center h-[100vh] ">
-                      <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
+                      <Loader className="animate-spin h-10 w-10 text-[#1a43bf]" />
                     </div>
                   ) : state.jobList?.length > 0 ? (
                     <>
@@ -1910,7 +1910,7 @@ export default function JobsPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center h-[100vh] ">
-                      <Loader className="animate-spin h-10 w-10 text-[#1d1d57]" />
+                      <Loader className="animate-spin h-10 w-10 text-[#1a43bf]" />
                     </div>
                   )}
                 </div>

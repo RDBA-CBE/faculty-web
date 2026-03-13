@@ -36,7 +36,7 @@ const StatsSection = () => {
   return (
     <section 
       className="py-20 bg-cover bg-center bg-no-repeat relative "
-      style={{ backgroundImage: "url('/assets/images/Faculty/count_bg.png')" }}
+      style={{ backgroundImage: "url('/assets/images/Rectangle-1.png')" }}
     >
       <div className="absolute "></div>
       

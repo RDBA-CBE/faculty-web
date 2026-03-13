@@ -267,7 +267,7 @@ const Header = () => {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: "easeOut" }}
-        className={` sticky top-0 z-[50] bg-[#1d1d57] text-white `}
+        className={` sticky top-0 z-[50] bg-[#fff] text-white `}
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
@@ -275,13 +275,13 @@ const Header = () => {
             <div className="flex items-center flex-shrink-0">
               <Link href="/" className="flex items-center space-x-3">
                 <img
-                  src="/assets/images/Faculty/Logo.png"
+                  src="/assets/images/faculty-logo.png"
                   alt="Logo"
-                  className="w-10 h-10 object-contain"
+                  className="!w-[200px] h-10"
                 />
-                <span className="font-medium text-2xl tracking-tight text-white">
+                {/* <span className="font-medium text-2xl tracking-tight text-white">
                   Faculty Pro
-                </span>
+                </span> */}
               </Link>
             </div>
 
@@ -306,8 +306,8 @@ const Header = () => {
                         isActive
                           ? "text-[#F2B31D]"
                           : isHomePage
-                          ? "text-white hover:text-[#F2B31D]"
-                          : "text-white hover:text-[#F2B31D]"
+                          ? "text-black hover:text-[#F2B31D]"
+                          : "text-black hover:text-[#F2B31D]"
                       }`}
                     >
                       {menu.title}
@@ -368,13 +368,13 @@ const Header = () => {
                   <Button
                     onClick={() => setState({ isOpenLogin: true })}
                     variant="ghost"
-                    className="text-white text-sm font-bold hover:text-[#F2B31D] transition-colors"
+                    className="text-black text-sm font-bold hover:text-[#F2B31D] transition-colors"
                   >
                     Login
                   </Button>
                   <Button
                     onClick={() => setState({ isOpenReg: true })}
-                    className="bg-[#f2b31d] hover:bg-[#d9a016] text-[#1a1a5e] px-8 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-transform active:scale-95 shadow-md"
+                    className="bg-[#f2b31d] hover:bg-[#d9a016] text-[#000] px-8 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-transform active:scale-95 shadow-md"
                   >
                     Register
                     <MoveRight size={16} />
@@ -389,10 +389,10 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden hover:bg-trasparent ${
-                      isHomePage ? "text-white" : "text-white"
+                      isHomePage ? "text-[#1a43bf]" : "text-[#1a43bf]"
                     }`}
                   >
-                    <MenuIcon className="h-6 w-6 text-white " />
+                    <MenuIcon className="h-6 w-6 text-[#1a43bf] " />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80">
@@ -525,7 +525,7 @@ const Header = () => {
 
             <Button
               type="button"
-              className=" bg-[#1d1d57] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
+              className=" bg-[#1a43bf] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
               onClick={handleLogin}
             >
               {state.btnLoading ? (
@@ -690,7 +690,7 @@ const Header = () => {
                 handleRegister();
               }}
               type="button"
-              className="bg-[#1d1d57] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
+              className="bg-[#1a43bf] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
             >
                 {state.btnLoading ? (
                 <Loader className="animate-spin" size={16} />

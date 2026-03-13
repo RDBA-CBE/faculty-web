@@ -120,7 +120,7 @@ const PartnerCard = (props) => {
       className={`
         flex flex-col items-center justify-center p-6 rounded-[24px] transition-all duration-300
         min-h-[220px] border  group relative overflow-hidden
-        border border-[#C7C7C7] hover:bg-[#01014B]
+        border border-[#C7C7C7] hover:bg-[#1a43bf]
         ${
           p.isDark
             ? "bg-[#1e1e1e] border-[#C7C7C7] !text-[#fff]  hover:scale-[1.02] border-1 "

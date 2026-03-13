@@ -188,7 +188,7 @@ const FindYourJob = () => {
                   <SlidersHorizontal className="w-4 h-4 mr-1" />
                   <span className="text-sm font-medium">Filters</span>
                 </button> */}
-                <button className="bg-[#01014B] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#080f3d] transition">
+                <button className="bg-[#1a43bf] text-white px-5 py-2 rounded-full text-sm font-medium hover:bg-[#080f3d] transition">
                   Find Job
                 </button>
               </div>
@@ -234,7 +234,7 @@ const FindYourJob = () => {
                     key={job.id}
                     className="p-3 md:p-5 border border-[#c7c7c787]
              transition-all duration-300 bg-white cursor-pointer group
-             hover:bg-[#01014b]
+             hover:bg-[#1a43bf]
              hover:border-gray-400
              hover:-translate-y-1
              hover:shadow-2xl hover:shadow-gray-500 h-full "
@@ -333,7 +333,7 @@ const FindYourJob = () => {
 
                                 {/* If more than 2 departments */}
                                 {job?.department?.length > 2 && (
-                                  <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1d1d57]  text-white  group-hover:bg-[#fff] group-hover:!text-[#1d1d57] text-[12px] font-medium">
+                                  <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1a43bf]  text-white  group-hover:bg-[#fff] group-hover:!text-[#1a43bf] text-[12px] font-medium">
                                     +{job.department.length - 2}
                                   </div>
                                 )}
@@ -344,7 +344,7 @@ const FindYourJob = () => {
                                 onClick={() =>
                                   router.push(`/jobs?id=${job.id}`)
                                 }
-                                className="border border-[#01014B] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#01014B] group-hover:bg-[#fff] group-hover:!text-[#01014B] transition"
+                                className="border border-[#1a43bf] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#1a43bf] group-hover:bg-[#fff] group-hover:!text-[#1a43bf] transition"
                               >
                                 View Job
                               </button>
@@ -376,7 +376,7 @@ const FindYourJob = () => {
           <div className="lg:col-span-3 space-y-6">
             {/* Job Spotlight */}
             <div className=" border ">
-              <div className="bg-[#01014B] flex items-center justify-between py-3 px-4">
+              <div className="bg-[#1a43bf] flex items-center justify-between py-3 px-4">
                 <h3 className="text-xl md:text-xl font-medium text-white">
                   Job spotlight
                 </h3>
@@ -461,7 +461,7 @@ const FindYourJob = () => {
 
                           {/* If more than 2 departments */}
                           {job?.department?.length > 2 && (
-                            <div className="w-6 h-6 px-3  mt-[-4px] flex items-center justify-center rounded-full bg-[#1d1d57] text-white text-[12px] font-medium">
+                            <div className="w-6 h-6 px-3  mt-[-4px] flex items-center justify-center rounded-full bg-[#1a43bf] text-white text-[12px] font-medium">
                               +{job.department.length - 2}
                             </div>
                           )}
@@ -471,7 +471,7 @@ const FindYourJob = () => {
                       <div className="relative flex items-center justify-end">
                         <button
                           onClick={() => router.push(`/jobs?id=${job.id}`)}
-                          className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#01014B] hover:text-white transition flex items-center gap-2"
+                          className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#1a43bf] hover:text-white transition flex items-center gap-2"
                         >
                           Apply Now
                         </button>
@@ -483,7 +483,7 @@ const FindYourJob = () => {
             </div>
 
             {/* Jobs By Category */}
-            <div className="bg-[#01014B] border ">
+            <div className="bg-[#1a43bf] border ">
               <div className="py-3 px-4">
                 <h3 className="text-xl md:text-xl font-medium text-white">
                   Jobs By Category
@@ -500,7 +500,7 @@ const FindYourJob = () => {
                           `/jobs?search=${encodeURIComponent(category.name)}`,
                         )
                       }
-                      className="flex items-center gap-2 text-gray-800 hover:text-[#01014B] cursor-pointer transition"
+                      className="flex items-center gap-2 text-gray-800 hover:text-[#1a43bf] cursor-pointer transition"
                     >
                       <ChevronRight className="w-4 h-4 text-[#1F1F1F]" />
                       <span className="text-[#1F1F1F]">{category.name}</span>
@@ -508,7 +508,7 @@ const FindYourJob = () => {
                   ))}
                 </div>
 
-                {/* <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#01014B] transition">
+                {/* <button className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#1a43bf] transition">
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
                     <Plus className="w-4 h-4" />
                   </div>

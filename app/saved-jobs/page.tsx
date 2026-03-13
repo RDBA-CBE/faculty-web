@@ -82,13 +82,13 @@ export default function SavedJobsPage() {
   return (
     <div className="bg-clr1 min-h-screen flex flex-col">
       {/* HEADER */}
-      {/* <div className="bg-[#1d1d57] py-6 px-4">
+      {/* <div className="bg-[#1a43bf] py-6 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="section-ti !text-white">Saved Jobs</h1>
         </div>
       </div> */}
 
-      <div className="bg-[#1d1d57] py-[20px] md:py-[50px] px-4 ">
+      <div className="bg-[#1a43bf] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
           <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
             Saved Jobs

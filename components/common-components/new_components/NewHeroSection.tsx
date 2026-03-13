@@ -57,7 +57,7 @@ const NewHeroSection = () => {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <Image
-          src="/assets/images/banner_bg.png"
+          src="/assets/images/banner-1.png"
           alt="Background"
           fill
           className="object-cover"
