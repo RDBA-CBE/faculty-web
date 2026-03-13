@@ -177,7 +177,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
           {/* If more than 2 departments */}
           {job?.department?.length > 2 && (
-            <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1a43bf] text-white text-[12px] font-medium">
+            <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[12px] font-medium">
               +{job.department.length - 2}
             </div>
           )}
@@ -206,8 +206,8 @@ export const JobCard: React.FC<JobCardProps> = ({
         >
           {job?.is_saved ? (
             <div className="flex items-center ">
-              <BookmarkCheck className="w-7 h-7 fill-[#1a43bf] text-white" />
-              <div className="text-[#1a43bf] font-medium text-sm">Saved</div>
+              <BookmarkCheck className="w-7 h-7 fill-[#1E3786] text-white" />
+              <div className="text-[#1E3786] font-medium text-sm">Saved</div>
             </div>
           ) : (
             <>

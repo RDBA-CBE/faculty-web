@@ -393,7 +393,7 @@ export default function NaukriProfilePage() {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#1a43bf",
+      confirmButtonColor: "#1E3786",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       background: "#fff",
@@ -1151,7 +1151,7 @@ export default function NaukriProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="p-1.5 hover:bg-[#1a43bf]/10 rounded-full"
+                                className="p-1.5 hover:bg-[#1E3786]/10 rounded-full"
                                 onClick={() => {}}
                               >
                                 <Edit className="w-4 h-4 text-[#f2b31d]" />
@@ -1262,7 +1262,7 @@ export default function NaukriProfilePage() {
                       <Card className="!rounded-none bg-clr2  border-0 ">
                         <CardContent className="relative p-4">
                           <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-[#1a43bf] "></div>
+                            <div className="w-2 h-2 bg-[#1E3786] "></div>
                             Quick Links
                           </h3>
 
@@ -1274,7 +1274,7 @@ export default function NaukriProfilePage() {
       className={`flex items-center justify-between px-2 py-3 rounded-xl cursor-pointer transition-all
         ${
           activeTab === item.id
-            ? "bg-[#1a43bf] text-white"
+            ? "bg-[#1E3786] text-white"
             : "bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 hover:bg-white/80"
         }`}
     >
@@ -1312,11 +1312,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("resume")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf]  rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786]  rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <FileText className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Resume Manager
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -1365,7 +1365,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-4">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Upload className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-lg font-bold text-gray-900">
@@ -1386,8 +1386,8 @@ export default function NaukriProfilePage() {
                                               htmlFor="resume-upload"
                                               className="cursor-pointer flex flex-col items-center gap-2 w-full h-full"
                                             >
-                                              <div className="w-12 h-12 bg-[#1a43bf]/10 rounded-full flex items-center justify-center">
-                                                <Upload className="w-6 h-6 text-[#1a43bf]" />
+                                              <div className="w-12 h-12 bg-[#1E3786]/10 rounded-full flex items-center justify-center">
+                                                <Upload className="w-6 h-6 text-[#1E3786]" />
                                               </div>
                                               <span className="text-sm font-medium text-gray-700">
                                                 Click to upload or drag and drop
@@ -1439,7 +1439,7 @@ export default function NaukriProfilePage() {
                                     <div className="flex items-start gap-6">
                                       {/* Resume Icon */}
                                       <div className="flex-shrink-0">
-                                        <div className="w-14 h-14 bg-[#1a43bf]  shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
+                                        <div className="w-14 h-14 bg-[#1E3786]  shadow-lg flex items-center justify-center transform group-hover:scale-105 transition-transform duration-300 relative">
                                           <div className="text-white">
                                             <div className="text-xs text-white font-bold mb-1">
                                               PDF
@@ -1448,7 +1448,7 @@ export default function NaukriProfilePage() {
                                             <div className="w-6 h-0.5 bg-white/40 mb-1"></div>
                                             <div className="w-7 h-0.5 bg-white/100"></div>
                                           </div>
-                                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#1a43bf] rounded-full flex items-center justify-center shadow-lg">
+                                          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#1E3786] rounded-full flex items-center justify-center shadow-lg">
                                             <span className="text-white text-sm font-bold">
                                               ✓
                                             </span>
@@ -1462,7 +1462,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex-1">
                                             <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
                                               <span className="flex items-center gap-1">
-                                                <div className="w-2 h-2 bg-[#1a43bf] rounded-full"></div>
+                                                <div className="w-2 h-2 bg-[#1E3786] rounded-full"></div>
                                                 {state?.userDetail?.resume_url
                                                   ? "Uploaded"
                                                   : "No Resume Uploaded"}
@@ -1477,11 +1477,11 @@ export default function NaukriProfilePage() {
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                  className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                   onClick={downloadResume}
                                                   title="Download Resume"
                                                 >
-                                                  <Download className="w-4 h-4 text-[#1a43bf]   group-hover/btn:scale-110 transition-transform" />
+                                                  <Download className="w-4 h-4 text-[#1E3786]   group-hover/btn:scale-110 transition-transform" />
                                                 </Button>
                                                 <Button
                                                   variant="outline"
@@ -1497,7 +1497,7 @@ export default function NaukriProfilePage() {
                                               <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                 title="Upload Resume"
                                                 onClick={() =>
                                                   setState({
@@ -1505,7 +1505,7 @@ export default function NaukriProfilePage() {
                                                   })
                                                 }
                                               >
-                                                <PlusIcon className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                <PlusIcon className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                               </Button>
                                             )}
                                           </div>
@@ -1514,7 +1514,7 @@ export default function NaukriProfilePage() {
                                         {state?.userDetail?.resume_url && (
                                           <div className="flex flex-wrap items-center gap-3 mb-4">
                                             <div className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 px-3 py-1 rounded-full">
-                                              <span className="text-[#1a43bf] font-semibold text-sm">
+                                              <span className="text-[#1E3786] font-semibold text-sm">
                                                 Latest Version
                                               </span>
                                             </div>
@@ -1544,11 +1544,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("headline")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <Edit3 className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Profile Summary
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -1558,7 +1558,7 @@ export default function NaukriProfilePage() {
                             </div>
                             <div className="flex items-center gap-3">
                               <button
-                                className="w-8 h-8 bg-[#1a43bf]  text-white  rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white  rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setState({
@@ -1629,7 +1629,7 @@ export default function NaukriProfilePage() {
                                         <div className="flex gap-3">
                                           <Button
                                             onClick={aboutUpdate}
-                                            className="bg-[#1a43bf]  text-white shadow-lg"
+                                            className="bg-[#1E3786]  text-white shadow-lg"
                                           >
                                             <CheckCircle className="w-4 h-4 mr-2" />
                                             Update
@@ -1704,11 +1704,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("skills")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <Code className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Skills
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -1725,7 +1725,7 @@ export default function NaukriProfilePage() {
                                     skill: "",
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -1769,7 +1769,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl"></div>
                                       <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -1860,7 +1860,7 @@ export default function NaukriProfilePage() {
                                         className="group relative"
                                       >
                                         <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
-                                          <span className="text-[#1a43bf] font-medium text-sm">
+                                          <span className="text-[#1E3786] font-medium text-sm">
                                             {skill.name}
                                           </span>
                                           {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
@@ -1891,7 +1891,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-8"
                                   >
                                     <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                      <Code className="w-8 h-8 text-[#1a43bf]/60" />
+                                      <Code className="w-8 h-8 text-[#1E3786]/60" />
                                     </div>
                                     <h4 className="text-lg font-semibold text-gray-900 mb-2">
                                       No Skills Added
@@ -1933,11 +1933,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("employment")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <Briefcase className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Experience
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -1947,7 +1947,7 @@ export default function NaukriProfilePage() {
                             </div>
                             <div className="flex items-center gap-3">
                               <button
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                 onClick={(e) => {
                                   setState({
                                     isCreateExperience: true,
@@ -2002,7 +2002,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -2129,7 +2129,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex items-start gap-3">
                                             {/* Company Logo Placeholder */}
                                             <div className="flex-shrink-0 pt-1">
-                                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <span className="text-white font-bold text-md">
                                                   {emp.company
                                                     .charAt(0)
@@ -2152,7 +2152,7 @@ export default function NaukriProfilePage() {
                                                       {emp.designation}
                                                     </h4>
                                                   </div>
-                                                  <p className="text-md font-semibold text-[#1a43bf] mb-1">
+                                                  <p className="text-md font-semibold text-[#1E3786] mb-1">
                                                     {emp.company}
                                                   </p>
                                                   <div className="text-sm text-gray-600 mb-2">
@@ -2184,7 +2184,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() =>
                                                       setState({
                                                         isEditingExperience:
@@ -2201,7 +2201,7 @@ export default function NaukriProfilePage() {
                                                       })
                                                     }
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -2285,7 +2285,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() =>
                                                       setState({
                                                         isEditingExperience:
@@ -2302,7 +2302,7 @@ export default function NaukriProfilePage() {
                                                       })
                                                     }
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -2341,7 +2341,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-12"
                                   >
                                     <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                      <Briefcase className="w-8 h-8 text-[#1a43bf]/60"/>
+                                      <Briefcase className="w-8 h-8 text-[#1E3786]/60"/>
                                     </div>
                                     <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                       No Employment History
@@ -2388,11 +2388,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("education")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <GraduationCap className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Education
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -2413,7 +2413,7 @@ export default function NaukriProfilePage() {
                                     cgpa: "",
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -2457,7 +2457,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -2605,7 +2605,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex items-start gap-3">
                                             {/* Institution Logo Placeholder */}
                                             <div className="flex-shrink-0 pt-1">
-                                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <span className="text-white font-bold text-md">
                                                   {edu.institution
                                                     .charAt(0)
@@ -2623,7 +2623,7 @@ export default function NaukriProfilePage() {
                                                       {edu.degree}
                                                     </h4>
                                                   </div>
-                                                  <p className="text-md font-semibold text-[#1a43bf]">
+                                                  <p className="text-md font-semibold text-[#1E3786]">
                                                     {edu.institution}
                                                   </p>
                                                   <div className="text-sm text-gray-600">
@@ -2638,7 +2638,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() =>
                                                       setState({
                                                         isEditingEducation:
@@ -2655,7 +2655,7 @@ export default function NaukriProfilePage() {
                                                       })
                                                     }
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -2685,7 +2685,7 @@ export default function NaukriProfilePage() {
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                  className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                   onClick={() =>
                                                     setState({
                                                       isEditingEducation: true,
@@ -2701,7 +2701,7 @@ export default function NaukriProfilePage() {
                                                     })
                                                   }
                                                 >
-                                                  <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                  <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                 </Button>
                                                 <Button
                                                   variant="outline"
@@ -2739,7 +2739,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-12"
                                   >
                                     <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                      <GraduationCap className="w-12 h-12 text-[#1a43bf]/60" />
+                                      <GraduationCap className="w-12 h-12 text-[#1E3786]/60" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                       No Education History
@@ -2787,11 +2787,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("projects")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <FolderOpen className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Projects
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -2816,7 +2816,7 @@ export default function NaukriProfilePage() {
                                     funding_details: "",
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -2860,7 +2860,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -2937,7 +2937,7 @@ export default function NaukriProfilePage() {
                                             <input
                                               type="checkbox"
                                               id="funded-create"
-                                              className="h-4 w-4 rounded border-gray-300 text-[#1a43bf] focus:ring-[#3b82f6]"
+                                              className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
                                               checked={state.funded}
                                               onChange={(e) =>
                                                 handleFormChange(
@@ -3011,7 +3011,7 @@ export default function NaukriProfilePage() {
                                                 ) => (
                                                   <div
                                                     key={index}
-                                                    className="bg-[#1a43bf]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                                                    className="bg-[#1E3786]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
                                                   >
                                                     {tech}
                                                     <button
@@ -3092,7 +3092,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex items-start gap-3">
                                             {/* Project Icon */}
                                             <div className="flex-shrink-0 pt-1">
-                                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <span className="text-white font-bold text-md">
                                                   {project.project_title
                                                     .charAt(0)
@@ -3124,7 +3124,7 @@ export default function NaukriProfilePage() {
                                                           }
                                                           target="_blank"
                                                           rel="noopener noreferrer"
-                                                          className="text-[#1a43bf] hover:underline"
+                                                          className="text-[#1E3786] hover:underline"
                                                         >
                                                           View Project
                                                         </a>
@@ -3138,7 +3138,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() => {
                                                       setState({
                                                         isEditingProject: true,
@@ -3160,7 +3160,7 @@ export default function NaukriProfilePage() {
                                                       });
                                                     }}
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -3243,7 +3243,7 @@ export default function NaukriProfilePage() {
                                                         (tech, techIndex) => (
                                                           <span
                                                             key={techIndex}
-                                                            className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 text-[#1a43bf] px-3 py-1 rounded-full text-sm font-medium"
+                                                            className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 text-[#1E3786] px-3 py-1 rounded-full text-sm font-medium"
                                                           >
                                                             {tech}
                                                           </span>
@@ -3258,7 +3258,7 @@ export default function NaukriProfilePage() {
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                  className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                   onClick={() => {
                                                     setState({
                                                       isEditingProject: true,
@@ -3280,7 +3280,7 @@ export default function NaukriProfilePage() {
                                                     });
                                                   }}
                                                 >
-                                                  <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                  <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                 </Button>
                                                 <Button
                                                   variant="outline"
@@ -3317,7 +3317,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-12"
                                   >
                                     <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                      <FolderOpen className="w-12 h-12 text-[#1a43bf]/60" />
+                                      <FolderOpen className="w-12 h-12 text-[#1E3786]/60" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                       No Projects Added
@@ -3366,11 +3366,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("publications")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <Book className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Publications
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -3392,7 +3392,7 @@ export default function NaukriProfilePage() {
                                     publication_year: "",
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -3436,7 +3436,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -3598,7 +3598,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex items-start gap-3">
                                             {/* Publication Icon */}
                                             <div className="flex-shrink-0 pt-1">
-                                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <span className="text-white font-bold text-md">
                                                   {pub.publication_title
                                                     .charAt(0)
@@ -3640,7 +3640,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() => {
                                                       setState({
                                                         isEditingPublication:
@@ -3661,7 +3661,7 @@ export default function NaukriProfilePage() {
                                                       });
                                                     }}
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -3723,7 +3723,7 @@ export default function NaukriProfilePage() {
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                  className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                   onClick={() => {
                                                     setState({
                                                       isEditingPublication:
@@ -3744,7 +3744,7 @@ export default function NaukriProfilePage() {
                                                     });
                                                   }}
                                                 >
-                                                  <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                  <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                 </Button>
                                                 <Button
                                                   variant="outline"
@@ -3783,7 +3783,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-12"
                                   >
                                     <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                      <Book className="w-12 h-12 text-[#1a43bf]/60" />
+                                      <Book className="w-12 h-12 text-[#1E3786]/60" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                       No Publications Added
@@ -3831,11 +3831,11 @@ export default function NaukriProfilePage() {
                             onClick={() => toggleSection("achievements")}
                           >
                             <div className="flex items-center gap-4">
-                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                                 <Award className="w-4 h-4 text-white transform -rotate-3" />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1a43bf] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
                                   Achievements & Awards
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -3856,7 +3856,7 @@ export default function NaukriProfilePage() {
                                     achievement_description: "",
                                   });
                                 }}
-                                className="w-8 h-8 bg-[#1a43bf]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                               >
                                 <Plus className="w-4 h-4" />
                               </button>
@@ -3900,7 +3900,7 @@ export default function NaukriProfilePage() {
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                       <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                         <div className="flex items-center gap-3 mb-6">
-                                          <div className="w-8 h-8 bg-[#1a43bf] rounded-xl flex items-center justify-center">
+                                          <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                             <Plus className="w-4 h-4 text-white" />
                                           </div>
                                           <h4 className="text-xl font-bold text-gray-900">
@@ -4035,7 +4035,7 @@ export default function NaukriProfilePage() {
                                           <div className="flex items-start gap-6">
                                             {/* Achievement Icon */}
                                             <div className="flex-shrink-0">
-                                              <div className="w-10 h-10 bg-[#1a43bf] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                              <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <Award className="w-4 h-4 text-white" />
                                               </div>
                                             </div>
@@ -4051,7 +4051,7 @@ export default function NaukriProfilePage() {
                                                       }
                                                     </h4>
                                                   </div>
-                                                  <p className="text-md font-semibold text-[#1a43bf] mb-1">
+                                                  <p className="text-md font-semibold text-[#1E3786] mb-1">
                                                     {achievement.organization}
                                                   </p>
                                                 </div>
@@ -4061,7 +4061,7 @@ export default function NaukriProfilePage() {
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                     onClick={() => {
                                                       setState({
                                                         isEditingAchievements:
@@ -4079,7 +4079,7 @@ export default function NaukriProfilePage() {
                                                       });
                                                     }}
                                                   >
-                                                    <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                    <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                   </Button>
                                                   <Button
                                                     variant="outline"
@@ -4162,7 +4162,7 @@ export default function NaukriProfilePage() {
                                                 <Button
                                                   variant="outline"
                                                   size="sm"
-                                                  className="hover:bg-[#1a43bf]/10 border-[#3b82f6]/30 group/btn"
+                                                  className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
                                                   onClick={() => {
                                                     setState({
                                                       isEditingAchievements:
@@ -4180,7 +4180,7 @@ export default function NaukriProfilePage() {
                                                     });
                                                   }}
                                                 >
-                                                  <Edit className="w-4 h-4 text-[#1a43bf] group-hover/btn:scale-110 transition-transform" />
+                                                  <Edit className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
                                                 </Button>
                                                 <Button
                                                   variant="outline"
@@ -4213,7 +4213,7 @@ export default function NaukriProfilePage() {
                                     className="text-center py-12"
                                   >
                                     <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                      <Award className="w-12 h-12 text-[#1a43bf]/60" />
+                                      <Award className="w-12 h-12 text-[#1E3786]/60" />
                                     </div>
                                     <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                       No Achievements Added
@@ -4471,7 +4471,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={profileUpdate}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>
@@ -4595,7 +4595,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={updateEmployment}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>
@@ -4725,7 +4725,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={updateEducation}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>
@@ -4822,7 +4822,7 @@ export default function NaukriProfilePage() {
                               <input
                                 type="checkbox"
                                 id="funded-edit"
-                                className="h-4 w-4 rounded border-gray-300 text-[#1a43bf] focus:ring-[#3b82f6]"
+                                className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
                                 checked={state.funded}
                                 onChange={(e) =>
                                   handleFormChange("funded", e.target.checked)
@@ -4888,7 +4888,7 @@ export default function NaukriProfilePage() {
                                   (tech: string, index: number) => (
                                     <div
                                       key={index}
-                                      className="bg-[#1a43bf]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
+                                      className="bg-[#1E3786]/20 text-blue-900 text-sm font-medium px-2.5 py-0.5 rounded-full flex items-center gap-2"
                                     >
                                       {tech}
                                       <button
@@ -4935,7 +4935,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={updateProjects}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>
@@ -5080,7 +5080,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={updatePublication}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>
@@ -5220,7 +5220,7 @@ export default function NaukriProfilePage() {
                           </Button>
                           <Button
                             onClick={updateAchievement}
-                            className="bg-[#1a43bf] "
+                            className="bg-[#1E3786] "
                           >
                             Update
                           </Button>

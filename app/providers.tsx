@@ -21,7 +21,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <Suspense
         fallback={
           <div className="flex items-center justify-center min-h-screen">
-           <Loader className="animate-spin h-10 w-10 text-[#1a43bf]" />
+           <Loader className="animate-spin h-10 w-10 text-[#1E3786]" />
           </div>
         }
       >

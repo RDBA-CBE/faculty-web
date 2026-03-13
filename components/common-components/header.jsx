@@ -389,10 +389,10 @@ const Header = () => {
                     variant="ghost"
                     size="icon"
                     className={`lg:hidden hover:bg-trasparent ${
-                      isHomePage ? "text-[#1a43bf]" : "text-[#1a43bf]"
+                      isHomePage ? "text-[#1E3786]" : "text-[#1E3786]"
                     }`}
                   >
-                    <MenuIcon className="h-6 w-6 text-[#1a43bf] " />
+                    <MenuIcon className="h-6 w-6 text-[#1E3786] " />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-80">
@@ -525,7 +525,7 @@ const Header = () => {
 
             <Button
               type="button"
-              className=" bg-[#1a43bf] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
+              className=" bg-[#1E3786] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
               onClick={handleLogin}
             >
               {state.btnLoading ? (
@@ -690,7 +690,7 @@ const Header = () => {
                 handleRegister();
               }}
               type="button"
-              className="bg-[#1a43bf] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
+              className="bg-[#1E3786] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
             >
                 {state.btnLoading ? (
                 <Loader className="animate-spin" size={16} />

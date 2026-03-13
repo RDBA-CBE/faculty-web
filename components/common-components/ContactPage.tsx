@@ -39,7 +39,7 @@ export default function ContactPage() {
     <main className="bg-gray-50">
       {/* ================= HERO ================= */}
 
-      <div className="bg-[#1a43bf] py-[20px] md:py-[50px] px-4 ">
+      <div className="bg-[#1E3786] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
           <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
             Contact Us
@@ -268,7 +268,7 @@ export default function ContactPage() {
                 key={item.id}
                 className={` p-6 transition ${
                   active === item.id
-                    ? "rounded-2xl bg-[#1a43bf0D] shadow-md"
+                    ? "rounded-2xl bg-[#1E37860D] shadow-md"
                     : "border-b border-gray-300"
                 }`}
               >
@@ -278,7 +278,7 @@ export default function ContactPage() {
                 >
                   <div className="flex gap-5 items-center">
                     <span
-                      className={`text-2xl font-medium ${active === item.id ? "text-[#1a43bf]" : "text-[#6C757D]"}`}
+                      className={`text-2xl font-medium ${active === item.id ? "text-[#1E3786]" : "text-[#6C757D]"}`}
                     >
                       {item.id}
                     </span>
@@ -288,12 +288,12 @@ export default function ContactPage() {
                   </div>
 
                   {active === item.id ? (
-                    <div className="bg-[#1a43bf] rounded-full p-1">
+                    <div className="bg-[#1E3786] rounded-full p-1">
                       <X className="text-white h-5 w-5" />
                     </div>
                   ) : (
-                    <div className="border border-[#1a43bf] rounded-full p-1">
-                      <Plus className="h-5 w-5 text-[#1a43bf]" />
+                    <div className="border border-[#1E3786] rounded-full p-1">
+                      <Plus className="h-5 w-5 text-[#1E3786]" />
                     </div>
                   )}
                 </div>

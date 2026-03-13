@@ -167,7 +167,7 @@ const FeedbackForm = ({ token }) => {
           {/* JOB TITLE */}
 
           <div className="text-center  mt-4">
-            <h1 className="text-2xl font-bold text-[#1a43bf]">
+            <h1 className="text-2xl font-bold text-[#1E3786]">
               Interview Feedback Form
             </h1>
 
@@ -225,7 +225,7 @@ const FeedbackForm = ({ token }) => {
 
           <div className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-[#1a43bf] text-white flex items-center justify-center font-semibold">
+              <div className="h-10 w-10 rounded-full bg-[#1E3786] text-white flex items-center justify-center font-semibold">
                 {state.job?.applicant_name?.charAt(0)}
               </div>
 
@@ -245,7 +245,7 @@ const FeedbackForm = ({ token }) => {
               <Link
                 href={state.job?.resume}
                 target="_blank"
-                className="px-3 py-2 text-sm rounded-lg bg-[#1a43bf] hover:bg-[#ffb400] text-white"
+                className="px-3 py-2 text-sm rounded-lg bg-[#1E3786] hover:bg-[#ffb400] text-white"
               >
                 View Resume
               </Link>
@@ -481,7 +481,7 @@ const FeedbackForm = ({ token }) => {
             <Button
               onClick={handleSubmit}
               disabled={state.btnLoading}
-              className="  py-3 bg-[#1a43bf] hover:bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+              className="  py-3 bg-[#1E3786] hover:bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2"
             >
               {state.btnLoading ? (
                 <Loader className="animate-spin h-4 w-4" />

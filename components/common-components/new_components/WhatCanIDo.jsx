@@ -126,7 +126,7 @@ const WhatCanIDo = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-4">
             {/* Jobs By Location */}
-            <div className="bg-[#1a43bf] border ">
+            <div className="bg-[#1E3786] border ">
               <div className="py-3 px-4">
                 <h3 className="text-xl md:text-xl font-medium text-white">
                   Jobs By Colleges
@@ -200,7 +200,7 @@ const WhatCanIDo = () => {
                 </div>
 
                 <button
-                  className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#1a43bf] transition"
+                  className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#1E3786] transition"
                   onClick={() => router.push(`/jobs`)}
                 >
                   <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">

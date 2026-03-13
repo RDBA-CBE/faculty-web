@@ -41,7 +41,7 @@ const NewHeroSection = () => {
   return (
     <section className="relative bg-[#f9fafb] py-20 lg:py-28">
       <div className="section-wid w-full flex flex-col items-center text-center">
-        <h1 className="text-4xl lg:text-6xl font-bold text-[#1a43bf] mb-6">
+        <h1 className="text-4xl lg:text-6xl font-bold text-[#1E3786] mb-6">
           Find Your Dream <span className="text-orange-500">Faculty Job</span>
         </h1>
         <p className="text-gray-600 text-lg mb-10 max-w-2xl">
@@ -81,7 +81,7 @@ const NewHeroSection = () => {
 
           <button
             onClick={handleSearch}
-            className="bg-[#1a43bf] text-white px-8 py-3 rounded-full text-base font-medium hover:bg-[#080f3d] transition w-full sm:w-auto"
+            className="bg-[#1E3786] text-white px-8 py-3 rounded-full text-base font-medium hover:bg-[#080f3d] transition w-full sm:w-auto"
           >
             Find Job
           </button>
@@ -93,7 +93,7 @@ const NewHeroSection = () => {
             <span
               key={term}
               onClick={() => router.push(`/jobs?search=${encodeURIComponent(term)}`)}
-              className="bg-white px-3 py-1 rounded-full border border-gray-200 cursor-pointer hover:border-[#1a43bf] transition"
+              className="bg-white px-3 py-1 rounded-full border border-gray-200 cursor-pointer hover:border-[#1E3786] transition"
             >
               {term}
             </span>

@@ -1074,7 +1074,7 @@ export default function JobsPage() {
     <>
       {" "}
       <div className=" bg-clr1">
-        <div className="bg-[#1a43bf] py-[20px] md:py-[50px] px-4 ">
+        <div className="bg-[#1E3786] py-[20px] md:py-[50px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
             <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
               Jobs
@@ -1113,7 +1113,7 @@ export default function JobsPage() {
                 <div className="bg-clr2 rounded-lg   p-6 ">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <div className="w-fit bg-[#1a43bf1A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
+                      <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
                         {/* • Posted{" "} */}
                         {moment(state?.jobDetail?.created_at).isValid() &&
                         moment(state?.jobDetail?.created_at).year() > 1900
@@ -1215,7 +1215,7 @@ export default function JobsPage() {
                         setState({ jobID: state?.jobDetail?.id });
                         handleApply();
                       }}
-                      className="bg-[#1a43bf]  text-md border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
                     >
                       {state.jobDetail?.apply_link
                         ? " Apply on company's site"
@@ -1234,7 +1234,7 @@ export default function JobsPage() {
                         {state.jobDetail?.is_saved ? (
                           <div className="flex items-center ">
                             <BookmarkCheck
-                              className={`w-5 h-5 fill-[#1a43bf] text-white cursor-pointer `}
+                              className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
                             />
                           </div>
                         ) : (
@@ -1278,9 +1278,9 @@ export default function JobsPage() {
                                     key={index}
                                     onClick={(e) => getDepartment(e, item.id)}
                                     className="px-4 py-2 text-sm font-medium rounded-full 
-                       bg-blue-50 text-[#1a43bf] 
+                       bg-blue-50 text-[#1E3786] 
                        border border-blue-100
-                       hover:bg-[#1a43bf] hover:text-white
+                       hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
                                   >
                                     {item.name}
@@ -1424,7 +1424,7 @@ export default function JobsPage() {
                         {state?.jobDetail?.department?.map((item, index) => (
                           <div key={index}>
                             <span
-                              className="text-md text-gray-500 hover:text-[#1a43bf] cursor-pointer hover:underline"
+                              className="text-md text-gray-500 hover:text-[#1E3786] cursor-pointer hover:underline"
                               onClick={(e) => getDepartment(e, item.id)}
                             >
                               {item.name}
@@ -1513,7 +1513,7 @@ export default function JobsPage() {
                           `/jobs?college=${state?.jobDetail?.college?.id}`,
                         );
                       }}
-                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1a43bf] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                      className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                     >
                       {state?.jobDetail?.college?.total_jobs || 0} Openings
                     </button>
@@ -1573,7 +1573,7 @@ export default function JobsPage() {
                             }}
                             className={`cursor-pointer px-2 py-5 transition-all   ${
                               selectedJob?.id === job.id
-                                ? "border border-[#1a43bf] bg-[#fff]  "
+                                ? "border border-[#1E3786] bg-[#fff]  "
                                 : "border-b border-[#c7c7c787]"
                             }`}
                           >
@@ -1717,7 +1717,7 @@ export default function JobsPage() {
 
                                       {/* If more than 2 departments */}
                                       {job?.department?.length > 2 && (
-                                        <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1a43bf] text-white text-[10px] font-medium">
+                                        <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
                                           +{job.department.length - 2}
                                         </div>
                                       )}
@@ -1798,7 +1798,7 @@ export default function JobsPage() {
                                       {job?.is_saved ? (
                                         <div className="flex items-center ">
                                           <BookmarkCheck
-                                            className={`w-5 h-5 fill-[#1a43bf] text-white cursor-pointer `}
+                                            className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
                                           />
                                         </div>
                                       ) : (
@@ -1911,7 +1911,7 @@ export default function JobsPage() {
                         <div className=" border-b  px-2 py-2 pb-5">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <div className="w-fit bg-[#1a43bf1A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                              <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
                                 {/* • Posted{" "} */}
                                 {moment(
                                   state?.jobDetail?.created_at,
@@ -2032,7 +2032,7 @@ export default function JobsPage() {
                                     {state.jobDetail?.is_saved ? (
                                       <div className="flex items-center ">
                                         <BookmarkCheck
-                                          className={`w-6 h-6 fill-[#1a43bf] text-white cursor-pointer `}
+                                          className={`w-6 h-6 fill-[#1E3786] text-white cursor-pointer `}
                                         />
                                       </div>
                                     ) : (
@@ -2060,7 +2060,7 @@ export default function JobsPage() {
                                     setState({ jobID: state?.jobDetail?.id });
                                     handleApply();
                                   }}
-                                  className="bg-[#1a43bf]  text-md border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
+                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
                                 >
                                   {state.jobDetail?.apply_link
                                     ? " Apply on company's site"
@@ -2117,9 +2117,9 @@ export default function JobsPage() {
                                               getDepartment(e, item.id)
                                             }
                                             className="px-4 py-2 text-sm font-medium rounded-full 
-                       bg-blue-50 text-[#1a43bf] 
+                       bg-blue-50 text-[#1E3786] 
                        border border-blue-100
-                       hover:bg-[#1a43bf] hover:text-white
+                       hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
                                           >
                                             {item.name}
@@ -2264,7 +2264,7 @@ export default function JobsPage() {
                                       (item, index) => (
                                         <div key={index}>
                                           <span
-                                            className="hover:text-[#1a43bf] cursor-pointer hover:underline"
+                                            className="hover:text-[#1E3786] cursor-pointer hover:underline"
                                             onClick={(e) =>
                                               getDepartment(e, item.id)
                                             }
@@ -2362,7 +2362,7 @@ export default function JobsPage() {
                                     `/jobs?college=${state?.jobDetail?.college?.id}`,
                                   );
                                 }}
-                                className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1a43bf] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                                className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                               >
                                 {state?.jobDetail?.college?.total_jobs || 0}{" "}
                                 Openings
@@ -2501,7 +2501,7 @@ export default function JobsPage() {
                                 onClick={() => setViewType("grid")}
                                 className={`p-2 rounded-md transition-colors ${
                                   viewType === "grid"
-                                    ? "bg-[#1a43bf] text-white"
+                                    ? "bg-[#1E3786] text-white"
                                     : "text-gray-400 hover:bg-gray-100"
                                 }`}
                               >
@@ -2512,7 +2512,7 @@ export default function JobsPage() {
                                 onClick={() => setViewType("list")}
                                 className={`p-2 rounded-md transition-colors ${
                                   viewType === "list"
-                                    ? "bg-[#1a43bf] text-white"
+                                    ? "bg-[#1E3786] text-white"
                                     : "text-gray-400 hover:bg-gray-100"
                                 }`}
                               >
@@ -2558,7 +2558,7 @@ export default function JobsPage() {
                               {isFilterApplied() && (
                                 <button
                                   onClick={() => setIsMobileFilterOpen(false)}
-                                  className=" bg-[#1a43bf] w-fit  text-sm border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
+                                  className=" bg-[#1E3786] w-fit  text-sm border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
                                 >
                                   Apply
                                 </button>
@@ -2967,9 +2967,9 @@ export default function JobsPage() {
                                           getDepartment(e, item.id)
                                         }
                                         className="px-3 py-1 text-xs leading-relaxed rounded-full 
-                       bg-blue-50 text-[#1a43bf] 
+                       bg-blue-50 text-[#1E3786] 
                        border border-blue-100
-                       hover:bg-[#1a43bf] hover:text-white
+                       hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
                                       >
                                         {item.name}
@@ -3107,7 +3107,7 @@ export default function JobsPage() {
                                       className="text-sm text-gray-500"
                                     >
                                       <span
-                                        className="text-sm text-gray-500 hover:text-[#1a43bf] cursor-pointer hover:underline"
+                                        className="text-sm text-gray-500 hover:text-[#1E3786] cursor-pointer hover:underline"
                                         onClick={(e) =>
                                           getDepartment(e, item.id)
                                         }
@@ -3206,7 +3206,7 @@ export default function JobsPage() {
                                 `/jobs?college=${state?.jobDetail?.college?.id}`,
                               );
                             }}
-                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1a43bf] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
+                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                           >
                             {state?.jobDetail?.college?.total_jobs || 0}{" "}
                             Openings
@@ -3223,7 +3223,7 @@ export default function JobsPage() {
                             setState({ jobID: state.jobDetail?.id });
                             handleApply();
                           }}
-                          className="bg-[#1a43bf] w-full py-3 text-md border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white"
+                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
 
                           // className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                         >
@@ -3379,7 +3379,7 @@ export default function JobsPage() {
                     <Button
                       type="button"
                       onClick={handleFormSubmit}
-                      className="px-12 py-3 bg-[#1a43bf] hover:bg-[#1a43bf] text-white font-semibold rounded-full"
+                      className="px-12 py-3 bg-[#1E3786] hover:bg-[#1E3786] text-white font-semibold rounded-full"
                     >
                       Submit
                     </Button>
@@ -3416,7 +3416,7 @@ export default function JobsPage() {
 
                   {/* Small decorative circles */}
                   <div className="absolute top-24 left-32 w-3 h-3 bg-gray-400 rounded-full"></div>
-                  <div className="absolute top-28 right-40 w-4 h-4 bg-[#1a43bf] rounded-full"></div>
+                  <div className="absolute top-28 right-40 w-4 h-4 bg-[#1E3786] rounded-full"></div>
                   <div className="absolute bottom-32 left-40 w-3 h-3 bg-gray-300 rounded-full"></div>
 
                   {/* Success star badge */}
@@ -3509,7 +3509,7 @@ export default function JobsPage() {
                         )}
 
                         <div>
-                          <h2 className="text-xl sm:text-2xl font-semibold text-[#1a43bf]">
+                          <h2 className="text-xl sm:text-2xl font-semibold text-[#1E3786]">
                             {state.collegeDetail?.college_name}
                           </h2>
                           <p className="text-xs sm:text-sm text-gray-500">
@@ -3564,7 +3564,7 @@ export default function JobsPage() {
                               alt="NAAC Logo"
                               className="h-10 sm:h-12 object-contain"
                             />
-                            <h3 className="text-base sm:text-lg font-semibold text-[#1a43bf]">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#1E3786]">
                               NAAC & Accreditation
                             </h3>
                           </div>
@@ -3594,7 +3594,7 @@ export default function JobsPage() {
                               alt="NIRF Logo"
                               className="h-6 sm:h-8 object-contain"
                             />
-                            <h3 className="text-base sm:text-lg font-semibold text-[#1a43bf]">
+                            <h3 className="text-base sm:text-lg font-semibold text-[#1E3786]">
                               NIRF Rankings
                             </h3>
                           </div>
@@ -3624,7 +3624,7 @@ export default function JobsPage() {
                       {/* ================= Stats ================= */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
                         {state.collegeDetail?.intake_per_year && (
-                          <div className="bg-[#1a43bf] text-white rounded-xl p-4 md:p-5 text-center">
+                          <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
                             <p className="text-sm sm:text-lg font-semibold text-[#fff]">
                               Intake Per Year
                             </p>
@@ -3736,7 +3736,7 @@ export default function JobsPage() {
                         <>
                           {/* ================= Header ================= */}
                           <div className="pb-4 md:pb-6 border-b text-center sm:text-left">
-                            <h2 className="text-2xl sm:text-3xl font-semibold text-[#1a43bf]">
+                            <h2 className="text-2xl sm:text-3xl font-semibold text-[#1E3786]">
                               {state.departmentDetail.department_name}
                             </h2>
 
@@ -3755,7 +3755,7 @@ export default function JobsPage() {
                                     alt="NBA Logo"
                                     className="h-6 sm:h-8 object-contain"
                                   />
-                                  <p className="text-base sm:text-lg font-semibold text-[#1a43bf]">
+                                  <p className="text-base sm:text-lg font-semibold text-[#1E3786]">
                                     NBA Accreditation
                                   </p>
                                 </div>
@@ -3767,7 +3767,7 @@ export default function JobsPage() {
                             )}
 
                             {state.departmentDetail.intake_per_year && (
-                              <div className="bg-[#1a43bf] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
+                              <div className="bg-[#1E3786] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
                                 <p className="text-sm sm:text-lg font-semibold text-[#fff]">
                                   Intake Per Year
                                 </p>
@@ -3782,7 +3782,7 @@ export default function JobsPage() {
                           {state.departmentDetail.recent_achievements?.length >
                             0 && (
                             <div>
-                              <h3 className="text-base sm:text-lg font-semibold text-[#1a43bf] mb-3 sm:mb-4">
+                              <h3 className="text-base sm:text-lg font-semibold text-[#1E3786] mb-3 sm:mb-4">
                                 Recent Achievements
                               </h3>
 
@@ -3805,7 +3805,7 @@ export default function JobsPage() {
                           {/* ================= Summary ================= */}
                           {state.departmentDetail.summary && (
                             <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 md:p-6">
-                              <h3 className="text-base sm:text-lg font-semibold text-[#1a43bf] mb-2 sm:mb-3">
+                              <h3 className="text-base sm:text-lg font-semibold text-[#1E3786] mb-2 sm:mb-3">
                                 Summary
                               </h3>
 

@@ -8,7 +8,7 @@ export default function AboutPage() {
     <main className="bg-gray-50">
       {/* ================= HERO SECTION ================= */}
 
-      <div className="bg-[#1a43bf] py-[20px] md:py-[50px] px-4 ">
+      <div className="bg-[#1E3786] py-[20px] md:py-[50px] px-4 ">
         <div className="max-w-7xl 0px] mx-auto text-center">
           <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
             About Us

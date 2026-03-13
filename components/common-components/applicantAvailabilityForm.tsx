@@ -145,7 +145,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       <div className="max-w-4xl mx-auto">
         <div className="bg-indigo-50 border rounded-xl shadow">
           <div className="text-center  mt-4">
-            <h1 className="text-2xl font-bold text-[#1a43bf]">
+            <h1 className="text-2xl font-bold text-[#1E3786]">
               Interview Availability
             </h1>
 
@@ -267,7 +267,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
             <Button
               onClick={handleSubmit}
               disabled={state.btnLoading}
-              className="  py-3 bg-[#1a43bf] hover:bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2"
+              className="  py-3 bg-[#1E3786] hover:bg-amber-500 text-white font-bold rounded-xl flex items-center justify-center gap-2"
             >
               {state.btnLoading ? (
                 <Loader className="animate-spin h-4 w-4" />

@@ -152,7 +152,7 @@ const ResetPasswordForm = () => {
               <div className="flex items-center gap-2">
                 <Button
                   type="submit"
-                  className="w-full py-3 bg-[#1a43bf] hover:bg-amber-500 text-white font-bold rounded-3xl flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-[#1E3786] hover:bg-amber-500 text-white font-bold rounded-3xl flex items-center justify-center gap-2"
                   disabled={state.btnLoading}
                 >
                   {state.btnLoading ? (

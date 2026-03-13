@@ -185,7 +185,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
 
               {/* If more than 2 departments */}
               {job?.department?.length > 2 && (
-                <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1a43bf] text-white text-[12px] font-medium">
+                <div className="w-6 h-6 px-3 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[12px] font-medium">
                   +{job.department.length - 2}
                 </div>
               )}
@@ -210,7 +210,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           >
             {job?.is_saved ? (
               <div className="flex items-center ">
-                <BookmarkCheck className="w-7 h-7 fill-[#1a43bf] text-white" />
+                <BookmarkCheck className="w-7 h-7 fill-[#1E3786] text-white" />
               </div>
             ) : (
               <>
@@ -220,7 +220,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           </button>
         </div>
 
-        <button className=" order-0 md:order-1 bg-[#1a43bf] w-fit mb-3 text-sm border border-xl border-[#1a43bf] rounded rounded-3xl  px-6 py-1  hover:bg-[#1a43bf] transition-colors text-white hover:text-white">
+        <button className=" order-0 md:order-1 bg-[#1E3786] w-fit mb-3 text-sm border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white">
           View Job
         </button>
       </div>

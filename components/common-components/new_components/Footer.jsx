@@ -117,7 +117,7 @@ const Footer = () => {
 
       {/* 2. Main Footer Section - This takes the full screen width */}
       <div
-        className="w-full bg-[#1a43bf] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
+        className="w-full bg-[#1E3786] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
         // style={{
         //   backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
         //   backgroundSize: "cover",
@@ -237,7 +237,7 @@ const Footer = () => {
                 <a
                   key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
                 >
                   <Icon className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -245,7 +245,7 @@ const Footer = () => {
                <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
                 >
                   <Facebook className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -253,7 +253,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
                 > 𝕏
                   {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
                 </a>
@@ -261,7 +261,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
                 >
                   <Instagram className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
@@ -269,7 +269,7 @@ const Footer = () => {
                  <a
                   // key={i}
                   href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1a43bf] transition-all"
+                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
                 >
                   <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
                 </a>
