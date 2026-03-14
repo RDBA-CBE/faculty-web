@@ -51,11 +51,10 @@ const WhatCanIDo = () => {
           {/* Left Content - Job Listings */}
           <div className="lg:col-span-9 ">
             <h2 className="text-2xl md:text-2xl  font-medium  mb-3 text-[#151515]">
-              What can I do With Faculty Pro?
+              Platform for Academic Careers and Institutional Hiring 
             </h2>
             <p className="text-gray-600 mb-8">
-              Lorem ipsum dolor sit amet consectetur. Quam sit nullam ac
-              scelerisque mi varius tellus feugiat.
+             FacultyPro is a specialized platform connecting academic talent with leading educational institutions
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">
@@ -80,10 +79,11 @@ const WhatCanIDo = () => {
                   </div>
                   <div>
                     <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
-                      Find and Apply for Faculty Jobs
+                      Explore and Apply for Faculty Positions
                     </h3>
                     <p className="text-gray-600 text-md">
-                      Explore verified academic openings across institutions.
+                      Access verified faculty opportunities across reputable colleges and universities that match your
+qualifications.
                     </p>
                   </div>
                 </div>
@@ -96,10 +96,11 @@ const WhatCanIDo = () => {
                   </div>
                   <div>
                     <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
-                      Hire Qualified Teaching Professionals Easily
+                      Recruit Qualified Academic Professionals Efficiently
                     </h3>
                     <p className="text-gray-600 text-md">
-                      Post vacancies and shortlist candidates effortlessly.
+                      Institutions can post vacancies, review applications, and identify suitable candidates through a
+streamlined process.
                     </p>
                   </div>
                 </div>
@@ -112,10 +113,10 @@ const WhatCanIDo = () => {
                   </div>
                   <div>
                     <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
-                      Manage Applications in One Platform
+                      Manage Recruitment from a Single Platform
                     </h3>
                     <p className="text-gray-600 text-md">
-                      Track, review, and communicate with applicants.
+                      Track applications, review candidates, and communicate with applicants through a centralized system.
                     </p>
                   </div>
                 </div>

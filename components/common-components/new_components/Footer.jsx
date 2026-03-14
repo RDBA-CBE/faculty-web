@@ -78,10 +78,11 @@ const Footer = () => {
           {/* Text & Input Content */}
           <div className="w-full md:w-1/2 text-black z-10">
             <h2 className="text-2xl md:text-2xl font-medium text-[#1C1C1C] mb-2">
-              Subscribe Newsletter
+              Stay Informed About Academic Opportunities
             </h2>
-            <p className="text-sm opacity-90 mb-6 max-w-xs leading-tight">
-              Lorem ipsum dolor sit amet consectetur. Ultricies
+            <p className="text-sm opacity-90 mb-6 max-w-md leading-tight">
+              Receive timely updates on the latest faculty openings, institutional recruitment announcements, and
+academic career opportunities.
             </p>
 
             {/* Input Group */}
@@ -138,8 +139,8 @@ const Footer = () => {
                 />
               </div>
               <p className="text-md text-white leading-relaxed max-w-sm">
-                Lorem ipsum dolor sit amet consectetur. Ultricies ac
-                pellentesque euismod dapibus ullamcorper nec.
+               FacultyPro is a specialized academic recruitment platform connecting qualified educators with
+reputable colleges and institutions seeking excellence in teaching, research, and academic leadership.
               </p>
             </div>
 
