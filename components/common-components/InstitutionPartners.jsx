@@ -17,8 +17,8 @@ const partners = [
 const PARTNERS = [
   {
     id: "1", // Purple Hex Arrow
-    name: "Karpagam College Of Engineering",
-    logo: "/assets/images/Faculty/favicon.png",
+    name: "Karpagam Academy of Higher Education",
+    logo: "/assets/images/kahe.webp",
   },
   {
     id: "2", // Saturn
