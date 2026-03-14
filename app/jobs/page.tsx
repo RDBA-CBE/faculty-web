@@ -240,10 +240,7 @@ export default function JobsPage() {
               if (cardRect.top < startFadePosition) {
                 const opacity = Math.max(
                   0.6,
-                  Math.min(
-                    1,
-                    (cardRect.top - endFadePosition) / transitionZone,
-                  ),
+                  Math.min(1, (cardRect.top - endFadePosition) / transitionZone)
                 );
                 const blur = (1 - opacity) * 4;
 
@@ -265,7 +262,9 @@ export default function JobsPage() {
             });
           } else {
             searchBar.style.position = "absolute";
-            searchBar.style.top = `${jobListContainer.offsetHeight - searchBarHeight}px`;
+            searchBar.style.top = `${
+              jobListContainer.offsetHeight - searchBarHeight
+            }px`;
             searchBar.style.width = `${searchBarWrapper.offsetWidth}px`;
             searchBar.style.backgroundColor = "white";
           }
@@ -368,7 +367,7 @@ export default function JobsPage() {
     if (isDesktopScreen && selectedJob && showJobDetail) {
       const scrollContainer = jobListSidebarScrollContainerRef.current;
       const jobElement = document.getElementById(
-        `job-list-item-${selectedJob.id}`,
+        `job-list-item-${selectedJob.id}`
       );
 
       if (scrollContainer && jobElement) {
@@ -898,6 +897,7 @@ export default function JobsPage() {
         error.inner.forEach((err) => {
           validationErrors[err.path] = err.message;
         });
+        console.log("✌️validationErrors --->", validationErrors);
 
         setState({
           errors: validationErrors,
@@ -973,7 +973,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0),
+        ...filters.datePosted.map((d) => durationMap[d] || 0)
       );
 
       if (maxDays === 1) {
@@ -1133,7 +1133,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 rounded-lg ${getAvatarColor(
-                              state?.jobDetail?.college?.name,
+                              state?.jobDetail?.college?.name
                             )} flex items-center justify-center text-black bg-white font-semibold text-lg`}
                             onClick={(e) =>
                               getCollege(e, state?.jobDetail.college?.id)
@@ -1201,7 +1201,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", "),
+                              .join(", ")
                           )}{" "}
                           {/* {state?.jobDetail?.college?.address} */}
                         </span>
@@ -1285,7 +1285,7 @@ export default function JobsPage() {
                                   >
                                     {item.name}
                                   </button>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -1483,7 +1483,7 @@ export default function JobsPage() {
                     ) : (
                       <div
                         className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                          selectedJob.college?.name,
+                          selectedJob.college?.name
                         )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                         onClick={(e) =>
                           getCollege(e, state?.jobDetail.college?.id)
@@ -1510,7 +1510,7 @@ export default function JobsPage() {
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
-                          `/jobs?college=${state?.jobDetail?.college?.id}`,
+                          `/jobs?college=${state?.jobDetail?.college?.id}`
                         );
                       }}
                       className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -1589,7 +1589,7 @@ export default function JobsPage() {
                                   ) : (
                                     <div
                                       className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                                        job.college?.name,
+                                        job.college?.name
                                       )} flex items-center justify-center ${
                                         selectedJob?.id === job.id
                                           ? "text-white bg-gray-400"
@@ -1914,12 +1914,12 @@ export default function JobsPage() {
                               <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
                                 {/* • Posted{" "} */}
                                 {moment(
-                                  state?.jobDetail?.created_at,
+                                  state?.jobDetail?.created_at
                                 ).isValid() &&
                                 moment(state?.jobDetail?.created_at).year() >
                                   1900
                                   ? moment(
-                                      state?.jobDetail?.created_at,
+                                      state?.jobDetail?.created_at
                                     ).fromNow()
                                   : "Just now"}
                               </div>
@@ -1934,19 +1934,19 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   />
                                 ) : (
                                   <div
                                     className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                      state?.jobDetail?.college?.name,
+                                      state?.jobDetail?.college?.name
                                     )} flex items-center justify-center text-white bg-gray-400 font-semibold text-lg`}
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
@@ -1958,7 +1958,7 @@ export default function JobsPage() {
                                 <div className="flex-1 flex-col">
                                   <h1 className="text-3xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.job_title,
+                                      state?.jobDetail?.job_title
                                     )}
                                   </h1>
                                   <p
@@ -1966,12 +1966,12 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.college?.name,
+                                      state?.jobDetail?.college?.name
                                     )}
                                   </p>
                                 </div>
@@ -2001,7 +2001,7 @@ export default function JobsPage() {
                                       {capitalizeFLetter(
                                         state?.jobDetail?.locations
                                           ?.map((item) => item.city)
-                                          .join(", "),
+                                          .join(", ")
                                       )}{" "}
                                       {/* {state?.jobDetail?.college?.address} */}
                                     </span>
@@ -2124,7 +2124,7 @@ export default function JobsPage() {
                                           >
                                             {item.name}
                                           </button>
-                                        ),
+                                        )
                                       )}
                                     </div>
                                   </div>
@@ -2161,7 +2161,7 @@ export default function JobsPage() {
 
                                         <span className="">{item}</span>
                                       </li>
-                                    ),
+                                    )
                                   )}
                                 </ul>
                               </div>
@@ -2275,7 +2275,7 @@ export default function JobsPage() {
                                             state.jobDetail.department.length -
                                               1 && ", "}
                                         </div>
-                                      ),
+                                      )
                                     )}
                                   </div>
                                 </div>
@@ -2325,7 +2325,7 @@ export default function JobsPage() {
                                 ) : (
                                   <div
                                     className={`w-12 h-12 rounded-3xl ${getAvatarColor(
-                                      selectedJob.college?.name,
+                                      selectedJob.college?.name
                                     )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                                   >
                                     {selectedJob.college?.name
@@ -2339,7 +2339,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
@@ -2359,7 +2359,7 @@ export default function JobsPage() {
                                   });
 
                                   router.push(
-                                    `/jobs?college=${state?.jobDetail?.college?.id}`,
+                                    `/jobs?college=${state?.jobDetail?.college?.id}`
                                   );
                                 }}
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -2885,7 +2885,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
                                 onClick={(e) =>
                                   getCollege(e, state?.jobDetail.college?.id)
@@ -2913,7 +2913,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at,
+                                        state.jobDetail?.created_at
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -2974,7 +2974,7 @@ export default function JobsPage() {
                                       >
                                         {item.name}
                                       </button>
-                                    ),
+                                    )
                                   )}
                                 </div>
                               </div>
@@ -3005,7 +3005,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -3118,7 +3118,7 @@ export default function JobsPage() {
                                         state.jobDetail.department.length - 1 &&
                                         ", "}
                                     </div>
-                                  ),
+                                  )
                                 )}
                               </p>
                             </div>
@@ -3172,7 +3172,7 @@ export default function JobsPage() {
                             ) : (
                               <div
                                 className={`w-12 h-12 rounded-lg ${getAvatarColor(
-                                  state.jobDetail?.college?.name,
+                                  state.jobDetail?.college?.name
                                 )} flex items-center justify-center text-white bg-gray-400 font-semibold`}
                                 onClick={(e) =>
                                   getCollege(e, state?.jobDetail.college?.id)
@@ -3203,7 +3203,7 @@ export default function JobsPage() {
                               window.scrollTo({ top: 0, behavior: "smooth" });
 
                               router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`,
+                                `/jobs?college=${state?.jobDetail?.college?.id}`
                               );
                             }}
                             className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -3266,7 +3266,7 @@ export default function JobsPage() {
                         handleFormChange("firstName", e.target.value)
                       }
                       required
-                      error={state.errors?.firstName}
+                      error={state.errors?.first_name}
                     />
                     <Input
                       placeholder="Last Name*"
@@ -3276,7 +3276,7 @@ export default function JobsPage() {
                       }
                       required
                       bg="ffffff"
-                      error={state.errors?.lastName}
+                      error={state.errors?.last_name}
                     />
                   </div>
 
@@ -3341,7 +3341,7 @@ export default function JobsPage() {
                       onChange={(selected) =>
                         handleFormChange(
                           "department_id",
-                          selected ? selected.value : null,
+                          selected ? selected.value : null
                         )
                       }
                       placeholder="Select a department"
@@ -3499,7 +3499,7 @@ export default function JobsPage() {
                         ) : (
                           <div
                             className={`w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl ${getAvatarColor(
-                              state.collegeDetail?.college_name,
+                              state.collegeDetail?.college_name
                             )} flex items-center justify-center text-white font-bold text-lg sm:text-xl md:text-2xl shadow`}
                           >
                             {state.collegeDetail?.college_name
@@ -3578,7 +3578,7 @@ export default function JobsPage() {
                                 >
                                   {item.grade}
                                 </span>
-                              ),
+                              )
                             )}
                           </div>
                         </div>
@@ -3606,16 +3606,15 @@ export default function JobsPage() {
                               </span>
                             )}
 
-                            {state.collegeDetail?.nirf_categories?.map(
-                              (item) =>
-                                item.is_active ? (
-                                  <span
-                                    key={item.id}
-                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
-                                  >
-                                    {item.category}
-                                  </span>
-                                ) : null,
+                            {state.collegeDetail?.nirf_categories?.map((item) =>
+                              item.is_active ? (
+                                <span
+                                  key={item.id}
+                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
+                                >
+                                  {item.category}
+                                </span>
+                              ) : null
                             )}
                           </div>
                         </div>
@@ -3663,7 +3662,7 @@ export default function JobsPage() {
                                   <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                   {item.achievement}
                                 </li>
-                              ),
+                              )
                             )}
                           </ul>
                         </div>
@@ -3796,7 +3795,7 @@ export default function JobsPage() {
                                       <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                       {item.achievement}
                                     </li>
-                                  ),
+                                  )
                                 )}
                               </ul>
                             </div>
