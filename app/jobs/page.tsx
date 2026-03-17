@@ -3087,7 +3087,7 @@ export default function JobsPage() {
                                 <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                 Department
                               </span>
-                              <p className="text-md text-gray-500 ps-6">
+                              <div className="text-md text-gray-500 ps-6">
                                 {state?.jobDetail?.department?.map(
                                   (item, index) => (
                                     <div
@@ -3108,7 +3108,7 @@ export default function JobsPage() {
                                     </div>
                                   )
                                 )}
-                              </p>
+                              </div>
                             </div>
                             {state?.jobDetail?.college?.address && (
                               <div>
