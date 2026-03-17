@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { useRouter } from "next/navigation";
-import { useSetState } from "@/utils/function.utils";
+import { getAvatarColor, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 
@@ -173,11 +173,9 @@ const TopHiringColleges = () => {
                           />
                         ) : (
                           <div
-                            className={`w-6 h-6 rounded-lg ${getAvatarColor(
-                              college.college_name,
-                            )} flex items-center justify-center text-white bg-gray-400  font-semibold flex-shrink-0`}
+                            className={`w-6 h-6 rounded-lg flex items-center justify-center text-white bg-gray-400  font-semibold flex-shrink-0`}
                           >
-                            {college.college_name?.slice(0, 1).toUpperCase()}
+                            {college?.college_name?.slice(0, 1).toUpperCase()}
                           </div>
                         )}
                       </div>

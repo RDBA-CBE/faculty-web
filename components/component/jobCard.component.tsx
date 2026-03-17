@@ -129,9 +129,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             />
           ) : (
             <div
-              className={`w-10 h-10 rounded-lg ${getAvatarColor(
-                job?.college?.name,
-              )} flex items-center justify-center text-white font-semibold text-sm`}
+              className={`w-10 h-10 rounded-lg bg-gray-500 flex items-center justify-center text-white font-semibold text-sm`}
             >
               {job?.college?.name?.charAt(0).toUpperCase()}
             </div>

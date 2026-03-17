@@ -2,7 +2,6 @@ import Models from "@/imports/models.import";
 import {
   capitalizeFLetter,
   Failure,
-  getAvatarColor,
   Success,
 } from "@/utils/function.utils";
 import {
@@ -114,9 +113,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             />
           ) : (
             <div
-              className={`w-10 h-10 rounded-3xl ${getAvatarColor(
-                job?.college?.name,
-              )} flex items-center justify-center text-black bg-gray-400 font-semibold text-sm`}
+              className={`w-10 h-10 rounded-3xl   flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
               onClick={(e) => onCollegeClick(e, job?.college?.id)}
             >
               {job?.college?.name?.slice(0, 1).toUpperCase()}
