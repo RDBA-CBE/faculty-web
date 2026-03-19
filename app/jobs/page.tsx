@@ -8,6 +8,7 @@ import { MOCK_JOBS } from "@/utils/constant.utils";
 import {
   buildResumeFile,
   capitalizeFLetter,
+  CharSlice,
   convertUrlToFile,
   Dropdown,
   Failure,
@@ -1302,7 +1303,7 @@ export default function JobsPage() {
                         )}
                       </div>
                       <p>
-                        {state?.jobDetail?.job_description}
+                        {state?.jobDetail?.job_description || "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
                         {/* We are looking for a talented professional to join our
                         dynamic team. This role offers an excellent opportunity
                         to work with cutting-edge technologies and contribute to
@@ -1606,7 +1607,7 @@ export default function JobsPage() {
                                             : "text-gray-900"
                                         }`}
                                       >
-                                        {capitalizeFLetter(job.job_title)}
+                                        {capitalizeFLetter(CharSlice(job.job_title, 20))}
                                       </h3>
                                       <p
                                         className={`cursor-pointer ${
@@ -1616,14 +1617,14 @@ export default function JobsPage() {
                                         } text-sm font-normal`}
                                         // onClick={(e) => getCollege(e, job.college?.id)}
                                       >
-                                        {job.college?.name}
+                                        {CharSlice(job.college?.name, 20)}
                                       </p>
                                     </div>
                                   </div>
                                   {/* Header */}
                                   {/* Experience and Salary */}
                                   <div
-                                    className={`flex  justify-start gap-3  mb-3 border-none mt-4 ${
+                                    className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
                                       selectedJob?.id === job.id
                                         ? ""
                                         : "text-gray-600"
@@ -1633,7 +1634,7 @@ export default function JobsPage() {
                                       <Briefcase
                                         className={`${
                                           selectedJob?.id === job.id && ""
-                                        } w-3 h-3 text-[#E6AB1D]`}
+                                        } w-3 h-3 flex-1 text-[#E6AB1D]`}
                                       />
                                       <span
                                         className={`text-[12px] pt-[-2px] ${
@@ -1649,7 +1650,7 @@ export default function JobsPage() {
                                         <MapPin
                                           className={`${
                                             selectedJob?.id === job.id && ""
-                                          } w-3 h-3 text-[#E6AB1D]`}
+                                          } w-3 h-3 text-[#E6AB1D] flex-1`}
                                         />
                                         <span
                                           className={`text-[12px] pt-[-2px] ${
@@ -1691,9 +1692,9 @@ export default function JobsPage() {
                               </div> */}
                                   </div>
                                   <div className="flex gap-2">
-                                    <Building2 className="w-4 h-4 text-[#ffb400]" />
+                                    <Building2 className="w-4 h-4 text-[#ffb400] " />
 
-                                    <span className="flex items-center ">
+                                    <span className="flex items-center gap-2">
                                       {job?.department
                                         ?.slice(0, 1)
                                         .map((item, index) => (
@@ -2316,7 +2317,7 @@ export default function JobsPage() {
                                   />
                                 ) : (
                                   <div
-                                    className={`w-12 h-12 rounded-3xl bg-gray-400  flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                                    className={`w-12 h-8 rounded-3xl bg-gray-400  flex items-center justify-center text-white bg-gray-400 font-semibold`}
                                   >
                                     {selectedJob.college?.name
                                       ?.slice(0, 1)

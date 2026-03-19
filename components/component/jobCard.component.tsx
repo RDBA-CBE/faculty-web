@@ -1,6 +1,7 @@
 import Models from "@/imports/models.import";
 import {
   capitalizeFLetter,
+  CharSlice,
   Failure,
   getAvatarColor,
   Success,
@@ -105,7 +106,7 @@ export const JobCard: React.FC<JobCardProps> = ({
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 text-base text-lg ">
-            {capitalizeFLetter(job?.job_title)}
+            {capitalizeFLetter(CharSlice(job?.job_title, 35))}
           </h3>
           <p
             className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
@@ -182,13 +183,15 @@ export const JobCard: React.FC<JobCardProps> = ({
         </span>
       </div>
       {/* Job Description */}
-      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-        {job?.job_description ||
-          "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
-      </p>
-
+      {job?.job_description && (
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+          {job?.job_description}
+          {/* {job?.job_description ||
+          "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."} */}
+        </p>
+      )}
       {/* Footer with Posted Date and Save Button */}
-      <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+      <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
         <div className="flex items-center gap-1 text-sm text-gray-500">
           {/* <Clock className="w-3.5 h-3.5" /> */}
           {moment(job?.created_at).isValid() &&

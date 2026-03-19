@@ -1,6 +1,7 @@
 import Models from "@/imports/models.import";
 import {
   capitalizeFLetter,
+  CharSlice,
   Failure,
   Success,
 } from "@/utils/function.utils";
@@ -125,7 +126,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
               <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  ">
-                {capitalizeFLetter(job?.job_title)}
+                {capitalizeFLetter(CharSlice(job?.job_title, 40))}
               </h3>
               <p
                 className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
