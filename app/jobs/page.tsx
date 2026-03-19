@@ -1075,15 +1075,15 @@ export default function JobsPage() {
     <>
       {" "}
       <div className=" bg-clr1">
-        <div className="bg-[#1E3786] py-[20px] md:py-[50px] px-4 ">
+        <div className="bg-[#1E3786] py-[10px] md:py-[10px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <h1 className="!text-white text-[24px] md:text-[40px] font-medium md:font-semibold">
+            <h1 className="!text-white text-[24px] md:text-[35px] font-medium md:font-semibold">
               Jobs
             </h1>
           </div>
         </div>
 
-        <div className="section-wid  py-8 lg:py-12">
+        <div className="section-wid  py-8 lg:py-8">
           <main>
             {isTabScreen && selectedJob ? (
               <div
@@ -1871,7 +1871,7 @@ export default function JobsPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 space-y-6" ref={jobDetailContainerRef}>
+                  <div className="flex-1 space-y-1" ref={jobDetailContainerRef}>
                     {/* Job Header Card */}
                     {state.loading ? (
                       <div className="bg-white p-6 rounded-lg border border-[#c7c7c787] mb-6">
@@ -1919,7 +1919,7 @@ export default function JobsPage() {
                                     ).fromNow()
                                   : "Just now"}
                               </div>
-                              <div className="flex items-start gap-4 h-full mb-4">
+                              <div className="flex items-start gap-4 h-full mb-2">
                                 {state?.jobDetail?.college?.college_logo ? (
                                   <img
                                     src={
@@ -2004,7 +2004,7 @@ export default function JobsPage() {
                               </div>
                             </div>
 
-                            <div className="flex flex-col gap-5 justify-between items-end h-full">
+                            <div className="flex flex-col gap-2 justify-between items-end h-full">
                               <button
                                 className="p-1"
                                 onClick={() => setSelectedJob(null)}
@@ -2085,7 +2085,7 @@ export default function JobsPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex gap-6 flex-col xl:flex-row">
+                      <div className="flex gap-6 flex-col xl:flex-row ">
                         {/* Main Content */}
                         <div className="flex-1 space-y-1   p-3">
                           <div>
@@ -2371,7 +2371,7 @@ export default function JobsPage() {
                 </div>
               </>
             ) : (
-              <div className="relative flex flex-col lg:flex-row gap-8">
+              <div className="relative flex flex-col lg:flex-row gap-4">
                 <div
                   className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
                     isSidebarOpen
@@ -2670,7 +2670,7 @@ export default function JobsPage() {
                               "bg-white px-5 border border-[#c7c7c787]"
                             }`}
                             style={{
-                              gap: "20px",
+                              gap: "10px",
                             }}
                           >
                             {/* {filteredJobs.map((job) => ( */}
