@@ -1904,10 +1904,10 @@ export default function JobsPage() {
                       </div>
                     ) : (
                       <>
-                        <div className=" border-b  px-2 py-2 pb-5">
+                        <div className=" border-b    pb-2">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-3 py-2 text-[12px] text-[#000]">
+                              <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
                                 {/* • Posted{" "} */}
                                 {moment(
                                   state?.jobDetail?.created_at
@@ -1919,7 +1919,7 @@ export default function JobsPage() {
                                     ).fromNow()
                                   : "Just now"}
                               </div>
-                              <div className="flex items-start gap-4 h-full mb-2">
+                              <div className="flex items-start gap-4 h-full mb-1">
                                 {state?.jobDetail?.college?.college_logo ? (
                                   <img
                                     src={
@@ -1950,7 +1950,7 @@ export default function JobsPage() {
                                   </div>
                                 )}
                                 <div className="flex-1 flex-col">
-                                  <h1 className="text-3xl font-semibold text-gray-900 mb-1">
+                                  <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
                                       state?.jobDetail?.job_title
                                     )}
@@ -2004,14 +2004,14 @@ export default function JobsPage() {
                               </div>
                             </div>
 
-                            <div className="flex flex-col gap-2 justify-between items-end h-full">
+                            <div className="flex flex-col  justify-between items-end h-full">
                               <button
                                 className="p-1"
                                 onClick={() => setSelectedJob(null)}
                               >
                                 <X size={25} className=" hover:text-gray-600" />
                               </button>
-                              <div className="flex flex-col items-end justify-between pt-6 gap-8  border-gray-100">
+                              <div className="flex flex-col items-end justify-between pt-6 gap-6  border-gray-100">
                                 <div className="flex items-center gap-2">
                                   <button
                                     onClick={() =>
@@ -2087,15 +2087,15 @@ export default function JobsPage() {
                     ) : (
                       <div className="flex gap-6 flex-col xl:flex-row ">
                         {/* Main Content */}
-                        <div className="flex-1 space-y-1   p-3">
+                        <div className="flex-1 space-y-1  py-3">
                           <div>
                             {/* Job Description */}
-                            <div className="border-b  px-2 py-2 pb-5">
-                              <h2 className="text-lg font-semibold text-black mb-4">
+                            <div className="border-b  pb-3">
+                              <h2 className="text-lg font-semibold text-black mb-2">
                                 About the job
                               </h2>
                               {/* Department Section */}
-                              <div className="leading-relaxed space-y-6">
+                              <div className="leading-relaxed space-y-4">
                                 {state?.jobDetail?.department?.length > 0 && (
                                   <div>
                                     <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
@@ -2110,7 +2110,7 @@ export default function JobsPage() {
                                             onClick={(e) =>
                                               getDepartment(e, item.id)
                                             }
-                                            className="px-4 py-2 text-sm font-medium rounded-full 
+                                            className="px-4 py-1 text-sm font-medium rounded-full 
                        bg-blue-50 text-[#1E3786] 
                        border border-blue-100
                        hover:bg-[#1E3786] hover:text-white
@@ -2140,11 +2140,11 @@ export default function JobsPage() {
 
                             {/* Responsibilities */}
                             {state?.responsibilities?.length > 0 && (
-                              <div className="border-b  px-2 py-2 pb-5">
-                                <h2 className="text-lg font-semibold text-black mb-4">
+                              <div className="border-b pt-3  py-2 pb-5">
+                                <h2 className="text-lg font-semibold text-black mb-2">
                                   Key responsibilities
                                 </h2>
-                                <ul className="space-y-3">
+                                <ul className="space-y-1">
                                   {state?.responsibilities?.map(
                                     (item, index) => (
                                       <li
@@ -2208,11 +2208,11 @@ export default function JobsPage() {
                         <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
                           <div className="sticky top-20 space-y-4 ">
                             {/* Job Details */}
-                            <div className="bg-clr2   border border-[#c7c7c787]  p-6">
-                              <h3 className="text-lg font-semibold text-black mb-4">
+                            <div className="bg-clr2   border border-[#c7c7c787]  px-5 py-5">
+                              <h3 className="text-lg font-semibold text-black mb-2">
                                 Job Overview
                               </h3>
-                              <div className="space-y-4">
+                              <div className="space-y-2">
                                 {/* <div>
                           <p className="text-md font-medium  pb-1">Job type</p>
                           <p className="text-md text-black">
@@ -2295,7 +2295,7 @@ export default function JobsPage() {
 
                             {state?.jobDetail?.job_image && (
                               <div
-                                className="bg-white  border border-[#c7c7c787] cursor-pointer  p-6"
+                                className="bg-white  border border-[#c7c7c787] cursor-pointer  p-5"
                                 onClick={() => setState({ imgOpen: true })}
                               >
                                 <img
@@ -2305,8 +2305,8 @@ export default function JobsPage() {
                                 />
                               </div>
                             )}
-                            <div className="bg-white  border border-[#c7c7c787]  p-6">
-                              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                            <div className="bg-white  border border-[#c7c7c787]  p-5">
+                              <h3 className="text-lg font-semibold text-gray-900 mb-2">
                                 About
                               </h3>
                               <div className="flex items-start gap-3 mb-4">

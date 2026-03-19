@@ -2,19 +2,19 @@ import Link from "next/link";
 
 export default function Breadcrumb() {
   return (
-    <nav className="flex items-center space-x-2 text-sm text-gray-600">
+    <nav className="flex items-center space-x-2 text-xs text-gray-600">
       {/* Home */}
-      <Link href="/" className="hover:text-black">
+      <Link href="/" className="hover:text-black text-xs">
         Home
       </Link>
 
-      <span>/</span>
+      <span className="text-xs">/</span>
 
       {/* Jobs */}
 
       <Link
         href="/jobs"
-        className="hover:text-black"
+        className="hover:text-black text-xs"
         onClick={() => (window.location.href = "/jobs")}
       >
         Job
@@ -27,10 +27,10 @@ export default function Breadcrumb() {
         Job
       </Link> */}
 
-      <span>/</span>
+      <span className="text-xs">/</span>
 
       {/* Current Page */}
-      <span className="font-medium text-black">Job Detail</span>
+      <span className="font-medium text-black text-xs">Job Detail</span>
     </nav>
   );
 }

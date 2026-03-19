@@ -171,12 +171,15 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
+  const [showAllExperience, setShowAllExperience] = useState(false);
 
   const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
   const [deptSearchQuery, setDeptSearchQuery] = useState("");
+  const [experienceSearchQuery, setExperienceSearchQuery] = useState("");
 
   const collegePopupRef = useRef<HTMLDivElement>(null);
   const deptPopupRef = useRef<HTMLDivElement>(null);
+  const experiencePopupRef = useRef<HTMLDivElement>(null);
 
   const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
     0, 5000000,
@@ -305,6 +308,22 @@ const Filterbar: React.FC<SidebarProps> = ({
     }
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showAllDept]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        experiencePopupRef.current &&
+        !experiencePopupRef.current.contains(event.target as Node)
+      ) {
+        setShowAllExperience(false);
+      }
+    };
+
+    if (showAllExperience) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllExperience]);
 
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
@@ -600,7 +619,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
         <FilterSection
           title="Experience Level"
-          items={experienceList ?? []}
+          items={experienceList?.slice(0, 5) ?? []}
           selected={filters.experienceLevels}
           onToggle={(value) =>
             onFilterChange({
@@ -609,6 +628,89 @@ const Filterbar: React.FC<SidebarProps> = ({
             })
           }
         />
+        {experienceList && experienceList.length > 5 && (
+          <div className="relative mt-3">
+            <button
+              onClick={() => setShowAllExperience(true)}
+              className="text-sm font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3 py-2 ps-7"
+            >
+              View more
+            </button>
+
+            {showAllExperience && (
+              <div
+                ref={experiencePopupRef}
+                className="absolute left-[5%] top-[-200px]  mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
+              >
+                <div className="flex justify-between items-center mb-3">
+                  <h4 className="font-semibold text-[#000]">All Experience Levels</h4>
+                  <button
+                    onClick={() => setShowAllExperience(false)}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div className="relative mb-3">
+                  <Search
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                    size={16}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search experience..."
+                    value={experienceSearchQuery}
+                    onChange={(e) => setExperienceSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                  />
+                </div>
+
+                <div className="overflow-y-auto flex-1 space-y-2 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                  {experienceList
+                    ?.filter((c) =>
+                      c.label
+                        .toLowerCase()
+                        .includes(experienceSearchQuery.toLowerCase())
+                    )
+                    .map((item) => (
+                      <label
+                        key={item.value}
+                        className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={filters.experienceLevels.includes(item.value)}
+                          onChange={() =>
+                            onFilterChange({
+                              ...filters,
+                              experienceLevels: toggleItem(
+                                filters.experienceLevels,
+                                item.value
+                              ),
+                            })
+                          }
+                          className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                        />
+                        <span className="text-sm text-slate-600">
+                          {item.label}
+                        </span>
+                      </label>
+                    ))}
+                  {experienceList?.filter((c) =>
+                    c.label
+                      .toLowerCase()
+                      .includes(experienceSearchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No experience levels found
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="pt-[15px]">
           <PriceRangeSlider
