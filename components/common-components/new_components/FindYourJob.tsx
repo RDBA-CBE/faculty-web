@@ -253,9 +253,7 @@ const FindYourJob = () => {
                             />
                           ) : (
                             <div
-                              className={`w-full h-full rounded-lg ${getAvatarColor(
-                                job?.college?.name,
-                              )} flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
+                              className={`w-full h-full rounded-lg  flex items-center justify-center text-white bg-gray-400 font-medium  flex-shrink-0`}
                             >
                               {job?.college?.name?.slice(0, 1).toUpperCase()}
                             </div>
@@ -411,9 +409,7 @@ const FindYourJob = () => {
                           />
                         ) : (
                           <div
-                            className={`w-full h-full ${getAvatarColor(
-                              job?.college?.name,
-                            )} flex items-center justify-center text-white font-bold text-4xl`}
+                            className={`w-16 h-16 rounded-full flex items-center justify-center text-white font-bold bg-gray-400 text-4xl`}
                           >
                             {job?.college?.name?.charAt(0).toUpperCase()}
                           </div>
