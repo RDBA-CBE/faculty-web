@@ -125,7 +125,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           {/* Header with Title and Company Logo on Right */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
-              <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  ">
+              <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  " title={job?.job_title}>
                 {capitalizeFLetter(CharSlice(job?.job_title, 40))}
               </h3>
               <p

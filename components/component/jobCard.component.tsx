@@ -105,14 +105,15 @@ export const JobCard: React.FC<JobCardProps> = ({
       {/* Header with Title and Company Logo on Right */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
-          <h3 className="font-bold text-gray-900 text-base text-lg ">
+          <h3 className="font-bold text-gray-900 text-base text-lg" title={job?.job_title}>
             {capitalizeFLetter(CharSlice(job?.job_title, 35))}
           </h3>
           <p
             className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
+            title={job?.college?.name}
             onClick={(e) => onCollegeClick(e, job?.college?.id)}
           >
-            {capitalizeFLetter(job?.college?.name)}
+            {capitalizeFLetter(CharSlice(job?.college?.name,43))}
           </p>
         </div>
 

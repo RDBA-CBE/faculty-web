@@ -1606,6 +1606,7 @@ export default function JobsPage() {
                                             ? ""
                                             : "text-gray-900"
                                         }`}
+                                        title={job.job_title}
                                       >
                                         {capitalizeFLetter(CharSlice(job.job_title, 20))}
                                       </h3>
