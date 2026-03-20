@@ -22,25 +22,45 @@ const WhatCanIDo = () => {
   }, []);
 
   const collegeList = async () => {
-    try {
-      setState({ loading: true });
+  try {
+    setState({ loading: true });
 
-      const res = await Models.colleges.collegeList();
+    let allColleges = [];
+    let page = 1;
+    let hasNext = true;
+
+    while (hasNext) {
+      const res = await Models.colleges.collegeList({
+        page,
+        page_size: 10,
+      });
 
       // Filter colleges where total_jobs > 0
-      const filteredColleges = res?.results?.filter(
-        (college) => college?.total_jobs > 0,
+      const filtered = res?.results?.filter(
+        (college) => college?.total_jobs > 0
       );
 
-      setState({
-        loading: false,
-        collegesList: filteredColleges,
-      });
-    } catch (error) {
-      setState({ loading: false });
-      // Failure("Failed to fetch jobs");
+      allColleges = [...allColleges, ...filtered];
+
+      // stop when no next page
+      if (!res?.next) {
+        hasNext = false;
+      } else {
+        page++;
+      }
+
+      // 🔥 safety guard
+      if (page > 20) break;
     }
-  };
+
+    setState({
+      loading: false,
+      collegesList: allColleges,
+    });
+  } catch (error) {
+    setState({ loading: false });
+  }
+};
 
   console.log("collegesList", state?.collegesList);
 
