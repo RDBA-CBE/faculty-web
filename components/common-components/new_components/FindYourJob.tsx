@@ -264,10 +264,10 @@ const FindYourJob = () => {
                           <div className="flex justify-between">
                             <div>
                               <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 group-hover:!text-white">
-                                {capitalizeFLetter(job.job_title)}
+                                {capitalizeFLetter(CharSlice(job.job_title, 35))}
                               </h3>
                               <p className="text-sm text-gray-600 group-hover:!text-white">
-                                {job.college?.name}
+                                {CharSlice(job.college?.name, 43)}
                               </p>
                             </div>
                             <div onClick={(e) => e.stopPropagation()}>
@@ -417,10 +417,10 @@ const FindYourJob = () => {
                       </div>
 
                       <h4 className="sub-ti !font-medium !text-[#313131] mb-2 line-clamp-1">
-                        {job.job_title}
+                        {CharSlice(job.job_title, 35)}
                       </h4>
                       <p className="text-base text-gray-600 mb-4 line-clamp-1">
-                        {job.college?.name}
+                        {CharSlice(job.college?.name, 43)}
                       </p>
 
                       <div className="space-y-2 ">

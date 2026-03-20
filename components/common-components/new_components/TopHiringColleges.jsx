@@ -63,26 +63,71 @@ const TopHiringColleges = () => {
     collgeList();
   }, []);
 
+  // const collgeList = async () => {
+  //   try {
+  //     setState({ loading: true });
+
+  //     const res = await Models.colleges.collegeList();
+
+  //     console.log("res", res);
+
+  //     // Filter colleges where total_jobs > 0
+  //     const filteredColleges = res?.results?.filter(
+  //       (college) => college?.total_jobs > 0,
+  //     );
+
+  //     setState({
+  //       loading: false,
+  //       collegesList: filteredColleges,
+  //     });
+  //   } catch (error) {
+  //     setState({ loading: false });
+  //     // Failure("Failed to fetch jobs");
+  //   }
+  // };
+
   const collgeList = async () => {
-    try {
-      setState({ loading: true });
+  try {
+    setState({ loading: true });
 
-      const res = await Models.colleges.collegeList();
+    let allColleges = [];
+    let page = 1;
+    let hasNext = true;
 
-      // Filter colleges where total_jobs > 0
-      const filteredColleges = res?.results?.filter(
-        (college) => college?.total_jobs > 0,
+    while (hasNext) {
+      const res = await Models.colleges.collegeList({
+        page,
+        page_size: 10,
+      });
+
+      console.log("PAGE:", page, "NEXT:", res?.next);
+
+      const filtered = res?.results?.filter(
+        (college) => college?.total_jobs > 0
       );
 
-      setState({
-        loading: false,
-        collegesList: filteredColleges,
-      });
-    } catch (error) {
-      setState({ loading: false });
-      // Failure("Failed to fetch jobs");
+      allColleges = [...allColleges, ...filtered];
+
+      if (!res?.next) {
+        hasNext = false;
+      } else {
+        page++;
+      }
+
+      // safety break
+      if (page > 20) break;
     }
-  };
+
+    setState({
+      loading: false,
+      collegesList: allColleges,
+    });
+  } catch (error) {
+    setState({ loading: false });
+  }
+};
+
+  console.log("collegesList", state?.collegesList);
 
   return (
     <section className="py-12 lg:py-20 bg-gray-50">
@@ -231,7 +276,8 @@ const TopHiringColleges = () => {
                 {state?.token ? (
                   <>
                     <h4 className="text-lg  font-normal text-white mb-4 ">
-                     Create your profile and upload your resume to stay informed about the latest faculty openings.
+                      Create your profile and upload your resume to stay
+                      informed about the latest faculty openings.
                     </h4>
                     {/* <p className="text-sm mb-4 py-4 text-white">
                       Add Resume Now!
@@ -247,9 +293,8 @@ const TopHiringColleges = () => {
                 ) : (
                   <>
                     <h4 className="text-lg  font-normal text-white mb-4 ">
-                      
-                      Receive the Most Relevant Job Opportunities Directly in Your Inbox
-                      
+                      Receive the Most Relevant Job Opportunities Directly in
+                      Your Inbox
                     </h4>
                     {/* <p className="text-sm mb-4 py-4 text-white">
                       Create your profile and upload your resume to stay

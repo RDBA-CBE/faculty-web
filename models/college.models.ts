@@ -99,28 +99,24 @@ const colleges = {
     });
   },
 
-  collegeList: (data = null) => {
-    return new Promise((resolve, reject) => {
-      let url = `colleges/colleges-list/`;
+ collegeList: (params = {}) => {
+  return new Promise((resolve, reject) => {
+    let url = `colleges/colleges-list/`;
 
-      if (data?.pagination == "No") {
-        url += `?pagination=${encodeURIComponent(false)}`;
-      }
-
-      axiosWithoutToken()
-        .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((error) => {
-          if (error.response) {
-            reject(error.response.message);
-          } else {
-            reject(error);
-          }
-        });
-    });
-  },
+    axiosWithoutToken()
+      .get(url, { params }) // ✅ PASS PARAMS HERE
+      .then((res) => {
+        resolve(res.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          reject(error.response.message);
+        } else {
+          reject(error);
+        }
+      });
+  });
+},
 
   dashboard: () => {
     return new Promise((resolve, reject) => {
