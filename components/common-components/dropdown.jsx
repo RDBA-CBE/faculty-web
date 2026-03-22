@@ -48,7 +48,7 @@ const CustomSelect = (props) => {
           value={value ? String(value) : ""}
           onValueChange={(val) => {
             const selected = options?.find(
-              (option) => String(option.value) === val,
+              (option) => String(option.value) === val
             );
             onChange(selected || null);
           }}
@@ -56,7 +56,9 @@ const CustomSelect = (props) => {
         >
           <SelectTrigger
             className={` shadow-none bg-none 
- ${selectedOption ? " pr-10 [&>svg]:hidden" : ""} ${className || "border-none"}`}
+ ${selectedOption ? " pr-10 [&>svg]:hidden" : ""} ${
+              className || "border-none"
+            }`}
           >
             {" "}
             {/* Space for clear icon */}

@@ -198,16 +198,37 @@ const FindYourJob = () => {
             {state.loading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="p-3 md:p-5 border border-[#c7c7c787] bg-white h-full">
+                  <div
+                    key={i}
+                    className="p-3 md:p-5 border border-[#c7c7c787] bg-white h-full"
+                  >
                     <div className="flex items-start gap-3">
-                      <SkeletonLoader type="rect" width={48} height={48} className="rounded-lg flex-shrink-0" />
+                      <SkeletonLoader
+                        type="rect"
+                        width={48}
+                        height={48}
+                        className="rounded-lg flex-shrink-0"
+                      />
                       <div className="w-full">
                         <div className="flex justify-between mb-2">
                           <div className="w-3/4">
-                            <SkeletonLoader type="text" width="90%" height={20} className="mb-2" />
-                            <SkeletonLoader type="text" width="50%" height={16} />
+                            <SkeletonLoader
+                              type="text"
+                              width="90%"
+                              height={20}
+                              className="mb-2"
+                            />
+                            <SkeletonLoader
+                              type="text"
+                              width="50%"
+                              height={16}
+                            />
                           </div>
-                          <SkeletonLoader type="circle" width={20} height={20} />
+                          <SkeletonLoader
+                            type="circle"
+                            width={20}
+                            height={20}
+                          />
                         </div>
 
                         <div className="flex gap-4 mb-4 mt-4">
@@ -219,7 +240,12 @@ const FindYourJob = () => {
                         </div>
 
                         <div className="flex justify-between items-center mt-4">
-                          <SkeletonLoader type="rect" width={100} height={32} className="rounded-full" />
+                          <SkeletonLoader
+                            type="rect"
+                            width={100}
+                            height={32}
+                            className="rounded-full"
+                          />
                           <SkeletonLoader type="text" width={60} height={12} />
                         </div>
                       </div>
@@ -264,7 +290,9 @@ const FindYourJob = () => {
                           <div className="flex justify-between">
                             <div>
                               <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 group-hover:!text-white">
-                                {capitalizeFLetter(CharSlice(job.job_title, 35))}
+                                {capitalizeFLetter(
+                                  CharSlice(job.job_title, 35)
+                                )}
                               </h3>
                               <p className="text-sm text-gray-600 group-hover:!text-white">
                                 {CharSlice(job.college?.name, 43)}
@@ -493,7 +521,7 @@ const FindYourJob = () => {
                       key={index}
                       onClick={() =>
                         router.push(
-                          `/jobs?search=${encodeURIComponent(category.name)}`,
+                          `/jobs?search=${encodeURIComponent(category.name)}`
                         )
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#1E3786] cursor-pointer transition"

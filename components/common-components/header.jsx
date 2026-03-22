@@ -339,12 +339,12 @@ const Header = () => {
                       <span>Profile</span>
                     </DropdownMenuItem>
 
-                    <DropdownMenuItem
+                    {/* <DropdownMenuItem
                       onClick={() => router.push("/saved-jobs")}
                     >
                       <Bookmark className="mr-2 h-4 w-4" />
                       <span>Saved Jobs</span>
-                    </DropdownMenuItem>
+                    </DropdownMenuItem> */}
 
                     <DropdownMenuItem
                       onClick={() => router.push("/change-password")}
@@ -656,7 +656,10 @@ const Header = () => {
                   />
                   <span className="text-gray-600 text-sm">
                     I've read and agree with your{" "}
-                    <button className="text-amber-500 hover:text-amber-600" onClick={() => window.open("/terms-conditions", "_blank")}>
+                    <button
+                      className="text-amber-500 hover:text-amber-600"
+                      onClick={() => window.open("/terms-conditions", "_blank")}
+                    >
                       Terms of Services
                     </button>
                     <span className="text-red-500"> *</span>
@@ -692,7 +695,7 @@ const Header = () => {
               type="button"
               className="bg-[#1E3786] w-full py-3  hover:bg-amber-500  text-white rounded-3xl flex items-center justify-center gap-2"
             >
-                {state.btnLoading ? (
+              {state.btnLoading ? (
                 <Loader className="animate-spin" size={16} />
               ) : (
                 <>
@@ -700,8 +703,6 @@ const Header = () => {
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-
-             
             </Button>
 
             {/* <div className="text-center text-gray-500 my-4">or</div> */}

@@ -2,15 +2,23 @@ import instance from "@/utils/axios.utils";
 
 
 const location = {
-  list: () => {
-    let promise = new Promise((resolve, reject) => {
-      let url = `job-locations/`;
-
+  list: (page, body = null) => {
+    return new Promise((resolve, reject) => {
+      const params = new URLSearchParams({
+        page: String(page),
+      });
+  
+      if (body?.search) {
+        params.append("search", body.search);
+      }
+  
+      const url = `job-locations/?${params.toString()}`;
+  
+      console.log("✌️url --->", url);
+  
       instance()
         .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
+        .then((res) => resolve(res.data))
         .catch((error) => {
           if (error.response) {
             reject(error.response.message);
@@ -19,7 +27,6 @@ const location = {
           }
         });
     });
-    return promise;
   },
 
   create: (data: any) => {
