@@ -1199,7 +1199,7 @@ export default function NaukriProfilePage() {
     try {
       const body = {
         is_interested: type == "accept" ? true : false,
-        is_reponse: true,
+        is_response: true,
       };
 
       const formData = new FormData();
@@ -4773,7 +4773,7 @@ export default function NaukriProfilePage() {
                           ))
                         ) : (
                           <p className="text-gray-500 text-center">
-                            No invites found
+                            No request found
                           </p>
                         )}
                       </>
