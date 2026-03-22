@@ -2,7 +2,7 @@ import instance from "@/utils/axios.utils";
 
 
 const location = {
-  list: (page, body = null) => {
+  list: (page=1, body = null) => {
     return new Promise((resolve, reject) => {
       const params = new URLSearchParams({
         page: String(page),
