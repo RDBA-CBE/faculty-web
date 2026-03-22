@@ -210,7 +210,7 @@ export default function JobsPage() {
 
   const locationList = async () => {
     try {
-      const res: any = await Models.location.list();
+      const res: any = await Models.location.list(1);
       const dropdown = Dropdown(res?.results, "city");
       setState({
         locationList: dropdown,
