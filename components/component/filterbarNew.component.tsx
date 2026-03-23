@@ -27,35 +27,26 @@ const FilterSection = ({ title, items, selected, onToggle }: any) => (
   </div>
 );
 
-const FilterbarNew = ({
-  filters,
-  onFilterChange,
-  filterList,
-}: SidebarProps) => {
+const FilterbarNew = ({ filters, onFilterChange, filterList }: SidebarProps) => {
   const [showCollegePopup, setShowCollegePopup] = useState(false);
   const [showDeptPopup, setShowDeptPopup] = useState(false);
 
   const [collegeSearch, setCollegeSearch] = useState("");
   const [deptSearch, setDeptSearch] = useState("");
 
-  const [debouncedCollege, setDebouncedCollege] = useState("");
-  const [debouncedDept, setDebouncedDept] = useState("");
+  const [collegePopupPos, setCollegePopupPos] = useState({ top: 0, left: 0 });
+  const [deptPopupPos, setDeptPopupPos] = useState({ top: 0, left: 0 });
+
+  const collegeSectionRef = useRef<any>(null);
+  const deptSectionRef = useRef<any>(null);
+
+  const collegePopupRef = useRef<any>(null);
+  const deptPopupRef = useRef<any>(null);
 
   const alphabetRefs = useRef<any>({});
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
 
   const alphabets = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
-
-  // ✅ debounce
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedCollege(collegeSearch), 300);
-    return () => clearTimeout(t);
-  }, [collegeSearch]);
-
-  useEffect(() => {
-    const t = setTimeout(() => setDebouncedDept(deptSearch), 300);
-    return () => clearTimeout(t);
-  }, [deptSearch]);
 
   // ✅ map API
   const mapped = useMemo(() => {
@@ -70,71 +61,110 @@ const FilterbarNew = ({
           value: d.id,
           label: d.department_name,
         })) || [],
-      locations:
-        filterList?.locations?.map((l: any) => ({
-          value: l.id,
-          label: l.city,
-        })) || [],
-      experiences:
-        filterList?.experiences?.map((e: any) => ({
-          value: e.id,
-          label: e.name,
-        })) || [],
-      salary:
-        filterList?.salary_ranges?.map((s: any) => ({
-          value: s.id,
-          label: s.name,
-        })) || [],
     };
   }, [filterList]);
 
   const toggleItem = (list: any[], item: any) =>
     list.includes(item) ? list.filter((i) => i !== item) : [...list, item];
 
-  // ✅ filtering
   const filteredColleges = useMemo(() => {
-    return mapped.colleges
-      .filter((c: any) =>
-        c.label.toLowerCase().includes(debouncedCollege.toLowerCase())
-      )
-      .sort((a: any, b: any) => a.label.localeCompare(b.label));
-  }, [mapped.colleges, debouncedCollege]);
+    return mapped.colleges.filter((c: any) =>
+      c.label.toLowerCase().includes(collegeSearch.toLowerCase())
+    );
+  }, [mapped.colleges, collegeSearch]);
 
   const filteredDepartments = useMemo(() => {
-    return mapped.departments
-      .filter((d: any) =>
-        d.label.toLowerCase().includes(debouncedDept.toLowerCase())
-      )
-      .sort((a: any, b: any) => a.label.localeCompare(b.label));
-  }, [mapped.departments, debouncedDept]);
+    return mapped.departments.filter((d: any) =>
+      d.label.toLowerCase().includes(deptSearch.toLowerCase())
+    );
+  }, [mapped.departments, deptSearch]);
 
-  const getAvailableLetters = (list: any[]) =>
-    new Set(list.map((i) => i.label[0]?.toUpperCase()));
+  // ✅ calculate popup position
+  const calcCollegePos = () => {
+    if (collegeSectionRef.current) {
+      const rect = collegeSectionRef.current.getBoundingClientRect();
+      setCollegePopupPos({
+        top: rect.top + 10,
+        left: rect.left,
+      });
+    }
+  };
 
-  const collegeLetters = getAvailableLetters(filteredColleges);
-  const deptLetters = getAvailableLetters(filteredDepartments);
+  const calcDeptPos = () => {
+    if (deptSectionRef.current) {
+      const rect = deptSectionRef.current.getBoundingClientRect();
+      setDeptPopupPos({
+        top: rect.top + 10,
+        left: rect.left,
+      });
+    }
+  };
 
-  // 🔒 lock scroll
   useEffect(() => {
-    document.body.style.overflow =
-      showCollegePopup || showDeptPopup ? "hidden" : "";
-  }, [showCollegePopup, showDeptPopup]);
+    if (showCollegePopup) {
+      calcCollegePos();
+      window.addEventListener("scroll", calcCollegePos);
+      window.addEventListener("resize", calcCollegePos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calcCollegePos);
+      window.removeEventListener("resize", calcCollegePos);
+    };
+  }, [showCollegePopup]);
+
+  useEffect(() => {
+    if (showDeptPopup) {
+      calcDeptPos();
+      window.addEventListener("scroll", calcDeptPos);
+      window.addEventListener("resize", calcDeptPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calcDeptPos);
+      window.removeEventListener("resize", calcDeptPos);
+    };
+  }, [showDeptPopup]);
+
+  // ✅ click outside close
+  useEffect(() => {
+    const handleClick = (e: any) => {
+      if (
+        collegePopupRef.current &&
+        !collegePopupRef.current.contains(e.target) &&
+        !collegeSectionRef.current.contains(e.target)
+      ) {
+        setShowCollegePopup(false);
+      }
+
+      if (
+        deptPopupRef.current &&
+        !deptPopupRef.current.contains(e.target) &&
+        !deptSectionRef.current.contains(e.target)
+      ) {
+        setShowDeptPopup(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   return (
     <aside className="p-4 w-full">
 
       {/* COLLEGE */}
-      <FilterSection
-        title="Choose Colleges"
-        items={filteredColleges.slice(0, 5)}
-        selected={filters.colleges}
-        onToggle={(v: any) =>
-          onFilterChange({
-            ...filters,
-            colleges: toggleItem(filters.colleges, v),
-          })
-        }
-      />
+      <div ref={collegeSectionRef}>
+        <FilterSection
+          title="Choose Colleges"
+          items={filteredColleges.slice(0, 5)}
+          selected={filters.colleges}
+          onToggle={(v: any) =>
+            onFilterChange({
+              ...filters,
+              colleges: toggleItem(filters.colleges, v),
+            })
+          }
+        />
+      </div>
 
       {filteredColleges.length > 5 && (
         <button
@@ -147,98 +177,58 @@ const FilterbarNew = ({
 
       {/* COLLEGE POPUP */}
       {showCollegePopup && (
-        <div className="fixed inset-0 bg-black/30 z-50 flex justify-center items-center">
-          <div className="bg-white w-[800px] h-[450px] p-4 flex flex-col">
+        <div
+          ref={collegePopupRef}
+          className="fixed bg-white border shadow-xl z-50 p-4 w-[800px] h-[450px]"
+          style={{
+            top: collegePopupPos.top,
+            left: collegePopupPos.left,
+          }}
+        >
+          <div className="flex justify-between border-b pb-2">
+            <input
+              placeholder="Search..."
+              value={collegeSearch}
+              onChange={(e) => setCollegeSearch(e.target.value)}
+              className="border px-2 py-1"
+            />
+            <X onClick={() => setShowCollegePopup(false)} />
+          </div>
 
-            {/* header */}
-            <div className="flex justify-between border-b pb-2">
-              <input
-                placeholder="Search..."
-                value={collegeSearch}
-                onChange={(e) => setCollegeSearch(e.target.value)}
-                className="border px-2 py-1"
-              />
-              <X onClick={() => setShowCollegePopup(false)} />
-            </div>
-
-            {/* alphabets */}
-            <div className="flex gap-2 mt-2 flex-wrap">
-              {alphabets.map((c) => {
-                const active = collegeLetters.has(c);
-                return (
-                  <span
-                    key={c}
-                    onClick={() => {
-                      if (!active) return;
-                      setSelectedAlphabet(c);
-                      alphabetRefs.current[c]?.scrollIntoView();
-                    }}
-                    className={`cursor-pointer ${
-                      active ? "" : "text-gray-300"
-                    } ${selectedAlphabet === c ? "font-bold" : ""}`}
-                  >
-                    {c}
-                  </span>
-                );
-              })}
-            </div>
-
-            {/* list */}
-            <div className="overflow-auto mt-2">
-              {filteredColleges.map((item: any, i: number) => {
-                const curr = item.label[0].toUpperCase();
-                const prev =
-                  i > 0
-                    ? filteredColleges[i - 1].label[0].toUpperCase()
-                    : null;
-
-                return (
-                  <div key={item.value}>
-                    {curr !== prev && (
-                      <div
-                        ref={(el) => (alphabetRefs.current[curr] = el)}
-                        className="font-semibold mt-2"
-                      >
-                        {curr}
-                      </div>
-                    )}
-
-                    <label className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        checked={filters.colleges.includes(item.value)}
-                        onChange={() =>
-                          onFilterChange({
-                            ...filters,
-                            colleges: toggleItem(
-                              filters.colleges,
-                              item.value
-                            ),
-                          })
-                        }
-                      />
-                      {item.label}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="overflow-auto mt-2">
+            {filteredColleges.map((item: any) => (
+              <label key={item.value} className="flex gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.colleges.includes(item.value)}
+                  onChange={() =>
+                    onFilterChange({
+                      ...filters,
+                      colleges: toggleItem(filters.colleges, item.value),
+                    })
+                  }
+                />
+                {item.label}
+              </label>
+            ))}
           </div>
         </div>
       )}
 
       {/* DEPARTMENT */}
-      <FilterSection
-        title="Choose Departments"
-        items={filteredDepartments.slice(0, 5)}
-        selected={filters.department}
-        onToggle={(v: any) =>
-          onFilterChange({
-            ...filters,
-            department: toggleItem(filters.department, v),
-          })
-        }
-      />
+      <div ref={deptSectionRef}>
+        <FilterSection
+          title="Choose Departments"
+          items={filteredDepartments.slice(0, 5)}
+          selected={filters.department}
+          onToggle={(v: any) =>
+            onFilterChange({
+              ...filters,
+              department: toggleItem(filters.department, v),
+            })
+          }
+        />
+      </div>
 
       {filteredDepartments.length > 5 && (
         <button
@@ -251,121 +241,43 @@ const FilterbarNew = ({
 
       {/* DEPT POPUP */}
       {showDeptPopup && (
-        <div className="fixed inset-0 bg-black/30 z-50 flex justify-center items-center">
-          <div className="bg-white w-[800px] h-[450px] p-4 flex flex-col">
+        <div
+          ref={deptPopupRef}
+          className="fixed bg-white border shadow-xl z-50 p-4 w-[800px] h-[450px]"
+          style={{
+            top: deptPopupPos.top,
+            left: deptPopupPos.left,
+          }}
+        >
+          <div className="flex justify-between border-b pb-2">
+            <input
+              placeholder="Search..."
+              value={deptSearch}
+              onChange={(e) => setDeptSearch(e.target.value)}
+              className="border px-2 py-1"
+            />
+            <X onClick={() => setShowDeptPopup(false)} />
+          </div>
 
-            <div className="flex justify-between border-b pb-2">
-              <input
-                placeholder="Search..."
-                value={deptSearch}
-                onChange={(e) => setDeptSearch(e.target.value)}
-                className="border px-2 py-1"
-              />
-              <X onClick={() => setShowDeptPopup(false)} />
-            </div>
-
-            <div className="flex gap-2 mt-2 flex-wrap">
-              {alphabets.map((c) => {
-                const active = deptLetters.has(c);
-                return (
-                  <span
-                    key={c}
-                    onClick={() => {
-                      if (!active) return;
-                      setSelectedAlphabet(c);
-                      alphabetRefs.current[c]?.scrollIntoView();
-                    }}
-                    className={`cursor-pointer ${
-                      active ? "" : "text-gray-300"
-                    } ${selectedAlphabet === c ? "font-bold" : ""}`}
-                  >
-                    {c}
-                  </span>
-                );
-              })}
-            </div>
-
-            <div className="overflow-auto mt-2">
-              {filteredDepartments.map((item: any, i: number) => {
-                const curr = item.label[0].toUpperCase();
-                const prev =
-                  i > 0
-                    ? filteredDepartments[i - 1].label[0].toUpperCase()
-                    : null;
-
-                return (
-                  <div key={item.value}>
-                    {curr !== prev && (
-                      <div
-                        ref={(el) => (alphabetRefs.current[curr] = el)}
-                        className="font-semibold mt-2"
-                      >
-                        {curr}
-                      </div>
-                    )}
-
-                    <label className="flex gap-2">
-                      <input
-                        type="checkbox"
-                        checked={filters.department.includes(item.value)}
-                        onChange={() =>
-                          onFilterChange({
-                            ...filters,
-                            department: toggleItem(
-                              filters.department,
-                              item.value
-                            ),
-                          })
-                        }
-                      />
-                      {item.label}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+          <div className="overflow-auto mt-2">
+            {filteredDepartments.map((item: any) => (
+              <label key={item.value} className="flex gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.department.includes(item.value)}
+                  onChange={() =>
+                    onFilterChange({
+                      ...filters,
+                      department: toggleItem(filters.department, item.value),
+                    })
+                  }
+                />
+                {item.label}
+              </label>
+            ))}
           </div>
         </div>
       )}
-
-      {/* LOCATION */}
-      <FilterSection
-        title="Location"
-        items={mapped.locations}
-        selected={filters.locations || []}
-        onToggle={(v: any) =>
-          onFilterChange({
-            ...filters,
-            locations: toggleItem(filters.locations || [], v),
-          })
-        }
-      />
-
-      {/* EXPERIENCE */}
-      <FilterSection
-        title="Experience"
-        items={mapped.experiences}
-        selected={filters.experienceLevels}
-        onToggle={(v: any) =>
-          onFilterChange({
-            ...filters,
-            experienceLevels: toggleItem(filters.experienceLevels, v),
-          })
-        }
-      />
-
-      {/* SALARY */}
-      <FilterSection
-        title="Salary"
-        items={mapped.salary}
-        selected={filters.salaryRange}
-        onToggle={(v: any) =>
-          onFilterChange({
-            ...filters,
-            salaryRange: toggleItem(filters.salaryRange, v),
-          })
-        }
-      />
     </aside>
   );
 };
