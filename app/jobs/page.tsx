@@ -88,6 +88,7 @@ import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
 import SkeletonLoader from "./SkeletonLoader";
+import FilterbarNew from "@/components/component/filterbarNew.component";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
@@ -142,7 +143,7 @@ export default function JobsPage() {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
-    location: locationParam ? parseInt(locationParam, 10) : null,
+    locations: locationParam ? parseInt(locationParam, 10) : null,
     categories: [],
     jobTypes: [],
     experienceLevels: [],
@@ -409,7 +410,6 @@ export default function JobsPage() {
     tagsList();
     collegeList();
     departmentList();
-
     filterList();
   }, []);
 
@@ -422,7 +422,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     const locationQuery = locationParam ? parseInt(locationParam, 10) : null;
-    if (locationQuery !== filters.location) {
+    if (locationQuery !== filters.locations) {
       setFilters((prevFilters) => ({
         ...prevFilters,
         location: isNaN(locationQuery) ? null : locationQuery,
@@ -449,7 +449,7 @@ export default function JobsPage() {
   }, [
     debouncedSearch,
     filters?.categories,
-    filters.location,
+    filters.locations,
     filters.jobTypes,
     filters.experienceLevels,
     filters.datePosted,
@@ -457,6 +457,7 @@ export default function JobsPage() {
     filters?.tags,
     filters?.colleges,
     filters?.department,
+    filters,
   ]);
 
   const categoryList = async () => {
@@ -473,12 +474,15 @@ export default function JobsPage() {
 
   const filterList = async () => {
     try {
-      const res: any = await Models.job.filterList(null);
+      const body = bodyData();
+      console.log("filterList --->", body);
+
+      const res: any = await Models.job.filterList(body);
       console.log("✌️res --->", res);
 
       // const dropdown = Dropdown(res?.results, "name");
       setState({
-        filterList: res,
+        filterList: res?.data,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -959,8 +963,8 @@ export default function JobsPage() {
       body.department = filters.department;
     }
 
-    if (filters?.location) {
-      body.location = filters.location;
+    if (filters?.locations) {
+      body.location = filters.locations;
     }
 
     if (filters?.jobTypes?.length > 0) {
@@ -1060,7 +1064,7 @@ export default function JobsPage() {
   const handleClearFilters = () => {
     setFilters({
       searchQuery: "",
-      location: null,
+      locations: null,
       categories: [],
       jobTypes: [],
       experienceLevels: [],
@@ -2408,18 +2412,15 @@ export default function JobsPage() {
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                   }`}
                 >
-                  <Filterbar
+                  <FilterbarNew
+                    filterList={state.filterList}
                     filters={filters}
-                    onFilterChange={setFilters}
-                    categoryList={state?.categoryList}
-                    locationList={state?.locationList}
-                    jobTypeList={state?.jobTypeList}
-                    experienceList={state?.experienceList}
-                    collegeList={state?.collegeList}
-                    deptList={state?.deptList}
-                    datePostedList={state?.datePostedList}
-                    salaryRangeList={state?.salaryRangeList}
-                    tagsList={state?.tagsList}
+                    // onFilterChange={(data: any) => setFilters(data)}
+                    onFilterChange={(data: any) => {
+                      console.log("✌️data --->", data);
+
+                      setFilters(data);
+                    }}
                     loading={state.loading}
                   />
                 </div>
@@ -2431,21 +2432,18 @@ export default function JobsPage() {
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787]"
+                    className="bg-clr2 border border-[#c7c7c787] "
                     ref={sidebarRef}
                   >
-                    <Filterbar
+                    <FilterbarNew
+                      filterList={state.filterList}
                       filters={filters}
-                      onFilterChange={setFilters}
-                      categoryList={state?.categoryList}
-                      locationList={state?.locationList}
-                      jobTypeList={state?.jobTypeList}
-                      experienceList={state?.experienceList}
-                      collegeList={state?.collegeList}
-                      datePostedList={state?.datePostedList}
-                      salaryRangeList={state?.salaryRangeList}
-                      tagsList={state?.tagsList}
-                      deptList={state?.deptList}
+                      // onFilterChange={setFilters}
+                      onFilterChange={(data: any) => {
+                        console.log("✌️data --->", data);
+
+                        setFilters(data);
+                      }}
                       loading={state.loading}
                     />
                   </div>
@@ -2482,11 +2480,11 @@ export default function JobsPage() {
 
                             <CustomSelect
                               options={state.locationList}
-                              value={filters.location}
+                              value={filters.locations}
                               onChange={(selected) =>
                                 setFilters({
                                   ...filters,
-                                  location: selected ? selected.value : null,
+                                  locations: selected ? selected.value : null,
                                 })
                               }
                               className="py-0 border-none"
@@ -2585,18 +2583,15 @@ export default function JobsPage() {
                             </div>
                           </div>
                           <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
-                            <Filterbar
+                            <FilterbarNew
+                              filterList={state.filterList}
                               filters={filters}
-                              onFilterChange={setFilters}
-                              categoryList={state?.categoryList}
-                              locationList={state?.locationList}
-                              jobTypeList={state?.jobTypeList}
-                              experienceList={state?.experienceList}
-                              datePostedList={state?.datePostedList}
-                              salaryRangeList={state?.salaryRangeList}
-                              tagsList={state?.tagsList}
-                              collegeList={state?.collegeList}
-                              deptList={state?.deptList}
+                              // onFilterChange={setFilters}
+                              onFilterChange={(data: any) => {
+                                console.log("✌️data --->", data);
+        
+                                setFilters(data);
+                              }}
                               loading={state.loading}
                             />
                           </div>

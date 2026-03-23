@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Image from "next/image";
+// import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   Search,
@@ -270,7 +270,7 @@ const FindYourJob = () => {
                       <div className="flex  items-start gap-3 w-full h-full">
                         <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center flex-shrink-0 border border-gray-100 overflow-hidden">
                           {job?.college?.college_logo ? (
-                            <Image
+                            <img
                               src={job?.college?.college_logo}
                               alt={job?.college?.name}
                               width={50}

@@ -139,9 +139,24 @@ const job = {
     let promise = new Promise((resolve, reject) => {
       let url = `jobs/filters/cascade`;
 
-      if (body?.date_posted_after) {
-        url += `&date_posted_after=${body.date_posted_after}`;
+      const params = [];
+
+      if (body?.location?.length>0) {
+        params.push(`location_id=${body.location}`);
       }
+
+      if (body?.colleges?.length>0) {
+        params.push(`college_id=${body.colleges}`);
+      }
+
+      if (body?.department?.length>0) {
+        params.push(`department_id=${body.department}`);
+      }
+
+      if (params.length > 0) {
+        url += `?${params.join("&")}`;
+      }
+      console.log('✌️url --->', url);
 
       instance()
         .get(url)
