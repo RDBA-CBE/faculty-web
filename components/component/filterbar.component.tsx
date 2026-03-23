@@ -581,18 +581,18 @@ const Filterbar: React.FC<SidebarProps> = ({
               ref={collegePopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
-                width: 'clamp(300px, 80vw, 900px)',
-                height: '420px',
+                width: 'clamp(300px, 90vw, 900px)',
+                height: `clamp(420px, 60vh, 420px)`,
                 left: `${collegePopupPos.left}px`,
                 top: `${collegePopupPos.top}px`,
                 maxHeight: '80vh',
                 overflowY: 'hidden',
               }}
             >
-              <div className="flex justify-between items-center mb-3 border-b">
+              <div className="flex justify-between items-start mb-3 border-b">
                   {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
-                  <div className="flex items-center gap-4">
-                    <div className="relative mb-3">
+                  <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                    <div className="relative mb-3 w-full md:w-auto">
                       <Search
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                         size={16}
@@ -605,7 +605,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                         className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
                       />
                     </div>
-                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2">
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
                       {alphabets.map((char) => {
                         const isAvailable = collegeAvailableAlphabets.has(char);
 
@@ -624,19 +624,19 @@ const Filterbar: React.FC<SidebarProps> = ({
                               });
                             }}
                             className={`
-        text-sm
-        ${
-          isAvailable
-            ? "cursor-pointer hover:text-black"
-            : "cursor-not-allowed text-slate-300"
-        }
-        ${
-          selectedAlphabet === char && isAvailable
-            ? "text-black border bg-gray-300 px-1 py-0 font-semibold"
-            : ""
-        }
-      `}
-                          >
+                                text-sm
+                                ${
+                                  isAvailable
+                                    ? "cursor-pointer hover:text-black"
+                                    : "cursor-not-allowed text-slate-300"
+                                }
+                                ${
+                                  selectedAlphabet === char && isAvailable
+                                    ? "text-black border bg-gray-300 px-1 py-0 font-semibold"
+                                    : ""
+                                }
+                              `}
+                            >
                             {char}
                           </span>
                         );
@@ -751,18 +751,18 @@ const Filterbar: React.FC<SidebarProps> = ({
               ref={deptPopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
-                width: 'clamp(300px, 80vw, 900px)',
-                height: '420px',
+                width: 'clamp(300px, 90vw, 900px)',
+                height: `clamp(420px, 60vh, 420px)`,
                 left: `${deptPopupPos.left}px`,
                 top: `${deptPopupPos.top}px`,
                 maxHeight: '80vh',
                 overflowY: 'hidden',
               }}
             >
-              <div className="flex justify-between items-center mb-3 border-b">
+              <div className="flex justify-between items-start mb-3 border-b">
                   {/* <h4 className="font-semibold text-[#000]">All Department</h4> */}
-                  <div className="flex items-center gap-4">
-                    <div className="relative mb-3">
+                  <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                    <div className="relative mb-3 w-full md:w-auto">
                       <Search
                         className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
                         size={16}
@@ -776,7 +776,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                       />
                     </div>
 
-                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2">
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
                       {alphabets.map((char) => {
                         const isAvailable = DepartAvailableAlphabets.has(char);
 
