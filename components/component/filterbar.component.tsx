@@ -5,7 +5,9 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
+  ReactNode,
 } from "react";
+import { createPortal } from "react-dom";
 import { X, Search, ArrowRight } from "lucide-react";
 import {
   CATEGORIES,
@@ -156,6 +158,19 @@ const FilterSectionString: React.FC<{
   </div>
 );
 
+// Portal component to render popups outside the sidebar hierarchy
+const PopupPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(children, document.body);
+};
+
 const Filterbar: React.FC<SidebarProps> = ({
   filters,
   onFilterChange,
@@ -177,8 +192,15 @@ const Filterbar: React.FC<SidebarProps> = ({
   const [deptSearchQuery, setDeptSearchQuery] = useState("");
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
 
+  const [collegePopupPos, setCollegePopupPos] = useState({ left: 0, top: -200 });
+  const [deptPopupPos, setDeptPopupPos] = useState({ left: 0, top: -200 });
+
   const collegePopupRef = useRef<HTMLDivElement>(null);
   const deptPopupRef = useRef<HTMLDivElement>(null);
+  const collegeButtonRef = useRef<HTMLButtonElement>(null);
+  const deptButtonRef = useRef<HTMLButtonElement>(null);
+  const collegeSectionRef = useRef<HTMLDivElement>(null);
+  const deptSectionRef = useRef<HTMLDivElement>(null);
 
   const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
     0, 5000000,
@@ -311,7 +333,9 @@ const Filterbar: React.FC<SidebarProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (
         collegePopupRef.current &&
-        !collegePopupRef.current.contains(event.target as Node)
+        !collegePopupRef.current.contains(event.target as Node) &&
+        collegeSectionRef.current &&
+        !collegeSectionRef.current.contains(event.target as Node)
       ) {
         setShowAllColleges(false);
       }
@@ -327,7 +351,9 @@ const Filterbar: React.FC<SidebarProps> = ({
     const handleClickOutside = (event: MouseEvent) => {
       if (
         deptPopupRef.current &&
-        !deptPopupRef.current.contains(event.target as Node)
+        !deptPopupRef.current.contains(event.target as Node) &&
+        deptSectionRef.current &&
+        !deptSectionRef.current.contains(event.target as Node)
       ) {
         setShowAllDept(false);
       }
@@ -349,6 +375,50 @@ const Filterbar: React.FC<SidebarProps> = ({
       document.body.style.overflow = "";
     };
   }, [showAllColleges, showAllDept]);
+
+  const calculateCollegePopupPos = () => {
+    if (collegeSectionRef.current) {
+      const rect = collegeSectionRef.current.getBoundingClientRect();
+      setCollegePopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
+  const calculateDeptPopupPos = () => {
+    if (deptSectionRef.current) {
+      const rect = deptSectionRef.current.getBoundingClientRect();
+      setDeptPopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (showAllColleges) {
+      calculateCollegePopupPos();
+      window.addEventListener("scroll", calculateCollegePopupPos);
+      window.addEventListener("resize", calculateCollegePopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateCollegePopupPos);
+      window.removeEventListener("resize", calculateCollegePopupPos);
+    };
+  }, [showAllColleges]);
+
+  useEffect(() => {
+    if (showAllDept) {
+      calculateDeptPopupPos();
+      window.addEventListener("scroll", calculateDeptPopupPos);
+      window.addEventListener("resize", calculateDeptPopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateDeptPopupPos);
+      window.removeEventListener("resize", calculateDeptPopupPos);
+    };
+  }, [showAllDept]);
 
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
@@ -475,34 +545,51 @@ const Filterbar: React.FC<SidebarProps> = ({
           }
         /> */}
 
-        <FilterSection
-          title="Choose Colleges"
-          
-          items={collegeList?.slice(0, 5) ?? []}
-          selected={filters.colleges}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              colleges: toggleItem(filters.colleges, value),
-            })
-          }
-        />
+        <div ref={collegeSectionRef}>
+          <FilterSection
+            title="Choose Colleges"
+            
+            items={collegeList?.slice(0, 5) ?? []}
+            selected={filters.colleges}
+            onToggle={(value) =>
+              onFilterChange({
+                ...filters,
+                colleges: toggleItem(filters.colleges, value),
+              })
+            }
+          />
+        </div>
 
         {collegeList && collegeList.length > 5 && (
           <div className="relative mt-2">
             <button
-              onClick={() => setShowAllColleges(true)}
+              ref={collegeButtonRef}
+              onClick={() => {
+                setShowAllColleges(true);
+                setTimeout(calculateCollegePopupPos, 0);
+              }}
               className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
             >
               View more
             </button>
+          </div>
+        )}
 
-            {showAllColleges && (
-              <div
-                ref={collegePopupRef}
-                className="z-10 absolute left-[-20px] top-[-200px]  mt-2 w-[350%] bg-white border border-slate-200 shadow-xl  z-50 p-4 h-[420px]  flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-3 border-b">
+        <PopupPortal>
+          {showAllColleges && (
+            <div
+              ref={collegePopupRef}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
+              style={{
+                width: 'clamp(300px, 80vw, 900px)',
+                height: '420px',
+                left: `${collegePopupPos.left}px`,
+                top: `${collegePopupPos.top}px`,
+                maxHeight: '80vh',
+                overflowY: 'hidden',
+              }}
+            >
+              <div className="flex justify-between items-center mb-3 border-b">
                   {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
                   <div className="flex items-center gap-4">
                     <div className="relative mb-3">
@@ -629,34 +716,50 @@ const Filterbar: React.FC<SidebarProps> = ({
                 </div>
               </div>
             )}
-          </div>
-        )}
-        <FilterSection
-          title="Choose Department"
-          items={deptList?.slice(0, 5) ?? []}
-          selected={filters.department}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              department: toggleItem(filters.department, value),
-            })
-          }
-        />
+        </PopupPortal>
+        <div ref={deptSectionRef}>
+          <FilterSection
+            title="Choose Department"
+            items={deptList?.slice(0, 5) ?? []}
+            selected={filters.department}
+            onToggle={(value) =>
+              onFilterChange({
+                ...filters,
+                department: toggleItem(filters.department, value),
+              })
+            }
+          />
+        </div>
         {deptList && deptList.length > 5 && (
           <div className="relative mt-2">
             <button
-              onClick={() => setShowAllDept(true)}
+              ref={deptButtonRef}
+              onClick={() => {
+                setShowAllDept(true);
+                setTimeout(calculateDeptPopupPos, 0);
+              }}
               className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
             >
               View more
             </button>
+          </div>
+        )}
 
-            {showAllDept && (
-              <div
-                ref={deptPopupRef}
-                className="z-10 absolute left-[-20px] top-[-200px]  mt-2 w-[350%] bg-white border border-slate-200 shadow-xl  z-50 p-4 h-[420px]  flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-3 border-b">
+        <PopupPortal>
+          {showAllDept && (
+            <div
+              ref={deptPopupRef}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
+              style={{
+                width: 'clamp(300px, 80vw, 900px)',
+                height: '420px',
+                left: `${deptPopupPos.left}px`,
+                top: `${deptPopupPos.top}px`,
+                maxHeight: '80vh',
+                overflowY: 'hidden',
+              }}
+            >
+              <div className="flex justify-between items-center mb-3 border-b">
                   {/* <h4 className="font-semibold text-[#000]">All Department</h4> */}
                   <div className="flex items-center gap-4">
                     <div className="relative mb-3">
@@ -784,8 +887,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                 </div>
               </div>
             )}
-          </div>
-        )}
+        </PopupPortal>
         {/* <FilterSection
           title="Experience Level"
           items={experienceList ?? []}
