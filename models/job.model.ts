@@ -135,6 +135,30 @@ const job = {
     return promise;
   },
 
+  filterList: (body) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `jobs/filters/cascade`;
+
+      if (body?.date_posted_after) {
+        url += `&date_posted_after=${body.date_posted_after}`;
+      }
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
   create: (data: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `jobs/`;

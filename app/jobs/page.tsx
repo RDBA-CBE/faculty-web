@@ -126,6 +126,7 @@ export default function JobsPage() {
     departmentDetail: null,
     showDepartmentModal: false,
     department_id: null,
+    filterList: [],
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -408,6 +409,8 @@ export default function JobsPage() {
     tagsList();
     collegeList();
     departmentList();
+
+    filterList();
   }, []);
 
   useEffect(() => {
@@ -442,6 +445,7 @@ export default function JobsPage() {
 
   useEffect(() => {
     jobList(1);
+    filterList();
   }, [
     debouncedSearch,
     filters?.categories,
@@ -461,6 +465,20 @@ export default function JobsPage() {
       const dropdown = Dropdown(res?.results, "name");
       setState({
         categoryList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const filterList = async () => {
+    try {
+      const res: any = await Models.job.filterList(null);
+      console.log("✌️res --->", res);
+
+      // const dropdown = Dropdown(res?.results, "name");
+      setState({
+        filterList: res,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -1303,7 +1321,8 @@ export default function JobsPage() {
                         )}
                       </div>
                       <p>
-                        {state?.jobDetail?.job_description || "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
+                        {state?.jobDetail?.job_description ||
+                          "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."}
                         {/* We are looking for a talented professional to join our
                         dynamic team. This role offers an excellent opportunity
                         to work with cutting-edge technologies and contribute to
@@ -1608,7 +1627,9 @@ export default function JobsPage() {
                                         }`}
                                         title={job.job_title}
                                       >
-                                        {capitalizeFLetter(CharSlice(job.job_title, 20))}
+                                        {capitalizeFLetter(
+                                          CharSlice(job.job_title, 20)
+                                        )}
                                       </h3>
                                       <p
                                         className={`cursor-pointer ${
