@@ -21,6 +21,7 @@ const ChipFilters = ({
   jobTypeList = [],
   experienceList = [],
   salaryRangeList = [],
+  jobRoleList = [],
   tagsList = [],
   collegeList = [],
   datePostedList = [],

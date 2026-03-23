@@ -37,6 +37,7 @@ interface SidebarProps {
     department: any[];
     minExperience?: string;
     maxExperience?: string;
+    jobRole?: any[];
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -45,6 +46,7 @@ interface SidebarProps {
   experienceList?: any[];
   datePostedList?: any[];
   salaryRangeList?: any[];
+  jobRoleList?: any[];
   tagsList?: any[];
   collegeList?: any[];
   deptList?: any[];
@@ -181,6 +183,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   collegeList,
   datePostedList,
   salaryRangeList,
+  jobRoleList,
   tagsList,
   deptList,
   loading,
@@ -438,6 +441,7 @@ const Filterbar: React.FC<SidebarProps> = ({
       colleges: [],
       minExperience: "",
       maxExperience: "",
+      jobRole:[],
     });
   };
 
@@ -888,6 +892,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               </div>
             )}
         </PopupPortal>
+
+
         {/* <FilterSection
           title="Experience Level"
           items={experienceList ?? []}
@@ -1063,6 +1069,35 @@ const Filterbar: React.FC<SidebarProps> = ({
             step={100000}
           />
         </div>
+
+        <FilterSection
+            title="Select Job role"
+            
+            items={jobRoleList?.slice(0, 5) ?? []}
+            selected={filters.jobRole}
+            onToggle={(value) =>
+              onFilterChange({
+                ...filters,
+                jobRole: toggleItem(filters.jobRole, value),
+              })
+            }
+          />
+
+          <FilterSection
+            title="Select Job Category"
+            
+            items={categoryList?.slice(0, 5) ?? []}
+            selected={filters.categories}
+            onToggle={(value) =>
+              onFilterChange({
+                ...filters,
+                categories: toggleItem(filters.categories, value),
+              })
+            }
+          />
+       
+
+     
 
         {/* Experience Level */}
         <FilterSection
