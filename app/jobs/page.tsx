@@ -2410,7 +2410,7 @@ export default function JobsPage() {
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787]"
+                    className="bg-clr2 border border-[#c7c7c787] "
                     ref={sidebarRef}
                   >
                     <Filterbar

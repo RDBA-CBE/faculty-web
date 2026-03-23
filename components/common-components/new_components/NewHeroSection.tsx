@@ -18,6 +18,8 @@ const NewHeroSection = () => {
   useEffect(() => {
     locationList();
     collegeList();
+    JobCatList();
+    JobRoleList();
   }, []);
 
   const locationList = async () => {
@@ -31,6 +33,32 @@ const NewHeroSection = () => {
       console.log("error fetching locations", error);
     }
   };
+
+  const JobCatList = async () => {
+    try {
+      const res: any = await Models.category.list();
+      const dropdown: any = Dropdown(res?.results, "name");
+      setState({
+        jobCatList: dropdown,
+      });
+    } catch (error) {
+      console.log("error fetching locations", error);
+    }
+  };
+
+  const JobRoleList = async () => {
+    try {
+      const res: any = await Models.category.jobRoleList();
+      const dropdown: any = Dropdown(res?.results, "role_name");
+      setState({
+        jobRoleList: dropdown,
+      });
+    } catch (error) {
+      console.log("error fetching locations", error);
+    }
+  };
+
+  console.log("jobCatList", state?.jobCatList);
 
   const collegeList = async () => {
     try {
@@ -47,8 +75,10 @@ const NewHeroSection = () => {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (state.search) params.append("search", state.search);
+    // if (state.search) params.append("search", state.search);
+    if (state.JobCat) params.append("job-category", state.JobCat);
     if (state.location) params.append("location", state.location);
+    if (state.jobRole) params.append("job-role", state.jobRole);
     router.push(`/jobs?${params.toString()}`);
   };
 
@@ -87,18 +117,33 @@ const NewHeroSection = () => {
 
             {/* Search Form */}
             <div className="bg-white rounded-[40px] shadow-lg p-4 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center max-w-full lg:max-w-3xl">
-              <input
+              {/* <input
                 type="text"
                 placeholder="Job Title or College"
                 className="w-full sm:flex-1 px-3 py-2 sm:px-6 sm:py-3 focus:outline-none text-base sm:text-base rounded-full sm:rounded-l-full sm:rounded-r-none border-b sm:border-b-0 border-gray-100 placeholder:text-[#373535]"
                 value={state.search}
                 onChange={(e) => setState({ search: e.target.value })}
-              />
-              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-              <div>
+              /> */}
+              <div className="w-[25%]">
                 <CustomSelect
-                  className="w-auto placeholder:text-[#373535]  px-3 py-2 sm:px-6 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
-                  placeholder="Select Location"
+                  className="w-full placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
+                  placeholder="Job Category"
+                  options={state.jobCatList}
+                  value={state?.JobCat || ""}
+                  onChange={(selected) =>
+                    setState({
+                      ...state,
+                      JobCat: selected ? selected.value : "",
+                    })
+                  }
+                />
+              </div>
+
+              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+              <div className="w-[25%]">
+                <CustomSelect
+                  className="w-max-[50px] placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
+                  placeholder="Location"
                   options={state.locationList}
                   value={state?.location || ""}
                   onChange={(selected) =>
@@ -109,6 +154,24 @@ const NewHeroSection = () => {
                   }
                 />
               </div>
+
+              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+
+                  <div className="w-[25%]">
+                     <CustomSelect
+                className="w-max-[50px] placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
+                placeholder="Job role"
+                options={state.jobRoleList}
+                value={state?.jobRole || ""}
+                onChange={(selected) =>
+                  setState({
+                    ...state,
+                    jobRole: selected ? selected.value : "",
+                  })
+                }
+              />
+                  </div>
+             
 
               <button
                 className="w-full sm:w-auto bg-[#F2B31D] text-black  md:px-8 py-3 sm:py-3 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-sm md:text-base font-semibold whitespace-nowrap"
@@ -125,14 +188,18 @@ const NewHeroSection = () => {
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
                   125K+
                 </div>
-                <div className="text-white text-sm">Registered Academic <br /> Professionals</div>
+                <div className="text-white text-sm">
+                  Registered Academic <br /> Professionals
+                </div>
               </div>
 
               <div>
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
                   9000+
                 </div>
-                <div className="text-white text-sm">Successful Faculty <br /> Appointments</div>
+                <div className="text-white text-sm">
+                  Successful Faculty <br /> Appointments
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -147,9 +214,10 @@ const NewHeroSection = () => {
                       </span>
                     ))}
                   </div>
-                  
                 </div>
-                <div className="text-white text-sm">Trusted by Institutions <br /> and Educators</div>
+                <div className="text-white text-sm">
+                  Trusted by Institutions <br /> and Educators
+                </div>
                 {/* <div className="flex -space-x-3 xl:-space-x-4">
                   {["image_1", "image_2", "image_3"].map((img, i) => (
                     <div

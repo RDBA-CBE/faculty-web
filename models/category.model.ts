@@ -97,6 +97,26 @@ const category = {
     });
     return promise;
   },
+
+  jobRoleList : () => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `job-roles/`;
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 };
 
 export default category;
