@@ -1225,7 +1225,7 @@ export default function NaukriProfilePage() {
             {state.loading ? (
               <>
                 <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
-                  <CardContent className="relative p-4 md:p-6">
+                  <CardContent className="relative py-4 px-2">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                       <SkeletonLoader
                         type="rect"
@@ -1315,9 +1315,9 @@ export default function NaukriProfilePage() {
             ) : (
               <>
                 {/* Profile Header - Will hide on scroll */}
-                <Card className="!rounded-none bg-transparent shadow-none border-0 mb-2 overflow-hidden ">
+                <Card className="!rounded-none bg-transparent shadow-none border-0 mb-2 overflow-hidden px-0">
                   <div className="absolute"></div>
-                  <CardContent className="relative py-4 px-0">
+                  <CardContent className="relative py-4 px-0 mx-0">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
                       <div className="relative flex-shrink-0">
@@ -1470,34 +1470,34 @@ export default function NaukriProfilePage() {
                 <div className="flex flex-col lg:flex-row gap-6">
                   <div className="quick-links-content flex-1">
                     {state.activeTab == "Profile" ? (
-                      <div className="flex flex-col lg:flex-row gap-6">
+                      <div className="flex flex-col lg:flex-row gap-4">
                         {/* Left Sidebar - Quick Links */}
                         <div
-                          className="lg:w-1/4 relative hidden lg:block "
+                          className="lg:w-1/5 relative hidden lg:block "
                           ref={wrapperRef}
                         >
                           <div ref={sidebarRef}>
-                            <Card className="!rounded-none bg-clr2  border-0 ">
-                              <CardContent className="relative p-4">
-                                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                                  <div className="w-2 h-2 bg-[#1E3786] "></div>
+                            <Card className="!rounded-none bg-clr2  border shadow-none ">
+                              <CardContent className="relative py-4 px-1">
+                                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                  {/* <div className="w-2 h-2 bg-[#1E3786] "></div> */}
                                   Quick Links
                                 </h3>
 
-                                <div className="space-y-4">
+                                <div className="space-y-2">
                                   {links.map((item) => (
                                     <div
                                       key={item.id}
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-3 rounded-xl cursor-pointer transition-all
-        ${
-          activeTab === item.id
-            ? "bg-[#1E3786] text-white"
-            : "bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 hover:bg-white/80"
-        }`}
-                                    >
+                                      className={`flex items-center justify-between px-2 py-1 rounded-lg cursor-pointer transition-all
+                                        ${
+                                          activeTab === item.id
+                                            ? "bg-[#1E3786] text-white"
+                                            : " hover:bg-white/80"
+                                        }`}
+                                      >
                                       <span
                                         className={`font-medium ${
                                           activeTab === item.id
@@ -1516,18 +1516,18 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Right Content Area - Scrollable */}
-                        <div className="lg:w-3/4 space-y-4">
+                        <div className="lg:w-4/5 space-y-4">
                           {/* Resume Section */}
                           <Card
                             id="resume-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative "
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div> */}
+                            {/* <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
-                                className="flex items-center justify-between mb-3 cursor-pointer"
+                                className="flex items-center justify-between  cursor-pointer"
                                 onClick={() => toggleSection("resume")}
                               >
                                 <div className="flex items-center gap-4">
@@ -1586,7 +1586,7 @@ export default function NaukriProfilePage() {
                                           className="mb-6 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
+                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-4">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Upload className="w-4 h-4 text-white" />
@@ -1634,7 +1634,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={resumeUpdate}
-                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
                                                 disabled={!state.resume_url}
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
@@ -1661,7 +1661,7 @@ export default function NaukriProfilePage() {
                                     {/* Current Resume Card */}
                                     <div className="relative">
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                      <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-[1.02]">
+                                      <div className="relative bg-white/70 rounded-lg pt-5 border border-white/50   transition-all duration-300 group ">
                                         <div className="flex items-start gap-6">
                                           {/* Resume Icon */}
                                           <div className="flex-shrink-0">
@@ -1761,14 +1761,14 @@ export default function NaukriProfilePage() {
                           {/* Resume Headline Section */}
                           <Card
                             id="headline-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
-                                className="flex items-center justify-between mb-6 cursor-pointer"
+                                className="flex items-center justify-between cursor-pointer"
                                 onClick={() => toggleSection("headline")}
                               >
                                 <div className="flex items-center gap-4">
@@ -1839,7 +1839,7 @@ export default function NaukriProfilePage() {
                                           className="mb-6 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
+                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-xl mt-5">
                                             {/* <div className="flex items-center gap-3 mb-4">
                                                 <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-blue-600 rounded-xl flex items-center justify-center">
                                                   <Edit3 className="w-4 h-4 text-white" />
@@ -1863,7 +1863,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={aboutUpdate}
-                                                className="bg-[#1E3786]  text-white shadow-lg"
+                                                className="bg-[#1E3786] hover:bg-[#1E3786]  text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Update
@@ -1888,7 +1888,7 @@ export default function NaukriProfilePage() {
                                     {/* Headline Display */}
                                     <div className="relative">
                                       {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div> */}
-                                      <div className="flex-1 px-3">
+                                      <div className="flex-1 px-3 pt-5">
                                         <div className="text-md text-gray-500 leading-relaxed whitespace-pre-line">
                                           <p>
                                             {expandedAbout
@@ -1929,12 +1929,12 @@ export default function NaukriProfilePage() {
                           {/* Skills Section */}
                           <Card
                             id="skills-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-8 cursor-pointer"
                                 onClick={() => toggleSection("skills")}
@@ -2162,12 +2162,12 @@ export default function NaukriProfilePage() {
                           {/* Employment Section */}
                           <Card
                             id="employment-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("employment")}
@@ -2637,12 +2637,12 @@ export default function NaukriProfilePage() {
                           {/* Education Section */}
                           <Card
                             id="education-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("education")}
@@ -3047,12 +3047,12 @@ export default function NaukriProfilePage() {
                           {/* Projects Section */}
                           <Card
                             id="projects-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("projects")}
@@ -3661,12 +3661,12 @@ export default function NaukriProfilePage() {
                           {/* Publications Section */}
                           <Card
                             id="publications-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("publications")}
@@ -4146,12 +4146,12 @@ export default function NaukriProfilePage() {
                           {/* Achievements Section */}
                           <Card
                             id="achievements-section"
-                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
                           >
-                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
 
-                            <CardContent className="relative p-4 md:p-6">
+                            <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("achievements")}
