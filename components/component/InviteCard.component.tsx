@@ -1,9 +1,10 @@
 import { capitalizeFLetter } from "@/utils/function.utils";
+import { Loader } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
 
 const InviteCard = (props) => {
-  const { invite, submit } = props;
+  const { invite, submit,btnLoading } = props;
   return (
     <div className="border rounded-lg p-4 bg-white shadow-sm flex flex-col gap-2">
       {/* Top */}
@@ -13,8 +14,8 @@ const InviteCard = (props) => {
             <p className="font-semibold text-gray-900">
               {capitalizeFLetter(invite.sender?.username)}
             </p>
-            {invite?.sender?.is_response ? (
-              invite?.sender?.is_interested ? (
+            {invite?.is_response ? (
+              invite?.is_interested ? (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-600">
                   Accepted
                 </span>
@@ -35,23 +36,25 @@ const InviteCard = (props) => {
 
       {/* Message */}
       <p className="text-sm text-gray-700">{invite.message}</p>
-{!invite?.sender?.is_response &&
-      <div className="flex justify-end gap-2">
-        <button
-          onClick={() => submit("accept")}
-          className="px-3 py-1 text-sm bg-green-600 text-white rounded"
-        >
-          Accept
-        </button>
+      {!invite?.is_response && (
+        <div className="flex justify-end gap-2">
+          <button
+            onClick={() => submit("accept")}
+            className="px-3 py-1 text-sm bg-green-600 text-white rounded"
+          >
+           {btnLoading?<Loader className="animate spin-2"/>:"Accept"} 
+          </button>
 
-        <button
-          onClick={() => submit("reject")}
-          className="px-3 py-1 text-sm bg-red-500 text-white rounded"
-        >
-          Reject
-        </button>
-      </div>
-      }
+          <button
+            onClick={() => submit("reject")}
+            className="px-3 py-1 text-sm bg-red-500 text-white rounded"
+          >
+            
+           {btnLoading?<Loader className="animate spin-2"/>:"Reject"} 
+
+          </button>
+        </div>
+      )}
     </div>
   );
 };

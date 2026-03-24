@@ -57,6 +57,25 @@ const profile = {
     });
     return promise;
   },
+
+  update_interest: (id,data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `users/interested/${id}/`;
+      instance()
+        .put(url, data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 };
 
 export default profile;

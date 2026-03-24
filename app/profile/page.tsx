@@ -457,8 +457,6 @@ export default function NaukriProfilePage() {
           newsletter: state.newsletter,
           active_job_seeker: state.active_job_seeker,
         };
-
-        
       }
 
       Object.keys(bodyData).forEach((key) => {
@@ -1195,7 +1193,8 @@ export default function NaukriProfilePage() {
   };
 
   const updateInviteStatus = async (type, item) => {
-
+    console.log("✌️item --->", item);
+    setState({ btnLoading: true });
     try {
       const body = {
         is_interested: type == "accept" ? true : false,
@@ -1203,16 +1202,22 @@ export default function NaukriProfilePage() {
       };
 
       const formData = new FormData();
+      formData.append("hr_interview_status",type == "accept"?"Accepted":"Rejected")
 
       Object.keys(body).forEach((key) => {
         formData.append(key, String(body[key]));
       });
 
-      const res = await Models.profile.update(formData, item?.sender_id);
+      const res = await Models.profile.update_interest(item?.id, body);
+      await Models.profile.update( formData,item?.applicant_id,);
+
       console.log("✌️res --->", res);
-      Success("Response sent successfully")
+      Success("Response sent successfully");
       userDetail(state.userId);
+      setState({ btnLoading: false });
     } catch (error) {
+      setState({ btnLoading: false });
+
       console.log("✌️error --->", error);
     }
   };
@@ -4686,7 +4691,7 @@ export default function NaukriProfilePage() {
                           Update
                         </Button>
                       </div>
-                    )  : state.activeTab == "My Applications" ? (
+                    ) : state.activeTab == "My Applications" ? (
                       <div
                         className={`grid mt-5 ${
                           !state.isGridView
@@ -4769,6 +4774,7 @@ export default function NaukriProfilePage() {
                               submit={(type) =>
                                 updateInviteStatus(type, invite)
                               }
+                              btnLoading={state.btnLoading}
                             />
                           ))
                         ) : (
