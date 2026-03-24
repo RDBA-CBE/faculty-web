@@ -16,24 +16,35 @@ const NewHeroSection = () => {
   });
 
   useEffect(() => {
-    locationList();
+    loadLocationFilterOptions(1);
     collegeList();
     JobCatList();
     JobRoleList();
-    departmentList()
+    departmentList();
   }, []);
 
-
-
-  const locationList = async () => {
+  const loadLocationFilterOptions = async (page = 1, search = "", loadMore = false) => {
     try {
-      const res: any = await Models.location.list();
+      setState({ locationListLoading: true });
+      const body: any = { search, page };
+      const res: any = await Models.location.list(page, body);
       const dropdown: any = Dropdown(res?.results, "city");
       setState({
-        locationList: dropdown,
+        locationListLoading: false,
+        locationListPage: page,
+        locationList: loadMore ? [...state.locationList, ...dropdown] : dropdown,
+        locationListNext: res?.next,
       });
     } catch (error) {
-      console.log("error fetching locations", error);
+      console.error("Error loading location options:", error);
+      setState({ locationListLoading: false });
+    }
+  };
+
+  const handleLoadMoreLocations = (searchTerm = "") => {
+    const nextPage = (state.locationListPage || 1) + 1;
+    if (state.locationListNext) {
+      loadLocationFilterOptions(nextPage, searchTerm, true);
     }
   };
 
@@ -51,19 +62,31 @@ const NewHeroSection = () => {
     }
   };
 
-  const JobRoleList = async () => {
+  const loadJobRoleOptions = async (page = 1, search = "", loadMore = false) => {
     try {
-      const res: any = await Models.category.jobRoleList();
+      setState({ jobRoleListLoading: true });
+      const res: any = await Models.category.jobRoleList(page, search);
       const dropdown: any = Dropdown(res?.results, "role_name");
       setState({
-        jobRoleList: dropdown,
+        jobRoleListLoading: false,
+        jobRoleListPage: page,
+        jobRoleList: loadMore ? [...state.jobRoleList, ...dropdown] : dropdown,
+        jobRoleListNext: res?.next,
       });
     } catch (error) {
-      console.log("error fetching locations", error);
+      console.log("error fetching job roles", error);
+      setState({ jobRoleListLoading: false });
     }
   };
 
+  const JobRoleList = () => loadJobRoleOptions(1);
 
+  const handleLoadMoreJobRoles = (searchTerm = "") => {
+    const nextPage = (state.jobRoleListPage || 1) + 1;
+    if (state.jobRoleListNext) {
+      loadJobRoleOptions(nextPage, searchTerm, true);
+    }
+  };
 
   console.log("jobCatList", state?.jobCatList);
 
@@ -71,7 +94,6 @@ const NewHeroSection = () => {
     try {
       const res: any = await Models.colleges.list();
       const dropdown = Dropdown(res?.results, "name");
-
       setState({
         collgeList: dropdown,
       });
@@ -80,22 +102,31 @@ const NewHeroSection = () => {
     }
   };
 
-  const departmentList = async () => {
-      try {
-      //   const body = {
-      //   pagination: "No",
-      // };
-        
-        const res: any = await Models.department.list();
-        const dropdown = Dropdown(res?.results, "department_name");
-  
-        setState({
-          departmentList: dropdown,
-        });
-      } catch (error) {
-        console.log("✌️error --->", error);
-      }
-    };
+  const loadDepartmentOptions = async (page = 1, search = "", loadMore = false) => {
+    try {
+      setState({ departmentListLoading: true });
+      const res: any = await Models.department.list(page, { search });
+      const dropdown = Dropdown(res?.results, "department_name");
+      setState({
+        departmentListLoading: false,
+        departmentListPage: page,
+        departmentList: loadMore ? [...state.departmentList, ...dropdown] : dropdown,
+        departmentListNext: res?.next,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+      setState({ departmentListLoading: false });
+    }
+  };
+
+  const departmentList = () => loadDepartmentOptions(1);
+
+  const handleLoadMoreDepartments = (searchTerm = "") => {
+    const nextPage = (state.departmentListPage || 1) + 1;
+    if (state.departmentListNext) {
+      loadDepartmentOptions(nextPage, searchTerm, true);
+    }
+  };
 
 
 
@@ -178,6 +209,8 @@ const NewHeroSection = () => {
                       location: selected ? selected.value : "",
                     })
                   }
+                  loadMore={handleLoadMoreLocations}
+                loading={state.locationFilterLoading}
                 />
               </div>
 
@@ -195,6 +228,8 @@ const NewHeroSection = () => {
                       department: selected ? selected.value : "",
                     })
                   }
+                  loadMore={handleLoadMoreDepartments}
+                  loading={state.departmentListLoading}
                 />
               </div>
 
@@ -215,6 +250,8 @@ const NewHeroSection = () => {
                     jobRole: selected ? selected.value : "",
                   })
                 }
+                loadMore={handleLoadMoreJobRoles}
+                loading={state.jobRoleListLoading}
               />
                   </div>
              

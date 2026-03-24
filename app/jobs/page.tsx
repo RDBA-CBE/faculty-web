@@ -1155,7 +1155,7 @@ export default function JobsPage() {
           </div>
         </div>
 
-        <div className="section-wid  py-8 lg:py-8">
+        <div className="section-wid  py-8 lg:py-6">
           <main>
             {isTabScreen && selectedJob ? (
               <div
@@ -1177,7 +1177,18 @@ export default function JobsPage() {
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
                 >
                   {/* <ArrowLeft size={20} /> */}
+                  <div className="flex justify-between">
                   <Breadcrumb />
+                  <div>
+                    <button
+                      onClick={() => setSelectedJob(null)}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
+                  </div>
+                </div>
                   {/* <span className="font-medium">Back to Jobs</span> */}
                 </button>
 
@@ -1595,9 +1606,20 @@ export default function JobsPage() {
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <>
-                <Breadcrumb />
+<div className="flex justify-between">
+                  <Breadcrumb />
+                  <div>
+                    <button
+                      onClick={() => setSelectedJob(null)}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
+                  </div>
+                </div>
 
-                <div className="flex gap-6 py-4 items-start">
+                <div className="flex gap-2 pb-4 pt-2 items-start">
                   {/* Left Sidebar - Jobs List */}
                   <div
                     ref={jobListSidebarWrapperRef}
@@ -2084,7 +2106,7 @@ export default function JobsPage() {
                                 className="p-1"
                                 onClick={() => setSelectedJob(null)}
                               >
-                                <X size={25} className=" hover:text-gray-600" />
+                                <X size={20} className=" hover:text-gray-600" />
                               </button>
                               <div className="flex flex-col items-end justify-between pt-6 gap-6  border-gray-100">
                                 <div className="flex items-center gap-2">
@@ -2160,9 +2182,9 @@ export default function JobsPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex gap-6 flex-col xl:flex-row ">
+                      <div className="flex gap-2  flex-col xl:flex-row ">
                         {/* Main Content */}
-                        <div className="flex-1 space-y-1  py-3">
+                        <div className="flex-1 space-y-4 mt-3 p-3 bg-clr2   border border-[#c7c7c787]">
                           <div>
                             {/* Job Description */}
                             <div className="border-b  pb-3">
@@ -2277,10 +2299,22 @@ export default function JobsPage() {
                           </div>
                         )} */}
                           </div>
+
+                          <button
+                            onClick={() => {
+                              setState({ jobID: state?.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
+                          >
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
+                          </button>
                         </div>
 
                         {/* Right Sidebar */}
-                        <div className="w-full xl:w-80 flex-shrink-0 mt-5 ">
+                        <div className="w-full xl:w-80 flex-shrink-0 mt-3 ">
                           <div className="sticky top-20 space-y-4 ">
                             {/* Job Details */}
                             <div className="bg-clr2   border border-[#c7c7c787]  px-5 py-5">
@@ -2432,7 +2466,7 @@ export default function JobsPage() {
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                               >
                                 {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                                Openings
+                                Job Openings
                               </button>
                               <p className="leading-relaxed">
                                 {state?.jobDetail?.college_detail}
@@ -3339,14 +3373,14 @@ export default function JobsPage() {
               title={capitalizeFLetter(selectedJob?.job_title)}
               width="700px"
               renderComponent={() => (
-                <div className="space-y-6 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
+                <div className="space-y-4 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
                       src="/assets/images/recruitmen.gif"
                       height={200}
                       width={150}
                       alt="Job Application"
-                      className="object-contain"
+                      className="object-contain w-[100px] h-[100px]"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
@@ -3403,8 +3437,8 @@ export default function JobsPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <CustomSelect
+                  <div className="space-y-1">
+                   <CustomSelect
                       // title="Experience"
                       required
                       className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
@@ -3441,9 +3475,9 @@ export default function JobsPage() {
                       error={state.errors.department_id}
                     />
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 !gap-4">
                     <TextArea
-                      placeholder="Your message..."
+                      title="Cover Letter"
                       value={state.message}
                       onChange={(e) =>
                         handleFormChange("message", e.target.value)

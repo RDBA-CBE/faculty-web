@@ -98,11 +98,12 @@ const category = {
     return promise;
   },
 
- jobRoleList: (page = 1) => {
+ jobRoleList: (page = 1, search = "") => {
   return new Promise((resolve, reject) => {
     const params = new URLSearchParams({
       page: String(page),
     });
+    if (search) params.append("search", search);
 
     const url = `job-roles/?${params.toString()}`;
 
