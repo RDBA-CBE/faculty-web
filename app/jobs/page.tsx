@@ -100,6 +100,7 @@ export default function JobsPage() {
   const collegeParam = searchParams.get("college");
   const jobRoleParam = searchParams.get("job-role");
   const jobcategoryParam = searchParams.get("job-category");
+  const departmentParam = searchParams.get("department");
 
   const [state, setState] = useSetState({
     firstName: "",
@@ -155,7 +156,7 @@ export default function JobsPage() {
     experience: "",
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
-    department: [],
+    department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
   });
 
@@ -484,6 +485,22 @@ export default function JobsPage() {
       }));
     }
   }, [jobcategoryParam]);
+
+  useEffect(() => {
+    const departmentQuery = departmentParam
+      ? [parseInt(departmentParam, 10)]
+      : [];
+    if (
+      filters.department.length !== departmentQuery.length ||
+      (departmentQuery.length > 0 &&
+        filters.department[0] !== departmentQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        department: departmentQuery,
+      }));
+    }
+  }, [departmentParam]);
 
   useEffect(() => {
     jobList(1);

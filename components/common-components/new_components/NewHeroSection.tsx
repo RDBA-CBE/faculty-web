@@ -20,7 +20,10 @@ const NewHeroSection = () => {
     collegeList();
     JobCatList();
     JobRoleList();
+    departmentList()
   }, []);
+
+
 
   const locationList = async () => {
     try {
@@ -33,6 +36,8 @@ const NewHeroSection = () => {
       console.log("error fetching locations", error);
     }
   };
+
+  
 
   const JobCatList = async () => {
     try {
@@ -58,6 +63,8 @@ const NewHeroSection = () => {
     }
   };
 
+
+
   console.log("jobCatList", state?.jobCatList);
 
   const collegeList = async () => {
@@ -73,11 +80,31 @@ const NewHeroSection = () => {
     }
   };
 
+  const departmentList = async () => {
+      try {
+      //   const body = {
+      //   pagination: "No",
+      // };
+        
+        const res: any = await Models.department.list();
+        const dropdown = Dropdown(res?.results, "department_name");
+  
+        setState({
+          departmentList: dropdown,
+        });
+      } catch (error) {
+        console.log("✌️error --->", error);
+      }
+    };
+
+
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     // if (state.search) params.append("search", state.search);
-    if (state.JobCat) params.append("job-category", state.JobCat);
-    if (state.location) params.append("location", state.location);
+    // if (state.JobCat) params.append("job-category", state.JobCat);
+    if (state.location) params.append("location", state.location);    
+    if (state.department) params.append("department", state.department);
     if (state.jobRole) params.append("job-role", state.jobRole);
     router.push(`/jobs?${params.toString()}`);
   };
@@ -124,7 +151,7 @@ const NewHeroSection = () => {
                 value={state.search}
                 onChange={(e) => setState({ search: e.target.value })}
               /> */}
-              <div className="w-[25%]">
+              {/* <div className="w-[25%]">
                 <CustomSelect
                   className="w-full placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
                   placeholder="Job Category"
@@ -137,10 +164,9 @@ const NewHeroSection = () => {
                     })
                   }
                 />
-              </div>
+              </div> */}
 
-              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
-              <div className="w-[25%]">
+               <div className="w-[25%]">
                 <CustomSelect
                   className="w-max-[50px] placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
                   placeholder="Location"
@@ -154,6 +180,26 @@ const NewHeroSection = () => {
                   }
                 />
               </div>
+
+              <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
+
+              <div className="w-[25%]">
+                <CustomSelect
+                  className="w-full placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
+                  placeholder="Job Department"
+                  options={state.departmentList}
+                  value={state?.department || ""}
+                  onChange={(selected) =>
+                    setState({
+                      ...state,
+                      department: selected ? selected.value : "",
+                    })
+                  }
+                />
+              </div>
+
+              
+             
 
               <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
 
