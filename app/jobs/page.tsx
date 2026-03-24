@@ -154,7 +154,9 @@ export default function JobsPage() {
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
     department: [],
+    jobRoleList:[]
   });
+  console.log("✌️filters --->", filters);
 
   const debouncedSearch = useDebounce(state.search, 500);
 
@@ -476,11 +478,9 @@ export default function JobsPage() {
     try {
       const body = bodyData();
       console.log("filterList --->", body);
-
       const res: any = await Models.job.filterList(body);
       console.log("✌️res --->", res);
 
-      // const dropdown = Dropdown(res?.results, "name");
       setState({
         filterList: res?.data,
       });
@@ -1075,6 +1075,7 @@ export default function JobsPage() {
       jobID: null,
       colleges: [],
       department: [],
+      jobRoleList:[]
     });
     setState({ search: "" });
   };
@@ -2412,16 +2413,29 @@ export default function JobsPage() {
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                   }`}
                 >
-                  <FilterbarNew
-                    filterList={state.filterList}
-                    filters={filters}
-                    // onFilterChange={(data: any) => setFilters(data)}
-                    onFilterChange={(data: any) => {
-                      console.log("✌️data --->", data);
+                  <Filterbar
+                   filters={filters}
+                   onFilterChange={setFilters}
+                   categoryList={state?.categoryList}
+                   locationList={state?.locationList}
+                   jobTypeList={state?.jobTypeList}
+                   experienceList={state?.experienceList}
+                   collegeList={state?.collegeList}
+                   deptList={state?.deptList}
+                   datePostedList={state?.datePostedList}
+                   salaryRangeList={state?.salaryRangeList}
+                  //  jobRoleList={state?.jobRoleList}
+                   tagsList={state?.tagsList}
+                   loading={state.loading}
+                    // filterList={state.filterList}
+                    // filters={filters}
+                    // // onFilterChange={(data: any) => setFilters(data)}
+                    // onFilterChange={(data: any) => {
+                    //   console.log("✌️data --->", data);
 
-                      setFilters(data);
-                    }}
-                    loading={state.loading}
+                    //   setFilters(data);
+                    // }}
+                    // loading={state.loading}
                   />
                 </div>
 
@@ -2435,15 +2449,28 @@ export default function JobsPage() {
                     className="bg-clr2 border border-[#c7c7c787] "
                     ref={sidebarRef}
                   >
-                    <FilterbarNew
-                      filterList={state.filterList}
-                      filters={filters}
-                      // onFilterChange={setFilters}
-                      onFilterChange={(data: any) => {
-                        console.log("✌️data --->", data);
+                    <Filterbar
+                      // filterList={state.filterList}
+                      // filters={filters}
+                      // // onFilterChange={setFilters}
+                      // onFilterChange={(data: any) => {
+                      //   console.log("✌️data --->", data);
 
-                        setFilters(data);
-                      }}
+                      //   setFilters(data);
+                      // }}
+                      // loading={state.loading}
+                      filters={filters}
+                      onFilterChange={setFilters}
+                      categoryList={state?.categoryList}
+                      locationList={state?.locationList}
+                      jobTypeList={state?.jobTypeList}
+                      experienceList={state?.experienceList}
+                      collegeList={state?.collegeList}
+                      deptList={state?.deptList}
+                      datePostedList={state?.datePostedList}
+                      salaryRangeList={state?.salaryRangeList}
+                      jobRoleList={state?.jobRoleList}
+                      tagsList={state?.tagsList}
                       loading={state.loading}
                     />
                   </div>
@@ -2583,15 +2610,27 @@ export default function JobsPage() {
                             </div>
                           </div>
                           <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
-                            <FilterbarNew
-                              filterList={state.filterList}
-                              filters={filters}
-                              // onFilterChange={setFilters}
-                              onFilterChange={(data: any) => {
-                                console.log("✌️data --->", data);
+                            <Filterbar
+                              // filterList={state.filterList}
+                              // filters={filters}
+                              // // onFilterChange={setFilters}
+                              // onFilterChange={(data: any) => {
+                              //   console.log("✌️data --->", data);
         
-                                setFilters(data);
-                              }}
+                              //   setFilters(data);
+                              // }}
+                              filters={filters}
+                              onFilterChange={setFilters}
+                              categoryList={state?.categoryList}
+                              locationList={state?.locationList}
+                              jobTypeList={state?.jobTypeList}
+                              experienceList={state?.experienceList}
+                              collegeList={state?.collegeList}
+                              deptList={state?.deptList}
+                              datePostedList={state?.datePostedList}
+                              salaryRangeList={state?.salaryRangeList}
+                              jobRoleList={state?.jobRoleList}
+                              tagsList={state?.tagsList}
                               loading={state.loading}
                             />
                           </div>

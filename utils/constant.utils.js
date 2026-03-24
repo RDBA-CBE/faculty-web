@@ -9,6 +9,9 @@ export const PROPERTY_LIST_PAGE = 12;
 
 export const dayNames = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
+export const FRONTEND_URL = "https://faculty-web-xi.vercel.app/";
+
+
 export const monthNames = [
   "January",
   "February",

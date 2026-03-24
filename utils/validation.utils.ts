@@ -51,8 +51,9 @@ export const user = Yup.object().shape({
   last_name: Yup.string().required("Last Name is required"),
   email: Yup.string().required("Email is required"),
   phone: Yup.string()
-    .required("Phone number is required")
-    .min(10, "Phone number must be at least 10 digits"),
+  .required("Phone number is required")
+  .min(10, "Phone number must be at least 10 digits")
+  .max(10, "Phone number must not exceed 10 digits"),
   current_location: Yup.string().required(" Location is required"),
   experience: Yup.string().required("Experience is required"),
   gender: Yup.string().required("Gender is required"),

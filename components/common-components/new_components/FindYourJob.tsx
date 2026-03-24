@@ -64,9 +64,15 @@ const FindYourJob = () => {
   const debouncedSearch = useDebounce(state.search, 500);
 
   useEffect(() => {
+    JobCatList();
+  }, []);
+
+
+  useEffect(() => {
     locationList();
+   
     jobList(1);
-  }, [debouncedSearch, state.location]);
+  }, [debouncedSearch, state.location , state?.JobCat]);
 
   useEffect(() => {
     jobList(state.page);
@@ -84,11 +90,28 @@ const FindYourJob = () => {
     }
   };
 
+  const JobCatList = async () => {
+      try {
+        const res: any = await Models.category.list();
+        const dropdown: any = Dropdown(res?.results, "name");
+        setState({
+          jobCatList: dropdown,
+        });
+      } catch (error) {
+        console.log("error fetching locations", error);
+      }
+    };
+
+    
+
   const jobList: any = async (page = 1) => {
     try {
       setState({ loading: true });
       console.log("hello");
       const body = bodyData();
+
+      console.log("body", body);
+      
 
       const res: any = await Models.job.list(page, body);
       console.log(res);
@@ -117,6 +140,10 @@ const FindYourJob = () => {
       body.location = state.location;
     }
 
+    if (state?.JobCat) {
+      body.category = state.JobCat;
+    }
+
     // if (filters?.location) {
     //   body.location = filters.location;
     // }
@@ -127,6 +154,9 @@ const FindYourJob = () => {
     // body.date_posted_before = moment().format("YYYY-MM-DD");
 
     return body;
+
+   
+    
   };
 
   const totalPages = Math.ceil(state.count / state.pageSize);
@@ -156,19 +186,32 @@ const FindYourJob = () => {
 
               {/* Search Bar */}
               <div className="bg-white   rounded-full  border border-[#c7c7c787] p-1.5 flex items-center gap-3 max-w-[500px]">
-                <div className="flex items-center flex-1 px-3 py-1.5">
-                  <Search className="w-4 h-4 text-gray-400 mr-2" />
-                  <input
+                <div className="flex items-center flex-1 px-3 py-1.5 w-[25%]">
+                  {/* <Search className="w-4 h-4 text-gray-400 mr-2" /> */}
+                  {/* <input
                     type="text"
                     placeholder="Job title, Position, Keyword..."
                     className="w-full focus:outline-none text-sm placeholder:bg-none placeholder:text-[#313131]"
                     value={state.search}
                     onChange={(e) => setState({ search: e.target.value })}
+                  /> */}
+
+                  <CustomSelect
+                    className="w-full placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
+                    placeholder="Job Category"
+                    options={state.jobCatList}
+                    value={state?.JobCat || ""}
+                    onChange={(selected) =>
+                      setState({
+                        ...state,
+                        JobCat: selected ? selected.value : "",
+                      })
+                    }
                   />
                 </div>
                 <div className="w-px h-6 bg-gray-200"></div>
                 <div className="flex items-center px-3 py-1.5 min-w-[120px]">
-                  <MapPin className="w-4 h-4 text-gray-400 mr-2" />
+                  {/* <MapPin className="w-4 h-4 text-gray-400 mr-2" /> */}
 
                   <CustomSelect
                     placeholder="City, state"
@@ -291,7 +334,7 @@ const FindYourJob = () => {
                             <div>
                               <h3 className="sub-ti !text-[#313131] !font-medium  mb-0.5 group-hover:!text-white">
                                 {capitalizeFLetter(
-                                  CharSlice(job.job_title, 35)
+                                  CharSlice(job.job_title, 35),
                                 )}
                               </h3>
                               <p className="text-sm text-gray-600 group-hover:!text-white">
@@ -521,7 +564,7 @@ const FindYourJob = () => {
                       key={index}
                       onClick={() =>
                         router.push(
-                          `/jobs?search=${encodeURIComponent(category.name)}`
+                          `/jobs?search=${encodeURIComponent(category.name)}`,
                         )
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#1E3786] cursor-pointer transition"
