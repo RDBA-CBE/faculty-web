@@ -98,6 +98,8 @@ export default function JobsPage() {
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
+  const jobRoleParam = searchParams.get("job-role");
+  const jobcategoryParam = searchParams.get("job-category");
 
   const [state, setState] = useSetState({
     firstName: "",
@@ -143,8 +145,8 @@ export default function JobsPage() {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
-    locations: locationParam ? parseInt(locationParam, 10) : null,
-    categories: [],
+    locations: locationParam ? [parseInt(locationParam, 10)] : [],
+    categories: jobcategoryParam ? [parseInt(jobcategoryParam, 10)] : [],
     jobTypes: [],
     experienceLevels: [],
     datePosted: [],
@@ -154,7 +156,7 @@ export default function JobsPage() {
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
     department: [],
-    jobRole:[],
+    jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
   });
 
   const debouncedSearch = useDebounce(state.search, 500);
@@ -244,7 +246,10 @@ export default function JobsPage() {
               if (cardRect.top < startFadePosition) {
                 const opacity = Math.max(
                   0.6,
-                  Math.min(1, (cardRect.top - endFadePosition) / transitionZone)
+                  Math.min(
+                    1,
+                    (cardRect.top - endFadePosition) / transitionZone,
+                  ),
                 );
                 const blur = (1 - opacity) * 4;
 
@@ -371,7 +376,7 @@ export default function JobsPage() {
     if (isDesktopScreen && selectedJob && showJobDetail) {
       const scrollContainer = jobListSidebarScrollContainerRef.current;
       const jobElement = document.getElementById(
-        `job-list-item-${selectedJob.id}`
+        `job-list-item-${selectedJob.id}`,
       );
 
       if (scrollContainer && jobElement) {
@@ -394,6 +399,10 @@ export default function JobsPage() {
     );
   };
 
+  // useEffect(()=>{
+  //   getUserDetails()
+  // },[])
+
   useEffect(() => {
     if (selectedJob && isTabScreen) {
       setTimeout(() => setIsAnimating(true), 100);
@@ -412,7 +421,7 @@ export default function JobsPage() {
     collegeList();
     departmentList();
     filterList();
-    jobRoleList()
+    jobRoleList();
   }, []);
 
   useEffect(() => {
@@ -424,10 +433,12 @@ export default function JobsPage() {
 
   useEffect(() => {
     const locationQuery = locationParam ? parseInt(locationParam, 10) : null;
-    if (locationQuery !== filters.locations) {
+    const currentLoc = filters.locations?.[0] || null;
+    if (locationQuery !== currentLoc) {
       setFilters((prevFilters) => ({
         ...prevFilters,
-        location: isNaN(locationQuery) ? null : locationQuery,
+        locations:
+          locationQuery && !isNaN(locationQuery) ? [locationQuery] : [],
       }));
     }
   }, [locationParam]);
@@ -446,8 +457,44 @@ export default function JobsPage() {
   }, [collegeParam]);
 
   useEffect(() => {
+    const jobRoleQuery = jobRoleParam ? [parseInt(jobRoleParam, 10)] : [];
+    if (
+      filters.jobRole.length !== jobRoleQuery.length ||
+      (jobRoleQuery.length > 0 && filters.jobRole[0] !== jobRoleQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        jobRole: jobRoleQuery,
+      }));
+    }
+  }, [jobRoleParam]);
+
+  useEffect(() => {
+    const jobCategoryQuery = jobcategoryParam
+      ? [parseInt(jobcategoryParam, 10)]
+      : [];
+    if (
+      filters.categories.length !== jobCategoryQuery.length ||
+      (jobCategoryQuery.length > 0 &&
+        filters.categories[0] !== jobCategoryQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        categories: jobCategoryQuery,
+      }));
+    }
+  }, [jobcategoryParam]);
+
+  useEffect(() => {
     jobList(1);
     filterList();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (jobListSidebarScrollContainerRef.current) {
+      jobListSidebarScrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
   }, [
     debouncedSearch,
     filters?.categories,
@@ -744,6 +791,21 @@ export default function JobsPage() {
     }
   };
 
+  // const getUserDetails = async () => {
+  //   try {
+  //     const profile = JSON.parse(localStorage.getItem("userId"));
+  //     console.log("profile", profile);
+      
+  //     const userId = profile?.id;
+  //     const res = await Models.profile.details(userId);
+  //     console.log("user res", res);
+      
+  //   } catch (error) {
+  //     console.log("error");
+      
+  //   }
+  // };
+
   const handleFormSubmitWithprofile = async (userId) => {
     try {
       const res: any = await Models.profile.details(userId);
@@ -961,7 +1023,6 @@ export default function JobsPage() {
   };
 
   console.log("jobRole", filters?.jobRole);
-  
 
   const bodyData = () => {
     const body: any = {};
@@ -981,7 +1042,7 @@ export default function JobsPage() {
       body.department = filters.department;
     }
 
-    if (filters?.locations) {
+    if (filters?.locations?.length > 0) {
       body.location = filters.locations;
     }
 
@@ -1018,7 +1079,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0)
+        ...filters.datePosted.map((d) => durationMap[d] || 0),
       );
 
       if (maxDays === 1) {
@@ -1086,7 +1147,7 @@ export default function JobsPage() {
   const handleClearFilters = () => {
     setFilters({
       searchQuery: "",
-      locations: null,
+      locations: [],
       categories: [],
       jobTypes: [],
       experienceLevels: [],
@@ -1097,7 +1158,7 @@ export default function JobsPage() {
       jobID: null,
       colleges: [],
       department: [],
-      jobRole:[],
+      jobRole: [],
     });
     setState({ search: "" });
   };
@@ -1245,7 +1306,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", ")
+                              .join(", "),
                           )}{" "}
                           {/* {state?.jobDetail?.college?.address} */}
                         </span>
@@ -1329,7 +1390,7 @@ export default function JobsPage() {
                                   >
                                     {item.name}
                                   </button>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -1553,7 +1614,7 @@ export default function JobsPage() {
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
-                          `/jobs?college=${state?.jobDetail?.college?.id}`
+                          `/jobs?college=${state?.jobDetail?.college?.id}`,
                         );
                       }}
                       className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -1655,7 +1716,7 @@ export default function JobsPage() {
                                         title={job.job_title}
                                       >
                                         {capitalizeFLetter(
-                                          CharSlice(job.job_title, 20)
+                                          CharSlice(job.job_title, 20),
                                         )}
                                       </h3>
                                       <p
@@ -1958,12 +2019,12 @@ export default function JobsPage() {
                               <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
                                 {/* • Posted{" "} */}
                                 {moment(
-                                  state?.jobDetail?.created_at
+                                  state?.jobDetail?.created_at,
                                 ).isValid() &&
                                 moment(state?.jobDetail?.created_at).year() >
                                   1900
                                   ? moment(
-                                      state?.jobDetail?.created_at
+                                      state?.jobDetail?.created_at,
                                     ).fromNow()
                                   : "Just now"}
                               </div>
@@ -1978,7 +2039,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   />
@@ -1988,7 +2049,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
@@ -2000,7 +2061,7 @@ export default function JobsPage() {
                                 <div className="flex-1 flex-col">
                                   <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.job_title
+                                      state?.jobDetail?.job_title,
                                     )}
                                   </h1>
                                   <p
@@ -2008,12 +2069,12 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.college?.name
+                                      state?.jobDetail?.college?.name,
                                     )}
                                   </p>
                                 </div>
@@ -2043,7 +2104,7 @@ export default function JobsPage() {
                                       {capitalizeFLetter(
                                         state?.jobDetail?.locations
                                           ?.map((item) => item.city)
-                                          .join(", ")
+                                          .join(", "),
                                       )}{" "}
                                       {/* {state?.jobDetail?.college?.address} */}
                                     </span>
@@ -2166,7 +2227,7 @@ export default function JobsPage() {
                                           >
                                             {item.name}
                                           </button>
-                                        )
+                                        ),
                                       )}
                                     </div>
                                   </div>
@@ -2203,7 +2264,7 @@ export default function JobsPage() {
 
                                         <span className="">{item}</span>
                                       </li>
-                                    )
+                                    ),
                                   )}
                                 </ul>
                               </div>
@@ -2317,7 +2378,7 @@ export default function JobsPage() {
                                             state.jobDetail.department.length -
                                               1 && ", "}
                                         </div>
-                                      )
+                                      ),
                                     )}
                                   </div>
                                 </div>
@@ -2379,7 +2440,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
@@ -2399,7 +2460,7 @@ export default function JobsPage() {
                                   });
 
                                   router.push(
-                                    `/jobs?college=${state?.jobDetail?.college?.id}`
+                                    `/jobs?college=${state?.jobDetail?.college?.id}`,
                                   );
                                 }}
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -2435,7 +2496,6 @@ export default function JobsPage() {
                     isSidebarOpen ? "translate-x-0" : "-translate-x-full"
                   }`}
                 >
-
                   {/* <FilterbarNew
                     filterList={state.filterList}
                     filters={filters}
@@ -2448,7 +2508,7 @@ export default function JobsPage() {
                     loading={state.loading}
                   /> */}
 
-                  <Filterbar                   
+                  <Filterbar
                     filters={filters}
                     onFilterChange={setFilters}
                     categoryList={state?.categoryList}
@@ -2472,10 +2532,9 @@ export default function JobsPage() {
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787] "
+                    className="bg-clr2 border border-[#c7c7c787] h-[90vh] overflow-y-auto scrollbar-hide"
                     ref={sidebarRef}
                   >
-
                     {/* <FilterbarNew
                       filterList={state.filterList}
                       filters={filters}
@@ -2488,8 +2547,7 @@ export default function JobsPage() {
                       loading={state.loading}
                     /> */}
 
-                    
-                    <Filterbar                    
+                    <Filterbar
                       filters={filters}
                       onFilterChange={setFilters}
                       categoryList={state?.categoryList}
@@ -2538,11 +2596,11 @@ export default function JobsPage() {
 
                             <CustomSelect
                               options={state.locationList}
-                              value={filters.locations}
+                              value={filters.locations?.[0]}
                               onChange={(selected) =>
                                 setFilters({
                                   ...filters,
-                                  locations: selected ? selected.value : null,
+                                  locations: selected ? [selected.value] : [],
                                 })
                               }
                               className="py-0 border-none"
@@ -2994,7 +3052,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at
+                                        state.jobDetail?.created_at,
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -3055,7 +3113,7 @@ export default function JobsPage() {
                                       >
                                         {item.name}
                                       </button>
-                                    )
+                                    ),
                                   )}
                                 </div>
                               </div>
@@ -3086,7 +3144,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -3199,7 +3257,7 @@ export default function JobsPage() {
                                         state.jobDetail.department.length - 1 &&
                                         ", "}
                                     </div>
-                                  )
+                                  ),
                                 )}
                               </div>
                             </div>
@@ -3282,7 +3340,7 @@ export default function JobsPage() {
                               window.scrollTo({ top: 0, behavior: "smooth" });
 
                               router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`
+                                `/jobs?college=${state?.jobDetail?.college?.id}`,
                               );
                             }}
                             className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -3420,7 +3478,7 @@ export default function JobsPage() {
                       onChange={(selected) =>
                         handleFormChange(
                           "department_id",
-                          selected ? selected.value : null
+                          selected ? selected.value : null,
                         )
                       }
                       placeholder="Select a department"
@@ -3655,7 +3713,7 @@ export default function JobsPage() {
                                 >
                                   {item.grade}
                                 </span>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -3683,15 +3741,16 @@ export default function JobsPage() {
                               </span>
                             )}
 
-                            {state.collegeDetail?.nirf_categories?.map((item) =>
-                              item.is_active ? (
-                                <span
-                                  key={item.id}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
-                                >
-                                  {item.category}
-                                </span>
-                              ) : null
+                            {state.collegeDetail?.nirf_categories?.map(
+                              (item) =>
+                                item.is_active ? (
+                                  <span
+                                    key={item.id}
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
+                                  >
+                                    {item.category}
+                                  </span>
+                                ) : null,
                             )}
                           </div>
                         </div>
@@ -3739,7 +3798,7 @@ export default function JobsPage() {
                                   <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                   {item.achievement}
                                 </li>
-                              )
+                              ),
                             )}
                           </ul>
                         </div>
@@ -3872,7 +3931,7 @@ export default function JobsPage() {
                                       <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                       {item.achievement}
                                     </li>
-                                  )
+                                  ),
                                 )}
                               </ul>
                             </div>

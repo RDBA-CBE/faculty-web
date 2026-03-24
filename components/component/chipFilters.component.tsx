@@ -27,6 +27,7 @@ const ChipFilters = ({
   datePostedList = [],
   locationList = [],
   deptList = [],
+
 }) => {
 
 
@@ -45,21 +46,13 @@ const ChipFilters = ({
   }
 
   // Location
-  if (filters.location) {
+  filters.locations?.forEach((value) => {
     activeFilters.push({
-      label: findLabel(locationList, filters.location),
-      onRemove: () => onFilterChange({ ...filters, location: "" }),
-    });
-  }
-
-  // Categories
-  filters.categories.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(categoryList, value),
+      label: findLabel(locationList, value),
       onRemove: () => {
         onFilterChange({
           ...filters,
-          categories: filters.categories.filter((v) => v !== value),
+          locations: filters.locations.filter((v) => v !== value),
         });
       },
     });
@@ -86,6 +79,32 @@ const ChipFilters = ({
         onFilterChange({
           ...filters,
           experienceLevels: filters.experienceLevels.filter((v) => v !== value),
+        });
+      },
+    });
+  });
+
+  // Categories
+  filters.categories.forEach((value) => {
+    activeFilters.push({
+      label: findLabel(categoryList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          categories: filters.categories.filter((v) => v !== value),
+        });
+      },
+    });
+  });
+
+  // jobrole
+  filters.jobRole.forEach((value) => {
+    activeFilters.push({
+      label: findLabel(jobRoleList, value),
+      onRemove: () => {
+        onFilterChange({
+          ...filters,
+          jobRole: filters.jobRole.filter((v) => v !== value),
         });
       },
     });

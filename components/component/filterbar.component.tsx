@@ -38,6 +38,7 @@ interface SidebarProps {
     minExperience?: string;
     maxExperience?: string;
     jobRole?: any[];
+    locations?:any[]
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -190,20 +191,41 @@ const Filterbar: React.FC<SidebarProps> = ({
 }) => {
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
+  const [showAllJobRoles, setShowAllJobRoles] = useState(false);
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllLocations, setShowAllLocations] = useState(false);
 
   const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
   const [deptSearchQuery, setDeptSearchQuery] = useState("");
+  const [jobRoleSearchQuery, setJobRoleSearchQuery] = useState("");
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
+  const [locationSearchQuery, setLocationSearchQuery] = useState("");
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
 
-  const [collegePopupPos, setCollegePopupPos] = useState({ left: 0, top: -200 });
+  const [collegePopupPos, setCollegePopupPos] = useState({
+    left: 0,
+    top: -200,
+  });
   const [deptPopupPos, setDeptPopupPos] = useState({ left: 0, top: -200 });
+  const [jobRolePopupPos, setJobRolePopupPos] = useState({ left: 0, top: -200 });
+  const [categoryPopupPos, setCategoryPopupPos] = useState({ left: 0, top: -200 });
+  const [locationPopupPos, setLocationPopupPos] = useState({ left: 0, top: -200 });
 
   const collegePopupRef = useRef<HTMLDivElement>(null);
   const deptPopupRef = useRef<HTMLDivElement>(null);
+  const jobRolePopupRef = useRef<HTMLDivElement>(null);
+  const categoryPopupRef = useRef<HTMLDivElement>(null);
+  const locationPopupRef = useRef<HTMLDivElement>(null);
   const collegeButtonRef = useRef<HTMLButtonElement>(null);
   const deptButtonRef = useRef<HTMLButtonElement>(null);
+  const jobRoleButtonRef = useRef<HTMLButtonElement>(null);
+  const categoryButtonRef = useRef<HTMLButtonElement>(null);
+  const locationButtonRef = useRef<HTMLButtonElement>(null);
   const collegeSectionRef = useRef<HTMLDivElement>(null);
   const deptSectionRef = useRef<HTMLDivElement>(null);
+  const jobRoleSectionRef = useRef<HTMLDivElement>(null);
+  const categorySectionRef = useRef<HTMLDivElement>(null);
+  const locationSectionRef = useRef<HTMLDivElement>(null);
 
   const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
     0, 5000000,
@@ -369,15 +391,69 @@ const Filterbar: React.FC<SidebarProps> = ({
   }, [showAllDept]);
 
   useEffect(() => {
-    if (showAllColleges || showAllDept) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        jobRolePopupRef.current &&
+        !jobRolePopupRef.current.contains(event.target as Node) &&
+        jobRoleSectionRef.current &&
+        !jobRoleSectionRef.current.contains(event.target as Node)
+      ) {
+        setShowAllJobRoles(false);
+      }
     };
-  }, [showAllColleges, showAllDept]);
+
+    if (showAllJobRoles) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllJobRoles]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        locationPopupRef.current &&
+        !locationPopupRef.current.contains(event.target as Node) &&
+        locationSectionRef.current &&
+        !locationSectionRef.current.contains(event.target as Node)
+      ) {
+        setShowAllLocations(false);
+      }
+    };
+
+    if (showAllLocations) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllLocations]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        categoryPopupRef.current &&
+        !categoryPopupRef.current.contains(event.target as Node) &&
+        categorySectionRef.current &&
+        !categorySectionRef.current.contains(event.target as Node)
+      ) {
+        setShowAllCategories(false);
+      }
+    };
+
+    if (showAllCategories) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showAllCategories]);
+
+  // useEffect(() => {
+  //   if (showAllColleges || showAllDept || showAllJobRoles || showAllCategories || showAllLocations) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "";
+  //   }
+  //   return () => {
+  //     document.body.style.overflow = "";
+  //   };
+  // }, [showAllColleges, showAllDept, showAllJobRoles, showAllCategories, showAllLocations]);
 
   const calculateCollegePopupPos = () => {
     if (collegeSectionRef.current) {
@@ -393,6 +469,36 @@ const Filterbar: React.FC<SidebarProps> = ({
     if (deptSectionRef.current) {
       const rect = deptSectionRef.current.getBoundingClientRect();
       setDeptPopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
+  const calculateJobRolePopupPos = () => {
+    if (jobRoleSectionRef.current) {
+      const rect = jobRoleSectionRef.current.getBoundingClientRect();
+      setJobRolePopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
+  const calculateCategoryPopupPos = () => {
+    if (categorySectionRef.current) {
+      const rect = categorySectionRef.current.getBoundingClientRect();
+      setCategoryPopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
+  const calculateLocationPopupPos = () => {
+    if (locationSectionRef.current) {
+      const rect = locationSectionRef.current.getBoundingClientRect();
+      setLocationPopupPos({
         left: rect.left,
         top: rect.top + 8,
       });
@@ -423,6 +529,42 @@ const Filterbar: React.FC<SidebarProps> = ({
     };
   }, [showAllDept]);
 
+  useEffect(() => {
+    if (showAllJobRoles) {
+      calculateJobRolePopupPos();
+      window.addEventListener("scroll", calculateJobRolePopupPos);
+      window.addEventListener("resize", calculateJobRolePopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateJobRolePopupPos);
+      window.removeEventListener("resize", calculateJobRolePopupPos);
+    };
+  }, [showAllJobRoles]);
+
+  useEffect(() => {
+    if (showAllCategories) {
+      calculateCategoryPopupPos();
+      window.addEventListener("scroll", calculateCategoryPopupPos);
+      window.addEventListener("resize", calculateCategoryPopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateCategoryPopupPos);
+      window.removeEventListener("resize", calculateCategoryPopupPos);
+    };
+  }, [showAllCategories]);
+
+  useEffect(() => {
+    if (showAllLocations) {
+      calculateLocationPopupPos();
+      window.addEventListener("scroll", calculateLocationPopupPos);
+      window.addEventListener("resize", calculateLocationPopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateLocationPopupPos);
+      window.removeEventListener("resize", calculateLocationPopupPos);
+    };
+  }, [showAllLocations]);
+
   const toggleItem = <T,>(list: T[], item: T) => {
     return list.includes(item)
       ? list.filter((i) => i !== item)
@@ -441,7 +583,8 @@ const Filterbar: React.FC<SidebarProps> = ({
       colleges: [],
       minExperience: "",
       maxExperience: "",
-      jobRole:[],
+      jobRole: [],
+      locations:[],
     });
   };
 
@@ -504,6 +647,36 @@ const Filterbar: React.FC<SidebarProps> = ({
     collegefilteredList?.map((item) => item.label[0].toUpperCase()),
   );
 
+  const jobRoleFilteredList = jobRoleList
+    ?.filter((c) =>
+      c.label.toLowerCase().includes(jobRoleSearchQuery.toLowerCase()),
+    )
+    ?.sort((a, b) => a.label.localeCompare(b.label));
+
+  const jobRoleAvailableAlphabets = new Set(
+    jobRoleFilteredList?.map((item) => item.label[0].toUpperCase()),
+  );
+
+  const categoryFilteredList = categoryList
+    ?.filter((c) =>
+      c.label.toLowerCase().includes(categorySearchQuery.toLowerCase()),
+    )
+    ?.sort((a, b) => a.label.localeCompare(b.label));
+
+  const categoryAvailableAlphabets = new Set(
+    categoryFilteredList?.map((item) => item.label[0].toUpperCase()),
+  );
+
+  const locationFilteredList = locationList
+    ?.filter((c) =>
+      c.label.toLowerCase().includes(locationSearchQuery.toLowerCase()),
+    )
+    ?.sort((a, b) => a.label.localeCompare(b.label));
+
+  const locationAvailableAlphabets = new Set(
+    locationFilteredList?.map((item) => item.label[0].toUpperCase()),
+  );
+
   return (
     <aside className="w-full h-full">
       <div className="flex w-full justify-between items-center px-4 mt-4">
@@ -516,6 +689,175 @@ const Filterbar: React.FC<SidebarProps> = ({
         </button>
       </div>
       <div className="lg:p-[19px] lg:pb-[10px] lg:pt-0">
+
+        <div ref={locationSectionRef}>
+          <FilterSection
+            title="Preffered Locations"
+            items={locationList?.slice(0, 5) ?? []}
+            selected={filters.locations}
+            onToggle={(value) =>
+              onFilterChange({
+                ...filters,
+                locations: toggleItem(filters.locations, value),
+              })
+            }
+          />
+        </div>
+
+        {locationList && locationList.length > 5 && (
+          <div className="relative mt-2">
+            <button
+              ref={locationButtonRef}
+              onClick={() => {
+                setShowAllLocations(true);
+                setTimeout(calculateLocationPopupPos, 0);
+              }}
+              className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
+            >
+              View more
+            </button>
+          </div>
+        )}
+
+        <PopupPortal>
+          {showAllLocations && (
+            <div
+              ref={locationPopupRef}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
+              style={{
+                width: "clamp(300px, 90vw, 900px)",
+                height: `clamp(420px, 60vh, 420px)`,
+                left: `${locationPopupPos.left}px`,
+                top: `${locationPopupPos.top}px`,
+                maxHeight: "80vh",
+                overflowY: "hidden",
+              }}
+            >
+              <div className="flex justify-between items-start mb-3 border-b">
+                <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                  <div className="relative mb-3 w-full md:w-auto">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search locations..."
+                      value={locationSearchQuery}
+                      onChange={(e) => setLocationSearchQuery(e.target.value)}
+                      className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                    {alphabets.map((char) => {
+                      const isAvailable = locationAvailableAlphabets.has(char);
+
+                      return (
+                        <span
+                          key={char}
+                          onClick={() => {
+                            if (!isAvailable) return;
+
+                            setSelectedAlphabet(char);
+
+                            alphabetRefs.current[char]?.scrollIntoView({
+                              behavior: "smooth",
+                              inline: "start",
+                              block: "nearest",
+                            });
+                          }}
+                          className={`
+                                text-sm
+                                ${
+                                  isAvailable
+                                    ? "cursor-pointer hover:text-black"
+                                    : "cursor-not-allowed text-slate-300"
+                                }
+                                ${
+                                  selectedAlphabet === char && isAvailable
+                                    ? "text-black border bg-gray-300 px-1 py-0 font-semibold"
+                                    : ""
+                                }
+                              `}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAllLocations(false);
+                    setSelectedAlphabet(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div
+                ref={listRef}
+                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+              >
+                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                  {locationFilteredList.map((item, index) => {
+                    const currentLetter = item.label[0].toUpperCase();
+                    const prevLetter =
+                      index > 0
+                        ? locationFilteredList[index - 1]?.label[0].toUpperCase()
+                        : null;
+
+                    const showHeader = currentLetter !== prevLetter;
+
+                    return (
+                      <div key={item.value} className={`break-inside-avoid `}>
+                        {showHeader && (
+                          <div
+                            ref={(el) => {
+                              if (el) alphabetRefs.current[currentLetter] = el;
+                            }}
+                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                          >
+                            {currentLetter}
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={filters.locations.includes(item.value)}
+                            onChange={() =>
+                              onFilterChange({
+                                ...filters,
+                                locations: toggleItem(
+                                  filters.locations,
+                                  item.value,
+                                ),
+                              })
+                            }
+                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                          />
+                          <span className="text-sm text-slate-600">
+                            {item.label}
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  {locationFilteredList.length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No locations found
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </PopupPortal>
+
         {/* Job Sectors */}
         {/* <FilterSection
           title="Job Sectors"
@@ -552,7 +894,6 @@ const Filterbar: React.FC<SidebarProps> = ({
         <div ref={collegeSectionRef}>
           <FilterSection
             title="Choose Colleges"
-            
             items={collegeList?.slice(0, 5) ?? []}
             selected={filters.colleges}
             onToggle={(value) =>
@@ -585,49 +926,49 @@ const Filterbar: React.FC<SidebarProps> = ({
               ref={collegePopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
-                width: 'clamp(300px, 90vw, 900px)',
+                width: "clamp(300px, 90vw, 900px)",
                 height: `clamp(420px, 60vh, 420px)`,
                 left: `${collegePopupPos.left}px`,
                 top: `${collegePopupPos.top}px`,
-                maxHeight: '80vh',
-                overflowY: 'hidden',
+                maxHeight: "80vh",
+                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
-                  {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
-                  <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
-                    <div className="relative mb-3 w-full md:w-auto">
-                      <Search
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                        size={16}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Search colleges..."
-                        value={collegeSearchQuery}
-                        onChange={(e) => setCollegeSearchQuery(e.target.value)}
-                        className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-                      />
-                    </div>
-                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
-                      {alphabets.map((char) => {
-                        const isAvailable = collegeAvailableAlphabets.has(char);
+                {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
+                <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                  <div className="relative mb-3 w-full md:w-auto">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search colleges..."
+                      value={collegeSearchQuery}
+                      onChange={(e) => setCollegeSearchQuery(e.target.value)}
+                      className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                    {alphabets.map((char) => {
+                      const isAvailable = collegeAvailableAlphabets.has(char);
 
-                        return (
-                          <span
-                            key={char}
-                            onClick={() => {
-                              if (!isAvailable) return; // ❌ prevent click
+                      return (
+                        <span
+                          key={char}
+                          onClick={() => {
+                            if (!isAvailable) return; // ❌ prevent click
 
-                              setSelectedAlphabet(char);
+                            setSelectedAlphabet(char);
 
-                              alphabetRefs.current[char]?.scrollIntoView({
-                                behavior: "smooth",
-                                inline: "start",
-                                block: "nearest",
-                              });
-                            }}
-                            className={`
+                            alphabetRefs.current[char]?.scrollIntoView({
+                              behavior: "smooth",
+                              inline: "start",
+                              block: "nearest",
+                            });
+                          }}
+                          className={`
                                 text-sm
                                 ${
                                   isAvailable
@@ -640,86 +981,83 @@ const Filterbar: React.FC<SidebarProps> = ({
                                     : ""
                                 }
                               `}
-                            >
-                            {char}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowAllColleges(false);
-                      setSelectedAlphabet(null);
-                    }}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div
-                  ref={listRef}
-                  className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-                >
-                  <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
-                    {collegefilteredList.map((item, index) => {
-                      const currentLetter = item.label[0].toUpperCase();
-                      const prevLetter =
-                        index > 0
-                          ? collegefilteredList[
-                              index - 1
-                            ]?.label[0].toUpperCase()
-                          : null;
-
-                      const showHeader = currentLetter !== prevLetter;
-
-                      return (
-                        <div key={item.value} className={`break-inside-avoid `}>
-                          {showHeader && (
-                            <div
-                              ref={(el) => {
-                                if (el)
-                                  alphabetRefs.current[currentLetter] = el;
-                              }}
-                              className="font-semibold text-sm text-slate-700 mt-2 mb-1"
-                            >
-                              {currentLetter}
-                            </div>
-                          )}
-
-                          <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                            <input
-                              type="checkbox"
-                              checked={filters.colleges.includes(item.value)}
-                              onChange={() =>
-                                onFilterChange({
-                                  ...filters,
-                                  colleges: toggleItem(
-                                    filters.colleges,
-                                    item.value,
-                                  ),
-                                })
-                              }
-                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                            />
-                            <span className="text-sm text-slate-600">
-                              {item.label}
-                            </span>
-                          </label>
-                        </div>
+                        >
+                          {char}
+                        </span>
                       );
                     })}
-
-                    {collegefilteredList.length === 0 && (
-                      <p className="text-sm text-slate-400 text-center py-4">
-                        No department found
-                      </p>
-                    )}
                   </div>
                 </div>
+                <button
+                  onClick={() => {
+                    setShowAllColleges(false);
+                    setSelectedAlphabet(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={18} />
+                </button>
               </div>
-            )}
+
+              <div
+                ref={listRef}
+                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+              >
+                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                  {collegefilteredList.map((item, index) => {
+                    const currentLetter = item.label[0].toUpperCase();
+                    const prevLetter =
+                      index > 0
+                        ? collegefilteredList[index - 1]?.label[0].toUpperCase()
+                        : null;
+
+                    const showHeader = currentLetter !== prevLetter;
+
+                    return (
+                      <div key={item.value} className={`break-inside-avoid `}>
+                        {showHeader && (
+                          <div
+                            ref={(el) => {
+                              if (el) alphabetRefs.current[currentLetter] = el;
+                            }}
+                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                          >
+                            {currentLetter}
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={filters.colleges.includes(item.value)}
+                            onChange={() =>
+                              onFilterChange({
+                                ...filters,
+                                colleges: toggleItem(
+                                  filters.colleges,
+                                  item.value,
+                                ),
+                              })
+                            }
+                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                          />
+                          <span className="text-sm text-slate-600">
+                            {item.label}
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  {collegefilteredList.length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No department found
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </PopupPortal>
         <div ref={deptSectionRef}>
           <FilterSection
@@ -755,50 +1093,50 @@ const Filterbar: React.FC<SidebarProps> = ({
               ref={deptPopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
-                width: 'clamp(300px, 90vw, 900px)',
+                width: "clamp(300px, 90vw, 900px)",
                 height: `clamp(420px, 60vh, 420px)`,
                 left: `${deptPopupPos.left}px`,
                 top: `${deptPopupPos.top}px`,
-                maxHeight: '80vh',
-                overflowY: 'hidden',
+                maxHeight: "80vh",
+                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
-                  {/* <h4 className="font-semibold text-[#000]">All Department</h4> */}
-                  <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
-                    <div className="relative mb-3 w-full md:w-auto">
-                      <Search
-                        className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                        size={16}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Search department..."
-                        value={deptSearchQuery}
-                        onChange={(e) => setDeptSearchQuery(e.target.value)}
-                        className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-                      />
-                    </div>
+                {/* <h4 className="font-semibold text-[#000]">All Department</h4> */}
+                <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                  <div className="relative mb-3 w-full md:w-auto">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search department..."
+                      value={deptSearchQuery}
+                      onChange={(e) => setDeptSearchQuery(e.target.value)}
+                      className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                    />
+                  </div>
 
-                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
-                      {alphabets.map((char) => {
-                        const isAvailable = DepartAvailableAlphabets.has(char);
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                    {alphabets.map((char) => {
+                      const isAvailable = DepartAvailableAlphabets.has(char);
 
-                        return (
-                          <span
-                            key={char}
-                            onClick={() => {
-                              if (!isAvailable) return; // ❌ prevent click
+                      return (
+                        <span
+                          key={char}
+                          onClick={() => {
+                            if (!isAvailable) return; // ❌ prevent click
 
-                              setSelectedAlphabet(char);
+                            setSelectedAlphabet(char);
 
-                              alphabetRefs.current[char]?.scrollIntoView({
-                                behavior: "smooth",
-                                inline: "start",
-                                block: "nearest",
-                              });
-                            }}
-                            className={`
+                            alphabetRefs.current[char]?.scrollIntoView({
+                              behavior: "smooth",
+                              inline: "start",
+                              block: "nearest",
+                            });
+                          }}
+                          className={`
                           text-sm
                           ${
                             isAvailable
@@ -811,88 +1149,84 @@ const Filterbar: React.FC<SidebarProps> = ({
                                 : ""
                             }
                           `}
-                          >
-                            {char}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setShowAllDept(false);
-                      setSelectedAlphabet(null);
-                    }}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div
-                  ref={listRef}
-                  className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
-                >
-                  <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
-                    {DepartfilteredList.map((item, index) => {
-                      const currentLetter = item.label[0].toUpperCase();
-                      const prevLetter =
-                        index > 0
-                          ? DepartfilteredList[
-                              index - 1
-                            ]?.label[0].toUpperCase()
-                          : null;
-
-                      const showHeader = currentLetter !== prevLetter;
-
-                      return (
-                        <div key={item.value} className={`break-inside-avoid `}>
-                          {showHeader && (
-                            <div
-                              ref={(el) => {
-                                if (el)
-                                  alphabetRefs.current[currentLetter] = el;
-                              }}
-                              className="font-semibold text-sm text-slate-700 mt-2 mb-1"
-                            >
-                              {currentLetter}
-                            </div>
-                          )}
-
-                          <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                            <input
-                              type="checkbox"
-                              checked={filters.department.includes(item.value)}
-                              onChange={() =>
-                                onFilterChange({
-                                  ...filters,
-                                  department: toggleItem(
-                                    filters.department,
-                                    item.value,
-                                  ),
-                                })
-                              }
-                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                            />
-                            <span className="text-sm text-slate-600">
-                              {item.label}
-                            </span>
-                          </label>
-                        </div>
+                        >
+                          {char}
+                        </span>
                       );
                     })}
-
-                    {DepartfilteredList.length === 0 && (
-                      <p className="text-sm text-slate-400 text-center py-4">
-                        No department found
-                      </p>
-                    )}
                   </div>
                 </div>
+                <button
+                  onClick={() => {
+                    setShowAllDept(false);
+                    setSelectedAlphabet(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={18} />
+                </button>
               </div>
-            )}
-        </PopupPortal>
 
+              <div
+                ref={listRef}
+                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+              >
+                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                  {DepartfilteredList.map((item, index) => {
+                    const currentLetter = item.label[0].toUpperCase();
+                    const prevLetter =
+                      index > 0
+                        ? DepartfilteredList[index - 1]?.label[0].toUpperCase()
+                        : null;
+
+                    const showHeader = currentLetter !== prevLetter;
+
+                    return (
+                      <div key={item.value} className={`break-inside-avoid `}>
+                        {showHeader && (
+                          <div
+                            ref={(el) => {
+                              if (el) alphabetRefs.current[currentLetter] = el;
+                            }}
+                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                          >
+                            {currentLetter}
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={filters.department.includes(item.value)}
+                            onChange={() =>
+                              onFilterChange({
+                                ...filters,
+                                department: toggleItem(
+                                  filters.department,
+                                  item.value,
+                                ),
+                              })
+                            }
+                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                          />
+                          <span className="text-sm text-slate-600">
+                            {item.label}
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  {DepartfilteredList.length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No department found
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </PopupPortal>
 
         {/* <FilterSection
           title="Experience Level"
@@ -956,7 +1290,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             </button>
           </div>
         </div>
-
 
         {/* 
         <FilterSection
@@ -1070,9 +1403,9 @@ const Filterbar: React.FC<SidebarProps> = ({
           />
         </div>
 
-        <FilterSection
+        <div ref={jobRoleSectionRef}>
+          <FilterSection
             title="Select Job role"
-            
             items={jobRoleList?.slice(0, 5) ?? []}
             selected={filters.jobRole}
             onToggle={(value) =>
@@ -1082,10 +1415,165 @@ const Filterbar: React.FC<SidebarProps> = ({
               })
             }
           />
+        </div>
 
+        {jobRoleList && jobRoleList.length > 5 && (
+          <div className="relative mt-2">
+            <button
+              ref={jobRoleButtonRef}
+              onClick={() => {
+                setShowAllJobRoles(true);
+                setTimeout(calculateJobRolePopupPos, 0);
+              }}
+              className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
+            >
+              View more
+            </button>
+          </div>
+        )}
+
+        <PopupPortal>
+          {showAllJobRoles && (
+            <div
+              ref={jobRolePopupRef}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
+              style={{
+                width: "clamp(300px, 90vw, 900px)",
+                height: `clamp(420px, 60vh, 420px)`,
+                left: `${jobRolePopupPos.left}px`,
+                top: `${jobRolePopupPos.top}px`,
+                maxHeight: "80vh",
+                overflowY: "hidden",
+              }}
+            >
+              <div className="flex justify-between items-start mb-3 border-b">
+                <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                  <div className="relative mb-3 w-full md:w-auto">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search job roles..."
+                      value={jobRoleSearchQuery}
+                      onChange={(e) => setJobRoleSearchQuery(e.target.value)}
+                      className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                    {alphabets.map((char) => {
+                      const isAvailable = jobRoleAvailableAlphabets.has(char);
+
+                      return (
+                        <span
+                          key={char}
+                          onClick={() => {
+                            if (!isAvailable) return; // ❌ prevent click
+
+                            setSelectedAlphabet(char);
+
+                            alphabetRefs.current[char]?.scrollIntoView({
+                              behavior: "smooth",
+                              inline: "start",
+                              block: "nearest",
+                            });
+                          }}
+                          className={`
+                                text-sm
+                                ${
+                                  isAvailable
+                                    ? "cursor-pointer hover:text-black"
+                                    : "cursor-not-allowed text-slate-300"
+                                }
+                                ${
+                                  selectedAlphabet === char && isAvailable
+                                    ? "text-black border bg-gray-300 px-1 py-0 font-semibold"
+                                    : ""
+                                }
+                              `}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAllJobRoles(false);
+                    setSelectedAlphabet(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div
+                ref={listRef}
+                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+              >
+                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                  {jobRoleFilteredList.map((item, index) => {
+                    const currentLetter = item.label[0].toUpperCase();
+                    const prevLetter =
+                      index > 0
+                        ? jobRoleFilteredList[index - 1]?.label[0].toUpperCase()
+                        : null;
+
+                    const showHeader = currentLetter !== prevLetter;
+
+                    return (
+                      <div key={item.value} className={`break-inside-avoid `}>
+                        {showHeader && (
+                          <div
+                            ref={(el) => {
+                              if (el) alphabetRefs.current[currentLetter] = el;
+                            }}
+                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                          >
+                            {currentLetter}
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={filters.jobRole.includes(item.value)}
+                            onChange={() =>
+                              onFilterChange({
+                                ...filters,
+                                jobRole: toggleItem(
+                                  filters.jobRole,
+                                  item.value,
+                                ),
+                              })
+                            }
+                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                          />
+                          <span className="text-sm text-slate-600">
+                            {item.label}
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  {jobRoleFilteredList.length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No job roles found
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </PopupPortal>
+
+        <div ref={categorySectionRef}>
           <FilterSection
             title="Select Job Category"
-            
             items={categoryList?.slice(0, 5) ?? []}
             selected={filters.categories}
             onToggle={(value) =>
@@ -1095,9 +1583,161 @@ const Filterbar: React.FC<SidebarProps> = ({
               })
             }
           />
-       
+        </div>
 
-     
+        {categoryList && categoryList.length > 5 && (
+          <div className="relative mt-2">
+            <button
+              ref={categoryButtonRef}
+              onClick={() => {
+                setShowAllCategories(true);
+                setTimeout(calculateCategoryPopupPos, 0);
+              }}
+              className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
+            >
+              View more
+            </button>
+          </div>
+        )}
+
+        <PopupPortal>
+          {showAllCategories && (
+            <div
+              ref={categoryPopupRef}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
+              style={{
+                width: "clamp(300px, 90vw, 900px)",
+                height: `clamp(420px, 60vh, 420px)`,
+                left: `${categoryPopupPos.left}px`,
+                top: `${categoryPopupPos.top}px`,
+                maxHeight: "80vh",
+                overflowY: "hidden",
+              }}
+            >
+              <div className="flex justify-between items-start mb-3 border-b">
+                <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
+                  <div className="relative mb-3 w-full md:w-auto">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                      size={16}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search categories..."
+                      value={categorySearchQuery}
+                      onChange={(e) => setCategorySearchQuery(e.target.value)}
+                      className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                    {alphabets.map((char) => {
+                      const isAvailable = categoryAvailableAlphabets.has(char);
+
+                      return (
+                        <span
+                          key={char}
+                          onClick={() => {
+                            if (!isAvailable) return;
+
+                            setSelectedAlphabet(char);
+
+                            alphabetRefs.current[char]?.scrollIntoView({
+                              behavior: "smooth",
+                              inline: "start",
+                              block: "nearest",
+                            });
+                          }}
+                          className={`
+                                text-sm
+                                ${
+                                  isAvailable
+                                    ? "cursor-pointer hover:text-black"
+                                    : "cursor-not-allowed text-slate-300"
+                                }
+                                ${
+                                  selectedAlphabet === char && isAvailable
+                                    ? "text-black border bg-gray-300 px-1 py-0 font-semibold"
+                                    : ""
+                                }
+                              `}
+                        >
+                          {char}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowAllCategories(false);
+                    setSelectedAlphabet(null);
+                  }}
+                  className="text-slate-400 hover:text-slate-600"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div
+                ref={listRef}
+                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+              >
+                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                  {categoryFilteredList.map((item, index) => {
+                    const currentLetter = item.label[0].toUpperCase();
+                    const prevLetter =
+                      index > 0
+                        ? categoryFilteredList[index - 1]?.label[0].toUpperCase()
+                        : null;
+
+                    const showHeader = currentLetter !== prevLetter;
+
+                    return (
+                      <div key={item.value} className={`break-inside-avoid `}>
+                        {showHeader && (
+                          <div
+                            ref={(el) => {
+                              if (el) alphabetRefs.current[currentLetter] = el;
+                            }}
+                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                          >
+                            {currentLetter}
+                          </div>
+                        )}
+
+                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <input
+                            type="checkbox"
+                            checked={filters.categories.includes(item.value)}
+                            onChange={() =>
+                              onFilterChange({
+                                ...filters,
+                                categories: toggleItem(
+                                  filters.categories,
+                                  item.value,
+                                ),
+                              })
+                            }
+                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                          />
+                          <span className="text-sm text-slate-600">
+                            {item.label}
+                          </span>
+                        </label>
+                      </div>
+                    );
+                  })}
+
+                  {categoryFilteredList.length === 0 && (
+                    <p className="text-sm text-slate-400 text-center py-4">
+                      No categories found
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </PopupPortal>
 
         {/* Experience Level */}
         <FilterSection
