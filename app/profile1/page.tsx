@@ -1,3 +1,4 @@
+
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1219,13 +1220,13 @@ export default function NaukriProfilePage() {
   return (
     <>
       <div className="min-h-screen bg-clr1 py-4">
-        <div className="section-wid mx-auto ">
+        <div className="max-w-7xl mx-auto p-4">
           {/* Profile Header - Will hide on scroll */}
           <Card className="!rounded-none bg-transparent !shadow-none border-0 mb-8 ">
             {state.loading ? (
               <>
                 <Card className="!rounded-none bg-clr2 border-0 mb-8 overflow-hidden">
-                  <CardContent className="relative py-4 px-2">
+                  <CardContent className="relative p-4 md:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                       <SkeletonLoader
                         type="rect"
@@ -1315,13 +1316,13 @@ export default function NaukriProfilePage() {
             ) : (
               <>
                 {/* Profile Header - Will hide on scroll */}
-                <Card className="!rounded-none bg-transparent shadow-none border-0 mb-2 overflow-hidden px-0">
+                <Card className="!rounded-none bg-clr2 border-0 mb-4 overflow-hidden">
                   <div className="absolute"></div>
-                  <CardContent className="relative py-4 px-0 mx-0">
+                  <CardContent className="relative p-4 md:p-6">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
                       <div className="relative flex-shrink-0">
-                        <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                        <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                           <img
                             src={
                               state.userDetail?.profile_logo_url ||
@@ -1376,10 +1377,10 @@ export default function NaukriProfilePage() {
                             )}
                           </div>
                           <div className="flex-shrink-0">
-                            <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
+                            <div className="bg-white/100 rounded-lg px-3 py-2 shadow-sm border">
                               <p className="text-xs text-gray-500 whitespace-nowrap">
                                 Last Updated:{" "}
-                                <span className="font-semibold text-xs text-gray-700">
+                                <span className="font-semibold text-gray-700">
                                   {DateFormat(
                                     state.userDetail?.updated_at,
                                     "date",
@@ -1389,67 +1390,71 @@ export default function NaukriProfilePage() {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Profile Details Grid - Enhanced */}
-                    <div
-                      className="flex    mt-4"
-                      style={{ gap: "5px" }}
-                    >
-                      {[
-                        {
-                          icon: MapPin,
-                          label:
-                            state?.userDetail?.current_location ||
-                            "Not specified",
-                          color: "text-[#f2b31d]",
-                        },
-                        {
-                          icon: Phone,
-                          label: state?.userDetail?.phone || "Not specified",
-                          color: "text-[#f2b31d]",
-                          verified: true,
-                        },
-                        {
-                          icon: Calendar,
-                          label:
-                            state?.userDetail?.experience || "Not specified",
-                          color: "text-[#f2b31d]",
-                        },
-                        {
-                          icon: Mail,
-                          label: state?.userDetail?.email || "Not specified",
-                          color: "text-[#f2b31d]",
-                          verified: true,
-                        },
-                        {
-                          icon: User,
-                          label: state?.userDetail?.gender || "Not specified",
-                          color: "text-[#f2b31d]",
-                        },
-                      ].map((item, index) => (
+                        {/* Profile Details Grid - Enhanced */}
                         <div
-                          key={index}
-                          className="flex w-fit items-center gap-2 px-2 sm:px-3 py-1 bg-[#0000ff0a] rounded-xl border  hover:bg-white/70 transition-all duration-200"
+                          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  mt-4"
+                          style={{ gap: "5px" }}
                         >
-                          <item.icon
-                            className={`w-4 h-4 ${item.color} flex-shrink-0`}
-                          />
-                          <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
-                            {item.label}
-                          </span>
-                          {item.verified && (
-                            <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
-                          )}
+                          {[
+                            {
+                              icon: MapPin,
+                              label:
+                                state?.userDetail?.current_location ||
+                                "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                            {
+                              icon: Phone,
+                              label:
+                                state?.userDetail?.phone || "Not specified",
+                              color: "text-[#f2b31d]",
+                              verified: true,
+                            },
+                            {
+                              icon: Calendar,
+                              label:
+                                state?.userDetail?.experience ||
+                                "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                            {
+                              icon: Mail,
+                              label:
+                                state?.userDetail?.email || "Not specified",
+                              color: "text-[#f2b31d]",
+                              verified: true,
+                            },
+                            {
+                              icon: User,
+                              label:
+                                state?.userDetail?.gender || "Not specified",
+                              color: "text-[#f2b31d]",
+                            },
+                          ].map((item, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-2 p-2 sm:p-3 bg-white/100 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
+                            >
+                              <item.icon
+                                className={`w-4 h-4 ${item.color} flex-shrink-0`}
+                              />
+                              <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
+                                {item.label}
+                              </span>
+                              {item.verified && (
+                                <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Main Content Container */}
-                <div className="text-black mb-4">
+                <div className="bg-white text-black mb-4">
                   <div className="flex gap-4">
                     {PROFILE_TABS?.map((tab) => (
                       <button
@@ -1458,7 +1463,7 @@ export default function NaukriProfilePage() {
                         className={`px-4 py-1 rounded-full transition  ${
                           state.activeTab === tab
                             ? "bg-[#1e3786] text-white "
-                            : "text-[#000] hover:text-[#1e3786]"
+                            : "text-gray-400 hover:text-[#1e3786]"
                         }`}
                       >
                         {tab}
@@ -1470,34 +1475,34 @@ export default function NaukriProfilePage() {
                 <div className="flex flex-col lg:flex-row gap-6">
                   <div className="quick-links-content flex-1">
                     {state.activeTab == "Profile" ? (
-                      <div className="flex flex-col lg:flex-row gap-2">
+                      <div className="flex flex-col lg:flex-row gap-6">
                         {/* Left Sidebar - Quick Links */}
                         <div
-                          className="lg:w-1/5 relative hidden lg:block "
+                          className="lg:w-1/4 relative hidden lg:block "
                           ref={wrapperRef}
                         >
                           <div ref={sidebarRef}>
-                            <Card className="!rounded-none bg-clr2  border shadow-none ">
-                              <CardContent className="relative py-4 px-1">
-                                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                                  {/* <div className="w-2 h-2 bg-[#1E3786] "></div> */}
+                            <Card className="!rounded-none bg-clr2  border-0 ">
+                              <CardContent className="relative p-4">
+                                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                                  <div className="w-2 h-2 bg-[#1E3786] "></div>
                                   Quick Links
                                 </h3>
 
-                                <div className="space-y-2">
+                                <div className="space-y-4">
                                   {links.map((item) => (
                                     <div
                                       key={item.id}
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
-                                        ${
-                                          activeTab === item.id
-                                            ? "bg-[#1E3786] text-white"
-                                            : " hover:bg-white/80"
-                                        }`}
-                                      >
+                                      className={`flex items-center justify-between px-2 py-3 rounded-xl cursor-pointer transition-all
+        ${
+          activeTab === item.id
+            ? "bg-[#1E3786] text-white"
+            : "bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 hover:bg-white/80"
+        }`}
+                                    >
                                       <span
                                         className={`font-medium ${
                                           activeTab === item.id
@@ -1516,18 +1521,19 @@ export default function NaukriProfilePage() {
                         </div>
 
                         {/* Right Content Area - Scrollable */}
-                        <div className="lg:w-4/5 space-y-2">
+                        <div className="lg:w-3/4 space-y-4">
+                        
                           {/* Resume Section */}
                           <Card
                             id="resume-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative "
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div> */}
-                            {/* <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between  cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("resume")}
                               >
                                 <div className="flex items-center gap-4">
@@ -1586,7 +1592,7 @@ export default function NaukriProfilePage() {
                                           className="mb-6 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-xl mt-5">
+                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-4">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Upload className="w-4 h-4 text-white" />
@@ -1634,7 +1640,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={resumeUpdate}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                                 disabled={!state.resume_url}
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
@@ -1661,7 +1667,7 @@ export default function NaukriProfilePage() {
                                     {/* Current Resume Card */}
                                     <div className="relative">
                                       <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
-                                      <div className="relative bg-white/70 rounded-lg pt-5 border border-white/50   transition-all duration-300 group ">
+                                      <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group hover:scale-[1.02]">
                                         <div className="flex items-start gap-6">
                                           {/* Resume Icon */}
                                           <div className="flex-shrink-0">
@@ -1761,14 +1767,14 @@ export default function NaukriProfilePage() {
                           {/* Resume Headline Section */}
                           <Card
                             id="headline-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between cursor-pointer"
+                                className="flex items-center justify-between mb-6 cursor-pointer"
                                 onClick={() => toggleSection("headline")}
                               >
                                 <div className="flex items-center gap-4">
@@ -1839,7 +1845,7 @@ export default function NaukriProfilePage() {
                                           className="mb-6 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-white/50 shadow-xl mt-5">
+                                          <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-6 border border-white/50 shadow-xl">
                                             {/* <div className="flex items-center gap-3 mb-4">
                                                 <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-blue-600 rounded-xl flex items-center justify-center">
                                                   <Edit3 className="w-4 h-4 text-white" />
@@ -1863,7 +1869,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={aboutUpdate}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786]  text-white shadow-lg"
+                                                className="bg-[#1E3786]  text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Update
@@ -1888,7 +1894,7 @@ export default function NaukriProfilePage() {
                                     {/* Headline Display */}
                                     <div className="relative">
                                       {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm"></div> */}
-                                      <div className="flex-1 px-3 pt-5">
+                                      <div className="flex-1 px-3">
                                         <div className="text-md text-gray-500 leading-relaxed whitespace-pre-line">
                                           <p>
                                             {expandedAbout
@@ -1929,14 +1935,14 @@ export default function NaukriProfilePage() {
                           {/* Skills Section */}
                           <Card
                             id="skills-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between  cursor-pointer"
+                                className="flex items-center justify-between mb-8 cursor-pointer"
                                 onClick={() => toggleSection("skills")}
                               >
                                 <div className="flex items-center gap-4">
@@ -2006,8 +2012,8 @@ export default function NaukriProfilePage() {
                                           }}
                                           className="mb-8 relative"
                                         >
-                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80  rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl"></div>
+                                          <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -2066,7 +2072,7 @@ export default function NaukriProfilePage() {
                                                 //     updateSkill();
                                                 //   }
                                                 // }}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Save Skill
@@ -2089,7 +2095,7 @@ export default function NaukriProfilePage() {
                                     </AnimatePresence>
 
                                     {/* Skills List - Chip Format */}
-                                    <div className="flex flex-wrap gap-3 pt-5">
+                                    <div className="flex flex-wrap gap-3">
                                       {state?.userDetail?.skills?.map(
                                         (skill, index) => (
                                           <motion.div
@@ -2146,7 +2152,7 @@ export default function NaukriProfilePage() {
                                               skill: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Skills
@@ -2162,14 +2168,14 @@ export default function NaukriProfilePage() {
                           {/* Employment Section */}
                           <Card
                             id="employment-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between  cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("employment")}
                               >
                                 <div className="flex items-center gap-4">
@@ -2244,7 +2250,7 @@ export default function NaukriProfilePage() {
                                           className="mb-8 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80  rounded-lg p-8 border border-white/50 shadow-xl mt-5">
+                                          <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -2339,7 +2345,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={addEmployment}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Create Experience
@@ -2362,7 +2368,7 @@ export default function NaukriProfilePage() {
                                     </AnimatePresence>
 
                                     {/* Employment List */}
-                                    <div className="space-y-4 pt-5">
+                                    <div className="space-y-4">
                                       {state.userDetail?.experiences?.map(
                                         (emp, index) => (
                                           <motion.div
@@ -2372,8 +2378,8 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.1 }}
                                             className="relative group"
                                           >
-                                            {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div> */}
-                                            <div className="relative bg-white/70  rounded-lg p-6 border   transition-all duration-300 ">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                            <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                               <div className="flex items-start gap-3">
                                                 {/* Company Logo Placeholder */}
                                                 <div className="flex-shrink-0 pt-1">
@@ -2468,7 +2474,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Job Description */}
-                                                  <div className="bg-white rounded-lg py-4 px-2 border mb-2">
+                                                  <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-2">
                                                     <p className="text-gray-700 leading-relaxed text-sm">
                                                       {expandedDesc[emp.id]
                                                         ? emp.job_description
@@ -2582,7 +2588,7 @@ export default function NaukriProfilePage() {
                                                 state?.userDetail?.experiences
                                                   .length -
                                                   1 && (
-                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
                                               )}
                                             </div>
                                           </motion.div>
@@ -2621,7 +2627,7 @@ export default function NaukriProfilePage() {
                                               job_description: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Your First Job
@@ -2637,14 +2643,14 @@ export default function NaukriProfilePage() {
                           {/* Education Section */}
                           <Card
                             id="education-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20  blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20  blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("education")}
                               >
                                 <div className="flex items-center gap-4">
@@ -2719,7 +2725,7 @@ export default function NaukriProfilePage() {
                                           className="mb-8 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80  rounded-lg p-8 mt-5 border border-white/50 shadow-xl">
+                                          <div className="relative bg-white/80  rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -2833,7 +2839,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={addEducation}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Create Education
@@ -2856,7 +2862,7 @@ export default function NaukriProfilePage() {
                                     </AnimatePresence>
 
                                     {/* Education List */}
-                                    <div className="space-y-4 pt-5">
+                                    <div className="space-y-4">
                                       {state?.userDetail?.educations?.map(
                                         (edu, index) => (
                                           <motion.div
@@ -2866,12 +2872,12 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.1 }}
                                             className="relative group"
                                           >
-                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm  transition-all duration-300"></div>
-                                            <div className="relative bg-white/70  rounded-lg p-6 border   ">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                            <div className="relative bg-white/70  rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                               <div className="flex items-start gap-3">
                                                 {/* Institution Logo Placeholder */}
                                                 <div className="flex-shrink-0 pt-1">
-                                                  <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transition-transform duration-300">
+                                                  <div className="w-10 h-10 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                     <span className="text-white font-bold text-md">
                                                       {edu.institution
                                                         .charAt(0)
@@ -2882,7 +2888,7 @@ export default function NaukriProfilePage() {
 
                                                 {/* Education Details */}
                                                 <div className="flex-1 min-w-0">
-                                                  <div className="flex items-start justify-between md:mb-1 ">
+                                                  <div className="flex items-start justify-between md:mb-1">
                                                     <div className="flex-1">
                                                       <div className="flex items-center gap-2">
                                                         <h4 className="text-xl font-bold text-gray-900 group-hover:text-black transition-colors">
@@ -2992,11 +2998,11 @@ export default function NaukriProfilePage() {
                                                 state?.userDetail?.educations
                                                   ?.length -
                                                   1 && (
-                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
                                               )}
                                             </div>
                                           </motion.div>
-                                        )
+                                        ),
                                       )}
                                     </div>
 
@@ -3031,7 +3037,7 @@ export default function NaukriProfilePage() {
                                               cgpa: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Your First Education
@@ -3047,14 +3053,14 @@ export default function NaukriProfilePage() {
                           {/* Projects Section */}
                           <Card
                             id="projects-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("projects")}
                               >
                                 <div className="flex items-center gap-4">
@@ -3132,8 +3138,8 @@ export default function NaukriProfilePage() {
                                           }}
                                           className="mb-8 relative"
                                         >
-                                         <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 rounded-lg p-8 border border-white/50 shadow-xl mt-5">
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -3339,7 +3345,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={addProject}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Create Project
@@ -3362,7 +3368,7 @@ export default function NaukriProfilePage() {
                                     </AnimatePresence>
 
                                     {/* Projects List */}
-                                    <div className="space-y-4 pt-5">
+                                    <div className="space-y-4">
                                       {state.userDetail?.projects?.map(
                                         (project, index) => (
                                           <motion.div
@@ -3372,8 +3378,8 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.1 }}
                                             className="relative group"
                                           >
-                                            {/* <div className="absolute rounded-lg blur-sm group-hover:from-[#3b82f6]/10 "></div> */}
-                                            <div className="relative bg-white/70 rounded-lg p-5  border transition-all duration-300 ">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                            <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                               <div className="flex items-start gap-3">
                                                 {/* Project Icon */}
                                                 <div className="flex-shrink-0 pt-1">
@@ -3468,7 +3474,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Project Description */}
-                                                  <div className="bg-white rounded-lg p-4 border  mb-4">
+                                                  <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedProjectDesc[
                                                         project.id
@@ -3530,7 +3536,7 @@ export default function NaukriProfilePage() {
                                                   {project.technologies &&
                                                     project.technologies
                                                       .length > 0 && (
-                                                      <div className="">
+                                                      <div className="mb-4">
                                                         <h5 className="text-sm font-semibold text-gray-700 mb-2">
                                                           Technologies Used:
                                                         </h5>
@@ -3645,7 +3651,7 @@ export default function NaukriProfilePage() {
                                               technology: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Your First Project
@@ -3661,14 +3667,14 @@ export default function NaukriProfilePage() {
                           {/* Publications Section */}
                           <Card
                             id="publications-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("publications")}
                               >
                                 <div className="flex items-center gap-4">
@@ -3743,8 +3749,8 @@ export default function NaukriProfilePage() {
                                           }}
                                           className="mb-8 relative"
                                         >
-                                         <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 rounded-lg p-8 mt-5 border border-white/50 shadow-xl">
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -3874,7 +3880,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={addPublication}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Create Publication
@@ -3907,8 +3913,8 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.1 }}
                                             className="relative group"
                                           >
-                                            {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div> */}
-                                            <div className="relative bg-white/70 rounded-lg p-6 mt-5 border ">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                            <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                               <div className="flex items-start gap-3">
                                                 {/* Publication Icon */}
                                                 <div className="flex-shrink-0 pt-1">
@@ -3997,7 +4003,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Publication Description */}
-                                                  <div className="bg-white rounded-lg p-4 border  ">
+                                                  <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedPublicationDesc[
                                                         pub.id
@@ -4130,7 +4136,7 @@ export default function NaukriProfilePage() {
                                               publication_year: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Your First Publication
@@ -4146,14 +4152,14 @@ export default function NaukriProfilePage() {
                           {/* Achievements Section */}
                           <Card
                             id="achievements-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                            className="!rounded-none bg-gradient-to-br from-white via-[#3b82f6]/10 to-[#3b82f6]/5 border-0 overflow-hidden relative"
                           >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+                            <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div>
 
-                            <CardContent className="relative py-4 px-2">
+                            <CardContent className="relative p-4 md:p-6">
                               <div
-                                className="flex items-center justify-between  cursor-pointer"
+                                className="flex items-center justify-between mb-3 cursor-pointer"
                                 onClick={() => toggleSection("achievements")}
                               >
                                 <div className="flex items-center gap-4">
@@ -4228,7 +4234,7 @@ export default function NaukriProfilePage() {
                                           className="mb-8 relative"
                                         >
                                           <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80 rounded-lg p-8 mt-5 border border-white/50 shadow-xl">
+                                          <div className="relative bg-white/80 rounded-3xl p-8 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-xl flex items-center justify-center">
                                                 <Plus className="w-4 h-4 text-white" />
@@ -4331,7 +4337,7 @@ export default function NaukriProfilePage() {
                                             <div className="flex gap-3">
                                               <Button
                                                 onClick={addAchievement}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786] text-white shadow-lg"
+                                                className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
                                               >
                                                 <CheckCircle className="w-4 h-4 mr-2" />
                                                 Save Achievement
@@ -4354,7 +4360,7 @@ export default function NaukriProfilePage() {
                                     </AnimatePresence>
 
                                     {/* Achievements List */}
-                                    <div className="space-y-4 pt-5">
+                                    <div className="space-y-4">
                                       {state.userDetail?.achievements?.map(
                                         (achievement, index) => (
                                           <motion.div
@@ -4364,8 +4370,8 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.1 }}
                                             className="relative group"
                                           >
-                                            {/* <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div> */}
-                                            <div className="relative bg-white/70 rounded-lg p-6 border ">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/5 to-blue-500/5 rounded-3xl blur-sm group-hover:from-[#3b82f6]/10 group-hover:to-blue-500/10 transition-all duration-300"></div>
+                                            <div className="relative bg-white/70 rounded-3xl p-6 border border-white/50 shadow-lg hover:shadow-2xl transition-all duration-300 group-hover:scale-[1.02]">
                                               <div className="flex items-start gap-6">
                                                 {/* Achievement Icon */}
                                                 <div className="flex-shrink-0">
@@ -4432,7 +4438,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Achievement Description */}
-                                                  <div className="bg-white rounded-lg p-4 border">
+                                                  <div className="bg-white rounded-2xl p-4 border border-gray-100 mb-4">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedAchievementDesc[
                                                         achievement.id
@@ -4566,7 +4572,7 @@ export default function NaukriProfilePage() {
                                               achievement_description: "",
                                             })
                                           }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                          className="bg-gradient-to-r from-[#3b82f6] to-blue-600 hover:from-blue-600 hover:to-blue-700"
                                         >
                                           <Plus className="w-4 h-4 mr-2" />
                                           Add Your First Achievement
@@ -4581,264 +4587,193 @@ export default function NaukriProfilePage() {
                         </div>
                       </div>
                     ) : state.activeTab == "Qualifications" ? (
-                      <div className="space-y-2 pt-1">
-                        <Card className="!rounded-none bg-clr2 border shadow-none">
-                          <CardContent className="px-3 py-6">
-                            <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                                <GraduationCap className="w-6 h-6 text-white transform -rotate-3" />
-                              </div>
-                              <div>
-                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                  Academic Qualifications
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                  Highlight your completed examinations and degrees
-                                </p>
-                              </div>
-                            </div>
+                      <div className=" flex items-center gap-4 pt-4">
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="phd"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.phd_completed}
+                            onChange={(e) =>
+                              handleFormChange(
+                                "phd_completed",
+                                e.target.checked,
+                              )
+                            }
+                          />
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 !gap-3">
-                              {[
-                                {
-                                  id: "phd",
-                                  label: "PhD Completed",
-                                  desc: "Doctor of Philosophy",
-                                  state: state.phd_completed,
-                                  key: "phd_completed",
-                                },
-                                {
-                                  id: "net",
-                                  label: "NET Cleared",
-                                  desc: "National Eligibility Test",
-                                  state: state.net_cleared,
-                                  key: "net_cleared",
-                                },
-                                {
-                                  id: "set",
-                                  label: "SET Cleared",
-                                  desc: "State Eligibility Test",
-                                  state: state.set_cleared,
-                                  key: "set_cleared",
-                                },
-                                {
-                                  id: "slet",
-                                  label: "SLET Cleared",
-                                  desc: "State Level Eligibility Test",
-                                  state: state.slet_cleared,
-                                  key: "slet_cleared",
-                                },
-                              ].map((item) => (
-                                <div
-                                  key={item.id}
-                                  onClick={() =>
-                                    handleFormChange(item.key, !item.state)
-                                  }
-                                  className={`relative group cursor-pointer border rounded-xl p-4 transition-all duration-300 ${
-                                    item.state
-                                      ? "border-[#1E3786] bg-[#1E3786]/5 shadow-md"
-                                      : "border-gray-200 bg-white hover:border-[#1E3786]/50 hover:shadow-sm"
-                                  }`}
-                                >
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                      <div
-                                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
-                                          item.state
-                                            ? "bg-[#1E3786] border-[#1E3786]"
-                                            : "border-gray-300 bg-white group-hover:border-[#1E3786]/50"
-                                        }`}
-                                      >
-                                        {item.state && (
-                                          <CheckCircle className="w-3.5 h-3.5 text-white" />
-                                        )}
-                                      </div>
-                                      <div>
-                                        <h4
-                                          className={`font-semibold ${
-                                            item.state
-                                              ? "text-[#1E3786]"
-                                              : "text-gray-700"
-                                          }`}
-                                        >
-                                          {item.label}
-                                        </h4>
-                                        <p className="text-xs text-gray-500">
-                                          {item.desc}
-                                        </p>
-                                      </div>
-                                    </div>
-                                    {item.state && (
-                                      <div className="text-[#1E3786] bg-white rounded-full p-1 shadow-sm">
-                                        <Award className="w-4 h-4" />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                          <label
+                            htmlFor="phd"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            Phd Completed
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="net"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.net_cleared}
+                            onChange={(e) =>
+                              handleFormChange("net_cleared", e.target.checked)
+                            }
+                          />
 
-                            <div className="mt-8 flex justify-end">
-                              <Button
-                                onClick={() => menusUpdate("qualification")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Save Qualifications
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
+                          <label
+                            htmlFor="net"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            NET Cleared
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="set"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.set_cleared}
+                            onChange={(e) =>
+                              handleFormChange("set_cleared", e.target.checked)
+                            }
+                          />
+
+                          <label
+                            htmlFor="set"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            SET Cleared
+                          </label>
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="slet"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.slet_cleared}
+                            onChange={(e) =>
+                              handleFormChange("slet_cleared", e.target.checked)
+                            }
+                          />
+
+                          <label
+                            htmlFor="slet"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            SLET Cleared
+                          </label>
+                        </div>
+
+                        <Button
+                          onClick={() => menusUpdate("qualification")}
+                          className="bg-[#1E3786] "
+                        >
+                          Update
+                        </Button>
                       </div>
                     ) : state.activeTab == "Preferrences" ? (
-                      <div className="space-y-4 pt-1">
-                        <Card className="!rounded-none bg-clr2 border shadow-none">
-                          <CardContent className="py-6 px-3">
-                            <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                                <Briefcase className="w-6 h-6 text-white transform -rotate-3" />
-                              </div>
-                              <div>
-                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                  Job Preferences
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                  Manage your job seeking status and preferences
-                                </p>
-                              </div>
-                            </div>
+                      <div className="  gap-4 flex flex-col  ">
+                        <div className="flex pt-4 items-center items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="job"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.active_job_seeker}
+                            onChange={(e) =>
+                              handleFormChange(
+                                "active_job_seeker",
+                                e.target.checked,
+                              )
+                            }
+                          />
 
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                              {[
-                                {
-                                  id: "job",
-                                  label: "Active Job Seeker",
-                                  desc: "Actively looking for jobs",
-                                  state: state.active_job_seeker,
-                                  key: "active_job_seeker",
-                                  icon: User,
-                                },
-                                {
-                                  id: "Reveal",
-                                  label: "Reveal Name",
-                                  desc: "Show name to recruiters",
-                                  state: state.reveal_name,
-                                  key: "reveal_name",
-                                  icon: Award,
-                                },
-                                {
-                                  id: "News",
-                                  label: "Subscribe Newsletter",
-                                  desc: "Receive updates & news",
-                                  state: state.newsletter,
-                                  key: "newsletter",
-                                  icon: Mail,
-                                },
-                              ].map((item) => (
-                                <div
-                                  key={item.id}
-                                  onClick={() =>
-                                    handleFormChange(item.key, !item.state)
-                                  }
-                                  className={`relative overflow-hidden cursor-pointer border rounded-2xl p-5 transition-all duration-300 ${
-                                    item.state
-                                      ? "border-[#1E3786] bg-gradient-to-br from-[#1E3786]/5 to-[#1E3786]/10 shadow-md transform scale-[1.02]"
-                                      : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
-                                  }`}
-                                >
-                                  <div className="flex justify-between items-start mb-3">
-                                    <div
-                                      className={`p-2.5 rounded-xl ${
-                                        item.state
-                                          ? "bg-[#1E3786] text-white"
-                                          : "bg-gray-100 text-gray-500"
-                                      }`}
-                                    >
-                                      <item.icon className="w-5 h-5" />
-                                    </div>
-                                    <div
-                                      className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 ${
-                                        item.state
-                                          ? "bg-[#1E3786] justify-end"
-                                          : "bg-gray-300 justify-start"
-                                      }`}
-                                    >
-                                      <div className="w-4 h-4 rounded-full bg-white shadow-sm" />
-                                    </div>
-                                  </div>
-                                  <h4 className="font-bold text-gray-900 text-base mb-1">
-                                    {item.label}
-                                  </h4>
-                                  <p className="text-xs text-gray-500">
-                                    {item.desc}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
+                          <label
+                            htmlFor="job"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            Job Seeker
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="Reveal"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.reveal_name}
+                            onChange={(e) =>
+                              handleFormChange("reveal_name", e.target.checked)
+                            }
+                          />
 
-                            <div className="grid grid-cols-1 gap-6 mb-4">
-                              <div className="bg-white p-5 rounded-2xl border  space-y-6">
-                                <div className="space-y-4">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-1 h-6 bg-[#1E3786] rounded-full"></div>
-                                    <h5 className="font-semibold text-gray-900">
-                                      Location & Institute Preferences
-                                    </h5>
-                                  </div>
-                                  <CustomMultiSelect
-                                    title="Preferred Colleges"
-                                    placeholder="Select colleges..."
-                                    className="border border-gray-200"
-                                    options={state.collegeList}
-                                    value={state?.preferred_colleges || ""}
-                                    onChange={(selected) => {
-                                      console.log("✌️selected --->", selected);
-                                      setState({
-                                        preferred_colleges: selected,
-                                      });
-                                    }}
-                                    loadOptions={collegeList}
-                                    hasMore={state.collegeHasMore}
-                                    isLoading={state.collegeLoading}
-                                    isMulti={true}
-                                  />
+                          <label
+                            htmlFor="Reveal"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            Reveal Name
+                          </label>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            id="News"
+                            className="h-4 w-4 rounded border-gray-300 text-[#1E3786] focus:ring-[#3b82f6]"
+                            checked={state.newsletter}
+                            onChange={(e) =>
+                              handleFormChange("newsletter", e.target.checked)
+                            }
+                          />
 
-                                  <CustomMultiSelect
-                                    title="Preferred Locations"
-                                    placeholder="Select locations..."
-                                    className="border border-gray-200"
-                                    options={state.locationList}
-                                    value={state?.preferred_locations || ""}
-                                    onChange={(selected) => {
-                                      console.log("✌️selected --->", selected);
-                                      setState({
-                                        preferred_locations: selected,
-                                      });
-                                    }}
-                                    loadOptions={locationList}
-                                    hasMore={state.locationHasMore}
-                                    isLoading={state.locationLoading}
-                                    isMulti={true}
-                                  />
-                                </div>
-                              </div>
-                            </div>
+                          <label
+                            htmlFor="News"
+                            className="cursor-pointer text-sm font-semibold text-gray-700 leading-none"
+                          >
+                            News Letter
+                          </label>
+                        </div>
 
-                            <div className="flex ">
-                              <Button
-                                onClick={() => menusUpdate("pref")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Update Preferences
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
+                        <CustomMultiSelect
+                          title="Preferred Colleges"
+                          placeholder="Preferred Colleges"
+                          className="border border-gray-200 "
+                          options={state.collegeList}
+                          value={state?.preferred_colleges || ""}
+                          onChange={(selected) => {
+                            console.log("✌️selected --->", selected);
+                            setState({ preferred_colleges: selected });
+                          }}
+                          loadOptions={collegeList} // 🔥 API call
+                          hasMore={state.collegeHasMore}
+                          isLoading={state.collegeLoading}
+                          isMulti={true}
+                        />
+
+                        <CustomMultiSelect
+                          title="Preferred Locations"
+                          placeholder="Preferred Locations"
+                          className="border border-gray-200 "
+                          options={state.locationList}
+                          value={state?.preferred_locations || ""}
+                          onChange={(selected) => {
+                            console.log("✌️selected --->", selected);
+                            setState({ preferred_locations: selected });
+                          }}
+                          loadOptions={locationList} // 🔥 API call
+                          hasMore={state.locationHasMore}
+                          isLoading={state.locationLoading}
+                          isMulti={true}
+                        />
+
+                        <Button
+                          onClick={() => menusUpdate("pref")}
+                          className="bg-[#1E3786] "
+                        >
+                          Update
+                        </Button>
                       </div>
                     ) : state.activeTab == "My Applications" ? (
                       <div
-                        className={`grid  ${
+                        className={`grid mt-5 ${
                           !state.isGridView
                             ? "grid-cols-1 xl:grid-cols-2"
                             : "grid-cols-1"
@@ -4910,46 +4845,23 @@ export default function NaukriProfilePage() {
                         ))}
                       </div>
                     ) : state.activeTab == "HR Requests" ? (
-                      <div className="space-y-4 pt-1">
-                        {/* <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-xl font-bold text-gray-900">
-                            Recruiter Requests
-                          </h3>
-                          <span className="bg-[#1E3786]/10 text-[#1E3786] px-3 py-1 rounded-full text-sm font-medium border border-[#1E3786]/20">
-                            {state.userDetail?.interesteds?.length || 0} Pending
-                          </span>
-                        </div> */}
-
+                      <>
                         {state.userDetail?.interesteds?.length > 0 ? (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {state.userDetail?.interesteds?.map((invite) => (
-                              <InviteCard
-                                key={invite.id}
-                                invite={invite}
-                                submit={(type) =>
-                                  updateInviteStatus(type, invite)
-                                }
-                              />
-                            ))}
-                          </div>
+                          state.userDetail?.interesteds?.map((invite) => (
+                            <InviteCard
+                              key={invite.id}
+                              invite={invite}
+                              submit={(type) =>
+                                updateInviteStatus(type, invite)
+                              }
+                            />
+                          ))
                         ) : (
-                          <Card className="bg-white border-2 border-dashed border-gray-200 shadow-none rounded-xl">
-                            <CardContent className="flex flex-col items-center justify-center py-16">
-                              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
-                                <Mail className="w-10 h-10 text-gray-400" />
-                              </div>
-                              <h4 className="text-lg font-bold text-gray-900 mb-1">
-                                No Requests Yet
-                              </h4>
-                              <p className="text-gray-500 text-center max-w-sm">
-                                You haven't received any contact requests from
-                                recruiters. Keep your profile updated to attract
-                                more opportunities!
-                              </p>
-                            </CardContent>
-                          </Card>
+                          <p className="text-gray-500 text-center">
+                            No request found
+                          </p>
                         )}
-                      </div>
+                      </>
                     ) : null}
                   </div>
                 </div>
