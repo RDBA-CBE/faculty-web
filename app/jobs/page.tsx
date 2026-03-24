@@ -795,14 +795,14 @@ export default function JobsPage() {
   //   try {
   //     const profile = JSON.parse(localStorage.getItem("userId"));
   //     console.log("profile", profile);
-      
+
   //     const userId = profile?.id;
   //     const res = await Models.profile.details(userId);
   //     console.log("user res", res);
-      
+
   //   } catch (error) {
   //     console.log("error");
-      
+
   //   }
   // };
 
@@ -2532,7 +2532,7 @@ export default function JobsPage() {
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787] h-[90vh] overflow-y-auto scrollbar-hide"
+                    className="bg-clr2 border border-[#c7c7c787] h-[90vh] overflow-y-auto scrollbar-hide hover:scrollbar-default"
                     ref={sidebarRef}
                   >
                     {/* <FilterbarNew
@@ -2586,12 +2586,12 @@ export default function JobsPage() {
                           />
                         </div>
 
-                        {isWideScreen && (
+                        {/* {isWideScreen && (
                           <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                        )}
+                        )} */}
 
                         <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
-                          <div className="flex items-center px-4 flex-grow lg:w-64 ">
+                          {/* <div className="flex items-center px-4 flex-grow lg:w-64 ">
                             <MapPin color="#5c5a5a93" size={22} />
 
                             <CustomSelect
@@ -2606,21 +2606,13 @@ export default function JobsPage() {
                               className="py-0 border-none"
                               placeholder="Location"
                             />
-                            {/* <input
-                        type="text"
-                        placeholder="City, state or zip code"
-                        className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
-                        value={filters.location}
-                        onChange={(e) =>
-                          setFilters({ ...filters, location: e.target.value })
-                        }
-                      /> */}
+                            
                             <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
-                          </div>
+                          </div> */}
 
-                          {isWideScreen && (
+                          {/* {isWideScreen && (
                             <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                          )}
+                          )} */}
 
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
@@ -2675,7 +2667,7 @@ export default function JobsPage() {
                         </SheetTrigger>
                         <SheetContent
                           side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide rounded-t-3xl [&>button]:hidden"
+                          className="h-[80vh] overflow-y-scroll scrollbar-hide hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
                         >
                           <div className="flex items-center justify-between px-4 pb-3 border-b">
                             <SheetTitle className="text-lg font-semibold">
@@ -2698,7 +2690,7 @@ export default function JobsPage() {
                               </button>
                             </div>
                           </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
+                          <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
                             {/* <FilterbarNew
                               filterList={state.filterList}
                               filters={filters}
@@ -3648,6 +3640,7 @@ export default function JobsPage() {
                             {state.collegeDetail?.college_name}
                           </h2>
                           <p className="text-xs sm:text-sm text-gray-500">
+                            Group Institution -{" "}
                             {state.collegeDetail?.institution_name}
                           </p>
                         </div>

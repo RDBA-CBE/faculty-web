@@ -1219,7 +1219,7 @@ export default function NaukriProfilePage() {
   return (
     <>
       <div className="min-h-screen bg-clr1 py-4">
-        <div className="max-w-7xl mx-auto p-4">
+        <div className="section-wid mx-auto ">
           {/* Profile Header - Will hide on scroll */}
           <Card className="!rounded-none bg-transparent !shadow-none border-0 mb-8 ">
             {state.loading ? (
@@ -1315,13 +1315,13 @@ export default function NaukriProfilePage() {
             ) : (
               <>
                 {/* Profile Header - Will hide on scroll */}
-                <Card className="!rounded-none bg-clr2 border-0 mb-4 overflow-hidden">
+                <Card className="!rounded-none bg-transparent shadow-none border-0 mb-2 overflow-hidden ">
                   <div className="absolute"></div>
-                  <CardContent className="relative p-4 md:p-6">
+                  <CardContent className="relative py-4 px-0">
                     <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
                       <div className="relative flex-shrink-0">
-                        <div className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-3xl border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                        <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                           <img
                             src={
                               state.userDetail?.profile_logo_url ||
@@ -1376,10 +1376,10 @@ export default function NaukriProfilePage() {
                             )}
                           </div>
                           <div className="flex-shrink-0">
-                            <div className="bg-white/100 rounded-lg px-3 py-2 shadow-sm border">
+                            <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
                               <p className="text-xs text-gray-500 whitespace-nowrap">
                                 Last Updated:{" "}
-                                <span className="font-semibold text-gray-700">
+                                <span className="font-semibold text-xs text-gray-700">
                                   {DateFormat(
                                     state.userDetail?.updated_at,
                                     "date",
@@ -1389,71 +1389,67 @@ export default function NaukriProfilePage() {
                             </div>
                           </div>
                         </div>
-
-                        {/* Profile Details Grid - Enhanced */}
-                        <div
-                          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  mt-4"
-                          style={{ gap: "5px" }}
-                        >
-                          {[
-                            {
-                              icon: MapPin,
-                              label:
-                                state?.userDetail?.current_location ||
-                                "Not specified",
-                              color: "text-[#f2b31d]",
-                            },
-                            {
-                              icon: Phone,
-                              label:
-                                state?.userDetail?.phone || "Not specified",
-                              color: "text-[#f2b31d]",
-                              verified: true,
-                            },
-                            {
-                              icon: Calendar,
-                              label:
-                                state?.userDetail?.experience ||
-                                "Not specified",
-                              color: "text-[#f2b31d]",
-                            },
-                            {
-                              icon: Mail,
-                              label:
-                                state?.userDetail?.email || "Not specified",
-                              color: "text-[#f2b31d]",
-                              verified: true,
-                            },
-                            {
-                              icon: User,
-                              label:
-                                state?.userDetail?.gender || "Not specified",
-                              color: "text-[#f2b31d]",
-                            },
-                          ].map((item, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-2 p-2 sm:p-3 bg-white/100 rounded-xl border border-gray-100 hover:bg-white/70 transition-all duration-200"
-                            >
-                              <item.icon
-                                className={`w-4 h-4 ${item.color} flex-shrink-0`}
-                              />
-                              <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
-                                {item.label}
-                              </span>
-                              {item.verified && (
-                                <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
-                              )}
-                            </div>
-                          ))}
-                        </div>
                       </div>
+                    </div>
+
+                    {/* Profile Details Grid - Enhanced */}
+                    <div
+                      className="flex    mt-4"
+                      style={{ gap: "5px" }}
+                    >
+                      {[
+                        {
+                          icon: MapPin,
+                          label:
+                            state?.userDetail?.current_location ||
+                            "Not specified",
+                          color: "text-[#f2b31d]",
+                        },
+                        {
+                          icon: Phone,
+                          label: state?.userDetail?.phone || "Not specified",
+                          color: "text-[#f2b31d]",
+                          verified: true,
+                        },
+                        {
+                          icon: Calendar,
+                          label:
+                            state?.userDetail?.experience || "Not specified",
+                          color: "text-[#f2b31d]",
+                        },
+                        {
+                          icon: Mail,
+                          label: state?.userDetail?.email || "Not specified",
+                          color: "text-[#f2b31d]",
+                          verified: true,
+                        },
+                        {
+                          icon: User,
+                          label: state?.userDetail?.gender || "Not specified",
+                          color: "text-[#f2b31d]",
+                        },
+                      ].map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex w-fit items-center gap-2 px-2 sm:px-3 py-1 bg-[#0000ff0a] rounded-xl border  hover:bg-white/70 transition-all duration-200"
+                        >
+                          <item.icon
+                            className={`w-4 h-4 ${item.color} flex-shrink-0`}
+                          />
+                          <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
+                            {item.label}
+                          </span>
+                          {item.verified && (
+                            <CheckCircle className="w-3 h-3 text-[#f2b31d] flex-shrink-0" />
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Main Content Container */}
-                <div className="bg-white text-black mb-4">
+                <div className="text-black mb-4">
                   <div className="flex gap-4">
                     {PROFILE_TABS?.map((tab) => (
                       <button
@@ -1462,7 +1458,7 @@ export default function NaukriProfilePage() {
                         className={`px-4 py-1 rounded-full transition  ${
                           state.activeTab === tab
                             ? "bg-[#1e3786] text-white "
-                            : "text-gray-400 hover:text-[#1e3786]"
+                            : "text-[#000] hover:text-[#1e3786]"
                         }`}
                       >
                         {tab}
@@ -1521,7 +1517,6 @@ export default function NaukriProfilePage() {
 
                         {/* Right Content Area - Scrollable */}
                         <div className="lg:w-3/4 space-y-4">
-                        
                           {/* Resume Section */}
                           <Card
                             id="resume-section"

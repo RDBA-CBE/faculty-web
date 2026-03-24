@@ -692,7 +692,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
         <div ref={locationSectionRef}>
           <FilterSection
-            title="Preffered Locations"
+            title="Select Locations"
             items={locationList?.slice(0, 5) ?? []}
             selected={filters.locations}
             onToggle={(value) =>
