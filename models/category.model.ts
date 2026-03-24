@@ -98,25 +98,26 @@ const category = {
     return promise;
   },
 
-  jobRoleList : () => {
-    let promise = new Promise((resolve, reject) => {
-      let url = `job-roles/`;
-
-      instance()
-        .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((error) => {
-          if (error.response) {
-            reject(error.response.message);
-          } else {
-            reject(error);
-          }
-        });
+ jobRoleList: (page = 1) => {
+  return new Promise((resolve, reject) => {
+    const params = new URLSearchParams({
+      page: String(page),
     });
-    return promise;
-  },
+
+    const url = `job-roles/?${params.toString()}`;
+
+    instance()
+      .get(url)
+      .then((res) => resolve(res.data))
+      .catch((error) => {
+        if (error.response) {
+          reject(error.response.message);
+        } else {
+          reject(error);
+        }
+      });
+  });
+},
 };
 
 export default category;

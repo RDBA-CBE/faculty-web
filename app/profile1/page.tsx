@@ -2263,7 +2263,7 @@ export default function NaukriProfilePage() {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Company Name
+                                                  College Name
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Google Inc."
@@ -5006,7 +5006,7 @@ export default function NaukriProfilePage() {
 
                             <div className="space-y-2">
                               <Input
-                                title=" Current Company"
+                                title=" Current College"
                                 value={state.current_company}
                                 onChange={(e) =>
                                   handleFormChange(
@@ -5127,7 +5127,7 @@ export default function NaukriProfilePage() {
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Company Name
+                                College Name
                               </label>
                               <Input
                                 placeholder="e.g., Google Inc."

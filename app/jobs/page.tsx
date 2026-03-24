@@ -98,6 +98,9 @@ export default function JobsPage() {
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
+  const jobRoleParam = searchParams.get("job-role");
+  const jobcategoryParam = searchParams.get("job-category");
+  const departmentParam = searchParams.get("department");
 
   const [state, setState] = useSetState({
     firstName: "",
@@ -153,8 +156,8 @@ export default function JobsPage() {
     experience: "",
     jobID: null,
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
-    department: [],
-    jobRoleList:[]
+    department: departmentParam ? [parseInt(departmentParam, 10)] : [],
+    jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
   });
   console.log("✌️filters --->", filters);
 
@@ -444,6 +447,51 @@ export default function JobsPage() {
       }));
     }
   }, [collegeParam]);
+
+  useEffect(() => {
+    const jobRoleQuery = jobRoleParam ? [parseInt(jobRoleParam, 10)] : [];
+    if (
+      filters.jobRole.length !== jobRoleQuery.length ||
+      (jobRoleQuery.length > 0 && filters.jobRole[0] !== jobRoleQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        jobRole: jobRoleQuery,
+      }));
+    }
+  }, [jobRoleParam]);
+
+  useEffect(() => {
+    const jobCategoryQuery = jobcategoryParam
+      ? [parseInt(jobcategoryParam, 10)]
+      : [];
+    if (
+      filters.categories.length !== jobCategoryQuery.length ||
+      (jobCategoryQuery.length > 0 &&
+        filters.categories[0] !== jobCategoryQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        categories: jobCategoryQuery,
+      }));
+    }
+  }, [jobcategoryParam]);
+
+  useEffect(() => {
+    const departmentQuery = departmentParam
+      ? [parseInt(departmentParam, 10)]
+      : [];
+    if (
+      filters.department.length !== departmentQuery.length ||
+      (departmentQuery.length > 0 &&
+        filters.department[0] !== departmentQuery[0])
+    ) {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        department: departmentQuery,
+      }));
+    }
+  }, [departmentParam]);
 
   useEffect(() => {
     jobList(1);
@@ -1076,6 +1124,7 @@ export default function JobsPage() {
       colleges: [],
       department: [],
       jobRoleList:[]
+
     });
     setState({ search: "" });
   };
