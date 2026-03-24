@@ -1629,7 +1629,18 @@ export default function JobsPage() {
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <>
-                <Breadcrumb />
+                <div className="flex justify-between">
+                  <Breadcrumb />
+                  <div>
+                    <button
+                      onClick={() => setSelectedJob(null)}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
+                  </div>
+                </div>
 
                 <div className="flex gap-6 py-4 items-start">
                   {/* Left Sidebar - Jobs List */}
@@ -2196,7 +2207,7 @@ export default function JobsPage() {
                     ) : (
                       <div className="flex gap-6 flex-col xl:flex-row ">
                         {/* Main Content */}
-                        <div className="flex-1 space-y-1  py-3">
+                        <div className="flex-1 space-y-4  py-3 ">
                           <div>
                             {/* Job Description */}
                             <div className="border-b  pb-3">
@@ -2311,6 +2322,18 @@ export default function JobsPage() {
                           </div>
                         )} */}
                           </div>
+
+                          <button
+                            onClick={() => {
+                              setState({ jobID: state?.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
+                          >
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
+                          </button>
                         </div>
 
                         {/* Right Sidebar */}
@@ -2466,7 +2489,7 @@ export default function JobsPage() {
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                               >
                                 {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                                Openings
+                                Job Openings
                               </button>
                               <p className="leading-relaxed">
                                 {state?.jobDetail?.college_detail}
@@ -3376,14 +3399,14 @@ export default function JobsPage() {
               title={capitalizeFLetter(selectedJob?.job_title)}
               width="700px"
               renderComponent={() => (
-                <div className="space-y-6 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
+                <div className="space-y-4 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
                       src="/assets/images/recruitmen.gif"
-                      height={200}
+                      height={150}
                       width={150}
                       alt="Job Application"
-                      className="object-contain"
+                      className="object-contain w-[100px] h-[100px]"
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
@@ -3440,7 +3463,7 @@ export default function JobsPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <CustomSelect
                       // title="Experience"
                       required
@@ -3478,8 +3501,9 @@ export default function JobsPage() {
                       error={state.errors.department_id}
                     />
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 !gap-4">
                     <TextArea
+                      title="Cover Letter"
                       placeholder="Your message..."
                       value={state.message}
                       onChange={(e) =>

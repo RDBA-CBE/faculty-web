@@ -34,8 +34,9 @@ const ChipFilters = ({
 
   const activeFilters = [];
 
-  const findLabel = (list, value) =>
-    list.find((item) => item.value === value)?.label || value;
+  const findLabel = (list, value) => {
+    return list?.find((item) => String(item?.value) === String(value))?.label || value;
+  };
 
   // Search Query
   if (filters.searchQuery) {
