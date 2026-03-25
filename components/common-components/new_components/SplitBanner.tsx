@@ -244,18 +244,18 @@ const SplitBanner = () => {
                   placeholder="Location"
                   options={state.locationList}
                   value={state?.location || ""}
-                  // onChange={(selected) =>
-                  //   setState({
-                  //     ...state,
-                  //     location: selected ? selected.value : "",
-                  //   })
-                  // }
                   onChange={(selected) =>
                     setState({
                       ...state,
-                      location: selected, // array
+                      location: selected ? selected.value : "",
                     })
                   }
+                  // onChange={(selected) =>
+                  //   setState({
+                  //     ...state,
+                  //     location: selected, // array
+                  //   })
+                  // }
                   // isMulti
                   loadMore={handleLoadMoreLocations}
                   loading={state.locationListLoading}
