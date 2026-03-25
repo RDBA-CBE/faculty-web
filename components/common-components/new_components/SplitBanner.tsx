@@ -256,7 +256,7 @@ const SplitBanner = () => {
                       location: selected, // array
                     })
                   }
-                  isMulti
+                  // isMulti
                   loadMore={handleLoadMoreLocations}
                   loading={state.locationListLoading}
                 />

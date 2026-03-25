@@ -4,11 +4,8 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSetState, Success, Failure, Dropdown } from "@/utils/function.utils";
-import Models from "@/imports/models.import";
 import { TextInput } from "@/components/common-components/textInput";
-import CustomSelect from "@/components/common-components/dropdown";
 import CustomPhoneInput from "@/components/common-components/phoneInput";
-import { EyeIcon, EyeOff } from "lucide-react";
 
 const HRRegistrationPage = () => {
   const router = useRouter();
@@ -38,117 +35,117 @@ const HRRegistrationPage = () => {
     errors: {},
   });
 
-  useEffect(() => {
-    loadInstitutions(1);
-  }, []);
+  // useEffect(() => {
+  //   loadInstitutions(1);
+  // }, []);
 
-  useEffect(() => {
-    if (state.institution) {
-      loadColleges(1, "", false, state.institution);
-    } else {
-      setState({ collegeOptions: [], college: null });
-    }
-  }, [state.institution]);
+  // useEffect(() => {
+  //   if (state.institution) {
+  //     loadColleges(1, "", false, state.institution);
+  //   } else {
+  //     setState({ collegeOptions: [], college: null });
+  //   }
+  // }, [state.institution]);
 
-  const loadInstitutions = async (page, search = "", loadMore = false) => {
-    try {
-      setState({ institutionLoading: true });
-      const res = await Models.institution.list(page, { search });
-      const dropdownOptions = Dropdown(res?.results, "institution_name");
-      setState({
-        institutionOptions: loadMore
-          ? [...state.institutionOptions, ...dropdownOptions]
-          : dropdownOptions,
-        institutionNext: res?.next,
-        institutionPage: page,
-        institutionLoading: false,
-      });
-    } catch (error) {
-      setState({ institutionLoading: false });
-    }
-  };
+  // const loadInstitutions = async (page, search = "", loadMore = false) => {
+  //   try {
+  //     setState({ institutionLoading: true });
+  //     const res = await Models.institution.list(page, { search });
+  //     const dropdownOptions = Dropdown(res?.results, "institution_name");
+  //     setState({
+  //       institutionOptions: loadMore
+  //         ? [...state.institutionOptions, ...dropdownOptions]
+  //         : dropdownOptions,
+  //       institutionNext: res?.next,
+  //       institutionPage: page,
+  //       institutionLoading: false,
+  //     });
+  //   } catch (error) {
+  //     setState({ institutionLoading: false });
+  //   }
+  // };
 
-  const loadColleges = async (
-    page,
-    search = "",
-    loadMore = false,
-    institution,
-  ) => {
-    try {
-      setState({ collegeLoading: true });
-      const body = { search };
-      if (institution) {
-        body.institution = institution.value;
-      }
-      const res = await Models.college.list(page, body);
-      const dropdownOptions = Dropdown(res?.results, "college_name");
-      setState({
-        collegeOptions: loadMore
-          ? [...state.collegeOptions, ...dropdownOptions]
-          : dropdownOptions,
-        collegeNext: res?.next,
-        collegePage: page,
-        collegeLoading: false,
-      });
-    } catch (error) {
-      setState({ collegeLoading: false });
-    }
-  };
+  // const loadColleges = async (
+  //   page,
+  //   search = "",
+  //   loadMore = false,
+  //   institution,
+  // ) => {
+  //   try {
+  //     setState({ collegeLoading: true });
+  //     const body = { search };
+  //     if (institution) {
+  //       body.institution = institution.value;
+  //     }
+  //     const res = await Models.college.list(page, body);
+  //     const dropdownOptions = Dropdown(res?.results, "college_name");
+  //     setState({
+  //       collegeOptions: loadMore
+  //         ? [...state.collegeOptions, ...dropdownOptions]
+  //         : dropdownOptions,
+  //       collegeNext: res?.next,
+  //       collegePage: page,
+  //       collegeLoading: false,
+  //     });
+  //   } catch (error) {
+  //     setState({ collegeLoading: false });
+  //   }
+  // };
 
   const handleFormChange = (field, value) => {
     setState({ [field]: value, errors: { ...state.errors, [field]: "" } });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setState({ submitting: true, errors: {} });
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setState({ submitting: true, errors: {} });
 
-    const errors = {};
-    if (!state.username) errors.username = "Username is required";
-    if (!state.email) errors.email = "Email is required";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email))
-      errors.email = "Please enter a valid email address";
-    if (!state.institution) errors.institution = "Institution is required";
-    if (!state.college) errors.college = "College is required";
-    if (!state.phone) errors.phone = "Phone number is required";
-    if (!state.password) errors.password = "Password is required";
-    if (state.password !== state.confirm_password)
-      errors.confirm_password = "Passwords do not match";
+  //   const errors = {};
+  //   if (!state.username) errors.username = "Username is required";
+  //   if (!state.email) errors.email = "Email is required";
+  //   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email))
+  //     errors.email = "Please enter a valid email address";
+  //   if (!state.institution) errors.institution = "Institution is required";
+  //   if (!state.college) errors.college = "College is required";
+  //   if (!state.phone) errors.phone = "Phone number is required";
+  //   if (!state.password) errors.password = "Password is required";
+  //   if (state.password !== state.confirm_password)
+  //     errors.confirm_password = "Passwords do not match";
 
-    if (Object.keys(errors).length > 0) {
-      setState({ errors, submitting: false });
-      return;
-    }
+  //   if (Object.keys(errors).length > 0) {
+  //     setState({ errors, submitting: false });
+  //     return;
+  //   }
 
-    try {
-      const body = {
-        username: state.username,
-        email: state.email,
-        phone: state.phone,
-        password: state.password,
-        password_confirm: state.confirm_password,
-        role: "hr",
-        institution: state.institution.value,
-        college: state.college.value,
-      };
+  //   try {
+  //     const body = {
+  //       username: state.username,
+  //       email: state.email,
+  //       phone: state.phone,
+  //       password: state.password,
+  //       password_confirm: state.confirm_password,
+  //       role: "hr",
+  //       institution: state.institution.value,
+  //       college: state.college.value,
+  //     };
 
-      await Models.auth.createUser(body);
+  //     await Models.auth.createUser(body);
 
-      Success("HR Registration successful! Please login.");
-      router.push("/login");
-    } catch (error) {
-      const apiErrors = error?.response?.data;
-      if (apiErrors) {
-        setState({ errors: apiErrors });
-        const errorMessage = Object.values(apiErrors).flat().join(" ");
-        Failure(errorMessage || "Registration failed. Please try again.");
-      } else {
-        Failure("Registration failed. Please try again.");
-      }
-    } finally {
-      setState({ submitting: false });
-    }
-  };
+  //     Success("HR Registration successful! Please login.");
+  //     router.push("/login");
+  //   } catch (error) {
+  //     const apiErrors = error?.response?.data;
+  //     if (apiErrors) {
+  //       setState({ errors: apiErrors });
+  //       const errorMessage = Object.values(apiErrors).flat().join(" ");
+  //       Failure(errorMessage || "Registration failed. Please try again.");
+  //     } else {
+  //       Failure("Registration failed. Please try again.");
+  //     }
+  //   } finally {
+  //     setState({ submitting: false });
+  //   }
+  // };
 
   return (
     <section className="bg-gray-50 min-h-screen flex items-center justify-center py-12 lg:py-20">
@@ -162,10 +159,12 @@ const HRRegistrationPage = () => {
               Create your account to start managing recruitments.
             </p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form
+          //  onSubmit={handleSubmit} 
+           className="space-y-6">
             <TextInput
-              title="Full Name"
-              placeholder="Enter your full name"
+              title="Username"
+              placeholder="Enter your Username"
               value={state.username}
               onChange={(e) => handleFormChange("username", e.target.value)}
               error={state.errors.username}
@@ -180,40 +179,30 @@ const HRRegistrationPage = () => {
               error={state.errors.email}
               required
             />
-            <CustomSelect
+
+            <TextInput
               title="Institution Name"
-              options={state.institutionOptions}
+              type="text"
+              placeholder="Enter your institution name"
+           
               value={state.institution}
-              onChange={(selected) => handleFormChange("institution", selected)}
-              onSearch={(term) => loadInstitutions(1, term)}
-              loadMore={() =>
-                state.institutionNext &&
-                loadInstitutions(state.institutionPage + 1, "", true)
-              }
-              loading={state.institutionLoading}
-              placeholder="Select your institution"
+              onChange={(e) => handleFormChange("institution", e.target.value)}
               error={state.errors.institution}
               required
-              
             />
-            <CustomSelect
-              title="College Name"
-              options={state.collegeOptions}
+
+            <TextInput
+              title="college Name"
+              type="text"
+              placeholder="Enter your college name"
+           
               value={state.college}
-              onChange={(selected) => handleFormChange("college", selected)}
-              onSearch={(term) =>
-                loadColleges(1, term, false, state.institution)
-              }
-              loadMore={() =>
-                state.collegeNext &&
-                loadColleges(state.collegePage + 1, "", true, state.institution)
-              }
-              loading={state.collegeLoading}
-              placeholder="Select your college"
+              onChange={(e) => handleFormChange("college", e.target.value)}
               error={state.errors.college}
-              disabled={!state.institution}
               required
             />
+           
+            
             <CustomPhoneInput
               title="Phone Number"
               value={state.phone}
@@ -221,28 +210,8 @@ const HRRegistrationPage = () => {
               error={state.errors.phone}
               required
             />
-            <TextInput
-              title="Password"
-              type={state.showPassword ? "text" : "password"}
-              placeholder="Enter your password"
-              value={state.password}
-              onChange={(e) => handleFormChange("password", e.target.value)}
-              error={state.errors.password}
-              rightIcon={state.showPassword ? <EyeIcon /> : <EyeOff />}
-              rightIconOnlick={() => setState({ showPassword: !state.showPassword })}
-              required
-            />
-            <TextInput
-              title="Confirm Password"
-              type={state.showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm your password"
-              value={state.confirm_password}
-              onChange={(e) => handleFormChange("confirm_password", e.target.value)}
-              error={state.errors.confirm_password}
-              rightIcon={state.showConfirmPassword ? <EyeIcon /> : <EyeOff />}
-              rightIconOnlick={() => setState({ showConfirmPassword: !state.showConfirmPassword })}
-              required
-            />
+            
+            
             <button
               type="submit"
               disabled={state.submitting}
@@ -251,12 +220,7 @@ const HRRegistrationPage = () => {
               {state.submitting ? "Registering..." : "Register"}
             </button>
           </form>
-          <p className="text-center text-sm text-gray-600 mt-6">
-            Already have an account?{" "}
-            <Link href="/login" className="font-medium text-[#1E3786] hover:underline">
-              Login
-            </Link>
-          </p>
+          
         </div>
       </div>
     </section>
