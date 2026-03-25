@@ -17,6 +17,9 @@ import DownloadAppSection from '@/components/common-components/new_components/Do
 import FaqResumeSection from '@/components/common-components/new_components/FaqSection';
 import FindYourJob from '@/components/common-components/new_components/FindYourJob';
 import NewHeroSection from '@/components/common-components/new_components/NewHeroSection';
+import SplitBanner from '@/components/common-components/new_components/SplitBanner';
+import HRSection from '@/components/common-components/new_components/HRSection';
+
 
 
 
@@ -31,11 +34,16 @@ export default function Home1Page() {
         transition={{ duration: 0.6 }}
       >
         {/* <BannerSection /> */}
-        <NewHeroSection />
+        {/* <NewHeroSection /> */}
+        <SplitBanner/>
         <TopHiringColleges />
+         <StatsSection />
         <FindYourJob />
-        <WhatCanIDo />
-        <StatsSection />
+        <div id="institutionalHR">
+          {/* <WhatCanIDo /> */}
+          <HRSection/>
+        </div>
+       
         <InstitutionPartners />
         {/* <DownloadAppSection /> */}
         <FaqResumeSection />

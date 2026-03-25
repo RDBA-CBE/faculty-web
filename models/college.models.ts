@@ -99,9 +99,12 @@ const colleges = {
     });
   },
 
- collegeList: (params = {}) => {
+ collegeList: (params:any = {}) => {
   return new Promise((resolve, reject) => {
     let url = `colleges/colleges-list/`;
+    if(params.is_legacy ){
+      url + "?is_legacy=true" 
+    }
 
     axiosWithoutToken()
       .get(url, { params }) // ✅ PASS PARAMS HERE

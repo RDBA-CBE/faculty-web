@@ -24,6 +24,28 @@ const department = {
     return promise;
   },
 
+  masterDep : (data=null) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `department-masters/`;
+      if (data?.pagination == "No") {
+        url += `?pagination=${encodeURIComponent(false)}`;
+      }
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
   depdetails: (id: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `departments/${id}/`;

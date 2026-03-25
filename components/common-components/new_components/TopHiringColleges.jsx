@@ -98,6 +98,7 @@ const TopHiringColleges = () => {
       const res = await Models.colleges.collegeList({
         page,
         page_size: 10,
+        is_legacy:true
       });
 
       console.log("PAGE:", page, "NEXT:", res?.next);

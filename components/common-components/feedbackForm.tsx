@@ -553,9 +553,9 @@ const FeedbackForm = ({ token }) => {
               </CardContent>
             </Card>
 
-            {/* <div >
+           { state.panels?.decision_maker && <div >
               <p>View Fellow Panel Members Feedback</p>
-            </div> */}
+            </div>}
           </div>
         </div>
       </div>
