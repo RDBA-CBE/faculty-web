@@ -159,7 +159,9 @@ export default function JobsPage() {
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
-    jobRoleList:[]
+    jobRoleList: [],
+    minExperience: "",
+    maxExperience: "",
   });
   console.log("✌️filters --->", filters);
 
@@ -410,9 +412,9 @@ export default function JobsPage() {
     jobList(1);
     jobTypeList();
     // experienceList();
-    DatePosted();
-    salaryRangeList();
-    tagsList();
+    // DatePosted();
+    // salaryRangeList();
+    // tagsList();
     filterList();
   }, []);
 
@@ -678,7 +680,7 @@ export default function JobsPage() {
       console.log("✌️error --->", error);
     }
   };
-  
+
 
   const jobList = async (page = 1, append = false) => {
     try {
@@ -1178,6 +1180,8 @@ export default function JobsPage() {
       }
     }
   };
+
+
 
   return (
     <>
@@ -2762,6 +2766,8 @@ export default function JobsPage() {
                     collegeList={state?.collegeList}
                     deptList={state?.deptList}
                     locationList={state?.locationList}
+                    jobRoleList={state?.jobRoleList}
+
                   />
 
                   {state.loading || state.jobListLoading ? (

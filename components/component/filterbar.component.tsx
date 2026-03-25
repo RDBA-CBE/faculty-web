@@ -190,8 +190,6 @@ const Filterbar: React.FC<SidebarProps> = ({
   loading,
   jobRoleList,
 }) => {
-  console.log("✌️locationList --->", locationList);
-
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
   const [showAllJobRoles, setShowAllJobRoles] = useState(false);
@@ -703,8 +701,7 @@ const Filterbar: React.FC<SidebarProps> = ({
         </button>
       </div>
       <div className="lg:p-[19px] lg:pb-[10px] lg:pt-0">
-
-      {locationList?.length > 0 && (
+        {locationList?.length > 0 && (
           <div ref={locationSectionRef}>
             <FilterSection
               title="Select Locations"
@@ -1394,7 +1391,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
-       
 
         {collegeList?.length > 0 && (
           <div ref={collegeSectionRef}>
@@ -1567,8 +1563,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
-       
-      
 
         <div>
           <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
@@ -1596,12 +1590,10 @@ const Filterbar: React.FC<SidebarProps> = ({
               onClick={() => {
                 const minVal = minExp === "" ? 0 : parseInt(minExp);
                 const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
-
                 const selectedLevels = experienceList
                   ?.filter((item) => {
                     const parsed = parseExperienceLabel(item.label);
                     if (!parsed) return false;
-                    // Check for containment: (StartA >= StartB) and (EndA <= EndB)
                     return parsed.min >= minVal && parsed.max <= maxVal;
                   })
                   .map((item) => item.value);
