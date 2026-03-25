@@ -2557,7 +2557,12 @@ export default function JobsPage() {
                     jobRoleList={state?.jobRoleList}
                     tagsList={state?.tagsList}
                     loading={state.loading}
-                    closeModal={()=>setIsMobileFilterOpen(false)}
+                    closeModal={()=>{
+                      window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                      setIsMobileFilterOpen(false)}}
 
                     // filterList={state.filterList}
                     // filters={filters}
@@ -2604,7 +2609,12 @@ export default function JobsPage() {
                       jobRoleList={state?.jobRoleList}
                       tagsList={state?.tagsList}
                       loading={state.loading}
-                      closeModal={()=>setIsMobileFilterOpen(false)}
+                      closeModal={()=>{
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                        setIsMobileFilterOpen(false)}}
 
                     />
                   </div>
@@ -2758,7 +2768,12 @@ export default function JobsPage() {
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
-                              closeModal={()=>setIsMobileFilterOpen(false)}
+                              closeModal={()=>{
+                                window.scrollTo({
+                                  top: 0,
+                                  behavior: "smooth",
+                                });
+                                setIsMobileFilterOpen(false)}}
                             />
                           </div>
                         </SheetContent>
