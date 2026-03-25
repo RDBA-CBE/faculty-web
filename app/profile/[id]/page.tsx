@@ -4444,7 +4444,7 @@ export default function NaukriProfilePage() {
                                 No Requests Yet
                               </h4>
                               <p className="text-gray-500 text-center max-w-sm">
-                                You haven't received any contact requests from
+                                You haven&apos;t received any contact requests from
                                 recruiters. Keep your profile updated to attract
                                 more opportunities!
                               </p>

@@ -31,15 +31,15 @@ const job = {
         url += `&department_master_id=${encodeURIComponent(body.department)}`;
       }
 
-       if (body?.job_role) {
-        url += `&role_ids=${encodeURIComponent(body.job_role)}`;
-      }
+      //  if (body?.job_role) {
+      //   url += `&role_ids=${encodeURIComponent(body.job_role)}`;
+      // }
 
       if (body.jobTypes) {
         url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
       if (body.experience) {
-        url += `&experience=${encodeURIComponent(body.experience)}`;
+        url += `&experience_id=${encodeURIComponent(body.experience)}`;
       }
 
       if (body.colleges) {

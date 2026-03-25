@@ -159,7 +159,8 @@ export default function JobsPage() {
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
-    jobRoleList:[]
+    jobRoleList: [],
+ 
   });
   console.log("✌️filters --->", filters);
 
@@ -410,9 +411,9 @@ export default function JobsPage() {
     jobList(1);
     jobTypeList();
     // experienceList();
-    DatePosted();
-    salaryRangeList();
-    tagsList();
+    // DatePosted();
+    // salaryRangeList();
+    // tagsList();
     filterList();
   }, []);
 
@@ -678,6 +679,7 @@ export default function JobsPage() {
       console.log("✌️error --->", error);
     }
   };
+
 
   const jobList = async (page = 1, append = false) => {
     try {
@@ -1050,9 +1052,17 @@ export default function JobsPage() {
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0) {
+    if (filters?.experienceLevels?.length > 0 ) {
       body.experience = filters.experienceLevels;
     }
+
+    // if (filters?.minExperience) {
+    //   body.min_experience = filters.minExperience;
+    // }
+
+    // if (filters?.maxExperience) {
+    //   body.max_experience = filters.maxExperience;
+    // }
 
     if (filters?.salaryRange?.length > 0) {
       body.salary_range = filters.salaryRange;
@@ -1177,6 +1187,8 @@ export default function JobsPage() {
       }
     }
   };
+
+
 
   return (
     <>
@@ -2545,6 +2557,13 @@ export default function JobsPage() {
                     jobRoleList={state?.jobRoleList}
                     tagsList={state?.tagsList}
                     loading={state.loading}
+                    closeModal={()=>{
+                      window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                      setIsMobileFilterOpen(false)}}
+
                     // filterList={state.filterList}
                     // filters={filters}
                     // // onFilterChange={(data: any) => setFilters(data)}
@@ -2590,6 +2609,13 @@ export default function JobsPage() {
                       jobRoleList={state?.jobRoleList}
                       tagsList={state?.tagsList}
                       loading={state.loading}
+                      closeModal={()=>{
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth",
+                        });
+                        setIsMobileFilterOpen(false)}}
+
                     />
                   </div>
                 </div>
@@ -2742,6 +2768,12 @@ export default function JobsPage() {
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
+                              closeModal={()=>{
+                                window.scrollTo({
+                                  top: 0,
+                                  behavior: "smooth",
+                                });
+                                setIsMobileFilterOpen(false)}}
                             />
                           </div>
                         </SheetContent>
@@ -2761,6 +2793,8 @@ export default function JobsPage() {
                     collegeList={state?.collegeList}
                     deptList={state?.deptList}
                     locationList={state?.locationList}
+                    jobRoleList={state?.jobRoleList}
+
                   />
 
                   {state.loading || state.jobListLoading ? (

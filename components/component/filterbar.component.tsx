@@ -40,6 +40,7 @@ interface SidebarProps {
     jobRole?: any[];
     locations?: any[];
     jobRoleList: any[];
+    closeModal?:any
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -53,6 +54,7 @@ interface SidebarProps {
   deptList?: any[];
   loading?: boolean;
   jobRoleList: any[];
+  closeModal?:any
 }
 
 const FilterSection: React.FC<{
@@ -189,9 +191,8 @@ const Filterbar: React.FC<SidebarProps> = ({
   deptList,
   loading,
   jobRoleList,
+closeModal,
 }) => {
-  console.log("✌️locationList --->", locationList);
-
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
   const [showAllJobRoles, setShowAllJobRoles] = useState(false);
@@ -599,6 +600,7 @@ const Filterbar: React.FC<SidebarProps> = ({
       jobRole: [],
       locations: [],
       jobRoleList: [],
+      
     });
   };
 
@@ -703,8 +705,7 @@ const Filterbar: React.FC<SidebarProps> = ({
         </button>
       </div>
       <div className="lg:p-[19px] lg:pb-[10px] lg:pt-0">
-
-      {locationList?.length > 0 && (
+        {locationList?.length > 0 && (
           <div ref={locationSectionRef}>
             <FilterSection
               title="Select Locations"
@@ -1394,7 +1395,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
-       
 
         {collegeList?.length > 0 && (
           <div ref={collegeSectionRef}>
@@ -1567,8 +1567,6 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
-       
-      
 
         <div>
           <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
@@ -1597,21 +1595,14 @@ const Filterbar: React.FC<SidebarProps> = ({
                 const minVal = minExp === "" ? 0 : parseInt(minExp);
                 const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
 
-                const selectedLevels = experienceList
-                  ?.filter((item) => {
-                    const parsed = parseExperienceLabel(item.label);
-                    if (!parsed) return false;
-                    // Check for containment: (StartA >= StartB) and (EndA <= EndB)
-                    return parsed.min >= minVal && parsed.max <= maxVal;
-                  })
-                  .map((item) => item.value);
-
                 onFilterChange({
                   ...filters,
                   minExperience: minExp,
                   maxExperience: maxExp,
-                  experienceLevels: selectedLevels || [],
+                  experienceLevels: [ minVal, maxVal],
                 });
+                closeModal()
+
               }}
               className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
             >
@@ -1619,21 +1610,21 @@ const Filterbar: React.FC<SidebarProps> = ({
             </button>
           </div>
 
-          <div
+          {/* <div
             className="flex justify-end text-sm underline cursor-pointer mt-1"
             onClick={() => {
               onFilterChange({
                 ...filters,
                 minExperience: "",
                 maxExperience: "",
-                experienceLevels: ["Open to all experience levels"],
+                experienceLevels: ["10"],
               });
               setMinExp("");
               setMaxExp("");
             }}
           >
             Open to all experience levels
-          </div>
+          </div> */}
         </div>
 
         {/* <div className="pt-[15px]">
