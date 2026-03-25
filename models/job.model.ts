@@ -177,7 +177,7 @@ const job = {
       }
 
       if (body?.department?.length>0) {
-        params.push(`department_id=${body.department}`);
+        params.push(`department_master_id=${body.department}`);
       }
 
       if (body?.experience?.length>0) {
