@@ -2661,7 +2661,7 @@ export default function JobsPage() {
                         </SheetTrigger>
                         <SheetContent
                           side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide rounded-t-3xl [&>button]:hidden"
+                          className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
                         >
                           <div className="flex items-center justify-between px-4 pb-3 border-b">
                             <SheetTitle className="text-lg font-semibold">
@@ -2684,7 +2684,7 @@ export default function JobsPage() {
                               </button>
                             </div>
                           </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
+                          <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
                             <Filterbar
                               // filterList={state.filterList}
                               // filters={filters}
