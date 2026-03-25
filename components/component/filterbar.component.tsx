@@ -708,7 +708,7 @@ closeModal,
         {locationList?.length > 0 && (
           <div ref={locationSectionRef}>
             <FilterSection
-              title="Select Locations"
+              title="Locations"
               items={locationList?.slice(0, 5) ?? []}
               selected={filters.locations}
               onToggle={(value) =>
@@ -881,7 +881,7 @@ closeModal,
         {categoryList?.length > 0 && (
           <div ref={categorySectionRef}>
             <FilterSection
-              title="Select Job Category"
+              title="Job Category"
               items={categoryList?.slice(0, 5) ?? []}
               selected={filters.categories}
               onToggle={(value) =>
@@ -1054,7 +1054,7 @@ closeModal,
         {deptList?.length > 0 && (
           <div ref={deptSectionRef}>
             <FilterSection
-              title="Choose Department"
+              title="Department"
               items={deptList?.slice(0, 5) ?? []}
               selected={filters.department}
               onToggle={(value) =>
@@ -1227,7 +1227,7 @@ closeModal,
         {jobRoleList?.length > 0 && (
           <div ref={jobRoleSectionRef}>
             <FilterSection
-              title="Select Job role"
+              title="Job role"
               items={jobRoleList?.slice(0, 5) ?? []}
               selected={filters.jobRole}
               onToggle={(value) =>
@@ -1399,7 +1399,7 @@ closeModal,
         {collegeList?.length > 0 && (
           <div ref={collegeSectionRef}>
             <FilterSection
-              title="Choose Colleges"
+              title="Colleges"
               items={collegeList?.slice(0, 5) ?? []}
               selected={filters.colleges}
               onToggle={(value) =>

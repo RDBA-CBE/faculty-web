@@ -1655,15 +1655,7 @@ export default function JobsPage() {
               <>
                 <div className="flex justify-between">
                   <Breadcrumb />
-                  <div>
-                    <button
-                      onClick={() => setSelectedJob(null)}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
-                    >
-                      <ArrowLeft size={14} className="mt-[3px]" />
-                      Back
-                    </button>
-                  </div>
+                  
                 </div>
 
                 <div className="flex gap-2 pb-4 pt-2 items-start">
@@ -2149,12 +2141,21 @@ export default function JobsPage() {
                             </div>
 
                             <div className="flex flex-col  justify-between items-end h-full">
-                              <button
+                              {/* <button
                                 className="p-1"
                                 onClick={() => setSelectedJob(null)}
                               >
                                 <X size={20} className=" hover:text-gray-600" />
-                              </button>
+                              </button> */}
+                              <div>
+                    <button
+                      onClick={() => setSelectedJob(null)}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
+                  </div>
                               <div className="flex flex-col items-end justify-between pt-6 gap-6  border-gray-100">
                                 <div className="flex items-center gap-2">
                                   <button

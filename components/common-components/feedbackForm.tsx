@@ -41,6 +41,7 @@ import {
 
 import Models from "@/imports/models.import";
 import Link from "next/link";
+import Modal from "./modal";
 
 const ratingOptions = [
   "Strongly Recommended",
@@ -128,6 +129,8 @@ const FeedbackForm = ({ token }) => {
     position_recommendation: "",
     recommendation_comments: "",
 
+    showFeedbackModal: false,
+    feedbacks: [],
     errors: {},
   });
 
@@ -143,6 +146,10 @@ const FeedbackForm = ({ token }) => {
 
       const res: any = await Models.applications.interview_feedback(token);
 
+      const app = res?.applications?.[0];
+      const slotData = app?.all_slots?.[0] || app?.interview_slots?.[0];
+      const feedbacks = slotData?.decision_maker_feedbacks || [];
+
       setState({
         job: res?.applications?.[0],
         round: res?.round,
@@ -151,6 +158,7 @@ const FeedbackForm = ({ token }) => {
         position: res?.panel?.designation,
         loading: false,
         panels: res?.panels?.length > 0 ? res?.panels[0] : null,
+        feedbacks,
       });
     } catch (error) {
       setState({ loading: false });
@@ -553,12 +561,87 @@ const FeedbackForm = ({ token }) => {
               </CardContent>
             </Card>
 
-           { state.panels?.decision_maker && <div >
-              <p>View Fellow Panel Members Feedback</p>
-            </div>}
+            {state.panels?.decision_maker && (
+              <div
+                className="mt-4 p-4 bg-indigo-50 border border-indigo-100 rounded-lg cursor-pointer hover:bg-indigo-100 transition-colors"
+                onClick={() => setState({ showFeedbackModal: true })}
+              >
+                <div className="flex items-center justify-between text-[#1E3786]">
+                  <p className="font-semibold text-sm">
+                    View Fellow Panel Members Feedback
+                  </p>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      <Modal
+        isOpen={state.showFeedbackModal}
+        setIsOpen={(v) => setState({ showFeedbackModal: v })}
+        title="Fellow Panel Members Feedback"
+        width="700px"
+        renderComponent={() => (
+          <div className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
+            {state.feedbacks?.length > 0 ? (
+              state.feedbacks.map((fb: any, i: number) => (
+                <div
+                  key={i}
+                  className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h4 className="font-bold text-gray-900">
+                        {fb.panel_name || fb.panel?.name}
+                      </h4>
+                      <p className="text-xs text-gray-500">
+                        {fb.panel?.designation}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
+                        fb.recommendation === "hire" ||
+                        fb.recommendation === "strong_hire"
+                          ? "bg-green-100 text-green-700"
+                          : fb.recommendation === "reject"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {fb.recommendation?.replace("_", " ") || "Pending"}
+                    </span>
+                  </div>
+                  {fb.feedback_text && (
+                    <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+                      {fb.feedback_text}
+                    </div>
+                  )}
+                  {!fb.feedback_text && (
+                    <p className="text-xs text-gray-400 italic">
+                      No detailed remarks provided.
+                    </p>
+                  )}
+
+                  <div className="mt-2 flex justify-end">
+                    <p className="text-[10px] text-gray-400">
+                      Submitted:{" "}
+                      {fb.submitted_at
+                        ? new Date(fb.submitted_at).toLocaleString()
+                        : "N/A"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>No feedback available from other panel members yet.</p>
+              </div>
+            )}
+          </div>
+        )}
+      />
     </div>
   );
 };
