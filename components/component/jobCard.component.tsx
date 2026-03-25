@@ -108,7 +108,7 @@ export const JobCard: React.FC<JobCardProps> = ({
       {isProfile && (
         <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
           {/* • Posted{" "} */}
-          {job?.application_status}
+          {capitalizeFLetter(job?.application_status)}
         </div>
       )}
       {/* Header with Title and Company Logo on Right */}

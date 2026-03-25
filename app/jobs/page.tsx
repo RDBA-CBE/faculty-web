@@ -2580,12 +2580,12 @@ export default function JobsPage() {
                           />
                         </div>
 
-                        {isWideScreen && (
+                        {/* {isWideScreen && (
                           <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                        )}
+                        )} */}
 
                         <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
-                          <div className="flex items-center px-4 flex-grow lg:w-64 ">
+                          {/* <div className="flex items-center px-4 flex-grow lg:w-64 ">
                             <MapPin color="#5c5a5a93" size={22} />
 
                             <CustomSelect
@@ -2600,21 +2600,13 @@ export default function JobsPage() {
                               className="py-0 border-none"
                               placeholder="Location"
                             />
-                            {/* <input
-                        type="text"
-                        placeholder="City, state or zip code"
-                        className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
-                        value={filters.location}
-                        onChange={(e) =>
-                          setFilters({ ...filters, location: e.target.value })
-                        }
-                      /> */}
+                           
                             <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
-                          </div>
+                          </div> */}
 
-                          {isWideScreen && (
+                          {/* {isWideScreen && (
                             <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                          )}
+                          )} */}
 
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
