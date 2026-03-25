@@ -194,7 +194,7 @@ const NewHeroSection = () => {
                 />
               </div> */}
 
-               <div className="w-[25%]">
+               <div className="md:w-[25%]">
                 <CustomSelect
                   className="w-max-[50px] placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
                   placeholder="Location"
@@ -213,7 +213,7 @@ const NewHeroSection = () => {
 
               <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
 
-              <div className="w-[25%]">
+              <div className="md:w-[25%]">
                 <CustomSelect
                   className="w-full placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
                   placeholder="Job Department"
@@ -235,7 +235,7 @@ const NewHeroSection = () => {
 
               <div className="hidden sm:block w-px h-8 bg-gray-200"></div>
 
-                  <div className="w-[25%]">
+                  <div className="md:w-[25%]">
                      <CustomSelect
                 className="w-max-[50px] placeholder:text-[#373535]  px-3 py-2 sm:px-2 xl:px-4 sm:py-3 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
                 placeholder="Job role"

@@ -1326,7 +1326,7 @@ export default function NaukriProfilePage() {
                 <Card className="!rounded-none bg-transparent shadow-none border-0 mb-2 overflow-hidden px-0">
                   <div className="absolute"></div>
                   <CardContent className="relative py-4 px-0 mx-0">
-                    <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
+                    <div className="flex flex-row items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
                       <div className="relative flex-shrink-0">
                         <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
@@ -1349,8 +1349,8 @@ export default function NaukriProfilePage() {
                       {/* Profile Info - Enhanced */}
                       <div className="flex-1 w-full">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                          <div className="text-center sm:text-left">
-                            <div className="flex items-center gap-2 justify-center sm:justify-start">
+                          <div className="text-left">
+                            <div className="flex items-center gap-2 justify-start">
                               <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                                 {state.userDetail?.first_name &&
                                 state.userDetail?.last_name
@@ -1373,18 +1373,18 @@ export default function NaukriProfilePage() {
                             )}
                             {(state?.userDetail?.current_company ||
                               state?.userDetail?.current_location) && (
-                              <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
+                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
                                 <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
                                 <span className="text-sm">
-                                  {state?.userDetail?.current_company} -{" "}
+                                  {state?.userDetail?.current_company} -{" "} {state?.userDetail?.current_position} -
                                   {state?.userDetail?.current_location}
                                 </span>
                               </div>
                             )}
                           </div>
-                          <div className="flex-shrink-0">
-                            <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
+                          <div className="flex-shrink-0 justify-center">
+                            <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border w-fit">
                               <p className="text-xs text-gray-500 whitespace-nowrap">
                                 Last Updated:{" "}
                                 <span className="font-semibold text-xs text-gray-700">
@@ -1402,7 +1402,7 @@ export default function NaukriProfilePage() {
 
                     {/* Profile Details Grid - Enhanced */}
                     <div
-                      className="flex    mt-4"
+                      className="flex flex-wrap    mt-4"
                       style={{ gap: "5px" }}
                     >
                       {[
@@ -1458,17 +1458,17 @@ export default function NaukriProfilePage() {
 
                 {/* Main Content Container */}
                 <div className="text-black mb-4">
-                  <div className="flex gap-4">
+                  <div className="flex gap-2 md:gap-4 overflow-x-auto">
                     {PROFILE_TABS?.map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setState({ activeTab: tab })}
-                        className={`px-4 py-1 rounded-md transition  ${
+                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 ${
                           state.activeTab === tab
                             ? "bg-[#1e3786] text-white "
                             : "text-[#000] hover:text-[#1e3786]"
                         }`}
-                        style={{lineHeight:"20px"}}
+                        // style={{height:"fit"}}
                       >
                         {tab}
                       </button>
@@ -1540,8 +1540,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("resume")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786]  rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <FileText className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786]  rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <FileText className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -1781,8 +1781,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("headline")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Edit3 className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Edit3 className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -1949,8 +1949,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("skills")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Code className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Code className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -2182,8 +2182,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("employment")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Briefcase className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Briefcase className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -2657,8 +2657,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("education")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <GraduationCap className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <GraduationCap className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -3067,8 +3067,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("projects")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <FolderOpen className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <FolderOpen className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -3681,8 +3681,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("publications")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Book className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Book className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -4166,8 +4166,8 @@ export default function NaukriProfilePage() {
                                 onClick={() => toggleSection("achievements")}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Award className="w-4 h-4 text-white transform -rotate-3" />
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Award className="w-4 h-4 text-white transform " />
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -4503,7 +4503,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Mobile Action Buttons - Bottom Right */}
-                                                  <div className="flex md:hidden justify-end gap-2">
+                                                  <div className="flex md:hidden justify-end gap-2 mt-4">
                                                     <Button
                                                       variant="outline"
                                                       size="sm"
@@ -4594,8 +4594,8 @@ export default function NaukriProfilePage() {
                         <Card className="!rounded-none bg-clr2 border shadow-none">
                           <CardContent className="px-3 py-6">
                             <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                <GraduationCap className="w-6 h-6 text-white transform -rotate-3" />
+                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                <GraduationCap className="w-6 h-6 text-white transform " />
                               </div>
                               <div>
                                 <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
@@ -4704,8 +4704,8 @@ export default function NaukriProfilePage() {
                         <Card className="!rounded-none bg-clr2 border shadow-none">
                           <CardContent className="py-6 px-3">
                             <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                <Briefcase className="w-6 h-6 text-white transform -rotate-3" />
+                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                <Briefcase className="w-6 h-6 text-white transform " />
                               </div>
                               <div>
                                 <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
