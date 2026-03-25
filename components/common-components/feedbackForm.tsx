@@ -409,7 +409,7 @@ const FeedbackForm = ({ token }) => {
                   <Button
                     onClick={handleSubmit}
                     disabled={state.btnLoading}
-                    className="px-4 py-1 bg-[#1E3786] hover:bg-[#152861] text-white rounded-lg shadow-lg shadow-indigo-200 transition-all hover:shadow-indigo-300 flex items-center gap-2 text-base"
+                    className="px-3 py-1 bg-[#1E3786] hover:bg-[#152861] text-white rounded-md shadow-lg transition-all  flex items-center gap-2  text-sm"
                   >
                     {state.btnLoading ? (
                       <Loader className="animate-spin h-5 w-5" />
@@ -539,7 +539,7 @@ const FeedbackForm = ({ token }) => {
                         {state.panels?.designation || "N/A"}
                       </p>
                     </div>
-                    {state.job?.email}
+                    {/* {state.job?.email} */}
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                         Email
