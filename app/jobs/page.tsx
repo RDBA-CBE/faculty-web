@@ -678,6 +678,7 @@ export default function JobsPage() {
       console.log("✌️error --->", error);
     }
   };
+  
 
   const jobList = async (page = 1, append = false) => {
     try {
