@@ -4872,6 +4872,7 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
+                                isProfile = {true}
                               />
                             ) : (
                               <NewJobCard
@@ -4881,6 +4882,7 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
+                                isProfile = {true}
                               />
                             )}
                           </div>

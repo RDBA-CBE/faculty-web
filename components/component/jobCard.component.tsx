@@ -36,7 +36,9 @@ interface JobCardProps {
     job_description: any;
     is_saved: boolean;
     department?: any;
+    application_status?:any;
   };
+  isProfile?: boolean;
   onClick?: () => void;
   updateList?: () => void;
   onCollegeClick?: (e: React.MouseEvent, id: number) => void;
@@ -45,6 +47,7 @@ interface JobCardProps {
 
 export const JobCard: React.FC<JobCardProps> = ({
   job,
+  isProfile,
   onClick,
   updateList,
   onCollegeClick,
@@ -102,10 +105,19 @@ export const JobCard: React.FC<JobCardProps> = ({
       className="border border-[#c7c7c787] bg-white  p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
+      {isProfile && (
+        <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
+          {/* • Posted{" "} */}
+          {job?.application_status}
+        </div>
+      )}
       {/* Header with Title and Company Logo on Right */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
-          <h3 className="font-bold text-gray-900 text-base text-lg" title={job?.job_title}>
+          <h3
+            className="font-bold text-gray-900 text-base text-lg"
+            title={job?.job_title}
+          >
             {capitalizeFLetter(CharSlice(job?.job_title, 35))}
           </h3>
           <p
@@ -113,7 +125,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             title={job?.college?.name}
             onClick={(e) => onCollegeClick(e, job?.college?.id)}
           >
-            {capitalizeFLetter(CharSlice(job?.college?.name,43))}
+            {capitalizeFLetter(CharSlice(job?.college?.name, 43))}
           </p>
         </div>
 

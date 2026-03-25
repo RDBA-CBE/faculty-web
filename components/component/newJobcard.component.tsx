@@ -35,7 +35,9 @@ interface JobCardProps {
     job_description: any;
     is_saved: boolean;
     department?: any;
+    application_status?:any;
   };
+  isProfile?: boolean;
   onClick?: () => void;
   updateList?: () => void;
   onCollegeClick?: (e: React.MouseEvent, id: number) => void;
@@ -43,6 +45,7 @@ interface JobCardProps {
 }
 
 export const NewJobCard: React.FC<JobCardProps> = ({
+  isProfile,
   job,
   onClick,
   updateList,
@@ -101,6 +104,12 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       className=" border-b  border-[#c7c7c787] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
       onClick={onClick}
     >
+       {isProfile && (
+        <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
+          {/* • Posted{" "} */}
+          {job?.application_status}
+        </div>
+      )}
       <div className=" w-full md:w-4/5 flex flex-row gap-5">
         {/* Company Logo/Initials on Right */}
         <div className="flex-shrink-0 ml-3 order-1 md:order-0">

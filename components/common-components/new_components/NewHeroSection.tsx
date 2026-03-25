@@ -41,10 +41,9 @@ const NewHeroSection = () => {
     }
   };
 
-  const handleLoadMoreLocations = (searchTerm = "") => {
-    const nextPage = (state.locationListPage || 1) + 1;
-    if (state.locationListNext) {
-      loadLocationFilterOptions(nextPage, searchTerm, true);
+  const handleLoadMoreLocations = () => {
+    if (state.locationListNext && !state.locationListLoading) {
+      loadLocationFilterOptions((state.locationListPage || 1) + 1, "", true);
     }
   };
 
@@ -81,10 +80,9 @@ const NewHeroSection = () => {
 
   const JobRoleList = () => loadJobRoleOptions(1);
 
-  const handleLoadMoreJobRoles = (searchTerm = "") => {
-    const nextPage = (state.jobRoleListPage || 1) + 1;
-    if (state.jobRoleListNext) {
-      loadJobRoleOptions(nextPage, searchTerm, true);
+  const handleLoadMoreJobRoles = () => {
+    if (state.jobRoleListNext && !state.jobRoleListLoading) {
+      loadJobRoleOptions((state.jobRoleListPage || 1) + 1, "", true);
     }
   };
 
@@ -105,7 +103,7 @@ const NewHeroSection = () => {
   const loadDepartmentOptions = async (page = 1, search = "", loadMore = false) => {
     try {
       setState({ departmentListLoading: true });
-      const res: any = await Models.department.list(page, { search });
+      const res: any = await Models.department.list(page);
       const dropdown = Dropdown(res?.results, "department_name");
       setState({
         departmentListLoading: false,
@@ -121,10 +119,9 @@ const NewHeroSection = () => {
 
   const departmentList = () => loadDepartmentOptions(1);
 
-  const handleLoadMoreDepartments = (searchTerm = "") => {
-    const nextPage = (state.departmentListPage || 1) + 1;
-    if (state.departmentListNext) {
-      loadDepartmentOptions(nextPage, searchTerm, true);
+  const handleLoadMoreDepartments = () => {
+    if (state.departmentListNext && !state.departmentListLoading) {
+      loadDepartmentOptions((state.departmentListPage || 1) + 1, "", true);
     }
   };
 
@@ -210,7 +207,7 @@ const NewHeroSection = () => {
                     })
                   }
                   loadMore={handleLoadMoreLocations}
-                loading={state.locationFilterLoading}
+                  loading={state.locationListLoading}
                 />
               </div>
 
