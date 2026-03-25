@@ -57,22 +57,19 @@ const RatingField = ({
   comment,
   onCommentChange,
 }) => (
-  <div className="rounded-xl border bg-slate-50/50 p-5 transition-all hover:border-indigo-200 hover:shadow-sm">
-    <div className="mb-4 flex items-center gap-3">
-      <div className="rounded-lg bg-white p-2 shadow-sm ring-1 ring-slate-100">
-        {Icon && <Icon className="h-5 w-5 text-indigo-600" />}
+  <div className="rounded-lg border bg-slate-50/50 p-3 transition-all hover:border-indigo-200 hover:shadow-sm">
+    <div className="mb-2 flex items-center gap-2">
+      <div className="rounded-md bg-white p-1.5 shadow-sm ring-1 ring-slate-100">
+        {Icon && <Icon className="h-4 w-4 text-indigo-600" />}
       </div>
-      <h4 className="font-semibold text-gray-900">{label}</h4>
+      <h4 className="font-semibold text-gray-900 text-sm">{label}</h4>
     </div>
-    <div className="grid gap-6 md:grid-cols-2">
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          Rating
-        </label>
+    <div className="grid gap-3 md:grid-cols-2">
+      <div className="space-y-1">
         <select
           value={rating}
           onChange={(e) => onRatingChange(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm font-medium focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-shadow"
+          className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-medium focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-shadow"
         >
           <option value="">Select Level</option>
           {ratingOptions.map((r) => (
@@ -82,16 +79,13 @@ const RatingField = ({
           ))}
         </select>
       </div>
-      <div className="space-y-2">
-        <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          Comments
-        </label>
+      <div className="space-y-1">
         <textarea
-          rows={2}
-          placeholder="Add details and observations..."
+          rows={1}
+          placeholder="Add details..."
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
-          className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-shadow resize-none"
+          className="w-full rounded-md border border-gray-200 px-3 py-2 text-xs focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-shadow resize-none"
         />
       </div>
     </div>
@@ -225,35 +219,35 @@ const FeedbackForm = ({ token }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6">
-      <div className="section-wid mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-50 py-6 px-3 sm:px-4">
+      <div className="section-wid mx-auto space-y-2">
         {/* Header Section */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-[#1E3786] tracking-tight">
+        <div className="text-center space-y-1">
+          <h1 className="text-2xl font-bold text-[#1E3786] tracking-tight">
             Interview Feedback
           </h1>
-          <p className="text-gray-500 max-w-2xl mx-auto">
+          <p className="text-gray-500 max-w-2xl mx-auto text-sm">
             Please review the candidate&apos;s performance and provide your
             detailed assessment below.
           </p>
         </div>
 
         {/* Job & Interview Card */}
-        <Card className="border-t-4 border-t-[#1E3786] shadow-sm">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
+        <Card className="shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
               {state.job?.job_detail?.college?.college_logo && (
                 <div className="flex-shrink-0">
                   <img
                     src={state.job?.job_detail?.college?.college_logo}
                     alt="College Logo"
-                    className="w-20 h-20 rounded-xl bg-white object-contain border border-gray-100 shadow-sm p-1"
+                    className="w-16 h-16 rounded-xl bg-white object-contain border border-gray-100 shadow-sm p-1"
                   />
                 </div>
               )}
-              <div className="flex-grow space-y-2">
+              <div className="flex-grow space-y-1">
                 <div className="flex flex-wrap items-center gap-3">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900">
                     {state.job?.job_title}
                   </h2>
                   <div className="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider">
@@ -285,23 +279,23 @@ const FeedbackForm = ({ token }) => {
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 !gap-2">
           {/* Candidate Card */}
           <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2 text-gray-800">
                 <User className="h-5 w-5 text-indigo-600" />
                 Candidate Details
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-2 p-4 pt-0">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm">
+                  <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-lg ring-2 ring-white shadow-sm">
                     {state.job?.applicant_name?.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-bold text-gray-900 text-lg leading-tight">
+                    <p className="font-bold text-gray-900 text-base leading-tight">
                       {state.job?.applicant_name}
                     </p>
                     <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5">
@@ -315,7 +309,7 @@ const FeedbackForm = ({ token }) => {
                 <Link
                   href={state.job?.resume}
                   target="_blank"
-                  className="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-medium text-white bg-[#1E3786] rounded-lg hover:bg-indigo-800 transition-colors gap-2 shadow-sm"
+                  className="inline-flex items-center justify-center w-fit !mt-4 px-3 py-2 text-xs  text-white bg-[#1E3786] rounded-lg hover:bg-indigo-800 transition-colors gap-2 shadow-sm"
                 >
                   <FileText className="h-4 w-4" />
                   View Resume
@@ -326,14 +320,14 @@ const FeedbackForm = ({ token }) => {
 
           {/* Evaluator Card */}
           <Card className="shadow-sm">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-lg flex items-center gap-2 text-gray-800">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2 text-gray-800">
                 <CheckCircle2 className="h-5 w-5 text-indigo-600" />
                 Evaluator Details
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-4 bg-gray-50 rounded-lg p-4 border border-gray-100">
+            <CardContent className="p-4 pt-0">
+              <div className="space-y-2 bg-gray-50 rounded-lg p-3 border border-gray-100">
                 <div>
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Name
@@ -368,17 +362,17 @@ const FeedbackForm = ({ token }) => {
 
         {/* Main Feedback Form */}
         <Card className="shadow-md border-0 ring-1 ring-gray-200">
-          <CardHeader className="bg-gray-50/50 border-b pb-4">
-            <CardTitle className="text-xl text-[#1E3786]">
+          <CardHeader className="bg-gray-50/50 border-b pb-3 py-3">
+            <CardTitle className="text-lg text-[#1E3786]">
               Evaluation Form
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs">
               Fill in the details below based on the interview performance.
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-6 space-y-8">
+          <CardContent className="p-4 space-y-4">
             {/* Verification */}
-            <div className="bg-amber-50 border border-amber-100 rounded-lg p-4">
+            <div className="bg-amber-50 border border-amber-100 rounded-lg p-3">
               <label className="block text-sm font-bold text-amber-900 mb-2">
                 Applicant Verification
               </label>
@@ -403,7 +397,7 @@ const FeedbackForm = ({ token }) => {
             <Separator />
 
             {/* General Remarks */}
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2 mb-1">
                   <School className="h-4 w-4 text-indigo-600" />
@@ -412,9 +406,9 @@ const FeedbackForm = ({ token }) => {
                   </h4>
                 </div>
                 <textarea
-                  rows={4}
+                  rows={2}
                   placeholder="Remarks on academic background..."
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-shadow resize-none"
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-shadow resize-none"
                   value={state.academic_record_remark}
                   onChange={(e) =>
                     setState({ academic_record_remark: e.target.value })
@@ -429,9 +423,9 @@ const FeedbackForm = ({ token }) => {
                   </h4>
                 </div>
                 <textarea
-                  rows={4}
+                  rows={2}
                   placeholder="Remarks on work experience..."
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-shadow resize-none"
+                  className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/10 transition-shadow resize-none"
                   value={state.experience_remark}
                   onChange={(e) =>
                     setState({ experience_remark: e.target.value })
@@ -443,7 +437,7 @@ const FeedbackForm = ({ token }) => {
             <Separator />
 
             {/* Detailed Ratings */}
-            <div className="space-y-6">
+            <div className="space-y-3">
               <RatingField
                 label="Knowledge & Technical Skills"
                 icon={BrainCircuit}
@@ -534,7 +528,7 @@ const FeedbackForm = ({ token }) => {
               <Button
                 onClick={handleSubmit}
                 disabled={state.btnLoading}
-                className="px-8 py-6 bg-[#1E3786] hover:bg-[#152861] text-white font-bold rounded-xl shadow-lg shadow-indigo-200 transition-all hover:shadow-indigo-300 flex items-center gap-2 text-base"
+                className="px-4 py-1 bg-[#1E3786] hover:bg-[#152861] text-white rounded-lg shadow-lg shadow-indigo-200 transition-all hover:shadow-indigo-300 flex items-center gap-2 text-base"
               >
                 {state.btnLoading ? (
                   <Loader className="animate-spin h-5 w-5" />
