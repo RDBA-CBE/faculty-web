@@ -5,11 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSetState, Success, Failure, Dropdown } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
-import TextInput from "@/components/FormFields/TextInput.component";
-import CustomSelect from "@/components/FormFields/CustomSelect.component";
-import CustomPhoneInput from "@/components/phoneInput";
-import IconEye from "@/components/Icon/IconEye";
-import IconEyeOff from "@/components/Icon/IconEyeOff";
+import { TextInput } from "@/components/common-components/textInput";
+import CustomSelect from "@/components/common-components/dropdown";
+import CustomPhoneInput from "@/components/common-components/phoneInput";
+import { EyeIcon, EyeOff } from "lucide-react";
 
 const HRRegistrationPage = () => {
   const router = useRouter();
@@ -66,7 +65,6 @@ const HRRegistrationPage = () => {
       });
     } catch (error) {
       setState({ institutionLoading: false });
-      Failure("Failed to load institutions");
     }
   };
 
@@ -94,7 +92,6 @@ const HRRegistrationPage = () => {
       });
     } catch (error) {
       setState({ collegeLoading: false });
-      Failure("Failed to load colleges");
     }
   };
 
@@ -197,6 +194,7 @@ const HRRegistrationPage = () => {
               placeholder="Select your institution"
               error={state.errors.institution}
               required
+              
             />
             <CustomSelect
               title="College Name"
@@ -230,7 +228,7 @@ const HRRegistrationPage = () => {
               value={state.password}
               onChange={(e) => handleFormChange("password", e.target.value)}
               error={state.errors.password}
-              rightIcon={state.showPassword ? <IconEyeOff /> : <IconEye />}
+              rightIcon={state.showPassword ? <EyeIcon /> : <EyeOff />}
               rightIconOnlick={() => setState({ showPassword: !state.showPassword })}
               required
             />
@@ -241,7 +239,7 @@ const HRRegistrationPage = () => {
               value={state.confirm_password}
               onChange={(e) => handleFormChange("confirm_password", e.target.value)}
               error={state.errors.confirm_password}
-              rightIcon={state.showConfirmPassword ? <IconEyeOff /> : <IconEye />}
+              rightIcon={state.showConfirmPassword ? <EyeIcon /> : <EyeOff />}
               rightIconOnlick={() => setState({ showConfirmPassword: !state.showConfirmPassword })}
               required
             />

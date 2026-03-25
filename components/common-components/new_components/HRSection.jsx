@@ -147,7 +147,7 @@ const HRSection = () => {
                 <button
                   className="w-fit sm:w-auto bg-[#1E3786] text-white mt-4 px-3 py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#1E3786] transition text-sm  font-semibold whitespace-nowrap"
                   style={{ width: "fit-content" }}
-                  onClick={router.push("hr-registeration")}
+                  onClick={()=>router.push("hr-registeration")}
                  
                 >
                   Register Now
