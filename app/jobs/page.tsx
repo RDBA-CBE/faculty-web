@@ -160,8 +160,7 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
-    minExperience: "",
-    maxExperience: "",
+ 
   });
   console.log("✌️filters --->", filters);
 
@@ -1053,9 +1052,17 @@ export default function JobsPage() {
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0) {
+    if (filters?.experienceLevels?.length > 0 ) {
       body.experience = filters.experienceLevels;
     }
+
+    // if (filters?.minExperience) {
+    //   body.min_experience = filters.minExperience;
+    // }
+
+    // if (filters?.maxExperience) {
+    //   body.max_experience = filters.maxExperience;
+    // }
 
     if (filters?.salaryRange?.length > 0) {
       body.salary_range = filters.salaryRange;
@@ -2550,6 +2557,8 @@ export default function JobsPage() {
                     jobRoleList={state?.jobRoleList}
                     tagsList={state?.tagsList}
                     loading={state.loading}
+                    closeModal={()=>setIsMobileFilterOpen(false)}
+
                     // filterList={state.filterList}
                     // filters={filters}
                     // // onFilterChange={(data: any) => setFilters(data)}
@@ -2595,6 +2604,8 @@ export default function JobsPage() {
                       jobRoleList={state?.jobRoleList}
                       tagsList={state?.tagsList}
                       loading={state.loading}
+                      closeModal={()=>setIsMobileFilterOpen(false)}
+
                     />
                   </div>
                 </div>
@@ -2747,6 +2758,7 @@ export default function JobsPage() {
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
+                              closeModal={()=>setIsMobileFilterOpen(false)}
                             />
                           </div>
                         </SheetContent>

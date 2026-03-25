@@ -39,7 +39,7 @@ const job = {
         url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
       if (body.experience) {
-        url += `&experience=${encodeURIComponent(body.experience)}`;
+        url += `&experience_id=${encodeURIComponent(body.experience)}`;
       }
 
       if (body.colleges) {
