@@ -15,6 +15,7 @@ import {
   generateMockJobs,
   getAvatarColor,
   getFileNameFromUrl,
+  job_title,
   Success,
   useSetState,
 } from "@/utils/function.utils";
@@ -1267,7 +1268,7 @@ export default function JobsPage() {
                               getCollege(e, state?.jobDetail.college?.id)
                             }
                           >
-                            {capitalizeFLetter(state?.jobDetail?.job_title)}
+                            {capitalizeFLetter(job_title(state?.jobDetail))}
                           </h1>
                           <p className="text-md text-gray-700 mb-2">
                             {state?.jobDetail?.college?.name}
@@ -1511,7 +1512,7 @@ export default function JobsPage() {
                         Title
                       </span>
                       <p className="text-md text-gray-500  ps-6">
-                        {capitalizeFLetter(state?.jobDetail?.job_title)}
+                        {capitalizeFLetter(job_title(state?.jobDetail))}
                       </p>
                     </div>
                     <div>
@@ -1735,10 +1736,10 @@ export default function JobsPage() {
                                             ? ""
                                             : "text-gray-900"
                                         }`}
-                                        title={job.job_title}
+                                        title={job_title(job)}
                                       >
                                         {capitalizeFLetter(
-                                          CharSlice(job.job_title, 20)
+                                          CharSlice(job_title(job), 20)
                                         )}
                                       </h3>
                                       <p
@@ -2083,7 +2084,7 @@ export default function JobsPage() {
                                 <div className="flex-1 flex-col">
                                   <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.job_title
+                                      job_title(state?.jobDetail)
                                     )}
                                   </h1>
                                   <p
@@ -2368,7 +2369,7 @@ export default function JobsPage() {
                                     Job Title
                                   </span>
                                   <p className="text-md text-gray-500  ps-6">
-                                    {state?.jobDetail?.job_title}
+                                    {job_title(state?.jobDetail)}
                                   </p>
                                 </div>
 
@@ -2614,12 +2615,12 @@ export default function JobsPage() {
                           />
                         </div>
 
-                        {isWideScreen && (
+                        {/* {isWideScreen && (
                           <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                        )}
+                        )} */}
 
                         <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
-                          <div className="flex items-center px-4 flex-grow lg:w-64 ">
+                          {/* <div className="flex items-center px-4 flex-grow lg:w-64 ">
                             <MapPin color="#5c5a5a93" size={22} />
 
                             <CustomSelect
@@ -2634,21 +2635,13 @@ export default function JobsPage() {
                               className="py-0 border-none"
                               placeholder="Location"
                             />
-                            {/* <input
-                        type="text"
-                        placeholder="City, state or zip code"
-                        className="w-full pl-4 bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-slate-400 font-medium"
-                        value={filters.location}
-                        onChange={(e) =>
-                          setFilters({ ...filters, location: e.target.value })
-                        }
-                      /> */}
+                           
                             <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
-                          </div>
+                          </div> */}
 
-                          {isWideScreen && (
+                          {/* {isWideScreen && (
                             <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                          )}
+                          )} */}
 
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
@@ -2703,7 +2696,7 @@ export default function JobsPage() {
                         </SheetTrigger>
                         <SheetContent
                           side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide rounded-t-3xl [&>button]:hidden"
+                          className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
                         >
                           <div className="flex items-center justify-between px-4 pb-3 border-b">
                             <SheetTitle className="text-lg font-semibold">
@@ -2726,7 +2719,7 @@ export default function JobsPage() {
                               </button>
                             </div>
                           </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide max-h-[calc(80vh-100px)]">
+                          <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
                             <Filterbar
                               // filterList={state.filterList}
                               // filters={filters}
@@ -3060,7 +3053,7 @@ export default function JobsPage() {
                             )}
                             <div className="flex-1 text-left">
                               <SheetTitle className="text-xl font-bold text-gray-900 text-left">
-                                {capitalizeFLetter(state.jobDetail?.job_title)}
+                                {capitalizeFLetter(job_title(state.jobDetail))}
                               </SheetTitle>
                               <p
                                 className="text-gray-600 text-left"
@@ -3234,7 +3227,9 @@ export default function JobsPage() {
                                 Job Title
                               </span>
                               <p className="text-sm text-gray-500  ps-6">
-                                {capitalizeFLetter(state?.jobDetail?.job_title)}
+                                {/* {capitalizeFLetter(state?.jobDetail?.job_title)} */}
+                                {capitalizeFLetter(job_title(state.jobDetail))}
+
                               </p>
                             </div>
                             <div>
@@ -3404,7 +3399,7 @@ export default function JobsPage() {
                 setState({ errors: {} });
                 setShowApplicationModal(false);
               }}
-              title={capitalizeFLetter(selectedJob?.job_title)}
+              title={capitalizeFLetter(job_title(selectedJob))}
               width="700px"
               renderComponent={() => (
                 <div className="space-y-4 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">

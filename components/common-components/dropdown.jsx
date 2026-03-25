@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import React, { useRef } from "react";
+import React, { useRef, useCallback } from "react";
 
 const CustomSelect = (props) => {
   const {
@@ -28,19 +28,36 @@ const CustomSelect = (props) => {
 
   const selectedOption = options?.find((option) => option.value === value);
   const loadMoreCalledRef = useRef(false);
+  const contentRef = useRef(null);
 
-  const handleScroll = (e) => {
-    if (!loadMore) return;
-    const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    const isNearBottom = scrollTop + clientHeight >= scrollHeight - 20;
-    if (isNearBottom && !loadMoreCalledRef.current) {
-      loadMoreCalledRef.current = true;
-      loadMore("");
-      setTimeout(() => {
-        loadMoreCalledRef.current = false;
-      }, 500);
-    }
-  };
+  const handleScroll = useCallback(
+    (e) => {
+      if (!loadMore || loading || loadMoreCalledRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
+      const isNearBottom = scrollTop + clientHeight >= scrollHeight - 20;
+      if (isNearBottom) {
+        loadMoreCalledRef.current = true;
+        loadMore("");
+        setTimeout(() => {
+          loadMoreCalledRef.current = false;
+        }, 800);
+      }
+    },
+    [loadMore, loading]
+  );
+
+  // Attach scroll listener to the inner radix viewport once content mounts
+  const handleContentRef = useCallback(
+    (node) => {
+      contentRef.current = node;
+      if (!node || !loadMore) return;
+      const viewport = node.querySelector("[data-radix-select-viewport]");
+      if (viewport) {
+        viewport.addEventListener("scroll", handleScroll);
+      }
+    },
+    [handleScroll, loadMore]
+  );
 
   return (
     <div className="w-full">
@@ -54,7 +71,7 @@ const CustomSelect = (props) => {
           value={value ? String(value) : ""}
           onValueChange={(val) => {
             const selected = options?.find(
-              (option) => String(option.value) === val,
+              (option) => String(option.value) === val
             );
             onChange(selected || null);
           }}
@@ -67,14 +84,20 @@ const CustomSelect = (props) => {
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
-          <SelectContent onScroll={handleScroll}>
+          <SelectContent
+            ref={handleContentRef}
+            className="max-h-[220px] overflow-y-auto"
+          >
             {options?.map((option) => (
               <SelectItem key={option.value} value={String(option.value)}>
                 {option.label}
               </SelectItem>
             ))}
             {loading && (
-              <div className="py-2 text-center text-xs text-gray-400">Loading...</div>
+              <div className="py-2 text-center text-xs text-gray-400 flex items-center justify-center gap-1">
+                <span className="w-3 h-3 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin inline-block" />
+                Loading...
+              </div>
             )}
           </SelectContent>
         </Select>
@@ -88,9 +111,7 @@ const CustomSelect = (props) => {
           </button>
         )}
       </div>
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 };

@@ -124,16 +124,11 @@ export const buildResumeFile = async (url: any, filename: any) => {
   const response = await fetch(url);
   const blob = await response.blob();
 
-  return new File(
-    [blob],
-    `${filename}.pdf`,
-    {
-      type: blob.type,
-      lastModified: Date.now(),
-    }
-  );
+  return new File([blob], `${filename}.pdf`, {
+    type: blob.type,
+    lastModified: Date.now(),
+  });
 };
-
 
 export const isValidImageUrl = (url: string) => {
   const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
@@ -254,7 +249,7 @@ export const formatTimeRange = (date, time, intervalMinutes) => {
   const end = moment(start).add(intervalMinutes, "minutes");
 
   return `${start.format("MMMM D, YYYY")} at ${start.format(
-    "h:mm A",
+    "h:mm A"
   )} - ${end.format("h:mm A")}`;
 };
 
@@ -325,7 +320,7 @@ export const buildFormData = (data: Record<string, any>): FormData => {
       value.forEach((item, index) => {
         formData.append(
           `${key}`,
-          item instanceof File || item instanceof Blob ? item : String(item),
+          item instanceof File || item instanceof Blob ? item : String(item)
         );
       });
     }
@@ -374,7 +369,7 @@ export const getTime = (startDate, startTime) => {
     hours,
     minutes,
     seconds,
-    milliseconds,
+    milliseconds
   );
   return combinedDate;
 };
@@ -471,7 +466,7 @@ export const formatToINRS = (price: number | string): string => {
 
 export const formatPriceRange = (
   minPrice: number | string | null,
-  maxPrice: number | string | null,
+  maxPrice: number | string | null
 ): string => {
   if (minPrice === null && maxPrice === null) {
     return "Price on request";
@@ -566,11 +561,8 @@ export const DateFormat = (date, type = "dateTime") => {
 
 export const CharSlice = (text, limit) => {
   if (!text) return "";
-  return text.length > limit 
-    ? text.slice(0, limit) + "..." 
-    : text;
+  return text.length > limit ? text.slice(0, limit) + "..." : text;
 };
-
 
 export const formatScheduleDateTime = (date, time) => {
   const d = new Date(date);
@@ -591,4 +583,10 @@ export const formatScheduleDateTime = (date, time) => {
   });
 };
 
-
+export const job_title = (job) => {
+  if (job?.roles?.length > 0) {
+    return job?.roles?.[0]?.role_name;
+  } else if (job?.job_title) {
+    return job?.job_title;
+  }
+};
