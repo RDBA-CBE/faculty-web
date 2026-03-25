@@ -36,6 +36,7 @@ interface JobCardProps {
     job_description: any;
     is_saved: boolean;
     department?: any;
+    roles?: any;
   };
   onClick?: () => void;
   updateList?: () => void;
@@ -105,15 +106,33 @@ export const JobCard: React.FC<JobCardProps> = ({
       {/* Header with Title and Company Logo on Right */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
-          <h3 className="font-bold text-gray-900 text-base text-lg" title={job?.job_title}>
-            {capitalizeFLetter(CharSlice(job?.job_title, 35))}
+          <h3
+            className="font-bold text-gray-900 text-base text-lg"
+            title={
+              job?.job_title
+                ? job?.job_title
+                : job?.roles?.length > 0
+                ? job?.roles?.[0]?.role_name
+                : ""
+            }
+          >
+            {capitalizeFLetter(
+              CharSlice(
+                job?.job_title
+                  ? job?.job_title
+                  : job?.roles?.length > 0
+                  ? job?.roles?.[0]?.role_name
+                  : "",
+                35
+              )
+            )}
           </h3>
           <p
             className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
             title={job?.college?.name}
             onClick={(e) => onCollegeClick(e, job?.college?.id)}
           >
-            {capitalizeFLetter(CharSlice(job?.college?.name,43))}
+            {capitalizeFLetter(CharSlice(job?.college?.name, 43))}
           </p>
         </div>
 

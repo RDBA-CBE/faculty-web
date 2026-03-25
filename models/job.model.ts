@@ -17,8 +17,18 @@ const job = {
         url += `&location_id=${encodeURIComponent(body.location)}`;
       }
 
+      if (body.job_role) {
+        url += `&job_role_id=${encodeURIComponent(body.job_role)}`;
+      }
+
+      
+
+      // if (body?.department) {
+      //   url += `&department=${encodeURIComponent(body.department)}`;
+      // }
+
       if (body?.department) {
-        url += `&department=${encodeURIComponent(body.department)}`;
+        url += `&department_master_id=${encodeURIComponent(body.department)}`;
       }
 
        if (body?.job_role) {
@@ -149,6 +159,19 @@ const job = {
         params.push(`location_id=${body.location}`);
       }
 
+      // if (body?.category?.length>0) {
+      //   params.push(`category_id=${body.category}`);
+      // }
+
+      if (body.job_role) {
+        params.push(`job_role_id=${body.job_role}`);
+
+      }
+      if (body.category) {
+        params.push(`job_category_id=${body.category}`);
+
+      }
+
       if (body?.colleges?.length>0) {
         params.push(`college_id=${body.colleges}`);
       }
@@ -156,6 +179,12 @@ const job = {
       if (body?.department?.length>0) {
         params.push(`department_id=${body.department}`);
       }
+
+      if (body?.experience?.length>0) {
+        params.push(`experience_id=${body.experience}`);
+      }
+
+      
 
       if (params.length > 0) {
         url += `?${params.join("&")}`;

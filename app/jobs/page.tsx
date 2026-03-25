@@ -146,7 +146,7 @@ export default function JobsPage() {
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
-    locations: locationParam ? parseInt(locationParam, 10) : null,
+    locations: locationParam ? [parseInt(locationParam, 10)] : [],
     categories: [],
     jobTypes: [],
     experienceLevels: [],
@@ -158,6 +158,7 @@ export default function JobsPage() {
     colleges: collegeParam ? [parseInt(collegeParam, 10)] : [],
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
+    jobRoleList:[]
   });
   console.log("✌️filters --->", filters);
 
@@ -406,15 +407,11 @@ export default function JobsPage() {
 
   useEffect(() => {
     jobList(1);
-    categoryList();
     jobTypeList();
-    locationList();
-    experienceList();
+    // experienceList();
     DatePosted();
     salaryRangeList();
     tagsList();
-    collegeList();
-    departmentList();
     filterList();
   }, []);
 
@@ -426,11 +423,11 @@ export default function JobsPage() {
   }, [searchParam]);
 
   useEffect(() => {
-    const locationQuery = locationParam ? parseInt(locationParam, 10) : null;
-    if (locationQuery !== filters.locations) {
+    const locationQuery = locationParam ? [parseInt(locationParam, 10)] : [];
+    if (JSON.stringify(locationQuery) !== JSON.stringify(filters.locations)) {
       setFilters((prevFilters) => ({
         ...prevFilters,
-        location: isNaN(locationQuery) ? null : locationQuery,
+        locations: locationQuery,
       }));
     }
   }, [locationParam]);
@@ -525,12 +522,41 @@ export default function JobsPage() {
   const filterList = async () => {
     try {
       const body = bodyData();
-      console.log("filterList --->", body);
       const res: any = await Models.job.filterList(body);
-      console.log("✌️res --->", res);
+      const locationList = res?.data?.locations?.map((item) => ({
+        value: item.id,
+        label: item.city,
+      }));
+      const collegeList = res?.data?.colleges?.map((item) => ({
+        value: item.id,
+        label: item.college_name,
+      }));
+      const deptList = res?.data?.departments?.map((item) => ({
+        value: item.id,
+        label: item.department_name,
+      }));
+      const categoryList = res?.data?.job_categories?.map((item) => ({
+        value: item.id,
+        label: item.name,
+      }));
+      const jobRoleList = res?.data?.job_roles?.map((item) => ({
+        value: item.id,
+        label: item.role_name,
+      }));
+
+      const experienceList = res?.data?.experiences?.map((item) => ({
+        value: item.name,
+        label: item.name,
+      }));
 
       setState({
         filterList: res?.data,
+        locationList,
+        collegeList,
+        deptList,
+        categoryList,
+        jobRoleList,
+        experienceList,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -1007,11 +1033,15 @@ export default function JobsPage() {
       body.category = filters.categories;
     }
 
+    if (filters?.jobRole?.length > 0) {
+      body.job_role = filters.jobRole;
+    }
+
     if (filters?.department?.length > 0) {
       body.department = filters.department;
     }
 
-    if (filters?.locations) {
+    if (filters?.locations?.length > 0) {
       body.location = filters.locations;
     }
 
@@ -1029,6 +1059,10 @@ export default function JobsPage() {
 
     if (filters?.colleges?.length > 0) {
       body.colleges = filters.colleges;
+    }
+
+    if (filters?.categories?.length > 0) {
+      body.category = filters.categories;
     }
 
     if (filters?.tags?.length > 0) {
@@ -1112,7 +1146,7 @@ export default function JobsPage() {
   const handleClearFilters = () => {
     setFilters({
       searchQuery: "",
-      locations: null,
+      locations: [],
       categories: [],
       jobTypes: [],
       experienceLevels: [],
@@ -1123,8 +1157,8 @@ export default function JobsPage() {
       jobID: null,
       colleges: [],
       department: [],
-      jobRoleList:[]
-
+      jobRole: [],
+      jobRoleList: [],
     });
     setState({ search: "" });
   };
@@ -1178,17 +1212,17 @@ export default function JobsPage() {
                 >
                   {/* <ArrowLeft size={20} /> */}
                   <div className="flex justify-between">
-                  <Breadcrumb />
-                  <div>
-                    <button
-                      onClick={() => setSelectedJob(null)}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
-                    >
-                      <ArrowLeft size={14} className="mt-[3px]" />
-                      Back
-                    </button>
+                    <Breadcrumb />
+                    <div>
+                      <button
+                        onClick={() => setSelectedJob(null)}
+                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                      >
+                        <ArrowLeft size={14} className="mt-[3px]" />
+                        Back
+                      </button>
+                    </div>
                   </div>
-                </div>
                   {/* <span className="font-medium">Back to Jobs</span> */}
                 </button>
 
@@ -1606,7 +1640,7 @@ export default function JobsPage() {
               </div>
             ) : isDesktopScreen && selectedJob && showJobDetail ? (
               <>
-<div className="flex justify-between">
+                <div className="flex justify-between">
                   <Breadcrumb />
                   <div>
                     <button
@@ -2465,8 +2499,8 @@ export default function JobsPage() {
                                 }}
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
                               >
-                                {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                                Job Openings
+                                {state?.jobDetail?.college?.total_jobs || 0} Job
+                                Openings
                               </button>
                               <p className="leading-relaxed">
                                 {state?.jobDetail?.college_detail}
@@ -2497,19 +2531,19 @@ export default function JobsPage() {
                   }`}
                 >
                   <Filterbar
-                   filters={filters}
-                   onFilterChange={setFilters}
-                   categoryList={state?.categoryList}
-                   locationList={state?.locationList}
-                   jobTypeList={state?.jobTypeList}
-                   experienceList={state?.experienceList}
-                   collegeList={state?.collegeList}
-                   deptList={state?.deptList}
-                   datePostedList={state?.datePostedList}
-                   salaryRangeList={state?.salaryRangeList}
-                  //  jobRoleList={state?.jobRoleList}
-                   tagsList={state?.tagsList}
-                   loading={state.loading}
+                    filters={filters}
+                    onFilterChange={setFilters}
+                    categoryList={state?.categoryList}
+                    locationList={state?.locationList}
+                    jobTypeList={state?.jobTypeList}
+                    experienceList={state?.experienceList}
+                    collegeList={state?.collegeList}
+                    deptList={state?.deptList}
+                    datePostedList={state?.datePostedList}
+                    salaryRangeList={state?.salaryRangeList}
+                    jobRoleList={state?.jobRoleList}
+                    tagsList={state?.tagsList}
+                    loading={state.loading}
                     // filterList={state.filterList}
                     // filters={filters}
                     // // onFilterChange={(data: any) => setFilters(data)}
@@ -2699,7 +2733,7 @@ export default function JobsPage() {
                               // // onFilterChange={setFilters}
                               // onFilterChange={(data: any) => {
                               //   console.log("✌️data --->", data);
-        
+
                               //   setFilters(data);
                               // }}
                               filters={filters}
@@ -3438,7 +3472,7 @@ export default function JobsPage() {
                   </div>
 
                   <div className="space-y-1">
-                   <CustomSelect
+                    <CustomSelect
                       // title="Experience"
                       required
                       className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"

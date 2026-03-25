@@ -26,16 +26,15 @@ const ChipFilters = ({
   datePostedList = [],
   locationList = [],
   deptList = [],
-  jobRoleList=[]
-
+  jobRoleList = [],
 }) => {
-
-
-
   const activeFilters = [];
 
   const findLabel = (list, value) => {
-    return list?.find((item) => String(item?.value) === String(value))?.label || value;
+    return (
+      list?.find((item) => String(item?.value) === String(value))?.label ||
+      value
+    );
   };
 
   // Search Query
@@ -72,18 +71,35 @@ const ChipFilters = ({
     });
   });
 
-  // Experience Level
-  filters.experienceLevels?.forEach((value) => {
+  // Experience Range
+  if (filters.experienceLevels?.includes("Open to all experience levels")) {
     activeFilters.push({
-      label: findLabel(experienceList, value),
-      onRemove: () => {
+      label: "Open to all experience levels",
+      onRemove: () =>
         onFilterChange({
           ...filters,
-          experienceLevels: filters.experienceLevels.filter((v) => v !== value),
-        });
-      },
+          minExperience: "",
+          maxExperience: "",
+          experienceLevels: [],
+        }),
     });
-  });
+  } else if (filters.minExperience || filters.maxExperience) {
+    const min = filters.minExperience || "0";
+    const max = filters.maxExperience || "";
+    const label = max
+      ? `Experience: ${min} - ${max} Years`
+      : `Experience: ${min}+ Years`;
+    activeFilters.push({
+      label,
+      onRemove: () =>
+        onFilterChange({
+          ...filters,
+          minExperience: "",
+          maxExperience: "",
+          experienceLevels: [],
+        }),
+    });
+  }
 
   // Categories
   filters.categories.forEach((value) => {
@@ -125,33 +141,33 @@ const ChipFilters = ({
   });
 
   // Salary Range
- // Salary Range
-if (filters.salaryRange && filters.salaryRange.length > 0) {
-  const selectedRanges = filters?.salaryRange?.map((value) =>
-    findLabel(salaryRangeList, value)
-  );
+  // Salary Range
+  if (filters.salaryRange && filters.salaryRange.length > 0) {
+    const selectedRanges = filters?.salaryRange?.map((value) =>
+      findLabel(salaryRangeList, value)
+    );
 
-  // Extract min and max numbers
-  const numbers = selectedRanges.flatMap((range) => {
-    const match = range.match(/\d+/g);
-    return match ? match.map(Number) : [];
-  });
-
-  if (numbers.length > 0) {
-    const min = Math.min(...numbers);
-    const max = Math.max(...numbers);
-
-    activeFilters.push({
-      label: `Salary: ${min} - ${max} Lakhs`,
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          salaryRange: [],
-        });
-      },
+    // Extract min and max numbers
+    const numbers = selectedRanges.flatMap((range) => {
+      const match = range.match(/\d+/g);
+      return match ? match.map(Number) : [];
     });
+
+    if (numbers.length > 0) {
+      const min = Math.min(...numbers);
+      const max = Math.max(...numbers);
+
+      activeFilters.push({
+        label: `Salary: ${min} - ${max} Lakhs`,
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            salaryRange: [],
+          });
+        },
+      });
+    }
   }
-}
 
   // Colleges
   filters.colleges?.forEach((value) => {
@@ -166,7 +182,6 @@ if (filters.salaryRange && filters.salaryRange.length > 0) {
     });
   });
 
-
   filters.department?.forEach((value) => {
     activeFilters.push({
       label: findLabel(deptList, value),
@@ -178,7 +193,6 @@ if (filters.salaryRange && filters.salaryRange.length > 0) {
       },
     });
   });
-
 
   // Tags
   filters.tags.forEach((value) => {
@@ -192,8 +206,6 @@ if (filters.salaryRange && filters.salaryRange.length > 0) {
       },
     });
   });
-
-
 
   if (activeFilters.length === 0) {
     return null;

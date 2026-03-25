@@ -38,8 +38,8 @@ interface SidebarProps {
     minExperience?: string;
     maxExperience?: string;
     jobRole?: any[];
-    locations?:any[]
-    jobRoleList:any[]
+    locations?: any[];
+    jobRoleList: any[];
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -52,16 +52,16 @@ interface SidebarProps {
   collegeList?: any[];
   deptList?: any[];
   loading?: boolean;
-  jobRoleList:any[]
+  jobRoleList: any[];
 }
 
 const FilterSection: React.FC<{
   title: string;
   items: { value: number | string; label: string }[];
   counts?: number[];
-  selected: (number | string)[];
+  selected?: (number | string)[];
   onToggle: (value: number | string) => void;
-}> = ({ title, items, counts, selected, onToggle }) => (
+}> = ({ title, items, counts, selected = [], onToggle }) => (
   <div>
     <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
       {title}
@@ -188,8 +188,10 @@ const Filterbar: React.FC<SidebarProps> = ({
   tagsList,
   deptList,
   loading,
-  jobRoleList
+  jobRoleList,
 }) => {
+  console.log("✌️locationList --->", locationList);
+
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
   const [showAllJobRoles, setShowAllJobRoles] = useState(false);
@@ -208,9 +210,18 @@ const Filterbar: React.FC<SidebarProps> = ({
     top: -200,
   });
   const [deptPopupPos, setDeptPopupPos] = useState({ left: 0, top: -200 });
-  const [jobRolePopupPos, setJobRolePopupPos] = useState({ left: 0, top: -200 });
-  const [categoryPopupPos, setCategoryPopupPos] = useState({ left: 0, top: -200 });
-  const [locationPopupPos, setLocationPopupPos] = useState({ left: 0, top: -200 });
+  const [jobRolePopupPos, setJobRolePopupPos] = useState({
+    left: 0,
+    top: -200,
+  });
+  const [categoryPopupPos, setCategoryPopupPos] = useState({
+    left: 0,
+    top: -200,
+  });
+  const [locationPopupPos, setLocationPopupPos] = useState({
+    left: 0,
+    top: -200,
+  });
 
   const collegePopupRef = useRef<HTMLDivElement>(null);
   const deptPopupRef = useRef<HTMLDivElement>(null);
@@ -237,12 +248,12 @@ const Filterbar: React.FC<SidebarProps> = ({
   const alphabetRefs = useRef({});
   const listRef = useRef(null);
 
-  const [minExp, setMinExp] = useState(filters.minExperience || "");
-  const [maxExp, setMaxExp] = useState(filters.maxExperience || "");
+  const [minExp, setMinExp] = useState(filters.minExperience ?? "");
+  const [maxExp, setMaxExp] = useState(filters.maxExperience ?? "");
 
   useEffect(() => {
-    setMinExp(filters.minExperience || "");
-    setMaxExp(filters.maxExperience || "");
+    setMinExp(filters.minExperience ?? "");
+    setMaxExp(filters.maxExperience ?? "");
   }, [filters.minExperience, filters.maxExperience]);
 
   useEffect(() => {
@@ -567,9 +578,10 @@ const Filterbar: React.FC<SidebarProps> = ({
   }, [showAllLocations]);
 
   const toggleItem = <T,>(list: T[], item: T) => {
-    return list.includes(item)
-      ? list.filter((i) => i !== item)
-      : [...list, item];
+    const safeList = list ?? [];
+    return safeList.includes(item)
+      ? safeList.filter((i) => i !== item)
+      : [...safeList, item];
   };
 
   const handleClearFilters = () => {
@@ -585,8 +597,8 @@ const Filterbar: React.FC<SidebarProps> = ({
       minExperience: "",
       maxExperience: "",
       jobRole: [],
-      locations:[],
-      jobRoleList:[]
+      locations: [],
+      jobRoleList: [],
     });
   };
 
@@ -631,52 +643,52 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   const DepartfilteredList = deptList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase()),
+      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
   const DepartAvailableAlphabets = new Set(
-    DepartfilteredList?.map((item) => item.label[0].toUpperCase()),
+    DepartfilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   const collegefilteredList = collegeList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase()),
+      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
   const collegeAvailableAlphabets = new Set(
-    collegefilteredList?.map((item) => item.label[0].toUpperCase()),
+    collegefilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   const jobRoleFilteredList = jobRoleList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(jobRoleSearchQuery.toLowerCase()),
+      c.label.toLowerCase().includes(jobRoleSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
   const jobRoleAvailableAlphabets = new Set(
-    jobRoleFilteredList?.map((item) => item.label[0].toUpperCase()),
+    jobRoleFilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   const categoryFilteredList = categoryList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(categorySearchQuery.toLowerCase()),
+      c.label.toLowerCase().includes(categorySearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
   const categoryAvailableAlphabets = new Set(
-    categoryFilteredList?.map((item) => item.label[0].toUpperCase()),
+    categoryFilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   const locationFilteredList = locationList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(locationSearchQuery.toLowerCase()),
+      c.label.toLowerCase().includes(locationSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
   const locationAvailableAlphabets = new Set(
-    locationFilteredList?.map((item) => item.label[0].toUpperCase()),
+    locationFilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   return (
@@ -692,21 +704,22 @@ const Filterbar: React.FC<SidebarProps> = ({
       </div>
       <div className="lg:p-[19px] lg:pb-[10px] lg:pt-0">
 
-        <div ref={locationSectionRef}>
-          <FilterSection
-            title="Select Locations"
-            items={locationList?.slice(0, 5) ?? []}
-            selected={filters.locations}
-            onToggle={(value) =>
-              onFilterChange({
-                ...filters,
-                locations: toggleItem(filters.locations, value),
-              })
-            }
-          />
-        </div>
-
-        {locationList && locationList.length > 5 && (
+      {locationList?.length > 0 && (
+          <div ref={locationSectionRef}>
+            <FilterSection
+              title="Select Locations"
+              items={locationList?.slice(0, 5) ?? []}
+              selected={filters.locations}
+              onToggle={(value) =>
+                onFilterChange({
+                  ...filters,
+                  locations: toggleItem(filters.locations, value),
+                })
+              }
+            />
+          </div>
+        )}
+        {locationList && locationList?.length > 5 && (
           <div className="relative mt-2">
             <button
               ref={locationButtonRef}
@@ -808,7 +821,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
                       index > 0
-                        ? locationFilteredList[index - 1]?.label[0].toUpperCase()
+                        ? locationFilteredList[
+                            index - 1
+                          ]?.label[0].toUpperCase()
                         : null;
 
                     const showHeader = currentLetter !== prevLetter;
@@ -829,13 +844,15 @@ const Filterbar: React.FC<SidebarProps> = ({
                         <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
                           <input
                             type="checkbox"
-                            checked={filters.locations?.includes(item.value)}
+                            checked={(filters.locations ?? []).includes(
+                              item.value
+                            )}
                             onChange={() =>
                               onFilterChange({
                                 ...filters,
                                 locations: toggleItem(
                                   filters.locations,
-                                  item.value,
+                                  item.value
                                 ),
                               })
                             }
@@ -860,60 +877,28 @@ const Filterbar: React.FC<SidebarProps> = ({
           )}
         </PopupPortal>
 
-        {/* Job Sectors */}
-        {/* <FilterSection
-          title="Job Sectors"
-          items={categoryList ?? []}
-          // counts={CATEGORIES.map((c) => c.count)}
-          selected={filters.categories}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              categories: toggleItem(filters.categories, value),
-            })
-          }
-        />
-
-        {categoryList?.length > 5 && (
-          <button className="mt-6 w-full py-2 bg-amber-400 hover:bg-amber-500 text-slate-900 font-semibold rounded-lg text-sm transition-colors mb-4">
-            Show More
-          </button>
-        )} */}
-
-        {/* Job Type */}
-        {/* <FilterSection
-          title="Job Type"
-          items={jobTypeList ?? []}
-          selected={filters.jobTypes}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              jobTypes: toggleItem(filters.jobTypes, value),
-            })
-          }
-        /> */}
-
-        <div ref={collegeSectionRef}>
-          <FilterSection
-            title="Choose Colleges"
-            items={collegeList?.slice(0, 5) ?? []}
-            selected={filters.colleges}
-            onToggle={(value) =>
-              onFilterChange({
-                ...filters,
-                colleges: toggleItem(filters.colleges, value),
-              })
-            }
-          />
-        </div>
-
-        {collegeList && collegeList.length > 5 && (
+        {categoryList?.length > 0 && (
+          <div ref={categorySectionRef}>
+            <FilterSection
+              title="Select Job Category"
+              items={categoryList?.slice(0, 5) ?? []}
+              selected={filters.categories}
+              onToggle={(value) =>
+                onFilterChange({
+                  ...filters,
+                  categories: toggleItem(filters.categories, value),
+                })
+              }
+            />
+          </div>
+        )}
+        {categoryList && categoryList.length > 5 && (
           <div className="relative mt-2">
             <button
-              ref={collegeButtonRef}
+              ref={categoryButtonRef}
               onClick={() => {
-                setShowAllColleges(true);
-                setTimeout(calculateCollegePopupPos, 0);
+                setShowAllCategories(true);
+                setTimeout(calculateCategoryPopupPos, 0);
               }}
               className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
             >
@@ -923,21 +908,20 @@ const Filterbar: React.FC<SidebarProps> = ({
         )}
 
         <PopupPortal>
-          {showAllColleges && (
+          {showAllCategories && (
             <div
-              ref={collegePopupRef}
+              ref={categoryPopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
                 width: "clamp(300px, 90vw, 900px)",
                 height: `clamp(420px, 60vh, 420px)`,
-                left: `${collegePopupPos.left}px`,
-                top: `${collegePopupPos.top}px`,
+                left: `${categoryPopupPos.left}px`,
+                top: `${categoryPopupPos.top}px`,
                 maxHeight: "80vh",
                 overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
-                {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
                 <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
                   <div className="relative mb-3 w-full md:w-auto">
                     <Search
@@ -946,21 +930,21 @@ const Filterbar: React.FC<SidebarProps> = ({
                     />
                     <input
                       type="text"
-                      placeholder="Search colleges..."
-                      value={collegeSearchQuery}
-                      onChange={(e) => setCollegeSearchQuery(e.target.value)}
+                      placeholder="Search categories..."
+                      value={categorySearchQuery}
+                      onChange={(e) => setCategorySearchQuery(e.target.value)}
                       className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
                     {alphabets.map((char) => {
-                      const isAvailable = collegeAvailableAlphabets.has(char);
+                      const isAvailable = categoryAvailableAlphabets.has(char);
 
                       return (
                         <span
                           key={char}
                           onClick={() => {
-                            if (!isAvailable) return; // ❌ prevent click
+                            if (!isAvailable) return;
 
                             setSelectedAlphabet(char);
 
@@ -992,7 +976,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                 </div>
                 <button
                   onClick={() => {
-                    setShowAllColleges(false);
+                    setShowAllCategories(false);
                     setSelectedAlphabet(null);
                   }}
                   className="text-slate-400 hover:text-slate-600"
@@ -1006,11 +990,13 @@ const Filterbar: React.FC<SidebarProps> = ({
                 className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
               >
                 <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
-                  {collegefilteredList.map((item, index) => {
+                  {categoryFilteredList.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
                       index > 0
-                        ? collegefilteredList[index - 1]?.label[0].toUpperCase()
+                        ? categoryFilteredList[
+                            index - 1
+                          ]?.label[0].toUpperCase()
                         : null;
 
                     const showHeader = currentLetter !== prevLetter;
@@ -1031,13 +1017,15 @@ const Filterbar: React.FC<SidebarProps> = ({
                         <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
                           <input
                             type="checkbox"
-                            checked={filters.colleges.includes(item.value)}
+                            checked={(filters.categories ?? []).includes(
+                              item.value
+                            )}
                             onChange={() =>
                               onFilterChange({
                                 ...filters,
-                                colleges: toggleItem(
-                                  filters.colleges,
-                                  item.value,
+                                categories: toggleItem(
+                                  filters.categories,
+                                  item.value
                                 ),
                               })
                             }
@@ -1051,9 +1039,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                     );
                   })}
 
-                  {collegefilteredList.length === 0 && (
+                  {categoryFilteredList.length === 0 && (
                     <p className="text-sm text-slate-400 text-center py-4">
-                      No department found
+                      No categories found
                     </p>
                   )}
                 </div>
@@ -1061,19 +1049,22 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
-        <div ref={deptSectionRef}>
-          <FilterSection
-            title="Choose Department"
-            items={deptList?.slice(0, 5) ?? []}
-            selected={filters.department}
-            onToggle={(value) =>
-              onFilterChange({
-                ...filters,
-                department: toggleItem(filters.department, value),
-              })
-            }
-          />
-        </div>
+
+        {deptList?.length > 0 && (
+          <div ref={deptSectionRef}>
+            <FilterSection
+              title="Choose Department"
+              items={deptList?.slice(0, 5) ?? []}
+              selected={filters.department}
+              onToggle={(value) =>
+                onFilterChange({
+                  ...filters,
+                  department: toggleItem(filters.department, value),
+                })
+              }
+            />
+          </div>
+        )}
         {deptList && deptList.length > 5 && (
           <div className="relative mt-2">
             <button
@@ -1199,13 +1190,15 @@ const Filterbar: React.FC<SidebarProps> = ({
                         <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
                           <input
                             type="checkbox"
-                            checked={filters.department.includes(item.value)}
+                            checked={(filters.department ?? []).includes(
+                              item.value
+                            )}
                             onChange={() =>
                               onFilterChange({
                                 ...filters,
                                 department: toggleItem(
                                   filters.department,
-                                  item.value,
+                                  item.value
                                 ),
                               })
                             }
@@ -1230,194 +1223,21 @@ const Filterbar: React.FC<SidebarProps> = ({
           )}
         </PopupPortal>
 
-        {/* <FilterSection
-          title="Experience Level"
-          items={experienceList ?? []}
-          // counts={CATEGORIES.map((c) => c.count)}
-           selected={filters.experienceLevels}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              experienceLevels: toggleItem(filters.experienceLevels, value),
-            })
-          }
-        /> */}
-
-        <div>
-          <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
-            Experience (Years)
-          </h3>
-          <div className="flex items-center gap-2">
-            <input
-              type="number"
-              min="0"
-              placeholder="Min"
-              value={minExp}
-              onChange={(e) => setMinExp(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-            />
-            <span className="text-slate-400">-</span>
-            <input
-              type="number"
-              min="0"
-              placeholder="Max"
-              value={maxExp}
-              onChange={(e) => setMaxExp(e.target.value)}
-              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-            />
-            <button
-              onClick={() => {
-                const minVal = minExp === "" ? 0 : parseInt(minExp);
-                const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
-
-                const selectedLevels = experienceList
-                  ?.filter((item) => {
-                    const parsed = parseExperienceLabel(item.label);
-                    if (!parsed) return false;
-                    // Check for containment: (StartA >= StartB) and (EndA <= EndB)
-                    return parsed.min >= minVal && parsed.max <= maxVal;
-                  })
-                  .map((item) => item.value);
-
+        {jobRoleList?.length > 0 && (
+          <div ref={jobRoleSectionRef}>
+            <FilterSection
+              title="Select Job role"
+              items={jobRoleList?.slice(0, 5) ?? []}
+              selected={filters.jobRole}
+              onToggle={(value) =>
                 onFilterChange({
                   ...filters,
-                  minExperience: minExp,
-                  maxExperience: maxExp,
-                  experienceLevels: selectedLevels || [],
-                });
-              }}
-              className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
-            >
-              <ArrowRight size={16} />
-            </button>
+                  jobRole: toggleItem(filters.jobRole, value),
+                })
+              }
+            />
           </div>
-        </div>
-
-        {/* 
-        <FilterSection
-          title="Experience Level"
-          items={experienceList?.slice(0, 5) ?? []}
-          selected={filters.experienceLevels}
-          onToggle={(value) =>
-            onFilterChange({
-              ...filters,
-              experienceLevels: toggleItem(filters.experienceLevels, value),
-            })
-          }
-        />
-       
-        {experienceList && experienceList.length > 5 && (
-          <div className="relative mt-3">
-            <button
-              onClick={() => setShowAllExperience(true)}
-              className="text-sm font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3 py-2 ps-7"
-            >
-              View more
-            </button>
-
-            {showAllExperience && (
-              <div
-                ref={experiencePopupRef}
-                className="absolute left-[5%] top-[-200px]  mt-2 w-72 bg-white border border-slate-200 shadow-xl rounded-lg z-50 p-4 max-h-[400px] flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-3">
-                  <h4 className="font-semibold text-[#000]">
-                    All Experience Levels
-                  </h4>
-                  <button
-                    onClick={() => setShowAllExperience(false)}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
-
-                <div className="relative mb-3">
-                  <Search
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                    size={16}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search experience..."
-                    value={experienceSearchQuery}
-                    onChange={(e) => setExperienceSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
-                  />
-                </div>
-
-                <div className="overflow-y-auto flex-1 space-y-2 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                  {experienceList
-                    ?.filter((c) =>
-                      c.label
-                        .toLowerCase()
-                        .includes(experienceSearchQuery.toLowerCase()),
-                    )
-                    .map((item) => (
-                      <label
-                        key={item.value}
-                        className="flex items-center gap-3 cursor-pointer hover:bg-slate-50 p-1 rounded"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={filters.experienceLevels.includes(
-                            item.value,
-                          )}
-                          onChange={() =>
-                            onFilterChange({
-                              ...filters,
-                              experienceLevels: toggleItem(
-                                filters.experienceLevels,
-                                item.value,
-                              ),
-                            })
-                          }
-                          className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                        />
-                        <span className="text-sm text-slate-600">
-                          {item.label}
-                        </span>
-                      </label>
-                    ))}
-                  {experienceList?.filter((c) =>
-                    c.label
-                      .toLowerCase()
-                      .includes(experienceSearchQuery.toLowerCase()),
-                  ).length === 0 && (
-                    <p className="text-sm text-slate-400 text-center py-4">
-                      No experience levels found
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )} */}
-
-        <div className="pt-[15px]">
-          <PriceRangeSlider
-            title="Salary Range"
-            min={0}
-            max={maxSalary}
-            value={salarySliderRange}
-            onChange={handleSalarySliderChange}
-            step={100000}
-          />
-        </div>
-
-        <div ref={jobRoleSectionRef}>
-          <FilterSection
-            title="Select Job role"
-            items={jobRoleList?.slice(0, 5) ?? []}
-            selected={filters.jobRole}
-            onToggle={(value) =>
-              onFilterChange({
-                ...filters,
-                jobRole: toggleItem(filters.jobRole, value),
-              })
-            }
-          />
-        </div>
+        )}
 
         {jobRoleList && jobRoleList.length > 5 && (
           <div className="relative mt-2">
@@ -1542,13 +1362,15 @@ const Filterbar: React.FC<SidebarProps> = ({
                         <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
                           <input
                             type="checkbox"
-                            checked={filters.jobRole.includes(item.value)}
+                            checked={(filters.jobRole ?? []).includes(
+                              item.value
+                            )}
                             onChange={() =>
                               onFilterChange({
                                 ...filters,
                                 jobRole: toggleItem(
                                   filters.jobRole,
-                                  item.value,
+                                  item.value
                                 ),
                               })
                             }
@@ -1572,28 +1394,30 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
+       
 
-        <div ref={categorySectionRef}>
-          <FilterSection
-            title="Select Job Category"
-            items={categoryList?.slice(0, 5) ?? []}
-            selected={filters.categories}
-            onToggle={(value) =>
-              onFilterChange({
-                ...filters,
-                categories: toggleItem(filters.categories, value),
-              })
-            }
-          />
-        </div>
-
-        {categoryList && categoryList.length > 5 && (
+        {collegeList?.length > 0 && (
+          <div ref={collegeSectionRef}>
+            <FilterSection
+              title="Choose Colleges"
+              items={collegeList?.slice(0, 5) ?? []}
+              selected={filters.colleges}
+              onToggle={(value) =>
+                onFilterChange({
+                  ...filters,
+                  colleges: toggleItem(filters.colleges, value),
+                })
+              }
+            />
+          </div>
+        )}
+        {collegeList && collegeList.length > 5 && (
           <div className="relative mt-2">
             <button
-              ref={categoryButtonRef}
+              ref={collegeButtonRef}
               onClick={() => {
-                setShowAllCategories(true);
-                setTimeout(calculateCategoryPopupPos, 0);
+                setShowAllColleges(true);
+                setTimeout(calculateCollegePopupPos, 0);
               }}
               className="text-xs font-medium flex items-center  gap-1 text-[#1E3786] w-full rounded-full px-3  ps-7"
             >
@@ -1603,20 +1427,21 @@ const Filterbar: React.FC<SidebarProps> = ({
         )}
 
         <PopupPortal>
-          {showAllCategories && (
+          {showAllColleges && (
             <div
-              ref={categoryPopupRef}
+              ref={collegePopupRef}
               className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
               style={{
                 width: "clamp(300px, 90vw, 900px)",
                 height: `clamp(420px, 60vh, 420px)`,
-                left: `${categoryPopupPos.left}px`,
-                top: `${categoryPopupPos.top}px`,
+                left: `${collegePopupPos.left}px`,
+                top: `${collegePopupPos.top}px`,
                 maxHeight: "80vh",
                 overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
+                {/* <h4 className="font-semibold text-[#000]">All Colleges</h4> */}
                 <div className="flex flex-row flex-wrap md:flex-nowrap  items-center gap-4">
                   <div className="relative mb-3 w-full md:w-auto">
                     <Search
@@ -1625,21 +1450,21 @@ const Filterbar: React.FC<SidebarProps> = ({
                     />
                     <input
                       type="text"
-                      placeholder="Search categories..."
-                      value={categorySearchQuery}
-                      onChange={(e) => setCategorySearchQuery(e.target.value)}
+                      placeholder="Search colleges..."
+                      value={collegeSearchQuery}
+                      onChange={(e) => setCollegeSearchQuery(e.target.value)}
                       className=" pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
                     />
                   </div>
                   <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
                     {alphabets.map((char) => {
-                      const isAvailable = categoryAvailableAlphabets.has(char);
+                      const isAvailable = collegeAvailableAlphabets.has(char);
 
                       return (
                         <span
                           key={char}
                           onClick={() => {
-                            if (!isAvailable) return;
+                            if (!isAvailable) return; // ❌ prevent click
 
                             setSelectedAlphabet(char);
 
@@ -1671,7 +1496,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                 </div>
                 <button
                   onClick={() => {
-                    setShowAllCategories(false);
+                    setShowAllColleges(false);
                     setSelectedAlphabet(null);
                   }}
                   className="text-slate-400 hover:text-slate-600"
@@ -1685,11 +1510,11 @@ const Filterbar: React.FC<SidebarProps> = ({
                 className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
               >
                 <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
-                  {categoryFilteredList.map((item, index) => {
+                  {collegefilteredList?.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
                       index > 0
-                        ? categoryFilteredList[index - 1]?.label[0].toUpperCase()
+                        ? collegefilteredList[index - 1]?.label[0].toUpperCase()
                         : null;
 
                     const showHeader = currentLetter !== prevLetter;
@@ -1710,13 +1535,15 @@ const Filterbar: React.FC<SidebarProps> = ({
                         <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
                           <input
                             type="checkbox"
-                            checked={filters.categories.includes(item.value)}
+                            checked={(filters.colleges ?? []).includes(
+                              item.value
+                            )}
                             onChange={() =>
                               onFilterChange({
                                 ...filters,
-                                categories: toggleItem(
-                                  filters.categories,
-                                  item.value,
+                                colleges: toggleItem(
+                                  filters.colleges,
+                                  item.value
                                 ),
                               })
                             }
@@ -1730,9 +1557,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                     );
                   })}
 
-                  {categoryFilteredList.length === 0 && (
+                  {collegefilteredList.length === 0 && (
                     <p className="text-sm text-slate-400 text-center py-4">
-                      No categories found
+                      No department found
                     </p>
                   )}
                 </div>
@@ -1740,9 +1567,88 @@ const Filterbar: React.FC<SidebarProps> = ({
             </div>
           )}
         </PopupPortal>
+       
+      
+
+        <div>
+          <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
+            Experience (Years)
+          </h3>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              min="0"
+              placeholder="Min"
+              value={minExp}
+              onChange={(e) => setMinExp(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+            />
+            <span className="text-slate-400">-</span>
+            <input
+              type="number"
+              min="0"
+              placeholder="Max"
+              value={maxExp}
+              onChange={(e) => setMaxExp(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+            />
+            <button
+              onClick={() => {
+                const minVal = minExp === "" ? 0 : parseInt(minExp);
+                const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
+
+                const selectedLevels = experienceList
+                  ?.filter((item) => {
+                    const parsed = parseExperienceLabel(item.label);
+                    if (!parsed) return false;
+                    // Check for containment: (StartA >= StartB) and (EndA <= EndB)
+                    return parsed.min >= minVal && parsed.max <= maxVal;
+                  })
+                  .map((item) => item.value);
+
+                onFilterChange({
+                  ...filters,
+                  minExperience: minExp,
+                  maxExperience: maxExp,
+                  experienceLevels: selectedLevels || [],
+                });
+              }}
+              className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
+            >
+              <ArrowRight size={16} />
+            </button>
+          </div>
+
+          <div
+            className="flex justify-end text-sm underline cursor-pointer mt-1"
+            onClick={() => {
+              onFilterChange({
+                ...filters,
+                minExperience: "",
+                maxExperience: "",
+                experienceLevels: ["Open to all experience levels"],
+              });
+              setMinExp("");
+              setMaxExp("");
+            }}
+          >
+            Open to all experience levels
+          </div>
+        </div>
+
+        {/* <div className="pt-[15px]">
+          <PriceRangeSlider
+            title="Salary Range"
+            min={0}
+            max={maxSalary}
+            value={salarySliderRange}
+            onChange={handleSalarySliderChange}
+            step={100000}
+          />
+        </div> */}
 
         {/* Experience Level */}
-        <FilterSection
+        {/* <FilterSection
           title="Date Posted"
           items={datePostedList ?? []}
           selected={filters.datePosted}
@@ -1752,34 +1658,7 @@ const Filterbar: React.FC<SidebarProps> = ({
               datePosted: toggleItem(filters.datePosted, value),
             })
           }
-        />
-
-        {/* Tags */}
-        {/* <div>
-          <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
-            Tags
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            {tagsList?.map((tag, index) => (
-              <button
-                key={index} // ✅ unique
-                onClick={() =>
-                  onFilterChange({
-                    ...filters,
-                    tags: toggleItem(filters.tags, tag),
-                  })
-                }
-                className={`px-3 py-1 rounded-full text-md transition-all ${
-                  filters.tags.includes(tag)
-                    ? "bg-amber-400 text-slate-900 font-medium"
-                    : "bg-amber-50 text-amber-600 hover:bg-amber-100"
-                }`}
-              >
-                {tag?.label}
-              </button>
-            ))}
-          </div>
-        </div> */}
+        /> */}
       </div>
     </aside>
   );
