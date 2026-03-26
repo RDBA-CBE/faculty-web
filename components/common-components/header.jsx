@@ -1057,19 +1057,19 @@ const Header = () => {
           setState({ errors: {}, successRegistraion: false });
         }}
         title="Job Application Success"
-        width="750px"
+        width="auto"
         hideHeader={true}
         renderComponent={() => (
-          <div className="relative min-h-[500px] bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-12 overflow-hidden">
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
            
 
             
 
-            <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
+            <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
               Registration Successfull
             </h2>
 
-            <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
+            <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
                     Please Check Your Email Inbox and verify your email address to continue
             </p>
 
