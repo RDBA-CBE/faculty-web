@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card";
 import { Loader, CheckCircle } from "lucide-react";
 import Models from "@/imports/models.import";
-import { Failure, Success } from "./toast";
+import { Failure, InfinitySuccess } from "./toast";
 
 const VerifyEmailForm = () => {
   const router = useRouter();
@@ -34,11 +34,8 @@ const VerifyEmailForm = () => {
       // If backend only needs token
       const res: any = await Models.auth.verify_email(token);
 
-      Success(res?.message || "Email verified successfully.");
       setIsVerified(true);
-      setTimeout(() => {
-        handleLogin();
-      }, 2000); // Delay for 2 seconds to allow the success message to be seen
+      InfinitySuccess(res?.message || "Your email has been successfully verified.", handleLogin);
 
     } catch (error: any) {
       console.log("Verification error:", error);
@@ -49,8 +46,10 @@ const VerifyEmailForm = () => {
   };
 
   const handleLogin = () => {
-    window.dispatchEvent(new CustomEvent("openLoginModal"));
     router.push("/");
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("openLoginModal"));
+    }, 300);
   };
 
   return (

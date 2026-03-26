@@ -209,6 +209,11 @@ const Header = () => {
       setState({ token: res.access, errors: {}, isOpenLogin: false });
       window.dispatchEvent(new CustomEvent("loginSuccess"));
       Success("Login Successfully!");
+
+      if (sessionStorage.getItem("from_login_btn") === "true") {
+        sessionStorage.removeItem("from_login_btn");
+        router.push("/profile");
+      }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -363,7 +368,10 @@ const Header = () => {
               ) : (
                 <div className="hidden lg:flex items-center space-x-3">
                   <Button
-                    onClick={() => setState({ isOpenLogin: true })}
+                    onClick={() => {
+                      sessionStorage.setItem("from_login_btn", "true");
+                      setState({ isOpenLogin: true });
+                    }}
                     variant="ghost"
                     className="text-black text-sm font-bold hover:text-[#F2B31D] transition-colors"
                   >
@@ -423,6 +431,7 @@ const Header = () => {
                       <div className="flex flex-col space-y-3 pt-4 border-t">
                         <Button
                           onClick={() => {
+                            sessionStorage.setItem("from_login_btn", "true");
                             setState({ isOpenLogin: true });
                             setOpen(false);
                           }}

@@ -145,6 +145,24 @@ export default function NaukriProfilePage() {
   }, [searchParams]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login to access your profile.");
+      router.replace("/");
+      return;
+    }
+
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token" && !e.newValue) {
+        router.replace("/");
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  useEffect(() => {
     experienceList();
     locationList(1);
     collegeList(1);
@@ -571,19 +589,39 @@ export default function NaukriProfilePage() {
     }
   };
 
-  // const downloadResume = () => {
-  //   if (state.userDetail?.resume_url) {
-  //     const link = document.createElement("a");
-  //     link.href = state.userDetail.resume_url;
-  //     const filename = getFileNameFromUrl(state.userDetail.resume_url);
-  //     link.setAttribute("download", filename);
-  //     document.body.appendChild(link);
-  //     link.click();
-  //     document.body.removeChild(link);
-  //   } else {
-  //     Failure("No resume available to download.");
-  //   }
-  // };
+  const DirectdownloadResume = async () => {
+  try {
+    const url = state.userDetail?.resume_url;
+
+    if (!url) {
+      Failure("No resume available to download.");
+      return;
+    }
+
+    const response = await fetch(url, {
+      mode: "cors",
+    });
+
+    const blob = await response.blob();
+
+    const blobUrl = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = blobUrl;
+
+    const filename = getFileNameFromUrl(url) || "resume";
+    link.setAttribute("download", filename);
+
+    document.body.appendChild(link);
+    link.click();
+
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error("Download error:", error);
+    Failure("Failed to download resume.");
+  }
+};
 
   const downloadResume = (e) => {
     e.preventDefault(); // prevent same tab navigation
@@ -1518,7 +1556,7 @@ export default function NaukriProfilePage() {
                         {(tab === "My Applications" && state.appliedCount) ||
                         (tab === "Saved Jobs" && state.savedCount) ||
                         (tab === "HR Requests" &&
-                          state.userDetail?.interesteds?.length) ? (
+                          state.userDetail?.interesteds?.filter((invite) => !invite?.is_response)?.length) ? (
                           <span
                             className={`text-xs font-semibold px-2 py-[2px] rounded-full ${
                               state.activeTab === tab
@@ -1530,7 +1568,7 @@ export default function NaukriProfilePage() {
                               ? state.appliedCount
                               : tab === "Saved Jobs"
                                 ? state.savedCount
-                                : state.userDetail?.interesteds?.length}
+                                : state.userDetail?.interesteds?.filter((invite) => !invite?.is_response)?.length}
                           </span>
                         ) : null}
                       </button>
@@ -1760,7 +1798,7 @@ export default function NaukriProfilePage() {
                                               <div className="">
                                                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
                                                   <span className="flex items-center gap-1">
-                                                    <div className="w-2 h-2 bg-[#1E3786] rounded-full"></div>
+                                                    <div className="w-2 h-2 bg-[#1E3786] rounded-md rounded-full"></div>
                                                     {state?.userDetail
                                                       ?.resume_url
                                                       ? "Uploaded"
@@ -1785,8 +1823,8 @@ export default function NaukriProfilePage() {
 
                                                     <button
                                                      
-                                                      className=" border-[#1E3786]  px-1 py-1"
-                                                      onClick={downloadResume}
+                                                      className="border border-[#1E3786] rounded-md px-1 py-1"
+                                                      onClick={DirectdownloadResume}
                                                       title="Download Resume"
                                                     >
                                                       <Download
@@ -1799,7 +1837,7 @@ export default function NaukriProfilePage() {
 
                                                       onClick={deleteResume}
                                                      
-                                                      className="hover:bg-red-50 border-red-500 group/btn px-1 py-1"
+                                                      className="hover:bg-red-50 border rounded-md border-red-500 group/btn px-1 py-1"
                                                       title="Delete Resume"
                                                     >
                                                       <Trash
@@ -1812,7 +1850,7 @@ export default function NaukriProfilePage() {
                                                 ) : (
                                                   <button
                                                    
-                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
+                                                    className=" border border-[#1E3786] rounded-md group/btn px-1 py-1"
                                                     title="Upload Resume"
                                                     onClick={() =>
                                                       setState({
@@ -4675,7 +4713,8 @@ export default function NaukriProfilePage() {
                       <div className="space-y-2 pt-1">
                         <Card className="!rounded-none bg-clr2 border shadow-none">
                           <CardContent className="px-3 py-6">
-                            <div className="flex items-center gap-4 mb-6">
+                            <div className="flex flex-wrap md:flex-nowrap md:justify-between">
+                               <div className="flex items-center gap-4 mb-6">
                               <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
                                 <GraduationCap className="w-6 h-6 text-white transform " />
                               </div>
@@ -4689,6 +4728,18 @@ export default function NaukriProfilePage() {
                                 </p>
                               </div>
                             </div>
+
+                            <div className=" flex justify-end">
+                              <Button
+                                onClick={() => menusUpdate("qualification")}
+                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Save Qualifications
+                              </Button>
+                            </div>
+                            </div>
+                           
 
                             <div className="grid grid-cols-1 md:grid-cols-2 !gap-3">
                               {[
@@ -4770,15 +4821,7 @@ export default function NaukriProfilePage() {
                               ))}
                             </div>
 
-                            <div className="mt-8 flex justify-end">
-                              <Button
-                                onClick={() => menusUpdate("qualification")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Save Qualifications
-                              </Button>
-                            </div>
+                            
                           </CardContent>
                         </Card>
                       </div>
@@ -4786,12 +4829,13 @@ export default function NaukriProfilePage() {
                       <div className="space-y-4 pt-1">
                         <Card className="!rounded-none bg-clr2 border shadow-none">
                           <CardContent className="py-6 px-3">
-                            <div className="flex items-center gap-4 mb-6">
+                            <div className="flex flex-wrap md:flex-nowrap md:justify-between">
+                              <div className="flex items-center gap-4 mb-6">
                               <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
                                 <Briefcase className="w-6 h-6 text-white transform " />
                               </div>
                               <div>
-                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent  ">
                                   Job Preferences
                                 </h3>
                                 <p className="text-sm text-gray-500">
@@ -4799,6 +4843,18 @@ export default function NaukriProfilePage() {
                                 </p>
                               </div>
                             </div>
+
+                            <div className="flex ">
+                              <Button
+                                onClick={() => menusUpdate("pref")}
+                                className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                              >
+                                <CheckCircle className="w-4 h-4 mr-2" />
+                                Update Preferences
+                              </Button>
+                            </div>
+                            </div>
+                            
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
                               {[
@@ -4916,7 +4972,7 @@ export default function NaukriProfilePage() {
                               </div>
                             </div>
 
-                            <div className="flex ">
+                            {/* <div className="flex ">
                               <Button
                                 onClick={() => menusUpdate("pref")}
                                 className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -4924,7 +4980,7 @@ export default function NaukriProfilePage() {
                                 <CheckCircle className="w-4 h-4 mr-2" />
                                 Update Preferences
                               </Button>
-                            </div>
+                            </div> */}
                           </CardContent>
                         </Card>
                       </div>
