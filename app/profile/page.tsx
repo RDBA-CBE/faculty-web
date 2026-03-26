@@ -1497,12 +1497,15 @@ export default function NaukriProfilePage() {
                         onClick={() => setState({ activeTab: tab })}
                         className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
                           state.activeTab === tab
-                            ? "bg-[#1e3786] text-white"
-                            : "text-white hover:text-[#1e3786]"
+                            ? "bg-[#1e3786] !text-[#fff]"
+                            : "text-gray-800 hover:text-[#1e3786]"
                         }`}
                       >
                         {/* Tab Label */}
-                        <span>
+                        <span className={`${state.activeTab === tab
+                            ? "bg-[#1e3786] !text-[#fff]"
+                            : "text-gray-800 hover:text-[#1e3786]"
+                        }`}>
                           {tab === "My Applications"
                             ? "My Applications"
                             : tab === "Saved Jobs"
@@ -1571,7 +1574,7 @@ export default function NaukriProfilePage() {
                                         className={`font-medium ${
                                           state.activeTab === item.id
                                             ? "text-white" // This should still be activeTab for the main tab
-                                            : "text-white"
+                                            : "text-[#000]"
                                         }`}
                                       >
                                         {item.label}
