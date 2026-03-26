@@ -36,10 +36,13 @@ const VerifyEmailForm = () => {
 
       Success(res?.message || "Email verified successfully.");
       setIsVerified(true);
+      setTimeout(() => {
+        handleLogin();
+      }, 2000); // Delay for 2 seconds to allow the success message to be seen
 
     } catch (error: any) {
-      console.error("Verification error:", error);
-      Failure(error?.detail || "Verification failed.");
+      console.log("Verification error:", error);
+      Failure(error?.error || "Verification failed.");
     } finally {
       setLoading(false);
     }
@@ -68,14 +71,7 @@ const VerifyEmailForm = () => {
         </CardHeader>
 
         <CardContent className="p-0">
-          {isVerified ? (
-            <Button
-              onClick={handleLogin}
-              className="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold"
-            >
-              Login to Continue
-            </Button>
-          ) : (
+          {!isVerified && (
             <Button
               onClick={handleVerify}
               className="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold"

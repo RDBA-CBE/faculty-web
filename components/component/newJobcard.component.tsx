@@ -15,6 +15,8 @@ import {
   IndianRupee,
   BookmarkCheck,
   Building2,
+  Star,
+  StarIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -105,8 +107,9 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       onClick={onClick}
     >
        {isProfile && (
-        <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
+         <div className="w-fit bg-[#1E3786] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex gap-2">
           {/* • Posted{" "} */}
+          <StarIcon size={14}/>
           {capitalizeFLetter(job?.application_status)}
         </div>
       )}

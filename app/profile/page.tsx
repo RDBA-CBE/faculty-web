@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Edit3,
   MapPin,
@@ -68,8 +68,8 @@ import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 
 export default function NaukriProfilePage() {
-  const [activeTab, setActiveTab] = useState("resume");
   const [isManualScroll, setIsManualScroll] = useState(false);
+  const [activeTab, setActiveTab] = useState("resume");
 
   const [expandedDesc, setExpandedDesc] = useState({});
   const [expandedProjectDesc, setExpandedProjectDesc] = useState({});
@@ -82,6 +82,7 @@ export default function NaukriProfilePage() {
   const footerRef = useRef(null);
   const wrapperRef = useRef(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [state, setState] = useSetState({
     // Profile Data
@@ -120,8 +121,9 @@ export default function NaukriProfilePage() {
     newsletter: false,
     funded: false,
     loading: true,
-    activeTab: "Profile",
 
+    appliedCount: 0,
+    savedCount: 0,
     preferred_colleges: [],
     preferred_locations: [],
     phd_completed: false,
@@ -130,7 +132,17 @@ export default function NaukriProfilePage() {
     slet_cleared: false,
     active_job_seeker: false,
     reveal_name: false,
+    activeTab: "Profile", // Default main tab
+    activeProfileSubSection: "resume", // Default sub-section within Profile tab
   });
+
+  // Use a separate useEffect to initialize activeTab from URL on component mount
+  useEffect(() => {
+    const tabFromUrl = searchParams.get("tab");
+    if (tabFromUrl && PROFILE_TABS.includes(tabFromUrl)) {
+      setState({ activeTab: tabFromUrl });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     experienceList();
@@ -150,7 +162,7 @@ export default function NaukriProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (state.activeTab == "Applications") {
+    if (state.activeTab == "My Applications") {
       appliedJobList();
     } else if (state.activeTab == "Saved Jobs") {
       getSavedJobs();
@@ -179,12 +191,16 @@ export default function NaukriProfilePage() {
       (entries) => {
         if (isManualScroll) return;
 
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id.replace("-section", "");
-            setActiveTab(id);
-          }
-        });
+        // Only update sub-section if the main tab is "Profile"
+        if (state.activeTab === "Profile") {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const id = entry.target.id.replace("-section", "");
+              if (state.activeProfileSubSection !== id)
+                setState({ activeProfileSubSection: id });
+            }
+          });
+        }
       },
       {
         rootMargin: "-30% 0px -60% 0px",
@@ -198,7 +214,7 @@ export default function NaukriProfilePage() {
     });
 
     return () => observer.disconnect();
-  }, [isManualScroll]);
+  }, [isManualScroll, state.activeTab, state.activeProfileSubSection]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -206,6 +222,10 @@ export default function NaukriProfilePage() {
 
       const scrollPosition = window.scrollY + 120;
 
+      // Only update sub-section if the main tab is "Profile"
+      if (state.activeTab !== "Profile") return;
+
+      // This logic is for updating the active sub-section in the quick links
       links.forEach((link) => {
         const section = document.getElementById(link.section);
 
@@ -217,7 +237,9 @@ export default function NaukriProfilePage() {
             scrollPosition >= offsetTop &&
             scrollPosition < offsetTop + offsetHeight
           ) {
-            setActiveTab(link.id);
+            if (state.activeProfileSubSection !== link.id) {
+              setState({ activeProfileSubSection: link.id });
+            }
           }
         }
       });
@@ -338,6 +360,7 @@ export default function NaukriProfilePage() {
         loading: false, // For initial load
         jobListLoading: false,
         isFetchingMore: false,
+        appliedCount: res?.count || 0,
         count: res?.count,
         jobList: append
           ? [...state.jobList, ...(res?.results || [])]
@@ -348,7 +371,7 @@ export default function NaukriProfilePage() {
       });
     } catch (error) {
       setState({ loading: false, jobListLoading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
   };
 
@@ -362,13 +385,14 @@ export default function NaukriProfilePage() {
       setState({
         loading: false,
         savedJobList: res?.results || [],
+        savedCount: res?.count || 0,
         count: res?.count || 0,
         next: res?.next ?? null,
         prev: res?.previous ?? null,
         page,
       });
     } catch (error) {
-      console.error("Error fetching saved jobs:", error);
+      // console.error("Error fetching saved jobs:", error);
       setState({ loading: false });
     }
   };
@@ -1111,8 +1135,8 @@ export default function NaukriProfilePage() {
   };
 
   const scrollToSection = (sectionId: string) => {
-    const tabId = sectionId.replace("-section", "");
-    setActiveTab(tabId);
+    const subSectionId = sectionId.replace("-section", "");
+    setState({ activeProfileSubSection: subSectionId });
     setIsManualScroll(true);
 
     const element = document.getElementById(sectionId);
@@ -1367,10 +1391,10 @@ export default function NaukriProfilePage() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="p-1.5 hover:bg-[#1E3786]/10 rounded-full"
+                                className="p-1 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
-                                <Edit className="w-4 h-4 text-[#f2b31d]" />
+                                <Edit size={14} className=" text-[#fff] " />
                               </Button>
                             </div>
                             {state?.userDetail?.short_desc && (
@@ -1471,14 +1495,42 @@ export default function NaukriProfilePage() {
                       <button
                         key={tab}
                         onClick={() => setState({ activeTab: tab })}
-                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 ${
+                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
                           state.activeTab === tab
-                            ? "bg-[#1e3786] text-white "
+                            ? "bg-[#1e3786] text-white"
                             : "text-[#000] hover:text-[#1e3786]"
                         }`}
-                        // style={{height:"fit"}}
                       >
-                        {tab}
+                        {/* Tab Label */}
+                        <span>
+                          {tab === "My Applications"
+                            ? "My Applications"
+                            : tab === "Saved Jobs"
+                              ? "Saved Jobs"
+                              : tab === "HR Requests"
+                                ? "HR Requests"
+                                : tab}
+                        </span>
+
+                        {/* Count Badge */}
+                        {(tab === "My Applications" && state.appliedCount) ||
+                        (tab === "Saved Jobs" && state.savedCount) ||
+                        (tab === "HR Requests" &&
+                          state.userDetail?.interesteds?.length) ? (
+                          <span
+                            className={`text-xs font-semibold px-2 py-[2px] rounded-full ${
+                              state.activeTab === tab
+                                ? "bg-white text-[#1e3786]"
+                                : "bg-[#1e3786] text-white"
+                            }`}
+                          >
+                            {tab === "My Applications"
+                              ? state.appliedCount
+                              : tab === "Saved Jobs"
+                                ? state.savedCount
+                                : state.userDetail?.interesteds?.length}
+                          </span>
+                        ) : null}
                       </button>
                     ))}
                   </div>
@@ -1508,17 +1560,17 @@ export default function NaukriProfilePage() {
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
-                                        ${
-                                          activeTab === item.id
-                                            ? "bg-[#1E3786] text-white"
-                                            : " hover:bg-white/80"
-                                        }`}
+                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all ${
+                                        state.activeProfileSubSection ===
+                                        item.id
+                                          ? "bg-[#1E3786] text-white"
+                                          : " hover:bg-white/80"
+                                      }`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          activeTab === item.id
-                                            ? "text-white"
+                                          state.activeTab === item.id
+                                            ? "text-white" // This should still be activeTab for the main tab
                                             : "text-gray-700"
                                         }`}
                                       >
@@ -1701,8 +1753,8 @@ export default function NaukriProfilePage() {
 
                                           {/* Resume Details */}
                                           <div className="flex-1 min-w-0">
-                                            <div className="flex items-start justify-between md:mb-3">
-                                              <div className="flex-1">
+                                            <div className="flex items-start justify-start !gap-5 md:mb-3">
+                                              <div className="">
                                                 <div className="flex items-center gap-4 text-sm text-gray-600 mb-1">
                                                   <span className="flex items-center gap-1">
                                                     <div className="w-2 h-2 bg-[#1E3786] rounded-full"></div>
@@ -1722,27 +1774,43 @@ export default function NaukriProfilePage() {
                                                     <Button
                                                       variant="outline"
                                                       size="sm"
-                                                      className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
+                                                      className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
+                                                      onClick={downloadResume}
+                                                      title="View Resume"
+                                                    >
+                                                      View
+                                                    </Button>
+
+                                                    <Button
+                                                      variant="outline"
+                                                      size="sm"
+                                                      className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
                                                       onClick={downloadResume}
                                                       title="Download Resume"
                                                     >
-                                                      <Download className="w-4 h-4 text-[#1E3786]   group-hover/btn:scale-110 transition-transform" />
+                                                      <Download
+                                                        size={10}
+                                                        className="text-[#1E3786]  group-hover/btn:scale-110 transition-transform"
+                                                      />
                                                     </Button>
                                                     <Button
                                                       variant="outline"
                                                       onClick={deleteResume}
                                                       size="sm"
-                                                      className="hover:bg-red-50 border-red-200 group/btn"
+                                                      className="hover:bg-red-50 border-red-200 group/btn px-1 py-1"
                                                       title="Delete Resume"
                                                     >
-                                                      <Trash className="w-4 h-4 text-red-600 group-hover/btn:scale-110 transition-transform" />
+                                                      <Trash
+                                                        size={10}
+                                                        className=" text-red-600 group-hover/btn:scale-110 transition-transform"
+                                                      />
                                                     </Button>
                                                   </>
                                                 ) : (
                                                   <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn"
+                                                    className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
                                                     title="Upload Resume"
                                                     onClick={() =>
                                                       setState({
@@ -1750,7 +1818,10 @@ export default function NaukriProfilePage() {
                                                       })
                                                     }
                                                   >
-                                                    <PlusIcon className="w-4 h-4 text-[#1E3786] group-hover/btn:scale-110 transition-transform" />
+                                                    <PlusIcon
+                                                      size={10}
+                                                      className="text-[#1E3786] group-hover/btn:scale-110 transition-transform"
+                                                    />
                                                   </Button>
                                                 )}
                                               </div>
@@ -1937,239 +2008,6 @@ export default function NaukriProfilePage() {
                                         </div>
                                       </div>
                                     </div>
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </CardContent>
-                          </Card>
-
-                          {/* Skills Section */}
-                          <Card
-                            id="skills-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
-                          >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
-
-                            <CardContent className="relative py-4 px-2">
-                              <div
-                                className="flex items-center justify-between  cursor-pointer"
-                                onClick={() => toggleSection("skills")}
-                              >
-                                <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
-                                    <Code className="w-4 h-4 text-white transform " />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                      Skills
-                                    </h3>
-                                    <p className="text-sm text-gray-500">
-                                      Your technical expertise
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setState({
-                                        isEditingSkills: true,
-                                        skill: "",
-                                      });
-                                    }}
-                                    className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
-                                  >
-                                    <Plus className="w-4 h-4" />
-                                  </button>
-                                  {state.expandedSections.skills ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
-                                </div>
-                              </div>
-
-                              <AnimatePresence>
-                                {state.expandedSections.skills && (
-                                  <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                  >
-                                    {/* Add Skill Form */}
-                                    <AnimatePresence>
-                                      {state.isEditingSkills && (
-                                        <motion.div
-                                          initial={{
-                                            opacity: 0,
-                                            height: 0,
-                                            y: -20,
-                                          }}
-                                          animate={{
-                                            opacity: 1,
-                                            height: "auto",
-                                            y: 0,
-                                          }}
-                                          exit={{
-                                            opacity: 0,
-                                            height: 0,
-                                            y: -20,
-                                          }}
-                                          transition={{
-                                            duration: 0.3,
-                                            ease: "easeOut",
-                                          }}
-                                          className="mb-8 relative"
-                                        >
-                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80  rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
-                                            <div className="flex items-center gap-3 mb-6">
-                                              <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
-                                                <Plus className="w-4 h-4 text-white" />
-                                              </div>
-                                              <h4 className="text-xl font-bold text-gray-900">
-                                                Add New Skill
-                                              </h4>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                              <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700">
-                                                  Skill Name
-                                                </label>
-                                                <Input
-                                                  placeholder="e.g., JavaScript"
-                                                  value={state.skill || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "skill",
-                                                      e.target.value,
-                                                    )
-                                                  }
-                                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                                />
-                                              </div>
-                                              {/* <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700">
-                                                  Experience 
-                                                </label>
-                                                <Input
-                                                  placeholder="e.g., 3 years"
-                                                  value={state.skillForm.experience}
-                                                  onChange={(e) =>
-                                                    setState({
-                                                      skillForm: {
-                                                        ...state.skillForm,
-                                                        experience: e.target.value,
-                                                      },
-                                                    })
-                                                  }
-                                                  className="border-gray-200 focus:border-green-500 focus:ring-green-500"
-                                                />
-                                              </div> */}
-                                            </div>
-
-                                            <div className="flex gap-3">
-                                              <Button
-                                                onClick={addSkill}
-                                                // onClick={() => {
-                                                //   if (
-                                                //     state.userDetail?.skills?.length === 0
-                                                //   ) {
-                                                //     addSkill();
-                                                //   } else {
-                                                //     updateSkill();
-                                                //   }
-                                                // }}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                              >
-                                                <CheckCircle className="w-4 h-4 mr-2" />
-                                                Save Skill
-                                              </Button>
-                                              <Button
-                                                variant="outline"
-                                                onClick={() =>
-                                                  setState({
-                                                    isEditingSkills: false,
-                                                  })
-                                                }
-                                                className="border-gray-300 hover:bg-gray-50"
-                                              >
-                                                Cancel
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-
-                                    {/* Skills List - Chip Format */}
-                                    <div className="flex flex-wrap gap-3 pt-5">
-                                      {state?.userDetail?.skills?.map(
-                                        (skill, index) => (
-                                          <motion.div
-                                            key={skill.id}
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: index * 0.05 }}
-                                            className="group relative"
-                                          >
-                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
-                                              <span className="text-[#1E3786] font-medium text-sm">
-                                                {skill.name}
-                                              </span>
-                                              {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
-                                              {skill.experience}
-                                            </span> */}
-                                              <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
-                                                <button
-                                                  onClick={() =>
-                                                    deleteSkill(skill.id)
-                                                  }
-                                                  className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
-                                                >
-                                                  <X className="w-3 h-3  font-semibold" />
-                                                </button>
-                                              </div>
-                                            </div>
-                                          </motion.div>
-                                        ),
-                                      )}
-                                    </div>
-
-                                    {/* Empty State */}
-                                    {(state.userDetail?.skills?.length === 0 ||
-                                      !state.userDetail?.skills?.length) && (
-                                      <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="text-center py-8"
-                                      >
-                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                          <Code className="w-8 h-8 text-[#1E3786]/60" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                                          No Skills Added
-                                        </h4>
-                                        <p className="text-gray-500 mb-4">
-                                          Add your technical skills as chips
-                                        </p>
-                                        <Button
-                                          onClick={() =>
-                                            setState({
-                                              isEditingSkills: true,
-                                              skill: "",
-                                            })
-                                          }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                        >
-                                          <Plus className="w-4 h-4 mr-2" />
-                                          Add Skills
-                                        </Button>
-                                      </motion.div>
-                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -4160,6 +3998,239 @@ export default function NaukriProfilePage() {
                             </CardContent>
                           </Card>
 
+                          {/* Skills Section */}
+                          <Card
+                            id="skills-section"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                          >
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+
+                            <CardContent className="relative py-4 px-2">
+                              <div
+                                className="flex items-center justify-between  cursor-pointer"
+                                onClick={() => toggleSection("skills")}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                    <Code className="w-4 h-4 text-white transform " />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                      Skills
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                      Your technical expertise
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setState({
+                                        isEditingSkills: true,
+                                        skill: "",
+                                      });
+                                    }}
+                                    className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </button>
+                                  {state.expandedSections.skills ? (
+                                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                                  )}
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {state.expandedSections.skills && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    {/* Add Skill Form */}
+                                    <AnimatePresence>
+                                      {state.isEditingSkills && (
+                                        <motion.div
+                                          initial={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          animate={{
+                                            opacity: 1,
+                                            height: "auto",
+                                            y: 0,
+                                          }}
+                                          exit={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          transition={{
+                                            duration: 0.3,
+                                            ease: "easeOut",
+                                          }}
+                                          className="mb-8 relative"
+                                        >
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="relative bg-white/80  rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
+                                            <div className="flex items-center gap-3 mb-6">
+                                              <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
+                                                <Plus className="w-4 h-4 text-white" />
+                                              </div>
+                                              <h4 className="text-xl font-bold text-gray-900">
+                                                Add New Skill
+                                              </h4>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Skill Name
+                                                </label>
+                                                <Input
+                                                  placeholder="e.g., JavaScript"
+                                                  value={state.skill || ""}
+                                                  onChange={(e) =>
+                                                    handleFormChange(
+                                                      "skill",
+                                                      e.target.value,
+                                                    )
+                                                  }
+                                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                />
+                                              </div>
+                                              {/* <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Experience 
+                                                </label>
+                                                <Input
+                                                  placeholder="e.g., 3 years"
+                                                  value={state.skillForm.experience}
+                                                  onChange={(e) =>
+                                                    setState({
+                                                      skillForm: {
+                                                        ...state.skillForm,
+                                                        experience: e.target.value,
+                                                      },
+                                                    })
+                                                  }
+                                                  className="border-gray-200 focus:border-green-500 focus:ring-green-500"
+                                                />
+                                              </div> */}
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                              <Button
+                                                onClick={addSkill}
+                                                // onClick={() => {
+                                                //   if (
+                                                //     state.userDetail?.skills?.length === 0
+                                                //   ) {
+                                                //     addSkill();
+                                                //   } else {
+                                                //     updateSkill();
+                                                //   }
+                                                // }}
+                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                              >
+                                                <CheckCircle className="w-4 h-4 mr-2" />
+                                                Save Skill
+                                              </Button>
+                                              <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                  setState({
+                                                    isEditingSkills: false,
+                                                  })
+                                                }
+                                                className="border-gray-300 hover:bg-gray-50"
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+
+                                    {/* Skills List - Chip Format */}
+                                    <div className="flex flex-wrap gap-3 pt-5">
+                                      {state?.userDetail?.skills?.map(
+                                        (skill, index) => (
+                                          <motion.div
+                                            key={skill.id}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            className="group relative"
+                                          >
+                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                              <span className="text-[#1E3786] font-medium text-sm">
+                                                {skill.name}
+                                              </span>
+                                              {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
+                                              {skill.experience}
+                                            </span> */}
+                                              <div className="flex gap-1  group-hover:opacity-100 transition-opacity duration-200">
+                                                <button
+                                                  onClick={() =>
+                                                    deleteSkill(skill.id)
+                                                  }
+                                                  className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
+                                                >
+                                                  <X className="w-3 h-3  font-semibold" />
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </motion.div>
+                                        ),
+                                      )}
+                                    </div>
+
+                                    {/* Empty State */}
+                                    {(state.userDetail?.skills?.length === 0 ||
+                                      !state.userDetail?.skills?.length) && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <Code className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Skills Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-4">
+                                          Add your technical skills as chips
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isEditingSkills: true,
+                                              skill: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                        >
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Skills
+                                        </Button>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </CardContent>
+                          </Card>
+
                           {/* Achievements Section */}
                           <Card
                             id="achievements-section"
@@ -4855,51 +4926,58 @@ export default function NaukriProfilePage() {
                         </Card>
                       </div>
                     ) : state.activeTab == "My Applications" ? (
-                      state.jobList?.length > 0 ?
-                     ( <div
-                        className={`grid  ${
-                          !state.isGridView
-                            ? "grid-cols-1 xl:grid-cols-2"
-                            : "grid-cols-1"
-                        } ${
-                          state.isGridView &&
-                          "bg-white px-5 border border-[#c7c7c787]"
-                        }`}
-                        style={{
-                          gap: "10px",
-                        }}
-                      >
-                        {/* {filteredJobs.map((job) => ( */}
-                        {state.jobList?.map((job: any) => (
-                          <div
-                            key={job.id}
-                            className="cursor-pointer transition-transform hover:scale-10 job-card-item"
-                          >
-                            {!state.isGridView ? (
-                              <JobCard
-                                job={job}
-                                updateList={() => appliedJobList(state?.page)}
-                                onCollegeClick={(e, id) => console.log("first")}
-                                onDepartmentClick={(e, id) =>
-                                  console.log("first")
-                                }
-                                isProfile={true}
-                              />
-                            ) : (
-                              <NewJobCard
-                                job={job}
-                                updateList={() => appliedJobList(state?.page)}
-                                onCollegeClick={(e, id) => console.log("first")}
-                                onDepartmentClick={(e, id) =>
-                                  console.log("first")
-                                }
-                                isProfile={true}
-                              />
-                            )}
-                          </div>
-                        ))}
-                      </div>) : 
-                       <Card className="bg-white border-2   border-dashed border-gray-200 shadow-none rounded-md">
+                      state.jobList?.length > 0 ? (
+                        <div
+                          className={`grid  ${
+                            !state.isGridView
+                              ? "grid-cols-1 xl:grid-cols-2"
+                              : "grid-cols-1"
+                          } ${
+                            state.isGridView &&
+                            "bg-white px-5 border border-[#c7c7c787]"
+                          }`}
+                          style={{
+                            gap: "10px",
+                          }}
+                        >
+                          {/* {filteredJobs.map((job) => ( */}
+                          {state.jobList?.map((job: any) => (
+                            <div
+                              key={job.id}
+                              className="cursor-pointer transition-transform hover:scale-10 job-card-item"
+                            >
+                              {!state.isGridView ? (
+                                <JobCard
+                                  job={job}
+                                  updateList={() => appliedJobList(state?.page)}
+                                  onCollegeClick={(e, id) =>
+                                    console.log("first")
+                                  }
+                                  onDepartmentClick={(e, id) =>
+                                    console.log("first")
+                                  }
+                                  isProfile={true}
+                                  onClick={() => router.push(`/jobs?id=${job?.job_id || job?.id}`)}
+                                />
+                              ) : (
+                                <NewJobCard
+                                  job={job}
+                                  updateList={() => appliedJobList(state?.page)}
+                                  onCollegeClick={(e, id) =>
+                                    console.log("first")
+                                  }
+                                  onDepartmentClick={(e, id) =>
+                                    console.log("first")
+                                  }
+                                  isProfile={true}
+                                  onClick={() => router.push(`/jobs?id=${job?.job_id || job?.id}`)}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <Card className="bg-white border-2   border-dashed border-gray-200 shadow-none rounded-md">
                           <CardContent className="flex flex-col items-center justify-center py-16">
                             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                               <Mail className="w-10 h-10 text-gray-400" />
@@ -4916,6 +4994,7 @@ export default function NaukriProfilePage() {
                             </Button>
                           </CardContent>
                         </Card>
+                      )
                     ) : state.activeTab == "Saved Jobs" ? (
                       state?.savedJobList?.length > 0 ? (
                         <div
@@ -4944,6 +5023,7 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
+                                onClick={() => router.push(`/jobs?id=${job?.job?.id || job?.id}`)}
                               />
                             </div>
                           ))}
