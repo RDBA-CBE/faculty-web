@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 import {
   Edit3,
   MapPin,
@@ -31,6 +32,8 @@ import {
   PlusIcon,
   File,
   Book,
+  Router,
+  ArrowRight,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -78,6 +81,7 @@ export default function NaukriProfilePage() {
   const sidebarWrapperRef = useRef(null);
   const footerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const router = useRouter();
 
   const [state, setState] = useSetState({
     // Profile Data
@@ -1204,14 +1208,17 @@ export default function NaukriProfilePage() {
       };
 
       const formData = new FormData();
-      formData.append("hr_interview_status",type == "accept"?"Accepted":"Rejected")
+      formData.append(
+        "hr_interview_status",
+        type == "accept" ? "Accepted" : "Rejected",
+      );
 
       Object.keys(body).forEach((key) => {
         formData.append(key, String(body[key]));
       });
 
       const res = await Models.profile.update_interest(item?.id, body);
-      await Models.profile.update( formData,item?.applicant_id,);
+      await Models.profile.update(formData, item?.applicant_id);
 
       console.log("✌️res --->", res);
       Success("Response sent successfully");
@@ -1377,7 +1384,8 @@ export default function NaukriProfilePage() {
                                 <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
                                 <span className="text-sm">
-                                  {state?.userDetail?.current_company} -{" "} {state?.userDetail?.current_position} -
+                                  {state?.userDetail?.current_company} -{" "}
+                                  {state?.userDetail?.current_position} -
                                   {state?.userDetail?.current_location}
                                 </span>
                               </div>
@@ -1506,7 +1514,7 @@ export default function NaukriProfilePage() {
                                             ? "bg-[#1E3786] text-white"
                                             : " hover:bg-white/80"
                                         }`}
-                                      >
+                                    >
                                       <span
                                         className={`font-medium ${
                                           activeTab === item.id
@@ -3005,7 +3013,7 @@ export default function NaukriProfilePage() {
                                               )}
                                             </div>
                                           </motion.div>
-                                        )
+                                        ),
                                       )}
                                     </div>
 
@@ -3141,7 +3149,7 @@ export default function NaukriProfilePage() {
                                           }}
                                           className="mb-8 relative"
                                         >
-                                         <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                           <div className="relative bg-white/80 rounded-lg p-8 border border-white/50 shadow-xl mt-5">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
@@ -3752,7 +3760,7 @@ export default function NaukriProfilePage() {
                                           }}
                                           className="mb-8 relative"
                                         >
-                                         <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
                                           <div className="relative bg-white/80 rounded-lg p-8 mt-5 border border-white/50 shadow-xl">
                                             <div className="flex items-center gap-3 mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
@@ -4602,7 +4610,8 @@ export default function NaukriProfilePage() {
                                   Academic Qualifications
                                 </h3>
                                 <p className="text-sm text-gray-500">
-                                  Highlight your completed examinations and degrees
+                                  Highlight your completed examinations and
+                                  degrees
                                 </p>
                               </div>
                             </div>
@@ -4846,7 +4855,8 @@ export default function NaukriProfilePage() {
                         </Card>
                       </div>
                     ) : state.activeTab == "My Applications" ? (
-                      <div
+                      state.jobList?.length > 0 ?
+                     ( <div
                         className={`grid  ${
                           !state.isGridView
                             ? "grid-cols-1 xl:grid-cols-2"
@@ -4873,7 +4883,7 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
-                                isProfile = {true}
+                                isProfile={true}
                               />
                             ) : (
                               <NewJobCard
@@ -4883,43 +4893,80 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
-                                isProfile = {true}
+                                isProfile={true}
                               />
                             )}
                           </div>
                         ))}
-                      </div>
+                      </div>) : 
+                       <Card className="bg-white border-2   border-dashed border-gray-200 shadow-none rounded-md">
+                          <CardContent className="flex flex-col items-center justify-center py-16">
+                            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                              <Mail className="w-10 h-10 text-gray-400" />
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-900 mb-1">
+                              No Job Applied Yet
+                            </h4>
+                            <Button
+                              onClick={() => router.push("/jobs")}
+                              className="mt-5 bg-[#1E3786] hover:bg-[#1E3786]"
+                            >
+                              Go to Job List
+                              <ArrowRight className="w-4 h-4 mr-2" />
+                            </Button>
+                          </CardContent>
+                        </Card>
                     ) : state.activeTab == "Saved Jobs" ? (
-                      <div
-                        className={`grid  ${
-                          !state.isGridView
-                            ? "grid-cols-1 xl:grid-cols-2"
-                            : "grid-cols-1"
-                        } ${
-                          state.isGridView &&
-                          "bg-white px-5 border border-[#c7c7c787]"
-                        }`}
-                        style={{
-                          gap: "10px",
-                        }}
-                      >
-                        {/* {filteredJobs.map((job) => ( */}
-                        {state.savedJobList?.map((job: any) => (
-                          <div
-                            key={job.id}
-                            className="cursor-pointer transition-transform hover:scale-10 job-card-item"
-                          >
-                            <JobCard
-                              job={job?.job}
-                              updateList={() => getSavedJobs(state?.page)}
-                              onCollegeClick={(e, id) => console.log("first")}
-                              onDepartmentClick={(e, id) =>
-                                console.log("first")
-                              }
-                            />
-                          </div>
-                        ))}
-                      </div>
+                      state?.savedJobList?.length > 0 ? (
+                        <div
+                          className={`grid  ${
+                            !state.isGridView
+                              ? "grid-cols-1 xl:grid-cols-2"
+                              : "grid-cols-1"
+                          } ${
+                            state.isGridView &&
+                            "bg-white px-5 border border-[#c7c7c787]"
+                          }`}
+                          style={{
+                            gap: "10px",
+                          }}
+                        >
+                          {/* {filteredJobs.map((job) => ( */}
+                          {state.savedJobList?.map((job: any) => (
+                            <div
+                              key={job.id}
+                              className="cursor-pointer transition-transform hover:scale-10 job-card-item"
+                            >
+                              <JobCard
+                                job={job?.job}
+                                updateList={() => getSavedJobs(state?.page)}
+                                onCollegeClick={(e, id) => console.log("first")}
+                                onDepartmentClick={(e, id) =>
+                                  console.log("first")
+                                }
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <Card className="bg-white border-2 border-dashed border-gray-200 shadow-none rounded-md">
+                          <CardContent className="flex flex-col items-center justify-center py-16">
+                            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                              <Mail className="w-10 h-10 text-gray-400" />
+                            </div>
+                            <h4 className="text-lg font-bold text-gray-900 mb-1">
+                              No Saved Job Yet
+                            </h4>
+                            <Button
+                              onClick={() => router.push("/jobs")}
+                              className="mt-5 bg-[#1E3786] hover:bg-[#1E3786]"
+                            >
+                              Go to Job List
+                              <ArrowRight className="w-4 h-4 mr-2" />
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )
                     ) : state.activeTab == "HR Requests" ? (
                       <div className="space-y-4 pt-1">
                         {/* <div className="flex items-center justify-between mb-2">
@@ -4952,9 +4999,9 @@ export default function NaukriProfilePage() {
                                 No Requests Yet
                               </h4>
                               <p className="text-gray-500 text-center max-w-sm">
-                              You haven&apos;t received any contact requests from
-                                recruiters. Keep your profile updated to attract
-                                more opportunities!
+                                You haven&apos;t received any contact requests
+                                from recruiters. Keep your profile updated to
+                                attract more opportunities!
                               </p>
                             </CardContent>
                           </Card>
@@ -5957,5 +6004,3 @@ export default function NaukriProfilePage() {
     </>
   );
 }
-
-
