@@ -1390,7 +1390,7 @@ export default function NaukriProfilePage() {
                               </h1>
                               <button
                                
-                                className="p-3 bg-[#1E3786] rounded-full"
+                                className="p-2 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
                                 <Edit size={14} className=" text-[#fff] " style={{height:"15px", width:"15px"}}/>
@@ -1776,7 +1776,7 @@ export default function NaukriProfilePage() {
                                                   <>
                                                     <button
                                                      
-                                                      className="bg-[#1E3786] text-white px-3 py-1 text-xs "
+                                                      className="bg-[#1E3786] text-white px-3 py-1 text-xs rounded-lg"
                                                       onClick={downloadResume}
                                                       
                                                     >
