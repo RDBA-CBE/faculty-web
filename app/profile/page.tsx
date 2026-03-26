@@ -1388,14 +1388,13 @@ export default function NaukriProfilePage() {
                                   ? `${state.userDetail.first_name} ${state.userDetail.last_name}`
                                   : state.userDetail?.username || ""}
                               </h1>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="p-1 bg-[#1E3786] rounded-full"
+                              <button
+                               
+                                className="p-3 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
                                 <Edit size={14} className=" text-[#fff] " style={{height:"15px", width:"15px"}}/>
-                              </Button>
+                              </button>
                             </div>
                             {state?.userDetail?.short_desc && (
                               <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
@@ -1774,19 +1773,17 @@ export default function NaukriProfilePage() {
                                                 {state?.userDetail
                                                   ?.resume_url ? (
                                                   <>
-                                                    <Button
-                                                      variant="outline"
-                                                      size="sm"
-                                                      className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
+                                                    <button
+                                                     
+                                                      className="bg-[#1E3786] text-white px-1 py-1"
                                                       onClick={downloadResume}
-                                                      title="View Resume"
+                                                      
                                                     >
                                                       View
-                                                    </Button>
+                                                    </button>
 
-                                                    <Button
-                                                      variant="outline"
-                                                      size="sm"
+                                                    <button
+                                                     
                                                       className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
                                                       onClick={downloadResume}
                                                       title="Download Resume"
@@ -1796,25 +1793,24 @@ export default function NaukriProfilePage() {
                                                         style={{height:"15px", width:"15px"}}
                                                         className="text-[#1E3786]  group-hover/btn:scale-110 transition-transform"
                                                       />
-                                                    </Button>
-                                                    <Button
-                                                      variant="outline"
+                                                    </button>
+                                                    <button
+
                                                       onClick={deleteResume}
-                                                      size="sm"
+                                                     
                                                       className="hover:bg-red-50 border-red-200 group/btn px-1 py-1"
                                                       title="Delete Resume"
-                                                    >quiv
+                                                    >
                                                       <Trash
                                                       style={{height:"15px", width:"15px"}}
                                                         size={10}
                                                         className=" text-red-600 group-hover/btn:scale-110 transition-transform"
                                                       />
-                                                    </Button>
+                                                    </button>
                                                   </>
                                                 ) : (
-                                                  <Button
-                                                    variant="outline"
-                                                    size="sm"
+                                                  <button
+                                                   
                                                     className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
                                                     title="Upload Resume"
                                                     onClick={() =>
@@ -1828,12 +1824,12 @@ export default function NaukriProfilePage() {
                                                       style={{height:"15px", width:"15px"}}
                                                       className="text-[#1E3786] group-hover/btn:scale-110 transition-transform"
                                                     />
-                                                  </Button>
+                                                  </button>
                                                 )}
                                               </div>
                                             </div>
 
-                                            {state?.userDetail?.resume_url && (
+                                            {/* {state?.userDetail?.resume_url && (
                                               <div className="flex flex-wrap items-center gap-3 mb-4">
                                                 <div className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 px-3 py-1 rounded-full">
                                                   <span className="text-[#1E3786] font-semibold text-sm">
@@ -1841,7 +1837,7 @@ export default function NaukriProfilePage() {
                                                   </span>
                                                 </div>
                                               </div>
-                                            )}
+                                            )} */}
                                           </div>
                                         </div>
                                       </div>
