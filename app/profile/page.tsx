@@ -1565,14 +1565,14 @@ export default function NaukriProfilePage() {
                                       className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all ${
                                         state.activeProfileSubSection ===
                                         item.id
-                                          ? "bg-[#1E3786] text-white"
+                                          ? "bg-[#1E3786] !text-[#fff]"
                                           : " hover:bg-white/80"
                                       }`}
                                     >
                                       <span
                                         className={`font-medium ${
                                           state.activeTab === item.id
-                                            ? "text-white" // This should still be activeTab for the main tab
+                                            ? "!text-[#fff]" // This should still be activeTab for the main tab
                                             : "text-[#000]"
                                         }`}
                                       >
