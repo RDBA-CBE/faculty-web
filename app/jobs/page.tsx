@@ -35,6 +35,8 @@ import {
   X,
   Check,
   BriefcaseBusinessIcon,
+  LogIn,
+  UserPlus,
   Upload,
   Bookmark,
   Share2,
@@ -50,6 +52,7 @@ import {
   PhoneCall,
   Award,
   Building,
+  ArrowRight,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -79,6 +82,7 @@ import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import PaginationCom from "@/components/component/PaginationCom";
 import CustomSelect from "@/components/common-components/dropdown";
+import CustomMultiSelect from "@/components/common-components/multi-select";
 import moment from "moment";
 import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
@@ -132,6 +136,8 @@ export default function JobsPage() {
     showDepartmentModal: false,
     department_id: null,
     filterList: [],
+    showApplyChoiceModal: false,
+    isMessageEdited: false,
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -160,11 +166,53 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
- 
   });
   console.log("✌️filters --->", filters);
 
   const debouncedSearch = useDebounce(state.search, 500);
+
+  useEffect(() => {
+    if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
+      const collegeName = state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "[College Name]";
+      let deptName = "[Department Name]";
+
+      if (state.department_id && Array.isArray(state.department_id) && state.department_id.length > 0) {
+        const names = state.department_id
+          .map((item: any) => {
+            const id = typeof item === "object" ? item.value : item;
+            return state.jobDetail?.department?.find((d: any) => d.id === id)?.name;
+          })
+          .filter(Boolean);
+        if (names.length > 0) deptName = names.join(", ");
+      } else if (state.jobDetail?.department?.length === 1) {
+        deptName = state.jobDetail.department[0].name;
+      } else if (state.jobDetail?.department?.length > 0) {
+        deptName = state.jobDetail.department[0].name;
+      }
+
+      const firstName = state.firstName || state.userDetail?.first_name || "";
+      const lastName = state.lastName || state.userDetail?.last_name || "";
+      const fullName = `${firstName} ${lastName}`.trim();
+      const userName = fullName || "[Your Name]";
+
+      const title = capitalizeFLetter(job_title(state.jobDetail));
+
+      const newMessage = `Dear HR,
+
+I am writing to apply for the ${title} position at ${collegeName}, in the ${deptName} Department. I am interested in contributing my skills and supporting the team in achieving its goals.
+
+I am a dedicated and responsible individual, willing to learn and adapt to new challenges. I am confident that I can perform my duties sincerely and contribute positively to the institution.
+
+Thank you for considering my application.
+
+Sincerely,
+${userName}`;
+
+      if (newMessage !== state.message) {
+        setState({ message: newMessage });
+      }
+    }
+  }, [state.firstName, state.lastName, state.department_id, showApplicationModal, state.jobDetail, state.isMessageEdited, state.userDetail]);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarWrapperRef = useRef<HTMLDivElement>(null);
@@ -251,7 +299,10 @@ export default function JobsPage() {
               if (cardRect.top < startFadePosition) {
                 const opacity = Math.max(
                   0.6,
-                  Math.min(1, (cardRect.top - endFadePosition) / transitionZone)
+                  Math.min(
+                    1,
+                    (cardRect.top - endFadePosition) / transitionZone,
+                  ),
                 );
                 const blur = (1 - opacity) * 4;
 
@@ -378,7 +429,7 @@ export default function JobsPage() {
     if (isDesktopScreen && selectedJob && showJobDetail) {
       const scrollContainer = jobListSidebarScrollContainerRef.current;
       const jobElement = document.getElementById(
-        `job-list-item-${selectedJob.id}`
+        `job-list-item-${selectedJob.id}`,
       );
 
       if (scrollContainer && jobElement) {
@@ -680,7 +731,6 @@ export default function JobsPage() {
     }
   };
 
-
   const jobList = async (page = 1, append = false) => {
     try {
       if (append) {
@@ -771,6 +821,38 @@ export default function JobsPage() {
     }
   }, [jobIdParam]);
 
+  useEffect(() => {
+    const checkPendingApply = () => {
+      const profileStr = localStorage.getItem("user");
+      if (!profileStr) return;
+
+      const profile = JSON.parse(profileStr);
+      const pendingJobId = sessionStorage.getItem("pending_apply_job_id");
+
+      if (profile?.id && pendingJobId && state.jobDetail?.id == pendingJobId) {
+        sessionStorage.removeItem("pending_apply_job_id");
+        setState({ jobID: state.jobDetail.id });
+        const departmentIds =
+          state.jobDetail?.department?.length === 1
+            ? [
+                {
+                  value: state.jobDetail.department[0].id,
+                  label: state.jobDetail.department[0].name,
+                },
+              ]
+            : [];
+        handleFormSubmitWithprofile(profile.id, departmentIds);
+      }
+    };
+
+    window.addEventListener("focus", checkPendingApply);
+    window.addEventListener("loginSuccess", checkPendingApply);
+    return () => {
+      window.removeEventListener("focus", checkPendingApply);
+      window.removeEventListener("loginSuccess", checkPendingApply);
+    };
+  }, [state.jobDetail]);
+
   const handleApply = () => {
     const profile = JSON.parse(localStorage.getItem("user"));
     const userId = profile?.id;
@@ -780,33 +862,58 @@ export default function JobsPage() {
       return;
     }
 
-    const newState: { department_id?: number | null } = {};
-    if (state.jobDetail?.department?.length === 1) {
-      newState.department_id = state.jobDetail.department[0].id;
-    } else {
-      newState.department_id = null;
-    }
+    const departmentIds =
+      state.jobDetail?.department?.length === 1
+        ? [
+            {
+              value: state.jobDetail.department[0].id,
+              label: state.jobDetail.department[0].name,
+            },
+          ]
+        : [];
 
     if (profile) {
-      setState(newState);
-      handleFormSubmitWithprofile(userId);
+      handleFormSubmitWithprofile(userId, departmentIds);
     } else {
-      setState({
-        ...newState,
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        message: "",
-        experience: "",
-        resume: null,
-        errors: {},
-      });
-      setShowApplicationModal(true);
+      setState({ showApplyChoiceModal: true, department_id: departmentIds });
     }
   };
 
-  const handleFormSubmitWithprofile = async (userId) => {
+  const handleLoginRedirect = () => {
+    setState({ showApplyChoiceModal: false });
+    sessionStorage.setItem("pending_apply_job_id", state.jobDetail?.id);
+    window.dispatchEvent(new CustomEvent("openLoginModal"));
+  };
+
+  const handleRegisterRedirect = () => {
+    setState({ showApplyChoiceModal: false });
+    sessionStorage.setItem("pending_apply_job_id", state.jobDetail?.id);
+    window.dispatchEvent(new CustomEvent("openRegisterModal"));
+  };
+
+  const handleContinueAsGuest = () => {
+    const departmentIds =
+      state.jobDetail?.department?.length === 1
+        ? [
+            {
+              value: state.jobDetail.department[0].id,
+              label: state.jobDetail.department[0].name,
+            },
+          ]
+        : [];
+
+    const newState: any = {
+      showApplyChoiceModal: false,
+      colleges: state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "",
+      department_id: departmentIds,
+      errors: {},
+      isMessageEdited: false,
+    };
+    setState(newState);
+    setShowApplicationModal(true);
+  };
+
+  const handleFormSubmitWithprofile = async (userId, deptIds = []) => {
     try {
       const res: any = await Models.profile.details(userId);
 
@@ -815,9 +922,13 @@ export default function JobsPage() {
         firstName: res.first_name,
         lastName: res.last_name,
         phone: res.phone,
+        message: "",
+        colleges: state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "",
         resume: await buildResumeFile(res.resume_url, `${res.username} Resume`),
         email: res.email?.trim(),
         experience: res.experience,
+        department_id: deptIds,
+        isMessageEdited: false,
       });
       setShowApplicationModal(true);
     } catch (error) {
@@ -911,11 +1022,11 @@ export default function JobsPage() {
       setState({ btnLoading: true, errors: {} });
 
       // Manual validation for department
-      if (state.jobDetail?.department?.length > 1 && !state.department_id) {
+      if (state.jobDetail?.department?.length > 1 && (!state.department_id || state.department_id.length === 0)) {
         setState({
           errors: {
             ...state.errors,
-            department_id: "Please select a department.",
+            department_id: "Please select at least one department.",
           },
           btnLoading: false,
         });
@@ -951,8 +1062,11 @@ export default function JobsPage() {
       formData.append("message", state.message || "");
       formData.append("status", "Applied");
 
-      if (state.department_id) {
-        formData.append("department_id", state.department_id);
+      if (state.department_id && state.department_id.length > 0) {
+        const ids = state.department_id.map((item: any) =>
+          typeof item === "object" ? Number(item.value) : Number(item)
+        );
+        formData.append("department_id", JSON.stringify(ids));
       }
 
       if (state.resume) {
@@ -985,8 +1099,10 @@ export default function JobsPage() {
         message: "",
         experience: "",
         resume: null,
-        department_id: null,
+        colleges: "",
+        department_id: [],
         congratsOpen: true,
+        isMessageEdited: false,
         btnLoading: false,
       });
     } catch (error) {
@@ -1052,7 +1168,7 @@ export default function JobsPage() {
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0 ) {
+    if (filters?.experienceLevels?.length > 0) {
       body.experience = filters.experienceLevels;
     }
 
@@ -1089,7 +1205,7 @@ export default function JobsPage() {
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0)
+        ...filters.datePosted.map((d) => durationMap[d] || 0),
       );
 
       if (maxDays === 1) {
@@ -1147,6 +1263,7 @@ export default function JobsPage() {
   const handleFormChange = (field, value) => {
     setState({
       [field]: value,
+      ...(field === "message" ? { isMessageEdited: true } : {}),
       errors: {
         ...state.errors,
         [field]: "",
@@ -1187,8 +1304,6 @@ export default function JobsPage() {
       }
     }
   };
-
-
 
   return (
     <>
@@ -1330,7 +1445,7 @@ export default function JobsPage() {
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", ")
+                              .join(", "),
                           )}{" "}
                           {/* {state?.jobDetail?.college?.address} */}
                         </span>
@@ -1414,7 +1529,7 @@ export default function JobsPage() {
                                   >
                                     {item.name}
                                   </button>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -1638,7 +1753,7 @@ export default function JobsPage() {
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
-                          `/jobs?college=${state?.jobDetail?.college?.id}`
+                          `/jobs?college=${state?.jobDetail?.college?.id}`,
                         );
                       }}
                       className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -1655,7 +1770,6 @@ export default function JobsPage() {
               <>
                 <div className="flex justify-between">
                   <Breadcrumb />
-                  
                 </div>
 
                 <div className="flex gap-2 pb-4 pt-2 items-start">
@@ -1743,7 +1857,7 @@ export default function JobsPage() {
                                         title={job_title(job)}
                                       >
                                         {capitalizeFLetter(
-                                          CharSlice(job_title(job), 20)
+                                          CharSlice(job_title(job), 20),
                                         )}
                                       </h3>
                                       <p
@@ -2046,12 +2160,12 @@ export default function JobsPage() {
                               <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
                                 {/* • Posted{" "} */}
                                 {moment(
-                                  state?.jobDetail?.created_at
+                                  state?.jobDetail?.created_at,
                                 ).isValid() &&
                                 moment(state?.jobDetail?.created_at).year() >
                                   1900
                                   ? moment(
-                                      state?.jobDetail?.created_at
+                                      state?.jobDetail?.created_at,
                                     ).fromNow()
                                   : "Just now"}
                               </div>
@@ -2066,7 +2180,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   />
@@ -2076,7 +2190,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
@@ -2088,7 +2202,7 @@ export default function JobsPage() {
                                 <div className="flex-1 flex-col">
                                   <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
-                                      job_title(state?.jobDetail)
+                                      job_title(state?.jobDetail),
                                     )}
                                   </h1>
                                   <p
@@ -2096,12 +2210,12 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.college?.name
+                                      state?.jobDetail?.college?.name,
                                     )}
                                   </p>
                                 </div>
@@ -2131,7 +2245,7 @@ export default function JobsPage() {
                                       {capitalizeFLetter(
                                         state?.jobDetail?.locations
                                           ?.map((item) => item.city)
-                                          .join(", ")
+                                          .join(", "),
                                       )}{" "}
                                       {/* {state?.jobDetail?.college?.address} */}
                                     </span>
@@ -2148,14 +2262,14 @@ export default function JobsPage() {
                                 <X size={20} className=" hover:text-gray-600" />
                               </button> */}
                               <div>
-                    <button
-                      onClick={() => setSelectedJob(null)}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
-                    >
-                      <ArrowLeft size={14} className="mt-[3px]" />
-                      Back
-                    </button>
-                  </div>
+                                <button
+                                  onClick={() => setSelectedJob(null)}
+                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                                >
+                                  <ArrowLeft size={14} className="mt-[3px]" />
+                                  Back
+                                </button>
+                              </div>
                               <div className="flex flex-col items-end justify-between pt-6 gap-6  border-gray-100">
                                 <div className="flex items-center gap-2">
                                   <button
@@ -2263,7 +2377,7 @@ export default function JobsPage() {
                                           >
                                             {item.name}
                                           </button>
-                                        )
+                                        ),
                                       )}
                                     </div>
                                   </div>
@@ -2300,7 +2414,7 @@ export default function JobsPage() {
 
                                         <span className="">{item}</span>
                                       </li>
-                                    )
+                                    ),
                                   )}
                                 </ul>
                               </div>
@@ -2426,7 +2540,7 @@ export default function JobsPage() {
                                             state.jobDetail.department.length -
                                               1 && ", "}
                                         </div>
-                                      )
+                                      ),
                                     )}
                                   </div>
                                 </div>
@@ -2488,7 +2602,7 @@ export default function JobsPage() {
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id
+                                        state?.jobDetail.college?.id,
                                       )
                                     }
                                   >
@@ -2508,7 +2622,7 @@ export default function JobsPage() {
                                   });
 
                                   router.push(
-                                    `/jobs?college=${state?.jobDetail?.college?.id}`
+                                    `/jobs?college=${state?.jobDetail?.college?.id}`,
                                   );
                                 }}
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -2558,12 +2672,13 @@ export default function JobsPage() {
                     jobRoleList={state?.jobRoleList}
                     tagsList={state?.tagsList}
                     loading={state.loading}
-                    closeModal={()=>{
+                    closeModal={() => {
                       window.scrollTo({
                         top: 0,
                         behavior: "smooth",
                       });
-                      setIsMobileFilterOpen(false)}}
+                      setIsMobileFilterOpen(false);
+                    }}
 
                     // filterList={state.filterList}
                     // filters={filters}
@@ -2610,13 +2725,13 @@ export default function JobsPage() {
                       jobRoleList={state?.jobRoleList}
                       tagsList={state?.tagsList}
                       loading={state.loading}
-                      closeModal={()=>{
+                      closeModal={() => {
                         window.scrollTo({
                           top: 0,
                           behavior: "smooth",
                         });
-                        setIsMobileFilterOpen(false)}}
-
+                        setIsMobileFilterOpen(false);
+                      }}
                     />
                   </div>
                 </div>
@@ -2769,12 +2884,13 @@ export default function JobsPage() {
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
-                              closeModal={()=>{
+                              closeModal={() => {
                                 window.scrollTo({
                                   top: 0,
                                   behavior: "smooth",
                                 });
-                                setIsMobileFilterOpen(false)}}
+                                setIsMobileFilterOpen(false);
+                              }}
                             />
                           </div>
                         </SheetContent>
@@ -2795,7 +2911,6 @@ export default function JobsPage() {
                     deptList={state?.deptList}
                     locationList={state?.locationList}
                     jobRoleList={state?.jobRoleList}
-
                   />
 
                   {state.loading || state.jobListLoading ? (
@@ -3103,7 +3218,7 @@ export default function JobsPage() {
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
-                                        state.jobDetail?.created_at
+                                        state.jobDetail?.created_at,
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
@@ -3164,7 +3279,7 @@ export default function JobsPage() {
                                       >
                                         {item.name}
                                       </button>
-                                    )
+                                    ),
                                   )}
                                 </div>
                               </div>
@@ -3195,7 +3310,7 @@ export default function JobsPage() {
                                       {responsibility}
                                     </p>
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </div>
@@ -3264,7 +3379,6 @@ export default function JobsPage() {
                               <p className="text-sm text-gray-500  ps-6">
                                 {/* {capitalizeFLetter(state?.jobDetail?.job_title)} */}
                                 {capitalizeFLetter(job_title(state.jobDetail))}
-
                               </p>
                             </div>
                             <div>
@@ -3310,7 +3424,7 @@ export default function JobsPage() {
                                         state.jobDetail.department.length - 1 &&
                                         ", "}
                                     </div>
-                                  )
+                                  ),
                                 )}
                               </div>
                             </div>
@@ -3393,7 +3507,7 @@ export default function JobsPage() {
                               window.scrollTo({ top: 0, behavior: "smooth" });
 
                               router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`
+                                `/jobs?college=${state?.jobDetail?.college?.id}`,
                               );
                             }}
                             className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -3437,7 +3551,7 @@ export default function JobsPage() {
               title={capitalizeFLetter(job_title(selectedJob))}
               width="700px"
               renderComponent={() => (
-                <div className="space-y-4 bg-[#EFF2F6] overflow-y-auto py-5 px-2 max-h-[85vh] ">
+                <div className="space-y-2 bg-[#EFF2F6] overflow-y-auto py-4 px-2 max-h-[85vh] ">
                   <div className="flex items-center justify-center w-full mb-6">
                     <img
                       src="/assets/images/recruitmen.gif"
@@ -3447,7 +3561,7 @@ export default function JobsPage() {
                       className="object-contain w-[100px] h-[100px]"
                     />
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 ">
                     <Input
                       placeholder="First Name*"
                       value={state.firstName}
@@ -3501,52 +3615,62 @@ export default function JobsPage() {
                     />
                   </div>
 
-                  <div className="space-y-1">
-                    <CustomSelect
-                      // title="Experience"
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <CustomSelect
+                        // title="Experience"
+                        required
+                        className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit"
+                        options={state.experienceList}
+                        value={state?.experience || ""}
+                        onChange={(selected) =>
+                          setState({
+                            ...state,
+                            experience: selected ? selected.value : "",
+                          })
+                        }
+                        error={state?.errors?.experience}
+                        placeholder="Experience"
+                      />
+                    </div>
+
+                    <Input
+                      type="colleges"
+                      placeholder="colleges*"
+                      value={state.colleges}
+                      className="border border-gray-100 !bg-[#fff] placeholder:!text-gray-500 placeholder:!text-sm"
                       required
-                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
-                      options={state.experienceList}
-                      value={state?.experience || ""}
-                      onChange={(selected) =>
-                        setState({
-                          ...state,
-                          experience: selected ? selected.value : "",
-                        })
-                      }
-                      error={state?.errors?.experience}
-                      placeholder="Experience"
+                      disabled
                     />
                   </div>
 
                   {state.jobDetail?.department?.length > 0 && (
-                    <CustomSelect
-                      label="Choose Department"
+                    <CustomMultiSelect
+                      title="Choose Department"
                       options={state.jobDetail.department.map((d) => ({
                         value: d.id,
                         label: d.name,
                       }))}
-                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm"
-                      value={state.department_id}
-                      onChange={(selected) =>
-                        handleFormChange(
-                          "department_id",
-                          selected ? selected.value : null
-                        )
-                      }
+                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit" 
+                      value={state.department_id || []}
+                      onChange={(selected) => {
+                        handleFormChange("department_id", selected);
+                      }}
                       placeholder="Select a department"
-                      disabled={state.jobDetail.department.length <= 1}
+                      isMulti={true}
                       error={state.errors.department_id}
+                      disabled={state.jobDetail.department.length === 1}
                     />
                   )}
-                  <div className="grid grid-cols-1 !gap-4">
+
+                  <div className="grid grid-cols-1 !gap-4 !mt-4">
                     <TextArea
-                      title="Cover Letter"
+                      title="Cover Letter (Edit as your wish)"
                       value={state.message}
                       onChange={(e) =>
                         handleFormChange("message", e.target.value)
                       }
-                      className="min-h-[150px] bg-white"
+                      className="min-h-[100px] bg-white"
                     />
 
                     {/* <TextArea
@@ -3573,6 +3697,67 @@ export default function JobsPage() {
                     >
                       Submit
                     </Button>
+                  </div>
+                </div>
+              )}
+            />
+
+            <Modal
+              isOpen={state.showApplyChoiceModal}
+              setIsOpen={() => setState({ showApplyChoiceModal: false })}
+              title="Apply for Job"
+              width="500px"
+              renderComponent={() => (
+                <div className="p-6 space-y-2">
+                  <div className="text-center mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      Choose how you want to apply
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Log in for a faster application process or continue as a
+                      guest.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 !gap-2">
+                    <Button
+                      onClick={handleLoginRedirect}
+                      className="w-full py-6 bg-[#1E3786] hover:bg-[#1E3786]/90 flex items-center justify-start gap-4 px-6 text-white text-base font-medium rounded-xl transition-all"
+                    >
+                      <div className="p-2 bg-white/10 rounded-lg">
+                        <LogIn size={20} className="text-white" />
+                      </div>
+                      Login to apply
+                    </Button>
+
+                    <Button
+                      onClick={handleRegisterRedirect}
+                      variant="outline"
+                      className="w-full mt-3 py-6 border-2 border-gray-100 hover:border-[#1E3786] hover:bg-blue-50 flex items-center justify-start gap-4 px-6 text-gray-700 text-base font-medium rounded-xl transition-all"
+                    >
+                      <div className="p-2 bg-gray-100 rounded-lg">
+                        <UserPlus size={20} />
+                      </div>
+                      Register to apply
+                    </Button>
+
+                    <div className="relative my-4">
+                      <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t"></span>
+                      </div>
+                      <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-[#eff2f6] px-2 text-gray-500">
+                          Or
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleContinueAsGuest}
+                      className="w-full py-0 text-[#1E3786] font-semibold hover:underline transition-all"
+                    >
+                      Continue as Unregistered User
+                    </button>
                   </div>
                 </div>
               )}
@@ -3624,10 +3809,27 @@ export default function JobsPage() {
                     Congrats, your job applied!
                   </h2>
 
-                  <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Curabitur dignissim rutrum dui quis malesuada.
-                  </p>
+                  {typeof window !== "undefined" && localStorage.getItem("user") ? (
+                    <Button
+                      onClick={() => router.push("/profile?tab=My Applications")}
+                      className="mt-5 bg-[#1E3786] hover:bg-[#1E3786]"
+                    >
+                      Go to Applied Job List
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        setState({ congratsOpen: false });
+                        setSelectedJob(null);
+                        setShowJobDetail(false);
+                      }}
+                      className="mt-5 bg-[#1E3786] hover:bg-[#1E3786]"
+                    >
+                      Search More Jobs
+                      <Search className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
                 </div>
               )}
             />
@@ -3766,7 +3968,7 @@ export default function JobsPage() {
                                 >
                                   {item.grade}
                                 </span>
-                              )
+                              ),
                             )}
                           </div>
                         </div>
@@ -3794,15 +3996,16 @@ export default function JobsPage() {
                               </span>
                             )}
 
-                            {state.collegeDetail?.nirf_categories?.map((item) =>
-                              item.is_active ? (
-                                <span
-                                  key={item.id}
-                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
-                                >
-                                  {item.category}
-                                </span>
-                              ) : null
+                            {state.collegeDetail?.nirf_categories?.map(
+                              (item) =>
+                                item.is_active ? (
+                                  <span
+                                    key={item.id}
+                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
+                                  >
+                                    {item.category}
+                                  </span>
+                                ) : null,
                             )}
                           </div>
                         </div>
@@ -3850,7 +4053,7 @@ export default function JobsPage() {
                                   <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                   {item.achievement}
                                 </li>
-                              )
+                              ),
                             )}
                           </ul>
                         </div>
@@ -3983,7 +4186,7 @@ export default function JobsPage() {
                                       <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                       {item.achievement}
                                     </li>
-                                  )
+                                  ),
                                 )}
                               </ul>
                             </div>

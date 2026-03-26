@@ -26,7 +26,7 @@ const department = {
 
   masterDep : (data=null) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `department-masters/`;
+      let url = `department-masters/?ordering=asc`;
       if (data?.pagination == "No") {
         url += `?pagination=${encodeURIComponent(false)}`;
       }

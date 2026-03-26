@@ -1,10 +1,14 @@
 import instance from "@/utils/axios.utils";
 
-
 const category = {
-  list: () => {
+  list: (page = 1, search = "") => {
     let promise = new Promise((resolve, reject) => {
-      let url = `job-categories/`;
+      const params = new URLSearchParams({
+        page: String(page),
+      });
+      if (search) params.append("search", search);
+
+      const url = `job-categories/?ordering=asc&${params.toString()}`;
 
       instance()
         .get(url)
@@ -98,27 +102,27 @@ const category = {
     return promise;
   },
 
- jobRoleList: (page = 1, search = "") => {
-  return new Promise((resolve, reject) => {
-    const params = new URLSearchParams({
-      page: String(page),
-    });
-    if (search) params.append("search", search);
-
-    const url = `job-roles/?${params.toString()}`;
-
-    instance()
-      .get(url)
-      .then((res) => resolve(res.data))
-      .catch((error) => {
-        if (error.response) {
-          reject(error.response.message);
-        } else {
-          reject(error);
-        }
+  jobRoleList: (page = 1, search = "") => {
+    return new Promise((resolve, reject) => {
+      const params = new URLSearchParams({
+        page: String(page),
       });
-  });
-},
+      if (search) params.append("search", search);
+
+      const url = `job-roles/?ordering=asc&${params.toString()}`;
+
+      instance()
+        .get(url)
+        .then((res) => resolve(res.data))
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+  },
 };
 
 export default category;

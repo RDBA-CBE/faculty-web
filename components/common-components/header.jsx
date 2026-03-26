@@ -163,13 +163,9 @@ const Header = () => {
         isOpenReg: false,
         // isOpenEmailVerify: true,
         errors: {},
-        // isOpenLogin: true,
         btnLoading: false,
       });
-
-      Success(
-        "Registration completed Successfully, Please check you email to verify your account and login to continue"
-      );
+      setState({ successRegistraion: true });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -211,6 +207,7 @@ const Header = () => {
       localStorage.setItem("user", JSON.stringify(res.user));
 
       setState({ token: res.access, errors: {}, isOpenLogin: false });
+      window.dispatchEvent(new CustomEvent("loginSuccess"));
       Success("Login Successfully!");
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -306,8 +303,8 @@ const Header = () => {
                         isActive
                           ? "text-[#F2B31D]"
                           : isHomePage
-                          ? "text-black hover:text-[#F2B31D]"
-                          : "text-black hover:text-[#F2B31D]"
+                            ? "text-black hover:text-[#F2B31D]"
+                            : "text-black hover:text-[#F2B31D]"
                       }`}
                     >
                       {menu.title}
@@ -1050,6 +1047,33 @@ const Header = () => {
                 Terms and condition
               </button>
             </div>
+          </div>
+        )}
+      />
+
+      <Modal
+        isOpen={state.successRegistraion}
+        setIsOpen={() => {
+          setState({ errors: {}, successRegistraion: false });
+        }}
+        title="Job Application Success"
+        width="750px"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative min-h-[500px] bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-12 overflow-hidden">
+           
+
+            
+
+            <h2 className="text-4xl font-bold text-gray-900 mb-6 z-10">
+              Registration Successfull
+            </h2>
+
+            <p className="text-gray-600 mb-12 max-w-lg text-lg leading-relaxed z-10">
+                    Please Check Your Email Inbox and verify your email address to continue
+            </p>
+
+            
           </div>
         )}
       />

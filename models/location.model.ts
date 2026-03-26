@@ -12,7 +12,7 @@ const location = {
         params.append("search", body.search);
       }
   
-      const url = `job-locations/?${params.toString()}`;
+      const url = `job-locations/?ordering=asc&${params.toString()}`;
   
       console.log("✌️url --->", url);
   

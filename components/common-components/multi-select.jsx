@@ -22,7 +22,7 @@ const CustomSelect = (props) => {
     className,
     isMulti = false,
 
-    // 🔥 NEW PROPS
+    // async
     loadOptions,
     hasMore,
     isLoading,
@@ -32,44 +32,51 @@ const CustomSelect = (props) => {
   const [page, setPage] = useState(1);
   const [open, setOpen] = useState(false);
 
+  // ✅ normalize selected values
   const selectedValues = isMulti
     ? Array.isArray(value)
       ? value
       : []
     : value
-    ? [value]
-    : [];
+      ? [value]
+      : [];
 
-  // 🔍 API CALL
+  const stringSelectedValues = selectedValues.map((v) => String(v));
+
+  // 🔍 API call
   useEffect(() => {
     if (loadOptions) {
       loadOptions({ search, page });
     }
   }, [search, page]);
 
+  // ✅ handle select
   const handleSelect = (val) => {
+    const stringVal = String(val);
+
     if (!isMulti) {
-      const selected = options?.find(
-        (o) => String(o.value) === val
-      );
+      const selected = options?.find((o) => String(o.value) === stringVal);
       onChange(selected || null);
-      setOpen(false); // close for single
+      setOpen(false);
       return;
     }
 
     let updated;
-    if (selectedValues.includes(val)) {
-      updated = selectedValues.filter((v) => v !== val);
+
+    if (stringSelectedValues.includes(stringVal)) {
+      updated = selectedValues.filter((v) => String(v) !== stringVal);
     } else {
-      updated = [...selectedValues, val];
+      // 🔥 ALWAYS push normalized value
+      updated = [...selectedValues, stringVal];
     }
 
     onChange(updated);
   };
 
-  const selectedLabels = options
-    ?.filter((o) => selectedValues.includes(String(o.value)))
-    .map((o) => o.label);
+  // ✅ selected options (better than labels only)
+  const selectedOptions = options?.filter((o) =>
+    stringSelectedValues.includes(String(o.value)),
+  );
 
   return (
     <div className="w-full">
@@ -83,26 +90,28 @@ const CustomSelect = (props) => {
         open={open}
         onOpenChange={setOpen}
         value={!isMulti ? String(value || "") : undefined}
-        onValueChange={handleSelect}
+        onValueChange={isMulti ? undefined : handleSelect}
         disabled={disabled}
       >
         {/* 🔹 TRIGGER */}
         <SelectTrigger className={`shadow-none ${className || "border-none"}`}>
-          {selectedLabels?.length > 0 ? (
-            <div className="flex flex-wrap gap-1 pr-6">
-              {selectedLabels.map((label, i) => (
+          {selectedOptions?.length > 0 ? (
+            <div
+              className="flex flex-wrap gap-1 pr-6"
+              onPointerDown={(e) => e.stopPropagation()}
+            >
+              {selectedOptions.map((opt) => (
                 <span
-                  key={i}
+                  key={opt.value}
                   className="bg-gray-200 px-2 py-0.5 rounded text-xs flex items-center gap-1"
                 >
-                  {label}
+                  {opt.label}
                   <X
                     className="w-3 h-3 cursor-pointer"
-                    onClick={(e) => {
+                    onPointerDown={(e) => {
                       e.stopPropagation();
-                      handleSelect(
-                        options.find((o) => o.label === label).value
-                      );
+                      e.preventDefault();
+                      handleSelect(opt.value);
                     }}
                   />
                 </span>
@@ -129,43 +138,26 @@ const CustomSelect = (props) => {
           {/* 🔹 OPTIONS */}
           <div className="max-h-48 overflow-auto">
             {options?.map((option) => {
-              const isSelected = selectedValues.includes(
-                String(option.value)
+              const isSelected = stringSelectedValues.includes(
+                String(option.value),
               );
 
               return (
-                <SelectItem
+                <div
                   key={option.value}
-                  value={String(option.value)}
-                  onSelect={(e) => {
-                    if (isMulti) {
-                      e.preventDefault(); // keep open
-                      handleSelect(String(option.value));
-                    }
+                  className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-gray-100 rounded"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(String(option.value)); // 🔥 normalize
                   }}
                 >
-                  <div className="flex items-center gap-2">
-                    {isMulti && (
-                      <input type="checkbox" checked={isSelected} readOnly />
-                    )}
-                    {option.label}
-                  </div>
-                </SelectItem>
+                  {isMulti && (
+                    <input type="checkbox" checked={isSelected} readOnly />
+                  )}
+                  <span>{option.label}</span>
+                </div>
               );
             })}
-
-            {/* 🔄 LOAD MORE */}
-            {hasMore && (
-              <button
-                className="w-full text-sm py-2 text-blue-500"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage((p) => p + 1);
-                }}
-              >
-                {isLoading ? "Loading..." : "Load more"}
-              </button>
-            )}
           </div>
 
           {/* ✅ APPLY BUTTON */}
@@ -182,9 +174,7 @@ const CustomSelect = (props) => {
         </SelectContent>
       </Select>
 
-      {error && (
-        <p className="mt-2 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );
 };
