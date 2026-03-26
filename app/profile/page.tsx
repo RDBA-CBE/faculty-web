@@ -1571,7 +1571,8 @@ export default function NaukriProfilePage() {
                                     >
                                       <span
                                         className={`font-medium ${
-                                          state.activeTab === item.id
+                                         state.activeProfileSubSection ===
+                                        item.id
                                             ? "!text-[#fff]" // This should still be activeTab for the main tab
                                             : "text-[#000]"
                                         }`}
@@ -1769,13 +1770,13 @@ export default function NaukriProfilePage() {
                                               </div>
 
                                               {/* Desktop Action Buttons - Top Right */}
-                                              <div className="hidden md:flex gap-2">
+                                              <div className="hidden md:flex gap-4">
                                                 {state?.userDetail
                                                   ?.resume_url ? (
                                                   <>
                                                     <button
                                                      
-                                                      className="bg-[#1E3786] text-white px-1 py-1"
+                                                      className="bg-[#1E3786] text-white px-3 py-1 text-xs "
                                                       onClick={downloadResume}
                                                       
                                                     >
@@ -1784,7 +1785,7 @@ export default function NaukriProfilePage() {
 
                                                     <button
                                                      
-                                                      className="hover:bg-[#1E3786]/10 border-[#3b82f6]/30 group/btn px-1 py-1"
+                                                      className=" border-[#1E3786]  px-1 py-1"
                                                       onClick={downloadResume}
                                                       title="Download Resume"
                                                     >
@@ -1798,7 +1799,7 @@ export default function NaukriProfilePage() {
 
                                                       onClick={deleteResume}
                                                      
-                                                      className="hover:bg-red-50 border-red-200 group/btn px-1 py-1"
+                                                      className="hover:bg-red-50 border-red-500 group/btn px-1 py-1"
                                                       title="Delete Resume"
                                                     >
                                                       <Trash
