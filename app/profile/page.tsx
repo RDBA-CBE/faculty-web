@@ -1394,7 +1394,7 @@ export default function NaukriProfilePage() {
                                 className="p-1 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
-                                <Edit size={14} className=" text-[#fff] " />
+                                <Edit size={14} className=" text-[#fff] " style={{height:"15px", width:"15px"}}/>
                               </Button>
                             </div>
                             {state?.userDetail?.short_desc && (
@@ -1498,7 +1498,7 @@ export default function NaukriProfilePage() {
                         className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
                           state.activeTab === tab
                             ? "bg-[#1e3786] text-white"
-                            : "text-[#000] hover:text-[#1e3786]"
+                            : "text-white hover:text-[#1e3786]"
                         }`}
                       >
                         {/* Tab Label */}
@@ -1571,7 +1571,7 @@ export default function NaukriProfilePage() {
                                         className={`font-medium ${
                                           state.activeTab === item.id
                                             ? "text-white" // This should still be activeTab for the main tab
-                                            : "text-gray-700"
+                                            : "text-white"
                                         }`}
                                       >
                                         {item.label}
@@ -1790,6 +1790,7 @@ export default function NaukriProfilePage() {
                                                     >
                                                       <Download
                                                         size={10}
+                                                        style={{height:"15px", width:"15px"}}
                                                         className="text-[#1E3786]  group-hover/btn:scale-110 transition-transform"
                                                       />
                                                     </Button>
@@ -1799,8 +1800,9 @@ export default function NaukriProfilePage() {
                                                       size="sm"
                                                       className="hover:bg-red-50 border-red-200 group/btn px-1 py-1"
                                                       title="Delete Resume"
-                                                    >
+                                                    >quiv
                                                       <Trash
+                                                      style={{height:"15px", width:"15px"}}
                                                         size={10}
                                                         className=" text-red-600 group-hover/btn:scale-110 transition-transform"
                                                       />
@@ -1820,6 +1822,7 @@ export default function NaukriProfilePage() {
                                                   >
                                                     <PlusIcon
                                                       size={10}
+                                                      style={{height:"15px", width:"15px"}}
                                                       className="text-[#1E3786] group-hover/btn:scale-110 transition-transform"
                                                     />
                                                   </Button>
