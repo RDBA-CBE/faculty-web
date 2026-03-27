@@ -66,7 +66,7 @@ import InviteCard from "@/components/component/InviteCard.component";
 
 export default function NaukriProfilePage() {
   const [activeTab, setActiveTab] = useState("resume");
-  const [isManualScroll, setIsManualScroll] = useState(false);
+  const isManualScrollRef = useRef(false);
 
   const [expandedDesc, setExpandedDesc] = useState({});
   const [expandedProjectDesc, setExpandedProjectDesc] = useState({});
@@ -117,6 +117,7 @@ export default function NaukriProfilePage() {
     funded: false,
     loading: true,
     activeTab: "Profile",
+    activeProfileSubSection: "resume",
 
     preferred_colleges: [],
     preferred_locations: [],
@@ -159,29 +160,46 @@ export default function NaukriProfilePage() {
     }
   }, [state.userId]);
 
+  const SECTION_IDS = [
+    "resume-section",
+    "headline-section",
+    "employment-section",
+    "education-section",
+    "projects-section",
+    "publications-section",
+    "skills-section",
+    "achievements-section",
+  ];
+
+  const activeTabRef = useRef(state.activeTab);
+  useEffect(() => {
+    activeTabRef.current = state.activeTab;
+  }, [state.activeTab]);
+
   useEffect(() => {
     const handleScroll = () => {
-      if (isManualScroll) return;
+      if (isManualScrollRef.current) return;
+      if (activeTabRef.current !== "Profile") return;
 
-      const scrollPosition = window.scrollY + 150;
-      let currentTab = "resume";
+      const scrollPosition = window.scrollY + 160;
+      let currentSubSection = "resume";
 
-      links.forEach((link) => {
-        const section = document.getElementById(link.section);
+      SECTION_IDS.forEach((sectionId) => {
+        const section = document.getElementById(sectionId);
         if (section) {
-          const offsetTop = section.offsetTop;
-          if (scrollPosition >= offsetTop) {
-            currentTab = link.id;
+          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+          if (scrollPosition >= sectionTop) {
+            currentSubSection = sectionId.replace("-section", "");
           }
         }
       });
 
-      setActiveTab(currentTab);
+      setState({ activeProfileSubSection: currentSubSection });
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isManualScroll]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -520,13 +538,32 @@ export default function NaukriProfilePage() {
   // };
 
   const downloadResume = (e) => {
-    e.preventDefault(); // prevent same tab navigation
+    e.preventDefault();
     e.stopPropagation();
-
     if (state.userDetail?.resume_url) {
       window.open(state.userDetail.resume_url, "_blank", "noopener,noreferrer");
     } else {
       Failure("No resume available to download.");
+    }
+  };
+
+  const DirectdownloadResume = async () => {
+    try {
+      const url = state.userDetail?.resume_url;
+      if (!url) { Failure("No resume available to download."); return; }
+      const response = await fetch(url, { mode: "cors" });
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      const filename = getFileNameFromUrl(url) || "resume";
+      link.setAttribute("download", filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      Failure("Failed to download resume.");
     }
   };
 
@@ -1069,9 +1106,8 @@ export default function NaukriProfilePage() {
   };
 
   const scrollToSection = (sectionId: string) => {
-    const tabId = sectionId.replace("-section", "");
-    setActiveTab(tabId);
-    setIsManualScroll(true);
+    const subSectionId = sectionId.replace("-section", "");
+    isManualScrollRef.current = true;
 
     const element = document.getElementById(sectionId);
 
@@ -1079,7 +1115,6 @@ export default function NaukriProfilePage() {
       const headerOffset = 100;
       const elementPosition =
         element.getBoundingClientRect().top + window.pageYOffset;
-
       const offsetPosition = elementPosition - headerOffset;
 
       window.scrollTo({
@@ -1088,9 +1123,20 @@ export default function NaukriProfilePage() {
       });
     }
 
-    setTimeout(() => {
-      setIsManualScroll(false);
-    }, 800);
+    const fallback = setTimeout(() => {
+      isManualScrollRef.current = false;
+      setState({ activeProfileSubSection: subSectionId });
+    }, 1000);
+
+    window.addEventListener(
+      "scrollend",
+      () => {
+        clearTimeout(fallback);
+        isManualScrollRef.current = false;
+        setState({ activeProfileSubSection: subSectionId });
+      },
+      { once: true }
+    );
   };
 
   const links = [
@@ -1511,16 +1557,16 @@ export default function NaukriProfilePage() {
                                       }
                                       className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
                                         ${
-                                          activeTab === item.id
-                                            ? "bg-[#1E3786] text-white"
+                                          state.activeProfileSubSection === item.id
+                                            ? "bg-[#1E3786] !text-[#fff]"
                                             : " hover:bg-white/80"
                                         }`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          activeTab === item.id
-                                            ? "text-white"
-                                            : "text-gray-700"
+                                          state.activeProfileSubSection === item.id
+                                            ? "!text-[#fff]"
+                                            : "text-[#000]"
                                         }`}
                                       >
                                         {item.label}
@@ -1716,15 +1762,41 @@ export default function NaukriProfilePage() {
                                               </div>
                                             </div>
 
-                                            {state?.userDetail?.resume_url && (
-                                              <div className="flex flex-wrap items-center gap-3 mb-4">
-                                                <div className="bg-gradient-to-r from-[#3b82f6]/20 to-blue-100 px-3 py-1 rounded-full">
-                                                  <span className="text-[#1E3786] font-semibold text-sm">
-                                                    Latest Version
-                                                  </span>
-                                                </div>
-                                              </div>
-                                            )}
+                                            <div className="flex gap-2 flex-wrap">
+                                              {state?.userDetail?.resume_url ? (
+                                                <>
+                                                  <button
+                                                    className="bg-[#1E3786] text-white px-3 py-1 text-xs rounded-lg"
+                                                    onClick={downloadResume}
+                                                  >
+                                                    View
+                                                  </button>
+                                                  <button
+                                                    className="border border-[#1E3786] rounded-md px-1 py-1"
+                                                    onClick={DirectdownloadResume}
+                                                    title="Download Resume"
+                                                  >
+                                                    <Download
+                                                      size={10}
+                                                      style={{ height: "15px", width: "15px" }}
+                                                      className="text-[#1E3786]"
+                                                    />
+                                                  </button>
+                                                </>
+                                              ) : (
+                                                <button
+                                                  className="border border-[#1E3786] rounded-md px-1 py-1"
+                                                  title="No Resume"
+                                                  disabled
+                                                >
+                                                  <PlusIcon
+                                                    size={10}
+                                                    style={{ height: "15px", width: "15px" }}
+                                                    className="text-gray-400"
+                                                  />
+                                                </button>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                       </div>
@@ -2129,11 +2201,13 @@ export default function NaukriProfilePage() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  {state.expandedSections.employment ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("employment"); }} className="cursor-pointer">
+                                    {state.expandedSections.employment ? (
+                                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                                    ) : (
+                                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                                    )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -2341,10 +2415,16 @@ export default function NaukriProfilePage() {
                                                             "date",
                                                           )}{" "}
                                                           to{" "}
-                                                          {DateFormat(
-                                                            emp.end_date,
-                                                            "date",
-                                                          )}
+                                                          {emp.end_date &&
+                                                            DateFormat(
+                                                              emp.end_date,
+                                                              "date",
+                                                            )
+                                                            ? DateFormat(
+                                                              emp.end_date,
+                                                              "date",
+                                                            )
+                                                            : "Present"}
                                                         </span>
                                                         {/* <span className="ml-1">
                                                         (
@@ -2356,6 +2436,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Job Description */}
+                                                  {emp.job_description && (
                                                   <div className="bg-white rounded-lg py-4 px-2 border mb-2">
                                                     <p className="text-gray-700 leading-relaxed text-sm">
                                                       {expandedDesc[emp.id]
@@ -2394,6 +2475,7 @@ export default function NaukriProfilePage() {
                                                         )}
                                                     </p>
                                                   </div>
+                                                  )}
 
                                                   {/* Key Skills */}
                                                   {/* {emp.keySkills &&
@@ -2510,11 +2592,13 @@ export default function NaukriProfilePage() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  {state.expandedSections.education ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("education"); }} className="cursor-pointer">
+                                    {state.expandedSections.education ? (
+                                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                                    ) : (
+                                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                                    )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -2829,11 +2913,13 @@ export default function NaukriProfilePage() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  {state.expandedSections.projects ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("projects"); }} className="cursor-pointer">
+                                    {state.expandedSections.projects ? (
+                                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                                    ) : (
+                                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                                    )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -3160,6 +3246,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Project Description */}
+                                                  {project.project_description && (
                                                   <div className="bg-white rounded-lg p-4 border  mb-4">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedProjectDesc[
@@ -3217,6 +3304,7 @@ export default function NaukriProfilePage() {
                                                       </div>
                                                     )}
                                                   </div>
+                                                  )}
 
                                                   {/* Technologies */}
                                                   {project.technologies &&
@@ -3331,11 +3419,13 @@ export default function NaukriProfilePage() {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  {state.expandedSections.publications ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("publications"); }} className="cursor-pointer">
+                                    {state.expandedSections.publications ? (
+                                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                                    ) : (
+                                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                                    )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -3584,6 +3674,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Publication Description */}
+                                                  {pub.publication_description && (
                                                   <div className="bg-white rounded-lg p-4 border  ">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedPublicationDesc[
@@ -3628,6 +3719,7 @@ export default function NaukriProfilePage() {
                                                         )}
                                                     </p>
                                                   </div>
+                                                  )}
                                                 </div>
                                               </div>
 
@@ -3923,6 +4015,7 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Achievement Description */}
+                                                  {achievement.achievement_description && (
                                                   <div className="bg-white rounded-lg p-4 border">
                                                     <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
                                                       {expandedAchievementDesc[
@@ -3983,6 +4076,7 @@ export default function NaukriProfilePage() {
                                                       </a>
                                                     )}
                                                   </div>
+                                                  )}
                                                 </div>
                                               </div>
                                             </div>

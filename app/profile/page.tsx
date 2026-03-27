@@ -66,6 +66,7 @@ import CustomMultiSelect from "@/components/common-components/multi-select";
 import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
+import HrRequestTable from "@/components/component/HrRequestTable.component";
 
 export default function NaukriProfilePage() {
   const isManualScrollRef = useRef(false);
@@ -5247,16 +5248,27 @@ export default function NaukriProfilePage() {
                         </div> */}
 
                         {state.userDetail?.interesteds?.length > 0 ? (
-                          state.userDetail?.interesteds?.map((invite) => (
-                            <InviteCard
-                              key={invite.id}
-                              invite={invite}
-                              submit={(type) =>
-                                updateInviteStatus(type, invite)
-                              }
-                              btnLoading={state.btnLoading}
-                            />
-                          ))
+                          <>
+                            {/* Desktop: DataTable - shown above lg breakpoint */}
+                            <div className="hidden lg:block">
+                              <HrRequestTable
+                                invites={state.userDetail.interesteds}
+                                onSubmit={(type, invite) => updateInviteStatus(type, invite)}
+                                btnLoading={state.btnLoading}
+                              />
+                            </div>
+                            {/* Mobile: InviteCard - shown below lg breakpoint */}
+                            <div className="flex flex-col gap-4 lg:hidden">
+                              {state.userDetail.interesteds.map((invite) => (
+                                <InviteCard
+                                  key={invite.id}
+                                  invite={invite}
+                                  submit={(type) => updateInviteStatus(type, invite)}
+                                  btnLoading={state.btnLoading}
+                                />
+                              ))}
+                            </div>
+                          </>
                         ) : (
                           <Card className="bg-white border-2 border-dashed border-gray-200 shadow-none rounded-md">
                             <CardContent className="flex flex-col items-center justify-center py-16">
