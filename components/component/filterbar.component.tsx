@@ -177,6 +177,17 @@ const PopupPortal: React.FC<{ children: ReactNode }> = ({ children }) => {
   return createPortal(children, document.body);
 };
 
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 1024);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+};
+
 const Filterbar: React.FC<SidebarProps> = ({
   filters,
   onFilterChange,
@@ -193,6 +204,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   jobRoleList,
 closeModal,
 }) => {
+  const isMobile = useIsMobile();
   const [showAllColleges, setShowAllColleges] = useState(false);
   const [showAllDept, setShowAllDept] = useState(false);
   const [showAllJobRoles, setShowAllJobRoles] = useState(false);
@@ -239,6 +251,17 @@ closeModal,
   const jobRoleSectionRef = useRef<HTMLDivElement>(null);
   const categorySectionRef = useRef<HTMLDivElement>(null);
   const locationSectionRef = useRef<HTMLDivElement>(null);
+
+  const anyPopupOpen = showAllColleges || showAllDept || showAllJobRoles || showAllCategories || showAllLocations;
+
+  useEffect(() => {
+    if (anyPopupOpen) {
+      document.body.classList.add("filterbar-popup-open");
+    } else {
+      document.body.classList.remove("filterbar-popup-open");
+    }
+    return () => document.body.classList.remove("filterbar-popup-open");
+  }, [anyPopupOpen]);
 
   const [salarySliderRange, setSalarySliderRange] = useState<[number, number]>([
     0, 5000000,
@@ -311,7 +334,7 @@ closeModal,
       return;
     }
 
-    if (filters.salaryRange.length === 0) {
+    if (!filters.salaryRange?.length) {
       setSalarySliderRange([0, maxSalary]);
     } else if (salaryRangeList && salaryRangeList.length > 0) {
       let min = maxSalary;
@@ -368,7 +391,7 @@ closeModal,
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         collegePopupRef.current &&
         !collegePopupRef.current.contains(event.target as Node) &&
@@ -380,13 +403,13 @@ closeModal,
     };
 
     if (showAllColleges) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [showAllColleges]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         deptPopupRef.current &&
         !deptPopupRef.current.contains(event.target as Node) &&
@@ -398,13 +421,13 @@ closeModal,
     };
 
     if (showAllDept) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [showAllDept]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         jobRolePopupRef.current &&
         !jobRolePopupRef.current.contains(event.target as Node) &&
@@ -416,13 +439,13 @@ closeModal,
     };
 
     if (showAllJobRoles) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [showAllJobRoles]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         locationPopupRef.current &&
         !locationPopupRef.current.contains(event.target as Node) &&
@@ -434,13 +457,13 @@ closeModal,
     };
 
     if (showAllLocations) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [showAllLocations]);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: PointerEvent) => {
       if (
         categoryPopupRef.current &&
         !categoryPopupRef.current.contains(event.target as Node) &&
@@ -452,9 +475,9 @@ closeModal,
     };
 
     if (showAllCategories) {
-      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("pointerdown", handleClickOutside);
     }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
   }, [showAllCategories]);
 
   // useEffect(() => {
@@ -738,16 +761,22 @@ closeModal,
 
         <PopupPortal>
           {showAllLocations && (
-            <div
-              ref={locationPopupRef}
-              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
-              style={{
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllLocations(false)} />
+              <div
+                ref={locationPopupRef}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+              style={isMobile ? {
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "92vw", height: "80vh",
+              } : {
                 width: "clamp(300px, 90vw, 900px)",
-                height: `clamp(420px, 60vh, 420px)`,
+                height: "clamp(420px, 60vh, 420px)",
                 left: `${locationPopupPos.left}px`,
                 top: `${locationPopupPos.top}px`,
                 maxHeight: "80vh",
-                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
@@ -816,9 +845,9 @@ closeModal,
 
               <div
                 ref={listRef}
-                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="overflow-y-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
               >
-                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                <div className="columns-[220px] gap-6 w-full lg:w-max h-full transition-opacity duration-300">
                   {locationFilteredList.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
@@ -876,6 +905,7 @@ closeModal,
                 </div>
               </div>
             </div>
+            </>
           )}
         </PopupPortal>
 
@@ -911,16 +941,22 @@ closeModal,
 
         <PopupPortal>
           {showAllCategories && (
-            <div
-              ref={categoryPopupRef}
-              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
-              style={{
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllCategories(false)} />
+              <div
+                ref={categoryPopupRef}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+              style={isMobile ? {
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "92vw", height: "80vh",
+              } : {
                 width: "clamp(300px, 90vw, 900px)",
-                height: `clamp(420px, 60vh, 420px)`,
+                height: "clamp(420px, 60vh, 420px)",
                 left: `${categoryPopupPos.left}px`,
                 top: `${categoryPopupPos.top}px`,
                 maxHeight: "80vh",
-                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
@@ -989,9 +1025,9 @@ closeModal,
 
               <div
                 ref={listRef}
-                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="overflow-y-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
               >
-                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                <div className="columns-[220px] gap-6 w-full lg:w-max h-full transition-opacity duration-300">
                   {categoryFilteredList.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
@@ -1049,6 +1085,7 @@ closeModal,
                 </div>
               </div>
             </div>
+            </>
           )}
         </PopupPortal>
 
@@ -1084,16 +1121,22 @@ closeModal,
 
         <PopupPortal>
           {showAllDept && (
-            <div
-              ref={deptPopupRef}
-              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
-              style={{
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllDept(false)} />
+              <div
+                ref={deptPopupRef}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+              style={isMobile ? {
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "92vw", height: "80vh",
+              } : {
                 width: "clamp(300px, 90vw, 900px)",
-                height: `clamp(420px, 60vh, 420px)`,
+                height: "clamp(420px, 60vh, 420px)",
                 left: `${deptPopupPos.left}px`,
                 top: `${deptPopupPos.top}px`,
                 maxHeight: "80vh",
-                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
@@ -1164,9 +1207,9 @@ closeModal,
 
               <div
                 ref={listRef}
-                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="overflow-y-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
               >
-                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                <div className="columns-[220px] gap-6 w-full lg:w-max h-full transition-opacity duration-300">
                   {DepartfilteredList.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
@@ -1222,6 +1265,7 @@ closeModal,
                 </div>
               </div>
             </div>
+            </>
           )}
         </PopupPortal>
 
@@ -1258,16 +1302,22 @@ closeModal,
 
         <PopupPortal>
           {showAllJobRoles && (
-            <div
-              ref={jobRolePopupRef}
-              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
-              style={{
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllJobRoles(false)} />
+              <div
+                ref={jobRolePopupRef}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+              style={isMobile ? {
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "92vw", height: "80vh",
+              } : {
                 width: "clamp(300px, 90vw, 900px)",
-                height: `clamp(420px, 60vh, 420px)`,
+                height: "clamp(420px, 60vh, 420px)",
                 left: `${jobRolePopupPos.left}px`,
                 top: `${jobRolePopupPos.top}px`,
                 maxHeight: "80vh",
-                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
@@ -1336,9 +1386,9 @@ closeModal,
 
               <div
                 ref={listRef}
-                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="overflow-y-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
               >
-                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                <div className="columns-[220px] gap-6 w-full lg:w-max h-full transition-opacity duration-300">
                   {jobRoleFilteredList.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
@@ -1394,6 +1444,7 @@ closeModal,
                 </div>
               </div>
             </div>
+            </>
           )}
         </PopupPortal>
 
@@ -1429,16 +1480,22 @@ closeModal,
 
         <PopupPortal>
           {showAllColleges && (
-            <div
-              ref={collegePopupRef}
-              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col"
-              style={{
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllColleges(false)} />
+              <div
+                ref={collegePopupRef}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+              style={isMobile ? {
+                top: "50%", left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: "92vw", height: "80vh",
+              } : {
                 width: "clamp(300px, 90vw, 900px)",
-                height: `clamp(420px, 60vh, 420px)`,
+                height: "clamp(420px, 60vh, 420px)",
                 left: `${collegePopupPos.left}px`,
                 top: `${collegePopupPos.top}px`,
                 maxHeight: "80vh",
-                overflowY: "hidden",
               }}
             >
               <div className="flex justify-between items-start mb-3 border-b">
@@ -1508,9 +1565,9 @@ closeModal,
 
               <div
                 ref={listRef}
-                className="overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
+                className="overflow-y-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
               >
-                <div className="columns-[220px] gap-6 w-max h-full transition-opacity duration-300">
+                <div className="columns-[220px] gap-6 w-full lg:w-max h-full transition-opacity duration-300">
                   {collegefilteredList?.map((item, index) => {
                     const currentLetter = item.label[0].toUpperCase();
                     const prevLetter =
@@ -1566,6 +1623,7 @@ closeModal,
                 </div>
               </div>
             </div>
+            </>
           )}
         </PopupPortal>
 

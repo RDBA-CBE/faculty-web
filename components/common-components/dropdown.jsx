@@ -283,7 +283,7 @@ const CustomSelect = (props) => {
           </SelectTrigger>
           <SelectContent
             ref={handleContentRef}
-            className="max-h-[220px] overflow-y-auto"
+            className="max-h-[220px] overflow-y-auto w-[70%] overflow-x-auto mx-auto"
           >
             {options?.map((option) => (
               <SelectItem key={option.value} value={String(option.value)}>

@@ -436,7 +436,7 @@ ${userName}`;
     window.addEventListener("scroll", handleStickyJobList);
     handleStickyJobList();
 
-    return () => {
+    return () => {masterExperienceList
       window.removeEventListener("scroll", handleStickyJobList);
       resizeObserver.disconnect();
     };
@@ -483,6 +483,7 @@ ${userName}`;
     // salaryRangeList();
     // tagsList();
     filterList();
+    masterExperienceList()
   }, []);
 
   useEffect(() => {
@@ -657,7 +658,7 @@ ${userName}`;
     }
   };
 
-  const experienceList = async () => {
+  const masterExperienceList = async () => {
     try {
       const res: any = await Models.masterExperience.list();
       const dropdown = res?.results?.map((item: any) => ({
@@ -666,7 +667,7 @@ ${userName}`;
       }));
 
       setState({
-        experienceList: dropdown,
+        masterExperienceList: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -3635,7 +3636,7 @@ ${userName}`;
                         // title="Experience"
                         required
                         className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit"
-                        options={state.experienceList}
+                        options={state.masterExperienceList}
                         value={state?.experience || ""}
                         onChange={(selected) =>
                           setState({
