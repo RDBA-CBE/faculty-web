@@ -1200,7 +1200,7 @@ export default function NaukriProfilePage() {
   const links = [
     { id: "resume", label: "Resume/login", section: "resume-section" },
     { id: "headline", label: "Profile Summary", section: "headline-section" },
-    { id: "skills", label: "Skills", section: "skills-section" },
+   
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
@@ -1209,6 +1209,7 @@ export default function NaukriProfilePage() {
       label: "Publications",
       section: "publications-section",
     },
+    { id: "skills", label: "Skills", section: "skills-section" },
     {
       id: "achievements",
       label: "Achievements",

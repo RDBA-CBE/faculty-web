@@ -180,7 +180,7 @@ export default function JobsPage() {
         const names = state.department_id
           .map((item: any) => {
             const id = typeof item === "object" ? item.value : item;
-            return state.jobDetail?.department?.find((d: any) => d.id === id)?.name;
+            return state.jobDetail?.department?.find((d: any) => d.id == id)?.name;
           })
           .filter(Boolean);
         if (names.length > 0) deptName = names.join(", ");
@@ -3637,19 +3637,10 @@ ${userName}`;
                         label: d.name,
                       }))}
                       className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit" 
-                        value={
-                          state.department_id
-                            ? state.jobDetail.department
-                                .filter((d: any) =>
-                                  state.department_id.includes(d.id)
-                                )
-                                .map((d: any) => ({ value: d.id, label: d.name }))
-                            : []
-                        }
+                        value={state.department_id || []}
                         onChange={(selected: any) => {
-                          const values = selected ? selected.map((s: any) => s.value) : [];
-                          handleFormChange("department_id", values);
-                      }}
+                          handleFormChange("department_id", selected);
+                        }}
                       placeholder="Select a department"
                       isMulti={true}
                       error={state.errors.department_id}
