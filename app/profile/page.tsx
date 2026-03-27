@@ -4788,7 +4788,7 @@ export default function NaukriProfilePage() {
                                 </div>
                               </div>
 
-                              <div className=" flex justify-end">
+                              <div className=" flex justify-end hidden md:block">
                                 <Button
                                   onClick={() => menusUpdate("qualification")}
                                   className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -4878,6 +4878,16 @@ export default function NaukriProfilePage() {
                                 </div>
                               ))}
                             </div>
+
+                            <div className=" flex block md:hidden">
+                                <Button
+                                  onClick={() => menusUpdate("qualification")}
+                                  className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Save Qualifications
+                                </Button>
+                              </div>
                           </CardContent>
                         </Card>
                       </div>
@@ -4901,7 +4911,7 @@ export default function NaukriProfilePage() {
                                 </div>
                               </div>
 
-                              <div className="flex ">
+                              <div className="flex hidden md:block">
                                 <Button
                                   onClick={() => menusUpdate("pref")}
                                   className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -5028,7 +5038,7 @@ export default function NaukriProfilePage() {
                               </div>
                             </div>
 
-                            {/* <div className="flex ">
+                            <div className="flex block md:hidden">
                               <Button
                                 onClick={() => menusUpdate("pref")}
                                 className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -5036,7 +5046,7 @@ export default function NaukriProfilePage() {
                                 <CheckCircle className="w-4 h-4 mr-2" />
                                 Update Preferences
                               </Button>
-                            </div> */}
+                            </div>
                           </CardContent>
                         </Card>
                       </div>
