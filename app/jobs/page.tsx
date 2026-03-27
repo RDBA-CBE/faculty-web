@@ -834,12 +834,7 @@ ${userName}`;
         setState({ jobID: state.jobDetail.id });
         const departmentIds =
           state.jobDetail?.department?.length === 1
-            ? [
-                {
-                  value: state.jobDetail.department[0].id,
-                  label: state.jobDetail.department[0].name,
-                },
-              ]
+              ? [state.jobDetail.department[0].id]
             : [];
         handleFormSubmitWithprofile(profile.id, departmentIds);
       }
@@ -864,12 +859,7 @@ ${userName}`;
 
     const departmentIds =
       state.jobDetail?.department?.length === 1
-        ? [
-            {
-              value: state.jobDetail.department[0].id,
-              label: state.jobDetail.department[0].name,
-            },
-          ]
+        ? [state.jobDetail.department[0].id]
         : [];
 
     if (profile) {
@@ -894,12 +884,7 @@ ${userName}`;
   const handleContinueAsGuest = () => {
     const departmentIds =
       state.jobDetail?.department?.length === 1
-        ? [
-            {
-              value: state.jobDetail.department[0].id,
-              label: state.jobDetail.department[0].name,
-            },
-          ]
+        ? [state.jobDetail.department[0].id]
         : [];
 
     const newState: any = {
@@ -3652,9 +3637,18 @@ ${userName}`;
                         label: d.name,
                       }))}
                       className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit" 
-                      value={state.department_id || []}
-                      onChange={(selected) => {
-                        handleFormChange("department_id", selected);
+                        value={
+                          state.department_id
+                            ? state.jobDetail.department
+                                .filter((d: any) =>
+                                  state.department_id.includes(d.id)
+                                )
+                                .map((d: any) => ({ value: d.id, label: d.name }))
+                            : []
+                        }
+                        onChange={(selected: any) => {
+                          const values = selected ? selected.map((s: any) => s.value) : [];
+                          handleFormChange("department_id", values);
                       }}
                       placeholder="Select a department"
                       isMulti={true}

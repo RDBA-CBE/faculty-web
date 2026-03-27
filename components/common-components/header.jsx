@@ -51,7 +51,6 @@ import {
 import {
   buildFormData,
   Failure,
-  Success,
   useSetState,
 } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
@@ -60,6 +59,7 @@ import { Input } from "../ui/input";
 import CustomPhoneInput from "./phoneInput";
 import * as Validation from "@/utils/validation.utils";
 import * as Yup from "yup";
+import { Success } from "./toast";
 
 const Header = () => {
   const router = useRouter();
@@ -80,6 +80,8 @@ const Header = () => {
     logoutLoading: false,
     isOpenLogin: false,
     isOpenEmailVerify: false,
+    loginFailModal: false,
+    loginErrorMessage: "",
   });
 
   useEffect(() => {
@@ -89,7 +91,17 @@ const Header = () => {
 
   useEffect(() => {
     const handleOpenRegisterModal = () => {
-      setState({ isOpenReg: true });
+      setState({
+        isOpenReg: true,
+        email: "",
+        password: "",
+        confirmPassword: "",
+        first_name: "",
+        last_name: "",
+        terms: false,
+        newsletter: false,
+        errors: {},
+      });
     };
 
     window.addEventListener("openRegisterModal", handleOpenRegisterModal);
@@ -101,7 +113,12 @@ const Header = () => {
 
   useEffect(() => {
     const handleOpenLoginModal = () => {
-      setState({ isOpenLogin: true });
+      setState({
+        isOpenLogin: true,
+        email: "",
+        password: "",
+        errors: {},
+      });
     };
 
     window.addEventListener("openLoginModal", handleOpenLoginModal);
@@ -164,6 +181,13 @@ const Header = () => {
         // isOpenEmailVerify: true,
         errors: {},
         btnLoading: false,
+        email: "",
+        password: "",
+        confirmPassword: "",
+        first_name: "",
+        last_name: "",
+        terms: false,
+        newsletter: false,
       });
       setState({ successRegistraion: true });
     } catch (error) {
@@ -206,7 +230,13 @@ const Header = () => {
       localStorage.setItem("refresh", res.refresh);
       localStorage.setItem("user", JSON.stringify(res.user));
 
-      setState({ token: res.access, errors: {}, isOpenLogin: false });
+      setState({
+        token: res.access,
+        errors: {},
+        isOpenLogin: false,
+        email: "",
+        password: "",
+      });
       window.dispatchEvent(new CustomEvent("loginSuccess"));
       Success("Login Successfully!");
 
@@ -224,8 +254,11 @@ const Header = () => {
 
         setState({ errors: validationErrors, btnLoading: false });
       } else {
-        Failure(error?.error);
-        setState({ btnLoading: false });
+        setState({
+          loginErrorMessage: error?.error || "Login failed. Please check your credentials.",
+          loginFailModal: true,
+          btnLoading: false,
+        });
       }
     }
   };
@@ -370,7 +403,12 @@ const Header = () => {
                   <Button
                     onClick={() => {
                       sessionStorage.setItem("from_login_btn", "true");
-                      setState({ isOpenLogin: true });
+                      setState({
+                        isOpenLogin: true,
+                        email: "",
+                        password: "",
+                        errors: {},
+                      });
                     }}
                     variant="ghost"
                     className="text-black text-sm font-bold hover:text-[#F2B31D] transition-colors"
@@ -378,7 +416,19 @@ const Header = () => {
                     Login
                   </Button>
                   <Button
-                    onClick={() => setState({ isOpenReg: true })}
+                    onClick={() =>
+                      setState({
+                        isOpenReg: true,
+                        email: "",
+                        password: "",
+                        confirmPassword: "",
+                        first_name: "",
+                        last_name: "",
+                        terms: false,
+                        newsletter: false,
+                        errors: {},
+                      })
+                    }
                     className="bg-[#f2b31d] hover:bg-[#d9a016] text-[#000] px-8 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-transform active:scale-95 shadow-md"
                   >
                     Register
@@ -432,7 +482,12 @@ const Header = () => {
                         <Button
                           onClick={() => {
                             sessionStorage.setItem("from_login_btn", "true");
-                            setState({ isOpenLogin: true });
+                            setState({
+                              isOpenLogin: true,
+                              email: "",
+                              password: "",
+                              errors: {},
+                            });
                             setOpen(false);
                           }}
                           variant="outline"
@@ -442,7 +497,17 @@ const Header = () => {
                         </Button>
                         <Button
                           onClick={() => {
-                            setState({ isOpenReg: true });
+                            setState({
+                              isOpenReg: true,
+                              email: "",
+                              password: "",
+                              confirmPassword: "",
+                              first_name: "",
+                              last_name: "",
+                              terms: false,
+                              newsletter: false,
+                              errors: {},
+                            });
                             setOpen(false);
                           }}
                           className="w-full bg-[#F2B31D] hover:bg-[#E5A01A] text-white"
@@ -462,7 +527,7 @@ const Header = () => {
       <Modal
         isOpen={state.isOpenLogin}
         setIsOpen={() => {
-          setState({ errors: {}, isOpenLogin: false });
+          setState({ errors: {}, isOpenLogin: false, email: "", password: "" });
         }}
         // closeIcon={false}
         hideHeader={true}
@@ -486,7 +551,18 @@ const Header = () => {
                 Don't have account{" "}
                 <button
                   onClick={() => {
-                    setState({ isOpenLogin: false, isOpenReg: true });
+                    setState({
+                      isOpenLogin: false,
+                      isOpenReg: true,
+                      email: "",
+                      password: "",
+                      confirmPassword: "",
+                      first_name: "",
+                      last_name: "",
+                      terms: false,
+                      newsletter: false,
+                      errors: {},
+                    });
                   }}
                   className="text-amber-500 hover:text-amber-600 font-medium"
                 >
@@ -559,7 +635,17 @@ const Header = () => {
       <Modal
         isOpen={state.isOpenReg}
         setIsOpen={() => {
-          setState({ errors: {}, isOpenReg: false });
+          setState({
+            errors: {},
+            isOpenReg: false,
+            email: "",
+            password: "",
+            confirmPassword: "",
+            first_name: "",
+            last_name: "",
+            terms: false,
+            newsletter: false,
+          });
         }}
         hideHeader={true}
         title="Create Account"
@@ -584,7 +670,13 @@ const Header = () => {
                 Already have account?{" "}
                 <button
                   onClick={() => {
-                    setState({ isOpenReg: false, isOpenLogin: true });
+                    setState({
+                      isOpenReg: false,
+                      isOpenLogin: true,
+                      email: "",
+                      password: "",
+                      errors: {},
+                    });
                   }}
                   className="text-amber-500 hover:text-amber-600 font-medium"
                 >
@@ -1083,6 +1175,34 @@ const Header = () => {
             </p>
 
             
+          </div>
+        )}
+      />
+
+      <Modal
+        isOpen={state.loginFailModal}
+        setIsOpen={() => {
+          setState({ loginFailModal: false });
+        }}
+        title="Login Failed"
+        width="auto"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+            <h2 className="text-xl font-bold text-red-500 mb-6 z-10">
+              Login Failed
+            </h2>
+
+            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+              {state.loginErrorMessage}
+            </p>
+
+            <Button
+              onClick={() => setState({ loginFailModal: false })}
+              className="mt-6 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-3xl px-8"
+            >
+              Try Again
+            </Button>
           </div>
         )}
       />

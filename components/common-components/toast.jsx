@@ -30,14 +30,34 @@ const toastStyles = {
 //   dismissAndToast(message, toastStyles.success);
 // }
 
-function dismissAndToast(message, style,onClick) {
-  toast.dismiss(); // Dismiss existing toasts
+// function dismissAndToast(message, style,onClick) {
+//   toast.dismiss(); // Dismiss existing toasts
+//   toast(message, {
+//     duration: 5000,
+//     style,
+//     action: {
+//       label: "x",
+//       onClick: () => onClick,
+//     },
+//   });
+// }
+
+function dismissAndToast(message, style, onClick) {
+  toast.dismiss();
+
   toast(message, {
     duration: 5000,
-    style,
+    style: {
+      ...style,
+    },
+    classNames: {
+      title: "!text-white",
+      description: "!text-white",
+      actionButton: "!text-white",
+    },
     action: {
       label: "x",
-      onClick: () => onClick,
+      onClick: onClick,
     },
   });
 }
@@ -61,9 +81,15 @@ export function Success(message,onClick) {
 
 export function InfinitySuccess(message, onClick) {
   toast.dismiss();
+
   toast(message, {
     duration: Infinity,
     style: toastStyles.success,
+    classNames: {
+      title: "!text-white",
+      description: "!text-white",
+      actionButton: "!text-white",
+    },
     action: {
       label: "x",
       onClick: () => {
