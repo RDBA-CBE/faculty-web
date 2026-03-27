@@ -78,46 +78,65 @@ const FindYourJob = () => {
     jobList(state.page);
   }, [state.page]);
 
-  const locationList = async () => {
+ const locationList = async () => {
+  try {
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.location.list(page);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
+    }
+
+    const dropdown = Dropdown(allResults, "city");
+
+    setState({
+      locationList: dropdown,
+    });
+  } catch (error) {
+    console.log("Error fetching locations:", error);
+  }
+};
+
+  const JobCatList = async () => {
     try {
-      const res: any = await Models.location.list();
-      const dropdown: any = Dropdown(res?.results, "city");
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+  
+      while (hasNext) {
+        const res: any = await Models.category.list(page,);
+  
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+  
+        hasNext = !!res?.next;
+        page++;
+      }
+  
+      const dropdown = Dropdown(allResults, "name");
+  
       setState({
-        locationList: dropdown,
+        jobCatList: dropdown,
       });
     } catch (error) {
-      console.log("✌️error --->", error);
+      console.error("Error fetching categories:", error);
     }
   };
 
-  const JobCatList = () => loadJobCatOptions(1);
+ 
 
-   const handleLoadMoreJobCat = () => {
-    if (state.jobRoleListNext && !state.jobCatListLoading) {
-      loadJobCatOptions((state.jobCatListPage || 1) + 1, "", true);
-    }
-  };
+   
 
-  const loadJobCatOptions = async (
-      page = 1,
-      search = "",
-      loadMore = false,
-    ) => {
-      try {
-        setState({ jobCatListLoading: true });
-        const res: any = await Models.category.list(page, search);
-        const dropdown: any = Dropdown(res?.results, "name");
-        setState({
-          jobCatListLoading: false,
-          jobCatListPage: page,
-          jobCatList: loadMore ? [...state.jobCatList, ...dropdown] : dropdown,
-          jobCatListNext: res?.next,
-        });
-      } catch (error) {
-        console.log("error fetching job roles", error);
-        setState({ jobCatListLoading: false });
-      }
-    };
+ 
 
   // const JobCatList = async () => {
   //     try {
@@ -236,7 +255,7 @@ const FindYourJob = () => {
                         JobCat: selected ? selected.value : "",
                       })
                     }
-                    loadMore={handleLoadMoreJobCat}
+                  
                   loading={state.jobCatListLoading}
                   />
                 </div>

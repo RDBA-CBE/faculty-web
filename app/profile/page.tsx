@@ -165,7 +165,7 @@ export default function NaukriProfilePage() {
   useEffect(() => {
     experienceList();
     locationList(1);
-    collegeList(1);
+    collegeList();
     appliedJobList();
     getSavedJobs();
   }, []);
@@ -330,22 +330,33 @@ export default function NaukriProfilePage() {
     }
   };
 
-  const collegeList = async (search) => {
-    try {
-      const body = {
-        pagination: "No",
-        search: search?.search,
-      };
-      const res: any = await Models.colleges.collegeList(body);
-      const dropdown = Dropdown(res?.results, "college_name");
+  const collegeList = async (search = "") => {
+  try {
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
 
-      setState({
-        collegeList: dropdown,
+    while (hasNext) {
+      const res: any = await Models.colleges.collegeList({
+        page,
+        search,
       });
-    } catch (error) {
-      console.log("✌️error --->", error);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
     }
-  };
+
+    const dropdown = Dropdown(allResults, "college_name");
+
+    setState({ collegeList: dropdown });
+  } catch (error) {
+    console.log("Error fetching colleges:", error);
+  }
+};
 
   const appliedJobList = async (page = 1, append = false) => {
     try {
@@ -764,9 +775,27 @@ export default function NaukriProfilePage() {
 
   const addEmployment = async () => {
     try {
-      setState({
-        isCreateExperience: false,
-      });
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
+      if (!state.start_date) {
+        Failure("Start date is required.");
+        return;
+      }
+      if (new Date(state.start_date) > today) {
+        Failure("Start date cannot be a future date.");
+        return;
+      }
+      if (!state.is_present && !state.end_date) {
+        Failure("End date is required.");
+        return;
+      }
+      if (!state.is_present && state.end_date && new Date(state.end_date) < new Date(state.start_date)) {
+        Failure("End date cannot be before start date.");
+        return;
+      }
+
+      setState({ isCreateExperience: false });
 
       const body = {
         user_id: state.userId,
@@ -791,9 +820,27 @@ export default function NaukriProfilePage() {
 
   const updateEmployment = async () => {
     try {
-      setState({
-        isEditingExperience: false,
-      });
+      const today = new Date();
+      today.setHours(23, 59, 59, 999);
+
+      if (!state.start_date) {
+        Failure("Start date is required.");
+        return;
+      }
+      if (new Date(state.start_date) > today) {
+        Failure("Start date cannot be a future date.");
+        return;
+      }
+      if (!state.is_present && !state.end_date) {
+        Failure("End date is required.");
+        return;
+      }
+      if (!state.is_present && state.end_date && new Date(state.end_date) < new Date(state.start_date)) {
+        Failure("End date cannot be before start date.");
+        return;
+      }
+
+      setState({ isEditingExperience: false });
 
       const body = {
         experience_id: state.editingId,
@@ -1795,7 +1842,7 @@ export default function NaukriProfilePage() {
                                               </div>
 
                                               {/* Desktop Action Buttons - Top Right */}
-                                              <div className="hidden md:flex gap-4">
+                                              <div className="flex gap-2 flex-wrap">
                                                 {state?.userDetail
                                                   ?.resume_url ? (
                                                   <>
@@ -2058,7 +2105,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between  cursor-pointer"
-                                onClick={() => toggleSection("employment")}
+                                onClick={() => toggleSection("employment")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -2077,6 +2124,7 @@ export default function NaukriProfilePage() {
                                   <button
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                     onClick={(e) => {
+                                      e.stopPropagation();
                                       setState({
                                         isCreateExperience: true,
                                         company: "",
@@ -2085,17 +2133,23 @@ export default function NaukriProfilePage() {
                                         end_date: "",
                                         is_present: false,
                                         job_description: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          employment: true,
+                                        },
                                       });
                                     }}
                                     title="Add Experience"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("employment"); }} className="cursor-pointer">
                                   {state.expandedSections.employment ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -2370,7 +2424,7 @@ export default function NaukriProfilePage() {
                                                             end_date:
                                                               emp.end_date,
                                                             is_present:
-                                                              !emp.end_date,
+                                                              emp.currently_working,
                                                             job_description:
                                                               emp.job_description,
                                                             editingId: emp.id,
@@ -2480,13 +2534,13 @@ export default function NaukriProfilePage() {
                                                             designation:
                                                               emp.designation,
                                                             start_date:
-                                                              emp.startDate,
+                                                              emp.start_date,
                                                             end_date:
-                                                              emp.endDate,
+                                                              emp.end_date,
                                                             is_present:
-                                                              !emp.endDate,
+                                                              emp.currently_working,
                                                             job_description:
-                                                              emp.description,
+                                                              emp.job_description,
                                                             editingId: emp.id,
                                                           })
                                                         }
@@ -2579,7 +2633,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection("education")}
+                                onClick={() => toggleSection("education")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -2597,6 +2651,7 @@ export default function NaukriProfilePage() {
                                 <div className="flex items-center gap-3">
                                   <button
                                     onClick={(e) => {
+                                      e.stopPropagation();
                                       setState({
                                         isCreateEducation: true,
                                         institution: "",
@@ -2605,17 +2660,23 @@ export default function NaukriProfilePage() {
                                         start_year: "",
                                         end_year: "",
                                         cgpa: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          education: true,
+                                        },
                                       });
                                     }}
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("education"); }} className="cursor-pointer">
                                   {state.expandedSections.education ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -2989,7 +3050,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection("projects")}
+                                onClick={() => toggleSection("projects")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -3019,17 +3080,23 @@ export default function NaukriProfilePage() {
                                         technology: "",
                                         funded: false,
                                         funding_details: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          projects: true,
+                                        },
                                       });
                                     }}
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("projects"); }} className="cursor-pointer">
                                   {state.expandedSections.projects ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -3606,7 +3673,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between cursor-pointer"
-                                onClick={() => toggleSection("publications")}
+                                onClick={() => toggleSection("publications")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -3633,17 +3700,23 @@ export default function NaukriProfilePage() {
                                         publication_volume: "",
                                         publication_issue: "",
                                         publication_year: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          publications: true,
+                                        },
                                       });
                                     }}
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("publications"); }} className="cursor-pointer">
                                   {state.expandedSections.publications ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -4107,7 +4180,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between  cursor-pointer"
-                                onClick={() => toggleSection("skills")}
+                                onClick={() => toggleSection("skills")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -4129,17 +4202,23 @@ export default function NaukriProfilePage() {
                                       setState({
                                         isEditingSkills: true,
                                         skill: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          skills: true,
+                                        },
                                       });
                                     }}
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("skills"); }} className="cursor-pointer">
                                   {state.expandedSections.skills ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -4340,7 +4419,7 @@ export default function NaukriProfilePage() {
                             <CardContent className="relative py-4 px-2">
                               <div
                                 className="flex items-center justify-between  cursor-pointer"
-                                onClick={() => toggleSection("achievements")}
+                                onClick={() => toggleSection("achievements")} 
                               >
                                 <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
@@ -4364,19 +4443,24 @@ export default function NaukriProfilePage() {
                                         achievement_title: "",
                                         organization: "",
                                         achievement_file: null,
-
                                         achievement_description: "",
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          achievements: true,
+                                        },
                                       });
                                     }}
                                     className="w-8 h-8 bg-[#1E3786]  text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("achievements"); }} className="cursor-pointer">
                                   {state.expandedSections.achievements ? (
                                     <ChevronUp className="w-5 h-5 text-gray-500" />
                                   ) : (
                                     <ChevronDown className="w-5 h-5 text-gray-500" />
                                   )}
+                                  </span>
                                 </div>
                               </div>
 
@@ -5485,8 +5569,8 @@ export default function NaukriProfilePage() {
                           </button>
                         </div>
 
-                        <div className="p-6 space-y-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="p-4 space-y-4">
+                          <div className="flex flex-col gap-4">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
                                 College Name

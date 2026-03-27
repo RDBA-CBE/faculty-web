@@ -33,9 +33,12 @@ const loadLocationFilterOptions = async () => {
     let page = 1;
     let allResults: any[] = [];
     let hasNext = true;
+    const body = {
+      has_jobs:true
+    }
 
     while (hasNext) {
-      const res: any = await Models.location.list(page);
+      const res: any = await Models.location.list(page, body);
 
       if (res?.results?.length) {
         allResults = [...allResults, ...res.results];
@@ -120,16 +123,29 @@ const departmentList = async () => {
 };
 
   const collegeList = async () => {
-    try {
-      const res: any = await Models.colleges.list();
-      const dropdown = Dropdown(res?.results, "name");
-      setState({
-        collgeList: dropdown,
-      });
-    } catch (error) {
-      console.log("✌️error --->", error);
+  try {
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.colleges.collegeList({ page });
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
     }
-  };
+
+    const dropdown = Dropdown(allResults, "college_name");
+
+    setState({ collegeList: dropdown });
+  } catch (error) {
+    console.log("Error fetching colleges:", error);
+  }
+};
 
  const JobCatList = async () => {
   try {
@@ -138,7 +154,7 @@ const departmentList = async () => {
     let hasNext = true;
 
     while (hasNext) {
-      const res: any = await Models.category.list(page);
+      const res: any = await Models.category.list(page,);
 
       if (res?.results?.length) {
         allResults = [...allResults, ...res.results];

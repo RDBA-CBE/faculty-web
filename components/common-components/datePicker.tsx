@@ -24,8 +24,8 @@ interface DatePickerProps {
   required?: boolean;
   error?: string;
   closeIcon?: boolean;
-  // disablePastDates?: boolean; // Added prop to disable past dates
   fromDate?: Date;
+  toDate?: Date;
   disabled?: boolean;
 }
 
@@ -37,8 +37,8 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   required,
   error,
   closeIcon,
-  // disablePastDates = false, // Default value is false
   fromDate,
+  toDate,
   disabled,
 }) => {
   const parsedDate = React.useMemo(() => {
@@ -99,18 +99,21 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             initialFocus
             disabled={(date) => {
               if (disabled) return true;
-
+              if (toDate) {
+                const to = new Date(toDate);
+                to.setHours(23, 59, 59, 999);
+                if (date > to) return true;
+              }
               if (fromDate) {
                 const from = new Date(fromDate);
                 from.setHours(0, 0, 0, 0);
                 return date < from;
               }
-
-              return false; // ✅ allow all dates
+              return false;
             }}
             captionLayout="dropdown"
             fromYear={1900}
-            toYear={new Date().getFullYear() + 5}
+            toYear={toDate ? new Date(toDate).getFullYear() : new Date().getFullYear() + 5}
           />
         </PopoverContent>
       </Popover>

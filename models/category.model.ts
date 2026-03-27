@@ -8,7 +8,7 @@ const category = {
       });
       if (search) params.append("search", search);
 
-      const url = `job-categories/?ordering=asc&${params.toString()}`;
+      const url = `job-categories/?ordering=asc&has_jobs=true&${params.toString()}`;
 
       instance()
         .get(url)
@@ -109,7 +109,7 @@ const category = {
       });
       if (search) params.append("search", search);
 
-      const url = `job-roles/?ordering=asc&${params.toString()}`;
+      const url = `job-roles/?ordering=asc&has_jobs=true&${params.toString()}`;
 
       instance()
         .get(url)
