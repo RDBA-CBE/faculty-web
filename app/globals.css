@@ -1499,3 +1499,19 @@ body {
     height: 380px;
   }
 }
+
+.custom-toast-popup {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: 20px !important;
+  border-radius: 8px;
+}
+
+.custom-toast-title {
+  color: #ffffff !important; /* 👈 force white text */
+  font-weight: 500;
+}
+
+.custom-toast-icon {
+  color: #ffffff !important;
+}

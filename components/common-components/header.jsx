@@ -82,6 +82,8 @@ const Header = () => {
     isOpenEmailVerify: false,
     loginFailModal: false,
     loginErrorMessage: "",
+    registrationFailModal: false,
+    registrationErrorMessage: "",
   });
 
   useEffect(() => {
@@ -210,8 +212,11 @@ const Header = () => {
           btnLoading: false,
         });
       } else {
-        Failure(error?.error);
-        setState({ btnLoading: false });
+        setState({
+          registrationErrorMessage: error?.error || "Registration failed. Please check your details.",
+          registrationFailModal: true,
+          btnLoading: false,
+        });
       }
     }
   };
@@ -1199,6 +1204,34 @@ const Header = () => {
 
             <Button
               onClick={() => setState({ loginFailModal: false })}
+              className="mt-6 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-3xl px-8"
+            >
+              Try Again
+            </Button>
+          </div>
+        )}
+      />
+
+      <Modal
+        isOpen={state.registrationFailModal}
+        setIsOpen={() => {
+          setState({ registrationFailModal: false });
+        }}
+        title="Registration Failed"
+        width="auto"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+            <h2 className="text-xl font-bold text-red-500 mb-6 z-10">
+              Registration Failed
+            </h2>
+
+            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+              {state.registrationErrorMessage}
+            </p>
+
+            <Button
+              onClick={() => setState({ registrationFailModal: false })}
               className="mt-6 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-3xl px-8"
             >
               Try Again
