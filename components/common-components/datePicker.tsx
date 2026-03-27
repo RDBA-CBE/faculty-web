@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/popover";
 import "react-day-picker/dist/style.css";
 
-// Workaround for PopoverContent type definition issue
 const PopoverContent = PopoverContentPrimitive as any;
 
 interface DatePickerProps {
@@ -41,12 +40,18 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   toDate,
   disabled,
 }) => {
+  // ✅ Parse incoming date safely
   const parsedDate = React.useMemo(() => {
     if (!selectedDate) return undefined;
     if (selectedDate instanceof Date) return selectedDate;
     const d = new Date(selectedDate);
     return isNaN(d.getTime()) ? undefined : d;
   }, [selectedDate]);
+
+  // ✅ Default: disable future dates if toDate not provided
+  const effectiveToDate = React.useMemo(() => {
+    return toDate ? new Date(toDate) : new Date();
+  }, [toDate]);
 
   return (
     <div className="w-full relative">
@@ -55,14 +60,16 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           {title} {required && <span className="text-red-500">*</span>}
         </label>
       )}
+
       <Popover>
         <PopoverTrigger asChild>
           <div className="relative w-full">
             <Button
               variant="outline"
+              disabled={disabled}
               className={cn(
                 "w-full justify-between text-left font-normal pr-10",
-                !selectedDate && "text-muted-foreground",
+                !parsedDate && "text-muted-foreground"
               )}
             >
               <div className="flex items-center gap-3">
@@ -70,14 +77,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
                 {parsedDate ? (
                   format(parsedDate, "PPP")
                 ) : (
-                  <span>
-                    {selectedDate ? String(selectedDate) : placeholder}
-                  </span>
+                  <span>{placeholder}</span>
                 )}
               </div>
             </Button>
 
-            {selectedDate && closeIcon && !disabled && (
+            {/* ✅ Clear icon */}
+            {parsedDate && closeIcon && !disabled && (
               <button
                 type="button"
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
@@ -91,44 +97,36 @@ export const DatePicker: React.FC<DatePickerProps> = ({
             )}
           </div>
         </PopoverTrigger>
+
         <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="single"
             selected={parsedDate}
             onSelect={(date) => onChange?.(date ?? null)}
             initialFocus
+            captionLayout="dropdown"
+            fromYear={1900}
+            toYear={effectiveToDate.getFullYear()}
             disabled={(date) => {
               if (disabled) return true;
-              if (toDate) {
-                const to = new Date(toDate);
-                to.setHours(23, 59, 59, 999);
-                if (date > to) return true;
-              }
+
+              const today = new Date();
+              today.setHours(23, 59, 59, 999);
+
+              // ✅ Disable future dates by default
+              if (date > effectiveToDate) return true;
+
               if (fromDate) {
                 const from = new Date(fromDate);
                 from.setHours(0, 0, 0, 0);
-                return date < from;
+                if (date < from) return true;
               }
+
               return false;
             }}
-            captionLayout="dropdown"
-            fromYear={1900}
-            toYear={toDate ? new Date(toDate).getFullYear() : new Date().getFullYear() + 5}
           />
         </PopoverContent>
       </Popover>
-      {/* 
-      {selectedDate && closeIcon && (
-        <button
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-          onClick={(e) => {
-            e.stopPropagation();
-            onChange?.(null);
-          }}
-        >
-          <X size={18} />
-        </button>
-      )} */}
 
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
