@@ -436,7 +436,7 @@ ${userName}`;
     window.addEventListener("scroll", handleStickyJobList);
     handleStickyJobList();
 
-    return () => {masterExperienceList
+    return () => {
       window.removeEventListener("scroll", handleStickyJobList);
       resizeObserver.disconnect();
     };
