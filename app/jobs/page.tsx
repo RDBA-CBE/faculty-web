@@ -1299,7 +1299,9 @@ ${userName}`;
       department: [],
       jobRole: [],
       jobRoleList: [],
-    });
+    })
+    setIsMobileFilterOpen(false)
+
     setState({ search: "" });
   };
 
