@@ -25,34 +25,6 @@ const SplitBanner = () => {
 
 
 
-const fetchAllPages = async (
-  apiFn: any,
-  keyName: string,
-  labelKey: string
-) => {
-  let page = 1;
-  let allResults: any[] = [];
-  let hasNext = true;
-
-  try {
-    while (hasNext) {
-      const res: any = await apiFn({ page });
-
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
-      }
-
-      // ✅ use next field correctly
-      hasNext = !!res?.next;
-      page++;
-    }
-
-    return Dropdown(allResults, labelKey);
-  } catch (error) {
-    console.error(`Error fetching ${keyName}:`, error);
-    return [];
-  }
-};
 
 const loadLocationFilterOptions = async () => {
   try {
@@ -241,7 +213,7 @@ const departmentList = async () => {
             </div>
 
             {/* Search Form */}
-            <div className="bg-white rounded-[40px] shadow-lg p-4 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center max-w-full lg:max-w-3xl">
+            <div className="bg-white rounded-[40px] shadow-lg p-4 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center justify-between max-w-full lg:max-w-3xl">
               {/* <input
                 type="text"
                 placeholder="Job Title or College"
