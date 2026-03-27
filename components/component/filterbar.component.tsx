@@ -602,6 +602,7 @@ closeModal,
       jobRoleList: [],
       
     });
+    closeModal()
   };
 
   if (loading) {
