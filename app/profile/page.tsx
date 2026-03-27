@@ -68,7 +68,7 @@ import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 
 export default function NaukriProfilePage() {
-  const [isManualScroll, setIsManualScroll] = useState(false);
+  const isManualScrollRef = useRef(false);
   const [activeTab, setActiveTab] = useState("resume");
 
   const [expandedDesc, setExpandedDesc] = useState({});
@@ -212,19 +212,36 @@ export default function NaukriProfilePage() {
     },
   ];
 
+  const SECTION_IDS = [
+    "resume-section",
+    "headline-section",
+    "employment-section",
+    "education-section",
+    "projects-section",
+    "publications-section",
+    "skills-section",
+    "achievements-section",
+  ];
+
+  const activeTabRef = useRef(state.activeTab);
+  useEffect(() => {
+    activeTabRef.current = state.activeTab;
+  }, [state.activeTab]);
+
   useEffect(() => {
     const handleScroll = () => {
-      if (isManualScroll) return;
-      if (state.activeTab !== "Profile") return;
+      if (isManualScrollRef.current) return;
+      if (activeTabRef.current !== "Profile") return;
 
-      const scrollPosition = window.scrollY + 150;
+      const scrollPosition = window.scrollY + 160;
       let currentSubSection = "resume";
 
-      links.forEach((link) => {
-        const section = document.getElementById(link.section);
+      SECTION_IDS.forEach((sectionId) => {
+        const section = document.getElementById(sectionId);
         if (section) {
-          if (scrollPosition >= section.offsetTop) {
-            currentSubSection = link.id;
+          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+          if (scrollPosition >= sectionTop) {
+            currentSubSection = sectionId.replace("-section", "");
           }
         }
       });
@@ -234,7 +251,7 @@ export default function NaukriProfilePage() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isManualScroll, state.activeTab]);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -1144,8 +1161,7 @@ export default function NaukriProfilePage() {
 
   const scrollToSection = (sectionId: string) => {
     const subSectionId = sectionId.replace("-section", "");
-    setState({ activeProfileSubSection: subSectionId });
-    setIsManualScroll(true);
+    isManualScrollRef.current = true;
 
     const element = document.getElementById(sectionId);
 
@@ -1153,7 +1169,6 @@ export default function NaukriProfilePage() {
       const headerOffset = 100;
       const elementPosition =
         element.getBoundingClientRect().top + window.pageYOffset;
-
       const offsetPosition = elementPosition - headerOffset;
 
       window.scrollTo({
@@ -1162,9 +1177,20 @@ export default function NaukriProfilePage() {
       });
     }
 
-    setTimeout(() => {
-      setIsManualScroll(false);
-    }, 800);
+    const fallback = setTimeout(() => {
+      isManualScrollRef.current = false;
+      setState({ activeProfileSubSection: subSectionId });
+    }, 1000);
+
+    window.addEventListener(
+      "scrollend",
+      () => {
+        clearTimeout(fallback);
+        isManualScrollRef.current = false;
+        setState({ activeProfileSubSection: subSectionId });
+      },
+      { once: true }
+    );
   };
 
   const toggleSection = (section: string) => {
