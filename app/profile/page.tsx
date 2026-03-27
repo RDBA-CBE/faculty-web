@@ -4788,7 +4788,7 @@ export default function NaukriProfilePage() {
                                 </div>
                               </div>
 
-                              <div className=" flex justify-end hidden md:block">
+                              <div className=" flex justify-end hidden md:block mt-4">
                                 <Button
                                   onClick={() => menusUpdate("qualification")}
                                   className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
