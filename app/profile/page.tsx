@@ -193,80 +193,48 @@ export default function NaukriProfilePage() {
     }
   }, [state.userId]);
 
-  const sections = [
-    "resume-section",
-    "headline-section",
-    "skills-section",
-    "employment-section",
-    "education-section",
-    "projects-section",
-    "publications-section",
-    "achievements-section",
+  const links = [
+    { id: "resume", label: "Resume/login", section: "resume-section" },
+    { id: "headline", label: "Profile Summary", section: "headline-section" },
+    { id: "employment", label: "Experience", section: "employment-section" },
+    { id: "education", label: "Education", section: "education-section" },
+    { id: "projects", label: "Projects", section: "projects-section" },
+    {
+      id: "publications",
+      label: "Publications",
+      section: "publications-section",
+    },
+    { id: "skills", label: "Skills", section: "skills-section" },
+    {
+      id: "achievements",
+      label: "Achievements",
+      section: "achievements-section",
+    },
   ];
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isManualScroll) return;
-
-        // Only update sub-section if the main tab is "Profile"
-        if (state.activeTab === "Profile") {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const id = entry.target.id.replace("-section", "");
-              if (state.activeProfileSubSection !== id)
-                setState({ activeProfileSubSection: id });
-            }
-          });
-        }
-      },
-      {
-        rootMargin: "-30% 0px -60% 0px",
-        threshold: 0.3,
-      },
-    );
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [isManualScroll, state.activeTab, state.activeProfileSubSection]);
 
   useEffect(() => {
     const handleScroll = () => {
       if (isManualScroll) return;
-
-      const scrollPosition = window.scrollY + 120;
-
-      // Only update sub-section if the main tab is "Profile"
       if (state.activeTab !== "Profile") return;
 
-      // This logic is for updating the active sub-section in the quick links
+      const scrollPosition = window.scrollY + 150;
+      let currentSubSection = "resume";
+
       links.forEach((link) => {
         const section = document.getElementById(link.section);
-
         if (section) {
-          const offsetTop = section.offsetTop;
-          const offsetHeight = section.offsetHeight;
-
-          if (
-            scrollPosition >= offsetTop &&
-            scrollPosition < offsetTop + offsetHeight
-          ) {
-            if (state.activeProfileSubSection !== link.id) {
-              setState({ activeProfileSubSection: link.id });
-            }
+          if (scrollPosition >= section.offsetTop) {
+            currentSubSection = link.id;
           }
         }
       });
+
+      setState({ activeProfileSubSection: currentSubSection });
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isManualScroll]);
+  }, [isManualScroll, state.activeTab]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -590,38 +558,38 @@ export default function NaukriProfilePage() {
   };
 
   const DirectdownloadResume = async () => {
-  try {
-    const url = state.userDetail?.resume_url;
+    try {
+      const url = state.userDetail?.resume_url;
 
-    if (!url) {
-      Failure("No resume available to download.");
-      return;
+      if (!url) {
+        Failure("No resume available to download.");
+        return;
+      }
+
+      const response = await fetch(url, {
+        mode: "cors",
+      });
+
+      const blob = await response.blob();
+
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+
+      const filename = getFileNameFromUrl(url) || "resume";
+      link.setAttribute("download", filename);
+
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download error:", error);
+      Failure("Failed to download resume.");
     }
-
-    const response = await fetch(url, {
-      mode: "cors",
-    });
-
-    const blob = await response.blob();
-
-    const blobUrl = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = blobUrl;
-
-    const filename = getFileNameFromUrl(url) || "resume";
-    link.setAttribute("download", filename);
-
-    document.body.appendChild(link);
-    link.click();
-
-    link.remove();
-    window.URL.revokeObjectURL(blobUrl);
-  } catch (error) {
-    console.error("Download error:", error);
-    Failure("Failed to download resume.");
-  }
-};
+  };
 
   const downloadResume = (e) => {
     e.preventDefault(); // prevent same tab navigation
@@ -788,7 +756,8 @@ export default function NaukriProfilePage() {
         company: state.company,
         designation: state.designation,
         start_date: DateFormat(state.start_date, "api"),
-        end_date: DateFormat(state.end_date, "api"),
+        end_date: state.is_present ? null : DateFormat(state.end_date, "api"),
+        currently_working: state.is_present ? true : false,
         job_description: state.job_description,
       };
       console.log("body", body);
@@ -814,7 +783,8 @@ export default function NaukriProfilePage() {
         company: state.company,
         designation: state.designation,
         start_date: DateFormat(state.start_date, "api"),
-        end_date: DateFormat(state.end_date, "api"),
+        end_date: state.is_present ? null : DateFormat(state.end_date, "api"),
+        currently_working: state.is_present ? true : false,
         job_description: state.job_description,
       };
       console.log("body", body);
@@ -1194,28 +1164,8 @@ export default function NaukriProfilePage() {
 
     setTimeout(() => {
       setIsManualScroll(false);
-    }, 1200);
+    }, 800);
   };
-
-  const links = [
-    { id: "resume", label: "Resume/login", section: "resume-section" },
-    { id: "headline", label: "Profile Summary", section: "headline-section" },
-   
-    { id: "employment", label: "Experience", section: "employment-section" },
-    { id: "education", label: "Education", section: "education-section" },
-    { id: "projects", label: "Projects", section: "projects-section" },
-    {
-      id: "publications",
-      label: "Publications",
-      section: "publications-section",
-    },
-    { id: "skills", label: "Skills", section: "skills-section" },
-    {
-      id: "achievements",
-      label: "Achievements",
-      section: "achievements-section",
-    },
-  ];
 
   const toggleSection = (section: string) => {
     setState({
@@ -1428,11 +1378,14 @@ export default function NaukriProfilePage() {
                                   : state.userDetail?.username || ""}
                               </h1>
                               <button
-                               
                                 className="p-2 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
-                                <Edit size={14} className=" text-[#fff] " style={{height:"15px", width:"15px"}}/>
+                                <Edit
+                                  size={14}
+                                  className=" text-[#fff] "
+                                  style={{ height: "15px", width: "15px" }}
+                                />
                               </button>
                             </div>
                             {state?.userDetail?.short_desc && (
@@ -1540,10 +1493,13 @@ export default function NaukriProfilePage() {
                         }`}
                       >
                         {/* Tab Label */}
-                        <span className={`${state.activeTab === tab
-                            ? "bg-[#1e3786] !text-[#fff]"
-                            : "text-gray-800 hover:text-[#1e3786]"
-                        }`}>
+                        <span
+                          className={`${
+                            state.activeTab === tab
+                              ? "bg-[#1e3786] !text-[#fff]"
+                              : "text-gray-800 hover:text-[#1e3786]"
+                          }`}
+                        >
                           {tab === "My Applications"
                             ? "My Applications"
                             : tab === "Saved Jobs"
@@ -1557,7 +1513,9 @@ export default function NaukriProfilePage() {
                         {(tab === "My Applications" && state.appliedCount) ||
                         (tab === "Saved Jobs" && state.savedCount) ||
                         (tab === "HR Requests" &&
-                          state.userDetail?.interesteds?.filter((invite) => !invite?.is_response)?.length) ? (
+                          state.userDetail?.interesteds?.filter(
+                            (invite) => !invite?.is_response,
+                          )?.length) ? (
                           <span
                             className={`text-xs font-semibold px-2 py-[2px] rounded-full ${
                               state.activeTab === tab
@@ -1569,7 +1527,9 @@ export default function NaukriProfilePage() {
                               ? state.appliedCount
                               : tab === "Saved Jobs"
                                 ? state.savedCount
-                                : state.userDetail?.interesteds?.filter((invite) => !invite?.is_response)?.length}
+                                : state.userDetail?.interesteds?.filter(
+                                    (invite) => !invite?.is_response,
+                                  )?.length}
                           </span>
                         ) : null}
                       </button>
@@ -1610,8 +1570,8 @@ export default function NaukriProfilePage() {
                                     >
                                       <span
                                         className={`font-medium ${
-                                         state.activeProfileSubSection ===
-                                        item.id
+                                          state.activeProfileSubSection ===
+                                          item.id
                                             ? "!text-[#fff]" // This should still be activeTab for the main tab
                                             : "text-[#000]"
                                         }`}
@@ -1814,35 +1774,38 @@ export default function NaukriProfilePage() {
                                                   ?.resume_url ? (
                                                   <>
                                                     <button
-                                                     
                                                       className="bg-[#1E3786] text-white px-3 py-1 text-xs rounded-lg"
                                                       onClick={downloadResume}
-                                                      
                                                     >
                                                       View
                                                     </button>
 
                                                     <button
-                                                     
                                                       className="border border-[#1E3786] rounded-md px-1 py-1"
-                                                      onClick={DirectdownloadResume}
+                                                      onClick={
+                                                        DirectdownloadResume
+                                                      }
                                                       title="Download Resume"
                                                     >
                                                       <Download
                                                         size={10}
-                                                        style={{height:"15px", width:"15px"}}
+                                                        style={{
+                                                          height: "15px",
+                                                          width: "15px",
+                                                        }}
                                                         className="text-[#1E3786]  group-hover/btn:scale-110 transition-transform"
                                                       />
                                                     </button>
                                                     <button
-
                                                       onClick={deleteResume}
-                                                     
                                                       className="hover:bg-red-50 border rounded-md border-red-500 group/btn px-1 py-1"
                                                       title="Delete Resume"
                                                     >
                                                       <Trash
-                                                      style={{height:"15px", width:"15px"}}
+                                                        style={{
+                                                          height: "15px",
+                                                          width: "15px",
+                                                        }}
                                                         size={10}
                                                         className=" text-red-600 group-hover/btn:scale-110 transition-transform"
                                                       />
@@ -1850,7 +1813,6 @@ export default function NaukriProfilePage() {
                                                   </>
                                                 ) : (
                                                   <button
-                                                   
                                                     className=" border border-[#1E3786] rounded-md group/btn px-1 py-1"
                                                     title="Upload Resume"
                                                     onClick={() =>
@@ -1861,7 +1823,10 @@ export default function NaukriProfilePage() {
                                                   >
                                                     <PlusIcon
                                                       size={10}
-                                                      style={{height:"15px", width:"15px"}}
+                                                      style={{
+                                                        height: "15px",
+                                                        width: "15px",
+                                                      }}
                                                       className="text-[#1E3786] group-hover/btn:scale-110 transition-transform"
                                                     />
                                                   </button>
@@ -2092,6 +2057,7 @@ export default function NaukriProfilePage() {
                                         designation: "",
                                         start_date: "",
                                         end_date: "",
+                                        is_present: false,
                                         job_description: "",
                                       });
                                     }}
@@ -2201,18 +2167,48 @@ export default function NaukriProfilePage() {
                                                   }}
                                                 />
                                               </div>
-                                              <div className="space-y-2">
-                                                <DatePicker
-                                                  placeholder="End Date"
-                                                  title="End Date"
-                                                  closeIcon={true}
-                                                  selectedDate={state.end_date}
-                                                  onChange={(date) => {
+                                              {!state.is_present && (
+                                                <div className="space-y-2">
+                                                  <DatePicker
+                                                    placeholder="End Date"
+                                                    title="End Date"
+                                                    closeIcon={true}
+                                                    selectedDate={
+                                                      state.end_date
+                                                    }
+                                                    onChange={(date) => {
+                                                      setState({
+                                                        end_date: date,
+                                                      });
+                                                    }}
+                                                  />
+                                                </div>
+                                              )}
+                                              <div className="flex items-center gap-2 col-span-2">
+                                                <input
+                                                  type="checkbox"
+                                                  id="is_present_create"
+                                                  checked={
+                                                    state.is_present || false
+                                                  }
+                                                  onChange={(e) =>
                                                     setState({
-                                                      end_date: date,
-                                                    });
-                                                  }}
+                                                      is_present:
+                                                        e.target.checked,
+                                                      end_date: e.target.checked
+                                                        ? ""
+                                                        : state.end_date,
+                                                    })
+                                                  }
+                                                  className="h-4 w-4 rounded border-gray-300 text-[#1E3786]"
                                                 />
+                                                <label
+                                                  htmlFor="is_present_create"
+                                                  className="text-sm font-semibold text-gray-700"
+                                                >
+                                                  Present (Currently working
+                                                  here)
+                                                </label>
                                               </div>
                                             </div>
 
@@ -2314,7 +2310,7 @@ export default function NaukriProfilePage() {
                                                           {DateFormat(
                                                             emp.end_date,
                                                             "date",
-                                                          )}
+                                                          ) || "Present"}
                                                         </span>
                                                         {/* <span className="ml-1">
                                                         (
@@ -2341,6 +2337,8 @@ export default function NaukriProfilePage() {
                                                               emp.start_date,
                                                             end_date:
                                                               emp.end_date,
+                                                            is_present:
+                                                              !emp.end_date,
                                                             job_description:
                                                               emp.job_description,
                                                             editingId: emp.id,
@@ -2365,44 +2363,48 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Job Description */}
-                                                  <div className="bg-white rounded-lg py-4 px-2 border mb-2">
-                                                    <p className="text-gray-700 leading-relaxed text-sm">
-                                                      {expandedDesc[emp.id]
-                                                        ? emp.job_description
-                                                        : emp.job_description?.slice(
-                                                            0,
-                                                            280,
+                                                  {emp.job_description && (
+                                                    <div className="bg-white rounded-lg py-4 px-2 border mb-2">
+                                                      <p className="text-gray-700 leading-relaxed text-sm">
+                                                        {expandedDesc[emp.id]
+                                                          ? emp.job_description
+                                                          : emp.job_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedDesc[
+                                                          emp.id
+                                                        ] &&
+                                                          emp.job_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {emp.job_description &&
+                                                          emp.job_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [emp.id]:
+                                                                      !prev[
+                                                                        emp.id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedDesc[
+                                                                emp.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedDesc[emp.id] &&
-                                                        emp.job_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {emp.job_description &&
-                                                        emp.job_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [emp.id]:
-                                                                    !prev[
-                                                                      emp.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedDesc[
-                                                              emp.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
-                                                  </div>
+                                                      </p>
+                                                    </div>
+                                                  )}
 
                                                   {/* Key Skills */}
                                                   {/* {emp.keySkills &&
@@ -2449,6 +2451,8 @@ export default function NaukriProfilePage() {
                                                               emp.startDate,
                                                             end_date:
                                                               emp.endDate,
+                                                            is_present:
+                                                              !emp.endDate,
                                                             job_description:
                                                               emp.description,
                                                             editingId: emp.id,
@@ -2515,6 +2519,7 @@ export default function NaukriProfilePage() {
                                               designation: "",
                                               start_date: "",
                                               end_date: "",
+                                              is_present: false,
                                               job_description: "",
                                             })
                                           }
@@ -3365,63 +3370,66 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Project Description */}
-                                                  <div className="bg-white rounded-lg p-4 border  mb-4">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedProjectDesc[
-                                                        project.id
-                                                      ]
-                                                        ? project.project_description
-                                                        : project.project_description?.slice(
-                                                            0,
-                                                            280,
+                                                  {project.project_description && (
+                                                    <div className="bg-white rounded-lg p-4 border  mb-4">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedProjectDesc[
+                                                          project.id
+                                                        ]
+                                                          ? project.project_description
+                                                          : project.project_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedProjectDesc[
+                                                          project.id
+                                                        ] &&
+                                                          project
+                                                            .project_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {project.project_description &&
+                                                          project
+                                                            .project_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedProjectDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [project.id]:
+                                                                      !prev[
+                                                                        project
+                                                                          .id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedProjectDesc[
+                                                                project.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedProjectDesc[
-                                                        project.id
-                                                      ] &&
-                                                        project
-                                                          .project_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {project.project_description &&
-                                                        project
-                                                          .project_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedProjectDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [project.id]:
-                                                                    !prev[
-                                                                      project.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedProjectDesc[
-                                                              project.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
+                                                      </p>
 
-                                                    {project.funding_details && (
-                                                      <div className="mt-4">
-                                                        <h5 className="text-sm font-semibold text-gray-700 mb-1">
-                                                          Funding Details
-                                                        </h5>
-                                                        <p className="text-gray-700 leading-relaxed text-sm">
-                                                          {
-                                                            project.funding_details
-                                                          }
-                                                        </p>
-                                                      </div>
-                                                    )}
-                                                  </div>
+                                                      {project.funding_details && (
+                                                        <div className="mt-4">
+                                                          <h5 className="text-sm font-semibold text-gray-700 mb-1">
+                                                            Funding Details
+                                                          </h5>
+                                                          <p className="text-gray-700 leading-relaxed text-sm">
+                                                            {
+                                                              project.funding_details
+                                                            }
+                                                          </p>
+                                                        </div>
+                                                      )}
+                                                    </div>
+                                                  )}
 
                                                   {/* Technologies */}
                                                   {project.technologies &&
@@ -3830,24 +3838,24 @@ export default function NaukriProfilePage() {
                                                         </h4>
                                                       </div>
                                                       <div className="text-sm text-gray-600 mb-2">
-                                                        <span className="font-medium">
+                                                        {pub.publication_journal && <span className="font-medium">
                                                           {
                                                             pub.publication_journal
                                                           }
-                                                        </span>
-                                                        <span className="ml-2">
+                                                        </span>}
+                                                        {pub.publication_year && <span className="ml-2">
                                                           | Year:{" "}
                                                           {pub.publication_year}
-                                                        </span>
+                                                        </span>}
                                                       </div>
-                                                      <div className="text-sm text-gray-600 mb-2">
+                                                      {pub.publication_volume && <div className="text-sm text-gray-600 mb-2">
                                                         Vol:{" "}
                                                         {pub.publication_volume}
-                                                      </div>
-                                                      <div className="text-sm text-gray-600 mb-2">
+                                                      </div>}
+                                                      {pub.publication_issue && <div className="text-sm text-gray-600 mb-2">
                                                         Issue:{" "}
                                                         {pub.publication_issue}
-                                                      </div>
+                                                      </div>}
                                                     </div>
 
                                                     {/* Desktop Action Buttons - Top Right */}
@@ -3894,50 +3902,52 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Publication Description */}
-                                                  <div className="bg-white rounded-lg p-4 border  ">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedPublicationDesc[
-                                                        pub.id
-                                                      ]
-                                                        ? pub.publication_description
-                                                        : pub.publication_description?.slice(
-                                                            0,
-                                                            280,
+                                                  {pub.publication_description && (
+                                                    <div className="bg-white rounded-lg p-4 border  ">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedPublicationDesc[
+                                                          pub.id
+                                                        ]
+                                                          ? pub.publication_description
+                                                          : pub.publication_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedPublicationDesc[
+                                                          pub.id
+                                                        ] &&
+                                                          pub
+                                                            .publication_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {pub.publication_description &&
+                                                          pub
+                                                            .publication_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedPublicationDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [pub.id]:
+                                                                      !prev[
+                                                                        pub.id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedPublicationDesc[
+                                                                pub.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedPublicationDesc[
-                                                        pub.id
-                                                      ] &&
-                                                        pub
-                                                          .publication_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {pub.publication_description &&
-                                                        pub
-                                                          .publication_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedPublicationDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [pub.id]:
-                                                                    !prev[
-                                                                      pub.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedPublicationDesc[
-                                                              pub.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
-                                                  </div>
+                                                      </p>
+                                                    </div>
+                                                  )}
 
                                                   {/* Mobile Action Buttons - Bottom Right */}
                                                   <div className="flex md:hidden justify-end gap-2 mt-4">
@@ -4562,66 +4572,68 @@ export default function NaukriProfilePage() {
                                                   </div>
 
                                                   {/* Achievement Description */}
-                                                  <div className="bg-white rounded-lg p-4 border">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedAchievementDesc[
-                                                        achievement.id
-                                                      ]
-                                                        ? achievement.achievement_description
-                                                        : achievement.achievement_description?.slice(
-                                                            0,
-                                                            280,
+                                                  {achievement.achievement_description && (
+                                                    <div className="bg-white rounded-lg p-4 border">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedAchievementDesc[
+                                                          achievement.id
+                                                        ]
+                                                          ? achievement.achievement_description
+                                                          : achievement.achievement_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedAchievementDesc[
+                                                          achievement.id
+                                                        ] &&
+                                                          achievement
+                                                            .achievement_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {achievement.achievement_description &&
+                                                          achievement
+                                                            .achievement_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedAchievementDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [achievement.id]:
+                                                                      !prev[
+                                                                        achievement
+                                                                          .id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedAchievementDesc[
+                                                                achievement.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedAchievementDesc[
-                                                        achievement.id
-                                                      ] &&
-                                                        achievement
-                                                          .achievement_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {achievement.achievement_description &&
-                                                        achievement
-                                                          .achievement_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedAchievementDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [achievement.id]:
-                                                                    !prev[
-                                                                      achievement
-                                                                        .id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedAchievementDesc[
-                                                              achievement.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
+                                                      </p>
 
-                                                    {achievement.achievement_file_url && (
-                                                      <a
-                                                        className="flex items-center text-gray-700 leading-relaxed text-sm"
-                                                        href={
-                                                          achievement.achievement_file_url
-                                                        }
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                      >
-                                                        {" "}
-                                                        View file
-                                                        <File className="w-3 h-3 ml-2" />
-                                                      </a>
-                                                    )}
-                                                  </div>
+                                                      {achievement.achievement_file_url && (
+                                                        <a
+                                                          className="flex items-center text-gray-700 leading-relaxed text-sm"
+                                                          href={
+                                                            achievement.achievement_file_url
+                                                          }
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                        >
+                                                          {" "}
+                                                          View file
+                                                          <File className="w-3 h-3 ml-2" />
+                                                        </a>
+                                                      )}
+                                                    </div>
+                                                  )}
 
                                                   {/* Mobile Action Buttons - Bottom Right */}
                                                   <div className="flex md:hidden justify-end gap-2 mt-4">
@@ -4715,32 +4727,31 @@ export default function NaukriProfilePage() {
                         <Card className="!rounded-none bg-clr2 border shadow-none">
                           <CardContent className="px-3 py-6">
                             <div className="flex flex-wrap md:flex-nowrap md:justify-between">
-                               <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
-                                <GraduationCap className="w-6 h-6 text-white transform " />
+                              <div className="flex items-center gap-4 mb-6">
+                                <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                  <GraduationCap className="w-6 h-6 text-white transform " />
+                                </div>
+                                <div>
+                                  <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                    Academic Qualifications
+                                  </h3>
+                                  <p className="text-sm text-gray-500">
+                                    Highlight your completed examinations and
+                                    degrees
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                  Academic Qualifications
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                  Highlight your completed examinations and
-                                  degrees
-                                </p>
-                              </div>
-                            </div>
 
-                            <div className=" flex justify-end">
-                              <Button
-                                onClick={() => menusUpdate("qualification")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Save Qualifications
-                              </Button>
+                              <div className=" flex justify-end">
+                                <Button
+                                  onClick={() => menusUpdate("qualification")}
+                                  className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Save Qualifications
+                                </Button>
+                              </div>
                             </div>
-                            </div>
-                           
 
                             <div className="grid grid-cols-1 md:grid-cols-2 !gap-3">
                               {[
@@ -4821,8 +4832,6 @@ export default function NaukriProfilePage() {
                                 </div>
                               ))}
                             </div>
-
-                            
                           </CardContent>
                         </Card>
                       </div>
@@ -4832,30 +4841,30 @@ export default function NaukriProfilePage() {
                           <CardContent className="py-6 px-3">
                             <div className="flex flex-wrap md:flex-nowrap md:justify-between">
                               <div className="flex items-center gap-4 mb-6">
-                              <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
-                                <Briefcase className="w-6 h-6 text-white transform " />
+                                <div className="w-12 h-12 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform ">
+                                  <Briefcase className="w-6 h-6 text-white transform " />
+                                </div>
+                                <div>
+                                  <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent  ">
+                                    Job Preferences
+                                  </h3>
+                                  <p className="text-sm text-gray-500">
+                                    Manage your job seeking status and
+                                    preferences
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent  ">
-                                  Job Preferences
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                  Manage your job seeking status and preferences
-                                </p>
-                              </div>
-                            </div>
 
-                            <div className="flex ">
-                              <Button
-                                onClick={() => menusUpdate("pref")}
-                                className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Update Preferences
-                              </Button>
+                              <div className="flex ">
+                                <Button
+                                  onClick={() => menusUpdate("pref")}
+                                  className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Update Preferences
+                                </Button>
+                              </div>
                             </div>
-                            </div>
-                            
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
                               {[
@@ -5017,7 +5026,11 @@ export default function NaukriProfilePage() {
                                     console.log("first")
                                   }
                                   isProfile={true}
-                                  onClick={() => router.push(`/jobs?id=${job?.job_id || job?.id}`)}
+                                  onClick={() =>
+                                    router.push(
+                                      `/jobs?id=${job?.job_id || job?.id}`,
+                                    )
+                                  }
                                 />
                               ) : (
                                 <NewJobCard
@@ -5030,7 +5043,11 @@ export default function NaukriProfilePage() {
                                     console.log("first")
                                   }
                                   isProfile={true}
-                                  onClick={() => router.push(`/jobs?id=${job?.job_id || job?.id}`)}
+                                  onClick={() =>
+                                    router.push(
+                                      `/jobs?id=${job?.job_id || job?.id}`,
+                                    )
+                                  }
                                 />
                               )}
                             </div>
@@ -5083,7 +5100,11 @@ export default function NaukriProfilePage() {
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
-                                onClick={() => router.push(`/jobs?id=${job?.job?.id || job?.id}`)}
+                                onClick={() =>
+                                  router.push(
+                                    `/jobs?id=${job?.job?.id || job?.id}`,
+                                  )
+                                }
                               />
                             </div>
                           ))}
@@ -5455,18 +5476,41 @@ export default function NaukriProfilePage() {
                               />
                             </div>
 
-                            <div className="space-y-2">
-                              <DatePicker
-                                placeholder="End Date"
-                                title="End Date"
-                                closeIcon={true}
-                                selectedDate={state.end_date}
-                                onChange={(date) => {
+                            {!state.is_present && (
+                              <div className="space-y-2">
+                                <DatePicker
+                                  placeholder="End Date"
+                                  title="End Date"
+                                  closeIcon={true}
+                                  selectedDate={state.end_date}
+                                  onChange={(date) => {
+                                    setState({ end_date: date });
+                                  }}
+                                />
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                id="is_present_edit"
+                                checked={state.is_present || false}
+                                onChange={(e) =>
                                   setState({
-                                    end_date: date,
-                                  });
-                                }}
+                                    is_present: e.target.checked,
+                                    end_date: e.target.checked
+                                      ? ""
+                                      : state.end_date,
+                                  })
+                                }
+                                className="h-4 w-4 rounded border-gray-300 text-[#1E3786]"
                               />
+                              <label
+                                htmlFor="is_present_edit"
+                                className="text-sm font-semibold text-gray-700"
+                              >
+                                Present (Currently working here)
+                              </label>
                             </div>
 
                             <div className="space-y-2">

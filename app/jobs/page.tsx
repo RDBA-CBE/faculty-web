@@ -11,12 +11,12 @@ import {
   CharSlice,
   convertUrlToFile,
   Dropdown,
-  // Failure,
+  Failure,
   generateMockJobs,
   getAvatarColor,
   getFileNameFromUrl,
   job_title,
-  // Success,
+  Success,
   useSetState,
 } from "@/utils/function.utils";
 import {
@@ -94,7 +94,7 @@ import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
 import SkeletonLoader from "./SkeletonLoader";
 import FilterbarNew from "@/components/component/filterbarNew.component";
-import { Failure, Success } from "@/components/common-components/toast";
+// import { Failure, Success } from "@/components/common-components/toast";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();

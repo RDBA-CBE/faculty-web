@@ -159,68 +159,27 @@ export default function NaukriProfilePage() {
     }
   }, [state.userId]);
 
-  const sections = [
-    "resume-section",
-    "headline-section",
-    "skills-section",
-    "employment-section",
-    "education-section",
-    "projects-section",
-    "publications-section",
-    "achievements-section",
-  ];
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (isManualScroll) return;
-
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const id = entry.target.id.replace("-section", "");
-            setActiveTab(id);
-          }
-        });
-      },
-      {
-        rootMargin: "-30% 0px -60% 0px",
-        threshold: 0.3,
-      },
-    );
-
-    sections.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) observer.observe(element);
-    });
-
-    return () => observer.disconnect();
-  }, [isManualScroll]);
-
   useEffect(() => {
     const handleScroll = () => {
       if (isManualScroll) return;
 
-      const scrollPosition = window.scrollY + 120;
+      const scrollPosition = window.scrollY + 150;
+      let currentTab = "resume";
 
       links.forEach((link) => {
         const section = document.getElementById(link.section);
-
         if (section) {
           const offsetTop = section.offsetTop;
-          const offsetHeight = section.offsetHeight;
-
-          if (
-            scrollPosition >= offsetTop &&
-            scrollPosition < offsetTop + offsetHeight
-          ) {
-            setActiveTab(link.id);
+          if (scrollPosition >= offsetTop) {
+            currentTab = link.id;
           }
         }
       });
+
+      setActiveTab(currentTab);
     };
 
     window.addEventListener("scroll", handleScroll);
-
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isManualScroll]);
 
@@ -1131,7 +1090,7 @@ export default function NaukriProfilePage() {
 
     setTimeout(() => {
       setIsManualScroll(false);
-    }, 1200);
+    }, 800);
   };
 
   const links = [
@@ -1141,16 +1100,8 @@ export default function NaukriProfilePage() {
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
-    {
-      id: "publications",
-      label: "Publications",
-      section: "publications-section",
-    },
-    {
-      id: "achievements",
-      label: "Achievements",
-      section: "achievements-section",
-    },
+    { id: "publications", label: "Publications", section: "publications-section" },
+    { id: "achievements", label: "Achievements", section: "achievements-section" },
   ];
 
   const toggleSection = (section: string) => {
