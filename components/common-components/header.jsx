@@ -560,7 +560,7 @@ const Header = () => {
         title="Sign In"
         width="500px"
         renderComponent={() => (
-          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[85vh] overflow-y-auto scrollbar-hide rounded rounded-lg">
+          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[85vh] overflow-y-auto scrollbar-hide rounded rounded-lg" onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}>
             <div className="flex items-center justify-center w-full mb-6">
               <img
                 src="/assets/images/faculty-logo.png"
@@ -677,7 +677,7 @@ const Header = () => {
         title="Create Account"
         width="500px"
         renderComponent={() => (
-          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg">
+          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg" onKeyDown={(e) => { if (e.key === "Enter") handleRegister(); }}>
             <div className="flex items-center justify-center w-full mb-6 ">
               <img
                 src="/assets/images/faculty-logo.png"

@@ -2333,10 +2333,16 @@ export default function NaukriProfilePage() {
                                                             "date",
                                                           )}{" "}
                                                           to{" "}
-                                                          {DateFormat(
+                                                          {emp.end_date &&
+                                                          DateFormat(
                                                             emp.end_date,
                                                             "date",
-                                                          ) || "Present"}
+                                                          )
+                                                            ? DateFormat(
+                                                                emp.end_date,
+                                                                "date",
+                                                              )
+                                                            : "Present"}
                                                         </span>
                                                         {/* <span className="ml-1">
                                                         (
@@ -3864,24 +3870,38 @@ export default function NaukriProfilePage() {
                                                         </h4>
                                                       </div>
                                                       <div className="text-sm text-gray-600 mb-2">
-                                                        {pub.publication_journal && <span className="font-medium">
-                                                          {
-                                                            pub.publication_journal
-                                                          }
-                                                        </span>}
-                                                        {pub.publication_year && <span className="ml-2">
-                                                          | Year:{" "}
-                                                          {pub.publication_year}
-                                                        </span>}
+                                                        {pub.publication_journal && (
+                                                          <span className="font-medium">
+                                                            {
+                                                              pub.publication_journal
+                                                            }
+                                                          </span>
+                                                        )}
+                                                        {pub.publication_year && (
+                                                          <span className="ml-2">
+                                                            | Year:{" "}
+                                                            {
+                                                              pub.publication_year
+                                                            }
+                                                          </span>
+                                                        )}
                                                       </div>
-                                                      {pub.publication_volume && <div className="text-sm text-gray-600 mb-2">
-                                                        Vol:{" "}
-                                                        {pub.publication_volume}
-                                                      </div>}
-                                                      {pub.publication_issue && <div className="text-sm text-gray-600 mb-2">
-                                                        Issue:{" "}
-                                                        {pub.publication_issue}
-                                                      </div>}
+                                                      {pub.publication_volume && (
+                                                        <div className="text-sm text-gray-600 mb-2">
+                                                          Vol:{" "}
+                                                          {
+                                                            pub.publication_volume
+                                                          }
+                                                        </div>
+                                                      )}
+                                                      {pub.publication_issue && (
+                                                        <div className="text-sm text-gray-600 mb-2">
+                                                          Issue:{" "}
+                                                          {
+                                                            pub.publication_issue
+                                                          }
+                                                        </div>
+                                                      )}
                                                     </div>
 
                                                     {/* Desktop Action Buttons - Top Right */}
