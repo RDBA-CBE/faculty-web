@@ -25,81 +25,127 @@ const SplitBanner = () => {
 
 
 
-  const fetchAllPages = async (
-    apiFn: any,
-    keyName: string,
-    labelKey: string,
-  ) => {
-    let page = 1;
-    let hasNext = true;
-    let allResults: any[] = [];
+const fetchAllPages = async (
+  apiFn: any,
+  keyName: string,
+  labelKey: string
+) => {
+  let page = 1;
+  let allResults: any[] = [];
+  let hasNext = true;
 
-    try {
-      while (hasNext) {
-        const res: any = await apiFn(page);
+  try {
+    while (hasNext) {
+      const res: any = await apiFn({ page });
 
-        if (res?.results?.length) {
-          allResults = [...allResults, ...res.results];
-        }
-
-        if (res?.next) {
-          page += 1;
-        } else {
-          hasNext = false;
-        }
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
       }
 
-      return Dropdown(allResults, labelKey);
-    } catch (error) {
-      console.error(`Error fetching ${keyName}:`, error);
-      return [];
+      // ✅ use next field correctly
+      hasNext = !!res?.next;
+      page++;
     }
-  };
 
-  const loadLocationFilterOptions = async () => {
+    return Dropdown(allResults, labelKey);
+  } catch (error) {
+    console.error(`Error fetching ${keyName}:`, error);
+    return [];
+  }
+};
+
+const loadLocationFilterOptions = async () => {
+  try {
     setState({ locationListLoading: true });
 
-    const dropdown = await fetchAllPages(
-      (page: number) => Models.location.list(page, { page }),
-      "locations",
-      "city",
-    );
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.location.list(page);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
+    }
+
+    const dropdown = Dropdown(allResults, "city");
 
     setState({
       locationList: dropdown,
       locationListLoading: false,
     });
-  };
+  } catch (error) {
+    console.error("Error fetching locations:", error);
+    setState({ locationListLoading: false });
+  }
+};
 
   const JobRoleList = async () => {
+  try {
     setState({ jobRoleListLoading: true });
 
-    const dropdown = await fetchAllPages(
-      (page: number) => Models.category.jobRoleList(page),
-      "job roles",
-      "role_name",
-    );
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.category.jobRoleList(page);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
+    }
+
+    const dropdown = Dropdown(allResults, "role_name");
 
     setState({
       jobRoleList: dropdown,
       jobRoleListLoading: false,
     });
-  };
+  } catch (error) {
+    console.error("Error fetching job roles:", error);
+    setState({ jobRoleListLoading: false });
+  }
+};
 
-  const departmentList = async () => {
+const departmentList = async () => {
+  try {
     setState({ departmentListLoading: true });
 
-    const dropdown = await fetchAllPages(
-      (page: number) => Models.department.masterDep(page),
-      "departments",
-      "name",
-    );
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({ page });
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
+    }
+
+    const dropdown = Dropdown(allResults, "name");
 
     setState({
       departmentList: dropdown,
       departmentListLoading: false,
     });
-  };
+  } catch (error) {
+    console.error("Error fetching departments:", error);
+    setState({ departmentListLoading: false });
+  }
+};
 
   const collegeList = async () => {
     try {
@@ -113,17 +159,32 @@ const SplitBanner = () => {
     }
   };
 
-  const JobCatList = async () => {
-    const dropdown = await fetchAllPages(
-      (page: number) => Models.category.list(page),
-      "categories",
-      "name",
-    );
+ const JobCatList = async () => {
+  try {
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
+      const res: any = await Models.category.list(page);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
+    }
+
+    const dropdown = Dropdown(allResults, "name");
 
     setState({
       jobCatList: dropdown,
     });
-  };
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+};
 
   console.log("departmentListNext", state?.departmentList);
 
