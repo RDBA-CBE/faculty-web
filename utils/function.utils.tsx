@@ -14,7 +14,7 @@ export const useSetState = (initialState: any) => {
 export const Success = (message: string, positions?: SweetAlertPosition) => {
   const toast = Swal.mixin({
     toast: true,
-    position: positions || "top-end",
+    position: positions || "top",
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
@@ -42,19 +42,24 @@ export const Success = (message: string, positions?: SweetAlertPosition) => {
 export const Failure = (message: string, positions?: SweetAlertPosition) => {
   const toast = Swal.mixin({
     toast: true,
-    position: positions || "top", // 👈 top center base
+    position: positions || "top",
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
     background: "#000000",
-
     customClass: {
-      popup: "custom-toast-popup",
-      title: "custom-toast-title",
-      icon: "custom-toast-icon",
+      popup: "custom-success-toast",
+      title: "custom-success-title",
+      icon: "custom-success-icon",
+    },
+    didOpen: (toast) => {
+      // Ensure text is white and medium font weight
+      const title = toast.querySelector(".swal2-title");
+      if (title) {
+        title.classList.add("text-white", "font-medium");
+      }
     },
   });
-
   toast.fire({
     icon: "error",
     title: message,

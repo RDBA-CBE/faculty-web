@@ -48,11 +48,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-  buildFormData,
-  Failure,
-  useSetState,
-} from "@/utils/function.utils";
+import { buildFormData, Failure, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
 import { Input } from "../ui/input";
@@ -129,6 +125,29 @@ const Header = () => {
       window.removeEventListener("openLoginModal", handleOpenLoginModal);
     };
   }, [setState]);
+
+  //  const DepartmentOptions = async (
+  //     page = 1,
+  //     search = "",
+  //     loadMore = false,
+  //   ) => {
+  //     try {
+  //       setState({ departmentListLoading: true });
+  //       const res = await Models.department.masterDep(page);
+  //       const dropdown = Dropdown(res?.results, "name");
+  //       setState({
+  //         departmentListLoading: false,
+  //         departmentListPage: page,
+  //         departmentList: loadMore
+  //           ? [...state.departmentList, ...dropdown]
+  //           : dropdown,
+  //         departmentListNext: res?.next,
+  //       });
+  //     } catch (error) {
+  //       console.log("✌️error --->", error);
+  //       setState({ departmentListLoading: false });
+  //     }
+  //   };
 
   const handleLogout = async () => {
     try {
@@ -213,7 +232,8 @@ const Header = () => {
         });
       } else {
         setState({
-          registrationErrorMessage: error?.error || "Registration failed. Please check your details.",
+          registrationErrorMessage:
+            error?.error || "Registration failed. Please check your details.",
           registrationFailModal: true,
           btnLoading: false,
         });
@@ -260,7 +280,8 @@ const Header = () => {
         setState({ errors: validationErrors, btnLoading: false });
       } else {
         setState({
-          loginErrorMessage: error?.error || "Login failed. Please check your credentials.",
+          loginErrorMessage:
+            error?.error || "Login failed. Please check your credentials.",
           loginFailModal: true,
           btnLoading: false,
         });
@@ -745,6 +766,24 @@ const Header = () => {
                 bg="ffffff"
                 error={state.errors?.password_confirm}
               />
+
+              {/*<CustomMultiSelect
+                title="Choose Department"
+                options={state.jobDetail.department.map((d) => ({
+                  value: d.id,
+                  label: d.name,
+                }))}
+                className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit"
+                value={state.department_id || []}
+                onChange={(selected) => {
+                  handleFormChange("department_id", selected);
+                }}
+                placeholder="Select a department"
+                isMulti={true}
+                error={state.errors.department_id}
+                disabled={state.jobDetail.department.length === 1}
+              /> */}
+
             </div>
             <div className="gap-4 flex flex-col">
               <div className="flex flex-col">
@@ -1167,19 +1206,14 @@ const Header = () => {
         hideHeader={true}
         renderComponent={() => (
           <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
-           
-
-            
-
             <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
               Registration Successfull
             </h2>
 
             <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
-                    Please Check Your Email Inbox and verify your email address to continue
+              Please Check Your Email Inbox and verify your email address to
+              continue
             </p>
-
-            
           </div>
         )}
       />

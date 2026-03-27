@@ -46,7 +46,7 @@ const VerifyEmailForm = () => {
   };
 
   const handleLogin = () => {
-    localStorage.setItem("from_login_btn", "true");
+    sessionStorage.setItem("from_login_btn", "true");
     router.push("/");
     setTimeout(() => {
       window.dispatchEvent(new CustomEvent("openLoginModal"));

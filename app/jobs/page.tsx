@@ -11,12 +11,12 @@ import {
   CharSlice,
   convertUrlToFile,
   Dropdown,
-  Failure,
+  // Failure,
   generateMockJobs,
   getAvatarColor,
   getFileNameFromUrl,
   job_title,
-  Success,
+  // Success,
   useSetState,
 } from "@/utils/function.utils";
 import {
@@ -94,6 +94,7 @@ import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
 import SkeletonLoader from "./SkeletonLoader";
 import FilterbarNew from "@/components/component/filterbarNew.component";
+import { Failure, Success } from "@/components/common-components/toast";
 
 export default function JobsPage() {
   const searchParams = useSearchParams();
@@ -173,14 +174,22 @@ export default function JobsPage() {
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
-      const collegeName = state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "[College Name]";
+      const collegeName =
+        state.jobDetail?.college?.name ||
+        state.jobDetail?.college?.college_name ||
+        "[College Name]";
       let deptName = "[Department Name]";
 
-      if (state.department_id && Array.isArray(state.department_id) && state.department_id.length > 0) {
+      if (
+        state.department_id &&
+        Array.isArray(state.department_id) &&
+        state.department_id.length > 0
+      ) {
         const names = state.department_id
           .map((item: any) => {
             const id = typeof item === "object" ? item.value : item;
-            return state.jobDetail?.department?.find((d: any) => d.id == id)?.name;
+            return state.jobDetail?.department?.find((d: any) => d.id == id)
+              ?.name;
           })
           .filter(Boolean);
         if (names.length > 0) deptName = names.join(", ");
@@ -212,7 +221,15 @@ ${userName}`;
         setState({ message: newMessage });
       }
     }
-  }, [state.firstName, state.lastName, state.department_id, showApplicationModal, state.jobDetail, state.isMessageEdited, state.userDetail]);
+  }, [
+    state.firstName,
+    state.lastName,
+    state.department_id,
+    showApplicationModal,
+    state.jobDetail,
+    state.isMessageEdited,
+    state.userDetail,
+  ]);
 
   const sidebarRef = useRef<HTMLDivElement>(null);
   const sidebarWrapperRef = useRef<HTMLDivElement>(null);
@@ -834,7 +851,7 @@ ${userName}`;
         setState({ jobID: state.jobDetail.id });
         const departmentIds =
           state.jobDetail?.department?.length === 1
-              ? [state.jobDetail.department[0].id]
+            ? [state.jobDetail.department[0].id]
             : [];
         handleFormSubmitWithprofile(profile.id, departmentIds);
       }
@@ -889,7 +906,10 @@ ${userName}`;
 
     const newState: any = {
       showApplyChoiceModal: false,
-      colleges: state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "",
+      colleges:
+        state.jobDetail?.college?.name ||
+        state.jobDetail?.college?.college_name ||
+        "",
       department_id: departmentIds,
       errors: {},
       isMessageEdited: false,
@@ -908,7 +928,10 @@ ${userName}`;
         lastName: res.last_name,
         phone: res.phone,
         message: "",
-        colleges: state.jobDetail?.college?.name || state.jobDetail?.college?.college_name || "",
+        colleges:
+          state.jobDetail?.college?.name ||
+          state.jobDetail?.college?.college_name ||
+          "",
         resume: await buildResumeFile(res.resume_url, `${res.username} Resume`),
         email: res.email?.trim(),
         experience: res.experience,
@@ -990,6 +1013,7 @@ ${userName}`;
     try {
       setState({ loading: true });
       const res: any = await Models.department.depdetails(id);
+      console.log("department res", res);
       setState({
         departmentDetail: res,
         showDepartmentModal: true,
@@ -1007,7 +1031,10 @@ ${userName}`;
       setState({ btnLoading: true, errors: {} });
 
       // Manual validation for department
-      if (state.jobDetail?.department?.length > 1 && (!state.department_id || state.department_id.length === 0)) {
+      if (
+        state.jobDetail?.department?.length > 1 &&
+        (!state.department_id || state.department_id.length === 0)
+      ) {
         setState({
           errors: {
             ...state.errors,
@@ -1049,7 +1076,7 @@ ${userName}`;
 
       if (state.department_id && state.department_id.length > 0) {
         const ids = state.department_id.map((item: any) =>
-          typeof item === "object" ? Number(item.value) : Number(item)
+          typeof item === "object" ? Number(item.value) : Number(item),
         );
         formData.append("department_id", JSON.stringify(ids));
       }
@@ -3636,11 +3663,11 @@ ${userName}`;
                         value: d.id,
                         label: d.name,
                       }))}
-                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit" 
-                        value={state.department_id || []}
-                        onChange={(selected: any) => {
-                          handleFormChange("department_id", selected);
-                        }}
+                      className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit"
+                      value={state.department_id || []}
+                      onChange={(selected: any) => {
+                        handleFormChange("department_id", selected);
+                      }}
                       placeholder="Select a department"
                       isMulti={true}
                       error={state.errors.department_id}
@@ -3794,9 +3821,12 @@ ${userName}`;
                     Congrats, your job applied!
                   </h2>
 
-                  {typeof window !== "undefined" && localStorage.getItem("user") ? (
+                  {typeof window !== "undefined" &&
+                  localStorage.getItem("user") ? (
                     <Button
-                      onClick={() => router.push("/profile?tab=My Applications")}
+                      onClick={() =>
+                        router.push("/profile?tab=My Applications")
+                      }
                       className="mt-5 bg-[#1E3786] hover:bg-[#1E3786]"
                     >
                       Go to Applied Job List
@@ -3919,14 +3949,16 @@ ${userName}`;
                             </span>
                           </div>
 
-                          <div className="flex items-start gap-2">
-                            <Building className="w-4 h-4 text-[#F2B31D] " />
-                            <span className="line-clamp-2">
-                              {state.collegeDetail?.college_types
-                                ?.map((item) => item?.name)
-                                ?.join(" ,")}
-                            </span>
-                          </div>
+                          {state.collegeDetail?.college_types  && (
+                            <div className="flex items-start gap-2">
+                              <Building className="w-4 h-4 text-[#F2B31D] " />
+                              <span className="line-clamp-2">
+                                {state.collegeDetail?.college_types
+                                  ?.map((item) => item?.name)
+                                  ?.join(" ,")}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -4112,7 +4144,7 @@ ${userName}`;
                           {/* ================= Header ================= */}
                           <div className="pb-4 md:pb-6 border-b text-center sm:text-left">
                             <h2 className="text-2xl sm:text-3xl font-semibold text-[#1E3786]">
-                              {state.departmentDetail.department_name}
+                              {state.departmentDetail?.department_name}
                             </h2>
 
                             <p className="text-xs sm:text-sm text-gray-500 mt-1">
@@ -4122,7 +4154,8 @@ ${userName}`;
 
                           {/* ================= Stats Section ================= */}
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                            {state.departmentDetail.nba_accreditation && (
+                            {state.departmentDetail?.department_extras?.[0]
+                              .nba_accreditation && (
                               <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-5 md:p-6">
                                 <div className="flex items-center gap-3 mb-3">
                                   <img
@@ -4141,28 +4174,32 @@ ${userName}`;
                               </div>
                             )}
 
-                            {state.departmentDetail.intake_per_year && (
+                            {state.departmentDetail?.department_extras?.[0]
+                              ?.intake_per_year > 0 && (
                               <div className="bg-[#1E3786] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
                                 <p className="text-sm sm:text-lg font-semibold text-[#fff]">
                                   Intake Per Year
                                 </p>
                                 <h3 className="text-2xl sm:text-3xl font-bold mt-2">
-                                  {state.departmentDetail.intake_per_year}
+                                  {
+                                    state.departmentDetail
+                                      ?.department_extras?.[0]?.intake_per_year
+                                  }
                                 </h3>
                               </div>
                             )}
                           </div>
 
                           {/* ================= Achievements ================= */}
-                          {state.departmentDetail.recent_achievements?.length >
-                            0 && (
+                          {state.departmentDetail?.department_extras?.[0]
+                            .recent_achievements?.length > 0 && (
                             <div>
                               <h3 className="text-base sm:text-lg font-semibold text-[#1E3786] mb-3 sm:mb-4">
                                 Recent Achievements
                               </h3>
 
                               <ul className="space-y-2 text-xs sm:text-sm text-gray-700">
-                                {state.departmentDetail.recent_achievements?.map(
+                                {state.departmentDetail?.department_extras?.[0].recent_achievements?.map(
                                   (item, index) => (
                                     <li
                                       key={index}
@@ -4178,14 +4215,18 @@ ${userName}`;
                           )}
 
                           {/* ================= Summary ================= */}
-                          {state.departmentDetail.summary && (
+                          {state.departmentDetail?.department_extras?.[0]
+                            .summary && (
                             <div className="bg-gray-50 rounded-2xl p-4 sm:p-5 md:p-6">
                               <h3 className="text-base sm:text-lg font-semibold text-[#1E3786] mb-2 sm:mb-3">
                                 Summary
                               </h3>
 
                               <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                                {state.departmentDetail.summary}
+                                {
+                                  state.departmentDetail?.department_extras?.[0]
+                                    .summary
+                                }
                               </p>
                             </div>
                           )}

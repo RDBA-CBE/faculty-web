@@ -152,7 +152,6 @@ const SplitBanner = () => {
   };
 
   console.log("departmentListNext", state?.departmentList);
-  
 
   const departmentList = () => loadDepartmentOptions(1);
 
@@ -312,48 +311,51 @@ const SplitBanner = () => {
             {/* Stats */}
             <div className="flex flex-wrap items-start gap-4 md:gap-8 lg:gap-12 pt-8 md:pt-2">
               {/* {state?.filteredJobCatList?.map((item: any, i) => ( */}
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                    100+
-                  </div>
-                  <div className="text-white text-sm">
-                   Engineering Colleges <br />  Requirement
-                  </div>
+              <div>
+                <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
+                  100+
                 </div>
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                    70+
-                  </div>
-                  <div className="text-white text-sm">
-                   Arts Colleges<br />  Requirement
-                  </div>
+                <div className="text-white text-sm">
+                  Engineering Colleges <br /> Requirement
                 </div>
-                <div>
-                  <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                    80+
-                  </div>
-                  <div className="text-white text-sm">
-                   Pharmacy Colleges<br />  Requirement
-                  </div>
+              </div>
+              <div>
+                <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
+                  70+
                 </div>
+                <div className="text-white text-sm">
+                  Arts Colleges
+                  <br /> Requirement
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
+                  80+
+                </div>
+                <div className="text-white text-sm">
+                  Pharmacy Colleges
+                  <br /> Requirement
+                </div>
+              </div>
               {/* ))} */}
-
-            
             </div>
 
             <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
-                Are You Institutional HR?
-              </h1>
+              Are You Institutional HR?
+            </h1>
 
-              <button
-                className="w-fit sm:w-auto bg-[#F2B31D] text-black  md:px-5 py-3 sm:py-2 rounded-full flex items-center justify-center gap-2 hover:bg-[#e0a519] transition text-sm md:text-base font-semibold whitespace-nowrap"
-                style={{width:"fit-content"}}
-                onClick={handleScrollToHR}
-              >
-                 Access HR Portal
-                <ArrowRight className="w-5 h-5" />
-               
-              </button>
+            <p
+              className="group relative inline-flex text-white items-center gap-2 text-sm md:text-base font-medium whitespace-nowrap cursor-pointer"
+              onClick={handleScrollToHR}
+            >
+              <span className="relative text-white">
+                Access HR Portal
+                {/* underline */}
+                <span className="absolute left-0 -bottom-1 h-[2px] w-full bg-white origin-left scale-x-0 transition-transform duration-300 ease-in-out group-hover:scale-x-100 text-white"></span>
+              </span>
+
+              <ArrowRight className="w-3 h-3" />
+            </p>
           </div>
 
           {/* Right Image - Aligned to bottom */}
