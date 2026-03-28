@@ -241,7 +241,8 @@ export default function NaukriProfilePage() {
       SECTION_IDS.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
         if (section) {
-          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+          const sectionTop =
+            section.getBoundingClientRect().top + window.scrollY;
           if (scrollPosition >= sectionTop) {
             currentSubSection = sectionId.replace("-section", "");
           }
@@ -489,12 +490,12 @@ export default function NaukriProfilePage() {
         };
       } else if (type == "pref") {
         formData.append(
-          "preferred_colleges",
+          "preferred_college_ids",
           JSON.stringify(state.preferred_colleges?.map((item) => Number(item))),
         );
 
         formData.append(
-          "preferred_location_ids",
+          "location_ids",
           JSON.stringify(
             state.preferred_locations?.map((item) => Number(item)),
           ),
@@ -793,7 +794,11 @@ export default function NaukriProfilePage() {
         Failure("End date is required.");
         return;
       }
-      if (!state.is_present && state.end_date && new Date(state.end_date) < new Date(state.start_date)) {
+      if (
+        !state.is_present &&
+        state.end_date &&
+        new Date(state.end_date) < new Date(state.start_date)
+      ) {
         Failure("End date cannot be before start date.");
         return;
       }
@@ -801,7 +806,11 @@ export default function NaukriProfilePage() {
       setState({ isCreateExperience: false });
 
       const isPresent = Boolean(state.is_present);
-      const endDateValue = isPresent ? null : (state.end_date ? DateFormat(state.end_date, "api") : null);
+      const endDateValue = isPresent
+        ? null
+        : state.end_date
+          ? DateFormat(state.end_date, "api")
+          : null;
 
       const body = {
         user_id: state.userId,
@@ -841,7 +850,11 @@ export default function NaukriProfilePage() {
         Failure("End date is required.");
         return;
       }
-      if (!state.is_present && state.end_date && new Date(state.end_date) < new Date(state.start_date)) {
+      if (
+        !state.is_present &&
+        state.end_date &&
+        new Date(state.end_date) < new Date(state.start_date)
+      ) {
         Failure("End date cannot be before start date.");
         return;
       }
@@ -849,7 +862,11 @@ export default function NaukriProfilePage() {
       setState({ isEditingExperience: false });
 
       const isPresent = Boolean(state.is_present);
-      const endDateValue = isPresent ? null : (state.end_date ? DateFormat(state.end_date, "api") : null);
+      const endDateValue = isPresent
+        ? null
+        : state.end_date
+          ? DateFormat(state.end_date, "api")
+          : null;
 
       const body = {
         experience_id: state.editingId,
@@ -1193,7 +1210,12 @@ export default function NaukriProfilePage() {
         hasNext = !!res?.next;
         page++;
       }
-      setState({ masterDeptList: allResults.map((item: any) => ({ value: item.id, label: item.name })) });
+      setState({
+        masterDeptList: allResults.map((item: any) => ({
+          value: item.id,
+          label: item.name,
+        })),
+      });
     } catch (error) {
       console.log("department error", error);
     }
@@ -1264,7 +1286,7 @@ export default function NaukriProfilePage() {
         isManualScrollRef.current = false;
         setState({ activeProfileSubSection: subSectionId });
       },
-      { once: true }
+      { once: true },
     );
   };
 
@@ -1274,7 +1296,7 @@ export default function NaukriProfilePage() {
         ...state.expandedSections,
         [section]:
           !state.expandedSections[
-          section as keyof typeof state.expandedSections
+            section as keyof typeof state.expandedSections
           ],
       },
     });
@@ -1474,7 +1496,7 @@ export default function NaukriProfilePage() {
                             <div className="flex items-center gap-2 justify-start">
                               <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                                 {state.userDetail?.first_name &&
-                                  state.userDetail?.last_name
+                                state.userDetail?.last_name
                                   ? `${state.userDetail.first_name} ${state.userDetail.last_name}`
                                   : state.userDetail?.username || ""}
                               </h1>
@@ -1495,17 +1517,22 @@ export default function NaukriProfilePage() {
                               </p>
                             )}
                             {(state?.userDetail?.current_company ||
+                              state?.userDetail?.current_position ||
                               state?.userDetail?.current_location) && (
-                                <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
-                                  <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                  <span className="text-sm">
-                                    {state?.userDetail?.current_company} -{" "}
-                                    {state?.userDetail?.current_position} -
-                                    {state?.userDetail?.current_location}
-                                  </span>
-                                </div>
-                              )}
+                                <span className="text-sm">
+                                  {[
+                                    state?.userDetail?.current_company,
+                                    state?.userDetail?.current_position,
+                                    state?.userDetail?.current_location,
+                                  ]
+                                    .filter(Boolean) // removes null/undefined/empty
+                                    .join(" - ")}
+                                </span>
+                              </div>
+                            )}
                           </div>
                           <div className="flex-shrink-0 justify-center">
                             <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border w-fit">
@@ -1560,14 +1587,21 @@ export default function NaukriProfilePage() {
                           label: state?.userDetail?.gender || "Not specified",
                           color: "text-[#f2b31d]",
                         },
-                        ...(state?.userDetail?.department_id ? [{
-                          icon: Briefcase,
-                          label: (() => {
-                            const found = state?.masterDeptList?.find((d: any) => d.value == state.userDetail.department_id);
-                            return found ? found.label : "";
-                          })(),
-                          color: "text-[#f2b31d]",
-                        }] : []),
+                        ...(state?.userDetail?.department_id
+                          ? [
+                              {
+                                icon: Briefcase,
+                                label: (() => {
+                                  const found = state?.masterDeptList?.find(
+                                    (d: any) =>
+                                      d.value == state.userDetail.department_id,
+                                  );
+                                  return found ? found.label : "";
+                                })(),
+                                color: "text-[#f2b31d]",
+                              },
+                            ]
+                          : []),
                       ].map((item, index) => (
                         <div
                           key={index}
@@ -1595,17 +1629,19 @@ export default function NaukriProfilePage() {
                       <button
                         key={tab}
                         onClick={() => setState({ activeTab: tab })}
-                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${state.activeTab === tab
-                          ? "bg-[#1e3786] !text-[#fff]"
-                          : "text-gray-800 hover:text-[#1e3786]"
-                          }`}
+                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
+                          state.activeTab === tab
+                            ? "bg-[#1e3786] !text-[#fff]"
+                            : "text-gray-800 hover:text-[#1e3786]"
+                        }`}
                       >
                         {/* Tab Label */}
                         <span
-                          className={`${state.activeTab === tab
-                            ? "bg-[#1e3786] !text-[#fff]"
-                            : "text-gray-800 hover:text-[#1e3786]"
-                            }`}
+                          className={`${
+                            state.activeTab === tab
+                              ? "bg-[#1e3786] !text-[#fff]"
+                              : "text-gray-800 hover:text-[#1e3786]"
+                          }`}
                         >
                           {tab === "My Applications"
                             ? "My Applications"
@@ -1618,24 +1654,25 @@ export default function NaukriProfilePage() {
 
                         {/* Count Badge */}
                         {(tab === "My Applications" && state.appliedCount) ||
-                          (tab === "Saved Jobs" && state.savedCount) ||
-                          (tab === "HR Requests" &&
-                            state.userDetail?.interesteds?.filter(
-                              (invite) => !invite?.is_response,
-                            )?.length) ? (
+                        (tab === "Saved Jobs" && state.savedCount) ||
+                        (tab === "HR Requests" &&
+                          state.userDetail?.interesteds?.filter(
+                            (invite) => !invite?.is_response,
+                          )?.length) ? (
                           <span
-                            className={`text-xs font-semibold px-2 py-[2px] rounded-full ${state.activeTab === tab
-                              ? "bg-white text-[#1e3786]"
-                              : "bg-[#1e3786] text-white"
-                              }`}
+                            className={`text-xs font-semibold px-2 py-[2px] rounded-full ${
+                              state.activeTab === tab
+                                ? "bg-white text-[#1e3786]"
+                                : "bg-[#1e3786] text-white"
+                            }`}
                           >
                             {tab === "My Applications"
                               ? state.appliedCount
                               : tab === "Saved Jobs"
                                 ? state.savedCount
                                 : state.userDetail?.interesteds?.filter(
-                                  (invite) => !invite?.is_response,
-                                )?.length}
+                                    (invite) => !invite?.is_response,
+                                  )?.length}
                           </span>
                         ) : null}
                       </button>
@@ -1667,18 +1704,20 @@ export default function NaukriProfilePage() {
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all ${state.activeProfileSubSection ===
+                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all ${
+                                        state.activeProfileSubSection ===
                                         item.id
-                                        ? "bg-[#1E3786] !text-[#fff]"
-                                        : " hover:bg-white/80"
-                                        }`}
+                                          ? "bg-[#1E3786] !text-[#fff]"
+                                          : " hover:bg-white/80"
+                                      }`}
                                     >
                                       <span
-                                        className={`font-medium ${state.activeProfileSubSection ===
+                                        className={`font-medium ${
+                                          state.activeProfileSubSection ===
                                           item.id
-                                          ? "!text-[#fff]" // This should still be activeTab for the main tab
-                                          : "text-[#000]"
-                                          }`}
+                                            ? "!text-[#fff]" // This should still be activeTab for the main tab
+                                            : "text-[#000]"
+                                        }`}
                                       >
                                         {item.label}
                                       </span>
@@ -2093,28 +2132,28 @@ export default function NaukriProfilePage() {
                                             {expandedAbout
                                               ? state?.userDetail?.about
                                               : state?.userDetail?.about?.slice(
-                                                0,
-                                                280,
-                                              )}
+                                                  0,
+                                                  280,
+                                                )}
                                             {!expandedAbout &&
                                               state?.userDetail?.about?.length >
-                                              280 &&
+                                                280 &&
                                               "..."}
                                             {state?.userDetail?.about?.length >
                                               280 && (
-                                                <button
-                                                  onClick={() =>
-                                                    setExpandedAbout(
-                                                      (prev) => !prev,
-                                                    )
-                                                  }
-                                                  className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
-                                                >
-                                                  {expandedAbout
-                                                    ? "Read Less"
-                                                    : "Read More"}
-                                                </button>
-                                              )}
+                                              <button
+                                                onClick={() =>
+                                                  setExpandedAbout(
+                                                    (prev) => !prev,
+                                                  )
+                                                }
+                                                className="text-blue-600 text-sm font-medium hover:underline cursor-pointer ml-1"
+                                              >
+                                                {expandedAbout
+                                                  ? "Read Less"
+                                                  : "Read More"}
+                                              </button>
+                                            )}
                                           </p>
                                         </div>
                                       </div>
@@ -2174,7 +2213,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("employment"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("employment");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.employment ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -2196,10 +2241,25 @@ export default function NaukriProfilePage() {
                                     <AnimatePresence>
                                       {state.isCreateExperience && (
                                         <motion.div
-                                          initial={{ opacity: 0, height: 0, y: -20 }}
-                                          animate={{ opacity: 1, height: "auto", y: 0 }}
-                                          exit={{ opacity: 0, height: 0, y: -20 }}
-                                          transition={{ duration: 0.3, ease: "easeOut" }}
+                                          initial={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          animate={{
+                                            opacity: 1,
+                                            height: "auto",
+                                            y: 0,
+                                          }}
+                                          exit={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          transition={{
+                                            duration: 0.3,
+                                            ease: "easeOut",
+                                          }}
                                           className="mb-6 sm:mb-8 relative"
                                         >
                                           {/* Background Blur */}
@@ -2207,7 +2267,6 @@ export default function NaukriProfilePage() {
 
                                           {/* Main Card */}
                                           <div className="relative bg-white/80 rounded-xl p-4 sm:p-6 md:p-8 border border-white/50 shadow-xl mt-4 sm:mt-5">
-
                                             {/* Header */}
                                             <div className="flex items-center gap-3 mb-5 sm:mb-6">
                                               <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center flex-shrink-0">
@@ -2220,7 +2279,6 @@ export default function NaukriProfilePage() {
 
                                             {/* Form Grid */}
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
-
                                               {/* College Name */}
                                               <div className="space-y-2 w-full">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -2230,7 +2288,10 @@ export default function NaukriProfilePage() {
                                                   placeholder="e.g., Google Inc."
                                                   value={state.company || ""}
                                                   onChange={(e) =>
-                                                    handleFormChange("company", e.target.value)
+                                                    handleFormChange(
+                                                      "company",
+                                                      e.target.value,
+                                                    )
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
@@ -2243,9 +2304,14 @@ export default function NaukriProfilePage() {
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Senior Software Engineer"
-                                                  value={state.designation || ""}
+                                                  value={
+                                                    state.designation || ""
+                                                  }
                                                   onChange={(e) =>
-                                                    handleFormChange("designation", e.target.value)
+                                                    handleFormChange(
+                                                      "designation",
+                                                      e.target.value,
+                                                    )
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
@@ -2257,9 +2323,13 @@ export default function NaukriProfilePage() {
                                                   placeholder="Start Date"
                                                   title="Start Date"
                                                   closeIcon={true}
-                                                  selectedDate={state.start_date}
+                                                  selectedDate={
+                                                    state.start_date
+                                                  }
                                                   onChange={(date) => {
-                                                    setState({ start_date: date });
+                                                    setState({
+                                                      start_date: date,
+                                                    });
                                                   }}
                                                   toDate={new Date()}
                                                 />
@@ -2272,11 +2342,21 @@ export default function NaukriProfilePage() {
                                                     placeholder="End Date"
                                                     title="End Date"
                                                     closeIcon={true}
-                                                    selectedDate={state.end_date}
+                                                    selectedDate={
+                                                      state.end_date
+                                                    }
                                                     onChange={(date) => {
-                                                      setState({ end_date: date });
+                                                      setState({
+                                                        end_date: date,
+                                                      });
                                                     }}
-                                                    fromDate={state.start_date ? new Date(state.start_date) : undefined} // ✅ prevent before start date
+                                                    fromDate={
+                                                      state.start_date
+                                                        ? new Date(
+                                                            state.start_date,
+                                                          )
+                                                        : undefined
+                                                    } // ✅ prevent before start date
                                                     toDate={new Date()}
                                                   />
                                                 </div>
@@ -2287,11 +2367,17 @@ export default function NaukriProfilePage() {
                                                 <input
                                                   type="checkbox"
                                                   id="is_present_create"
-                                                  checked={state.is_present || false}
+                                                  checked={
+                                                    state.is_present || false
+                                                  }
                                                   onChange={(e) =>
                                                     setState({
-                                                      is_present: e.target.checked,
-                                                      end_date: e.target.checked ? null : (state.end_date || null),
+                                                      is_present:
+                                                        e.target.checked,
+                                                      end_date: e.target.checked
+                                                        ? null
+                                                        : state.end_date ||
+                                                          null,
                                                     })
                                                   }
                                                   className="h-4 w-4 mt-1 sm:mt-0 rounded border-gray-300 text-[#1E3786]"
@@ -2300,7 +2386,8 @@ export default function NaukriProfilePage() {
                                                   htmlFor="is_present_create"
                                                   className="text-sm font-semibold text-gray-700 leading-snug"
                                                 >
-                                                  Present (Currently working here)
+                                                  Present (Currently working
+                                                  here)
                                                 </label>
                                               </div>
                                             </div>
@@ -2314,7 +2401,10 @@ export default function NaukriProfilePage() {
                                                 placeholder="Describe your key responsibilities and achievements..."
                                                 value={state.job_description}
                                                 onChange={(e) =>
-                                                  handleFormChange("job_description", e.target.value)
+                                                  handleFormChange(
+                                                    "job_description",
+                                                    e.target.value,
+                                                  )
                                                 }
                                                 className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6] min-h-[100px]"
                                               />
@@ -2401,14 +2491,14 @@ export default function NaukriProfilePage() {
                                                           )}{" "}
                                                           to{" "}
                                                           {emp.end_date &&
-                                                            DateFormat(
-                                                              emp.end_date,
-                                                              "date",
-                                                            )
+                                                          DateFormat(
+                                                            emp.end_date,
+                                                            "date",
+                                                          )
                                                             ? DateFormat(
-                                                              emp.end_date,
-                                                              "date",
-                                                            )
+                                                                emp.end_date,
+                                                                "date",
+                                                              )
                                                             : "Present"}
                                                         </span>
                                                         {/* <span className="ml-1">
@@ -2468,9 +2558,9 @@ export default function NaukriProfilePage() {
                                                         {expandedDesc[emp.id]
                                                           ? emp.job_description
                                                           : emp.job_description?.slice(
-                                                            0,
-                                                            280,
-                                                          )}
+                                                              0,
+                                                              280,
+                                                            )}
                                                         {!expandedDesc[
                                                           emp.id
                                                         ] &&
@@ -2487,7 +2577,7 @@ export default function NaukriProfilePage() {
                                                                     ...prev,
                                                                     [emp.id]:
                                                                       !prev[
-                                                                      emp.id
+                                                                        emp.id
                                                                       ],
                                                                   }),
                                                                 )
@@ -2581,9 +2671,9 @@ export default function NaukriProfilePage() {
                                               {index <
                                                 state?.userDetail?.experiences
                                                   .length -
-                                                1 && (
-                                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
-                                                )}
+                                                  1 && (
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
+                                              )}
                                             </div>
                                           </motion.div>
                                         ),
@@ -2595,40 +2685,40 @@ export default function NaukriProfilePage() {
                                       0 ||
                                       !state.userDetail?.experiences
                                         ?.length) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-12"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-12"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <Briefcase className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                          No Employment History
+                                        </h4>
+                                        <p className="text-gray-500 mb-6">
+                                          Add your work experience to showcase
+                                          your professional journey
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isCreateExperience: true,
+                                              company: "",
+                                              designation: "",
+                                              start_date: "",
+                                              end_date: "",
+                                              is_present: false,
+                                              job_description: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <Briefcase className="w-8 h-8 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                            No Employment History
-                                          </h4>
-                                          <p className="text-gray-500 mb-6">
-                                            Add your work experience to showcase
-                                            your professional journey
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isCreateExperience: true,
-                                                company: "",
-                                                designation: "",
-                                                start_date: "",
-                                                end_date: "",
-                                                is_present: false,
-                                                job_description: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Your First Job
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Your First Job
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -2683,7 +2773,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("education"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("education");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.education ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -2999,9 +3095,9 @@ export default function NaukriProfilePage() {
                                               {index <
                                                 state?.userDetail?.educations
                                                   ?.length -
-                                                1 && (
-                                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
-                                                )}
+                                                  1 && (
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-[#3b82f6]"></div>
+                                              )}
                                             </div>
                                           </motion.div>
                                         ),
@@ -3012,40 +3108,40 @@ export default function NaukriProfilePage() {
                                     {(state?.userDetail?.educations?.length ===
                                       0 ||
                                       !state?.userDetail?.educations) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-12"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-12"
+                                      >
+                                        <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                                          <GraduationCap className="w-12 h-12 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                          No Education History
+                                        </h4>
+                                        <p className="text-gray-500 mb-6">
+                                          Add your educational background to
+                                          showcase your qualifications
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isCreateEducation: true,
+                                              institution: "",
+                                              degree: "",
+                                              field: "",
+                                              start_year: "",
+                                              end_year: "",
+                                              cgpa: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <GraduationCap className="w-12 h-12 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                            No Education History
-                                          </h4>
-                                          <p className="text-gray-500 mb-6">
-                                            Add your educational background to
-                                            showcase your qualifications
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isCreateEducation: true,
-                                                institution: "",
-                                                degree: "",
-                                                field: "",
-                                                start_year: "",
-                                                end_year: "",
-                                                cgpa: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Your First Education
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Your First Education
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -3103,7 +3199,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("projects"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("projects");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.projects ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -3490,9 +3592,9 @@ export default function NaukriProfilePage() {
                                                         ]
                                                           ? project.project_description
                                                           : project.project_description?.slice(
-                                                            0,
-                                                            280,
-                                                          )}
+                                                              0,
+                                                              280,
+                                                            )}
                                                         {!expandedProjectDesc[
                                                           project.id
                                                         ] &&
@@ -3511,8 +3613,8 @@ export default function NaukriProfilePage() {
                                                                     ...prev,
                                                                     [project.id]:
                                                                       !prev[
-                                                                      project
-                                                                        .id
+                                                                        project
+                                                                          .id
                                                                       ],
                                                                   }),
                                                                 )
@@ -3621,9 +3723,9 @@ export default function NaukriProfilePage() {
                                               {index <
                                                 state.userDetail?.projects
                                                   ?.length -
-                                                1 && (
-                                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                                )}
+                                                  1 && (
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                              )}
                                             </div>
                                           </motion.div>
                                         ),
@@ -3634,41 +3736,41 @@ export default function NaukriProfilePage() {
                                     {(state.userDetail?.projects?.length ===
                                       0 ||
                                       !state.userDetail?.projects) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-12"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-12"
+                                      >
+                                        <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                          <FolderOpen className="w-12 h-12 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                          No Projects Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-6">
+                                          Showcase your work by adding your
+                                          projects and achievements
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isCreateProjects: true,
+                                              project_title: "",
+                                              project_description: "",
+                                              technologies: [],
+                                              duration: "",
+                                              status: "",
+                                              project_link: "",
+                                              technology: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <FolderOpen className="w-12 h-12 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                            No Projects Added
-                                          </h4>
-                                          <p className="text-gray-500 mb-6">
-                                            Showcase your work by adding your
-                                            projects and achievements
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isCreateProjects: true,
-                                                project_title: "",
-                                                project_description: "",
-                                                technologies: [],
-                                                duration: "",
-                                                status: "",
-                                                project_link: "",
-                                                technology: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Your First Project
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Your First Project
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -3723,7 +3825,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("publications"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("publications");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.publications ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -4042,9 +4150,9 @@ export default function NaukriProfilePage() {
                                                         ]
                                                           ? pub.publication_description
                                                           : pub.publication_description?.slice(
-                                                            0,
-                                                            280,
-                                                          )}
+                                                              0,
+                                                              280,
+                                                            )}
                                                         {!expandedPublicationDesc[
                                                           pub.id
                                                         ] &&
@@ -4063,7 +4171,7 @@ export default function NaukriProfilePage() {
                                                                     ...prev,
                                                                     [pub.id]:
                                                                       !prev[
-                                                                      pub.id
+                                                                        pub.id
                                                                       ],
                                                                   }),
                                                                 )
@@ -4129,9 +4237,9 @@ export default function NaukriProfilePage() {
                                               {index <
                                                 state.userDetail?.publications
                                                   ?.length -
-                                                1 && (
-                                                  <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
-                                                )}
+                                                  1 && (
+                                                <div className="absolute -bottom-3 left-8 w-0.5 h-6 bg-gradient-to-b from-[#3b82f6]/50 to-transparent"></div>
+                                              )}
                                             </div>
                                           </motion.div>
                                         ),
@@ -4142,40 +4250,40 @@ export default function NaukriProfilePage() {
                                     {(state.userDetail?.publications?.length ===
                                       0 ||
                                       !state.userDetail?.publications) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-12"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-12"
+                                      >
+                                        <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                          <Book className="w-12 h-12 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                          No Publications Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-6">
+                                          Showcase your research work by adding
+                                          your publications
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isCreatePublication: true,
+                                              publication_title: "",
+                                              publication_description: "",
+                                              publication_journal: "",
+                                              publication_volume: "",
+                                              publication_issue: "",
+                                              publication_year: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Book className="w-12 h-12 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                            No Publications Added
-                                          </h4>
-                                          <p className="text-gray-500 mb-6">
-                                            Showcase your research work by adding
-                                            your publications
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isCreatePublication: true,
-                                                publication_title: "",
-                                                publication_description: "",
-                                                publication_journal: "",
-                                                publication_volume: "",
-                                                publication_issue: "",
-                                                publication_year: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Your First Publication
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Your First Publication
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -4225,7 +4333,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("skills"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("skills");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.skills ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -4387,34 +4501,34 @@ export default function NaukriProfilePage() {
                                     {/* Empty State */}
                                     {(state.userDetail?.skills?.length === 0 ||
                                       !state.userDetail?.skills?.length) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-8"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <Code className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Skills Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-4">
+                                          Add your technical skills as chips
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isEditingSkills: true,
+                                              skill: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <Code className="w-8 h-8 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                                            No Skills Added
-                                          </h4>
-                                          <p className="text-gray-500 mb-4">
-                                            Add your technical skills as chips
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isEditingSkills: true,
-                                                skill: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Skills
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Skills
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -4467,7 +4581,13 @@ export default function NaukriProfilePage() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("achievements"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("achievements");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.achievements ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -4723,9 +4843,9 @@ export default function NaukriProfilePage() {
                                                         ]
                                                           ? achievement.achievement_description
                                                           : achievement.achievement_description?.slice(
-                                                            0,
-                                                            280,
-                                                          )}
+                                                              0,
+                                                              280,
+                                                            )}
                                                         {!expandedAchievementDesc[
                                                           achievement.id
                                                         ] &&
@@ -4744,8 +4864,8 @@ export default function NaukriProfilePage() {
                                                                     ...prev,
                                                                     [achievement.id]:
                                                                       !prev[
-                                                                      achievement
-                                                                        .id
+                                                                        achievement
+                                                                          .id
                                                                       ],
                                                                   }),
                                                                 )
@@ -4827,37 +4947,37 @@ export default function NaukriProfilePage() {
                                     {(state.userDetail?.achievements?.length ===
                                       0 ||
                                       !state.userDetail?.achievements) && (
-                                        <motion.div
-                                          initial={{ opacity: 0, scale: 0.9 }}
-                                          animate={{ opacity: 1, scale: 1 }}
-                                          className="text-center py-12"
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-12"
+                                      >
+                                        <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                          <Award className="w-12 h-12 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-xl font-semibold text-gray-900 mb-2">
+                                          No Achievements Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-6">
+                                          Showcase your awards and recognitions
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isCreateAchievements: true,
+                                              achievement_title: "",
+                                              organization: "",
+                                              achievement_file: null,
+                                              achievement_description: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
                                         >
-                                          <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                            <Award className="w-12 h-12 text-[#1E3786]/60" />
-                                          </div>
-                                          <h4 className="text-xl font-semibold text-gray-900 mb-2">
-                                            No Achievements Added
-                                          </h4>
-                                          <p className="text-gray-500 mb-6">
-                                            Showcase your awards and recognitions
-                                          </p>
-                                          <Button
-                                            onClick={() =>
-                                              setState({
-                                                isCreateAchievements: true,
-                                                achievement_title: "",
-                                                organization: "",
-                                                achievement_file: null,
-                                                achievement_description: "",
-                                              })
-                                            }
-                                            className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                          >
-                                            <Plus className="w-4 h-4 mr-2" />
-                                            Add Your First Achievement
-                                          </Button>
-                                        </motion.div>
-                                      )}
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Your First Achievement
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -4932,18 +5052,20 @@ export default function NaukriProfilePage() {
                                   onClick={() =>
                                     handleFormChange(item.key, !item.state)
                                   }
-                                  className={`relative group cursor-pointer border rounded-md p-4 transition-all duration-300 ${item.state
-                                    ? "border-[#1E3786] bg-[#1E3786]/5 shadow-md"
-                                    : "border-gray-200 bg-white hover:border-[#1E3786]/50 hover:shadow-sm"
-                                    }`}
+                                  className={`relative group cursor-pointer border rounded-md p-4 transition-all duration-300 ${
+                                    item.state
+                                      ? "border-[#1E3786] bg-[#1E3786]/5 shadow-md"
+                                      : "border-gray-200 bg-white hover:border-[#1E3786]/50 hover:shadow-sm"
+                                  }`}
                                 >
                                   <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                       <div
-                                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${item.state
-                                          ? "bg-[#1E3786] border-[#1E3786]"
-                                          : "border-gray-300 bg-white group-hover:border-[#1E3786]/50"
-                                          }`}
+                                        className={`w-6 h-6 rounded border-2 flex items-center justify-center transition-colors ${
+                                          item.state
+                                            ? "bg-[#1E3786] border-[#1E3786]"
+                                            : "border-gray-300 bg-white group-hover:border-[#1E3786]/50"
+                                        }`}
                                       >
                                         {item.state && (
                                           <CheckCircle className="w-3.5 h-3.5 text-white" />
@@ -4951,10 +5073,11 @@ export default function NaukriProfilePage() {
                                       </div>
                                       <div>
                                         <h4
-                                          className={`font-semibold ${item.state
-                                            ? "text-[#1E3786]"
-                                            : "text-gray-700"
-                                            }`}
+                                          className={`font-semibold ${
+                                            item.state
+                                              ? "text-[#1E3786]"
+                                              : "text-gray-700"
+                                          }`}
                                         >
                                           {item.label}
                                         </h4>
@@ -5048,25 +5171,28 @@ export default function NaukriProfilePage() {
                                   onClick={() =>
                                     handleFormChange(item.key, !item.state)
                                   }
-                                  className={`relative overflow-hidden cursor-pointer border rounded-md p-5 transition-all duration-300 ${item.state
-                                    ? "border-[#1E3786] bg-gradient-to-br from-[#1E3786]/5 to-[#1E3786]/10 shadow-md transform scale-[1.02]"
-                                    : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
-                                    }`}
+                                  className={`relative overflow-hidden cursor-pointer border rounded-md p-5 transition-all duration-300 ${
+                                    item.state
+                                      ? "border-[#1E3786] bg-gradient-to-br from-[#1E3786]/5 to-[#1E3786]/10 shadow-md transform scale-[1.02]"
+                                      : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
+                                  }`}
                                 >
                                   <div className="flex justify-between items-start mb-3">
                                     <div
-                                      className={`p-2.5 rounded-md ${item.state
-                                        ? "bg-[#1E3786] text-white"
-                                        : "bg-gray-100 text-gray-500"
-                                        }`}
+                                      className={`p-2.5 rounded-md ${
+                                        item.state
+                                          ? "bg-[#1E3786] text-white"
+                                          : "bg-gray-100 text-gray-500"
+                                      }`}
                                     >
                                       <item.icon className="w-5 h-5" />
                                     </div>
                                     <div
-                                      className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 ${item.state
-                                        ? "bg-[#1E3786] justify-end"
-                                        : "bg-gray-300 justify-start"
-                                        }`}
+                                      className={`w-10 h-6 rounded-full flex items-center p-1 transition-colors duration-300 ${
+                                        item.state
+                                          ? "bg-[#1E3786] justify-end"
+                                          : "bg-gray-300 justify-start"
+                                      }`}
                                     >
                                       <div className="w-4 h-4 rounded-full bg-white shadow-sm" />
                                     </div>
@@ -5144,12 +5270,14 @@ export default function NaukriProfilePage() {
                     ) : state.activeTab == "My Applications" ? (
                       state.jobList?.length > 0 ? (
                         <div
-                          className={`grid  ${!state.isGridView
-                            ? "grid-cols-1 xl:grid-cols-2"
-                            : "grid-cols-1"
-                            } ${state.isGridView &&
+                          className={`grid  ${
+                            !state.isGridView
+                              ? "grid-cols-1 xl:grid-cols-2"
+                              : "grid-cols-1"
+                          } ${
+                            state.isGridView &&
                             "bg-white px-5 border border-[#c7c7c787]"
-                            }`}
+                          }`}
                           style={{
                             gap: "10px",
                           }}
@@ -5220,12 +5348,14 @@ export default function NaukriProfilePage() {
                     ) : state.activeTab == "Saved Jobs" ? (
                       state?.savedJobList?.length > 0 ? (
                         <div
-                          className={`grid  ${!state.isGridView
-                            ? "grid-cols-1 xl:grid-cols-2"
-                            : "grid-cols-1"
-                            } ${state.isGridView &&
+                          className={`grid  ${
+                            !state.isGridView
+                              ? "grid-cols-1 xl:grid-cols-2"
+                              : "grid-cols-1"
+                          } ${
+                            state.isGridView &&
                             "bg-white px-5 border border-[#c7c7c787]"
-                            }`}
+                          }`}
                           style={{
                             gap: "10px",
                           }}
@@ -5288,7 +5418,9 @@ export default function NaukriProfilePage() {
                             <div className="hidden lg:block">
                               <HrRequestTable
                                 invites={state.userDetail.interesteds}
-                                onSubmit={(type, invite) => updateInviteStatus(type, invite)}
+                                onSubmit={(type, invite) =>
+                                  updateInviteStatus(type, invite)
+                                }
                                 btnLoading={state.btnLoading}
                               />
                             </div>
@@ -5298,7 +5430,9 @@ export default function NaukriProfilePage() {
                                 <InviteCard
                                   key={invite.id}
                                   invite={invite}
-                                  submit={(type) => updateInviteStatus(type, invite)}
+                                  submit={(type) =>
+                                    updateInviteStatus(type, invite)
+                                  }
                                   btnLoading={state.btnLoading}
                                 />
                               ))}
@@ -5460,7 +5594,7 @@ export default function NaukriProfilePage() {
                                   })
                                 }
                                 error={state?.errors?.experience}
-                              // placeholder="Experience"
+                                // placeholder="Experience"
                               />
                             </div>
 
@@ -5526,7 +5660,10 @@ export default function NaukriProfilePage() {
                                 options={state.masterDeptList || []}
                                 value={state?.department || ""}
                                 onChange={(selected) =>
-                                  handleFormChange("department", selected ? selected.value : "")
+                                  handleFormChange(
+                                    "department",
+                                    selected ? selected.value : "",
+                                  )
                                 }
                               />
                             </div>
@@ -5643,44 +5780,48 @@ export default function NaukriProfilePage() {
                               />
                             </div>
 
-                          
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="checkbox"
-                                  id="is_present_edit"
-                                  checked={state.is_present || false}
-                                  onChange={(e) =>
-                                    setState({
-                                      is_present: e.target.checked,
-                                      end_date: e.target.checked ? null : (state.end_date || null),
-                                    })
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                id="is_present_edit"
+                                checked={state.is_present || false}
+                                onChange={(e) =>
+                                  setState({
+                                    is_present: e.target.checked,
+                                    end_date: e.target.checked
+                                      ? null
+                                      : state.end_date || null,
+                                  })
+                                }
+                                className="h-4 w-4 rounded border-gray-300 text-[#1E3786]"
+                              />
+                              <label
+                                htmlFor="is_present_edit"
+                                className="text-sm font-semibold text-gray-700"
+                              >
+                                Present (Currently working here)
+                              </label>
+                            </div>
+
+                            {!state.is_present && (
+                              <div className="space-y-2">
+                                <DatePicker
+                                  placeholder="End Date"
+                                  title="End Date"
+                                  closeIcon={true}
+                                  selectedDate={state.end_date}
+                                  onChange={(date) => {
+                                    setState({ end_date: date });
+                                  }}
+                                  fromDate={
+                                    state.start_date
+                                      ? new Date(state.start_date)
+                                      : undefined
                                   }
-                                  className="h-4 w-4 rounded border-gray-300 text-[#1E3786]"
+                                  toDate={new Date()}
                                 />
-                                <label
-                                  htmlFor="is_present_edit"
-                                  className="text-sm font-semibold text-gray-700"
-                                >
-                                  Present (Currently working here)
-                                </label>
                               </div>
-                            
-                              {!state.is_present && (
-                                <div className="space-y-2">
-                                  <DatePicker
-                                    placeholder="End Date"
-                                    title="End Date"
-                                    closeIcon={true}
-                                    selectedDate={state.end_date}
-                                    onChange={(date) => {
-                                      setState({ end_date: date });
-                                    }}
-                                    fromDate={state.start_date ? new Date(state.start_date) : undefined}
-                                    toDate={new Date()}
-                                  />
-                                </div>
-                              )}
-                          
+                            )}
 
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -6291,7 +6432,7 @@ export default function NaukriProfilePage() {
                                 <div className="text-sm text-gray-600 mt-1">
                                   Current file:{" "}
                                   {typeof state.achievement_file ===
-                                    "string" ? (
+                                  "string" ? (
                                     <a
                                       href={state.achievement_file}
                                       target="_blank"
