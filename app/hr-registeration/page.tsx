@@ -59,8 +59,8 @@ const HRRegistrationPage = () => {
 
       await Models.auth.hr_user(body);
 
-      Success("Thanks !");
-      router.push("/login");
+      Success("Thanks for your interest!");
+      // router.push("/");
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors: Record<string, string> = {};
