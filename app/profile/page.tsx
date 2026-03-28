@@ -169,6 +169,7 @@ export default function NaukriProfilePage() {
     collegeList();
     appliedJobList();
     getSavedJobs();
+    masterDepartmentList();
   }, []);
 
   useEffect(() => {
@@ -436,6 +437,7 @@ export default function NaukriProfilePage() {
         current_position: state?.current_position || "",
         profile_logo: state?.profile_logo,
         newsletter: state?.newsletter,
+        ...(state?.department ? { department: state.department } : {}),
       };
 
       // ✅ Create FormData
@@ -1168,8 +1170,27 @@ export default function NaukriProfilePage() {
       short_desc: state.userDetail?.short_desc,
       newsletter: state.userDetail?.newsletter,
       profile_logo_preview: state.userDetail?.profile_logo_url,
+      department: state.userDetail?.department_id ?? "",
       isEditingProfile: true,
     });
+    masterDepartmentList();
+  };
+
+  const masterDepartmentList = async () => {
+    try {
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+      while (hasNext) {
+        const res: any = await Models.department.masterDep({ page });
+        if (res?.results?.length) allResults = [...allResults, ...res.results];
+        hasNext = !!res?.next;
+        page++;
+      }
+      setState({ masterDeptList: allResults.map((item: any) => ({ value: item.id, label: item.name })) });
+    } catch (error) {
+      console.log("department error", error);
+    }
   };
 
   const experienceList = async () => {
@@ -1533,6 +1554,14 @@ export default function NaukriProfilePage() {
                           label: state?.userDetail?.gender || "Not specified",
                           color: "text-[#f2b31d]",
                         },
+                        ...(state?.userDetail?.department_id ? [{
+                          icon: Briefcase,
+                          label: (() => {
+                            const found = state?.masterDeptList?.find((d: any) => d.value == state.userDetail.department_id);
+                            return found ? found.label : "";
+                          })(),
+                          color: "text-[#f2b31d]",
+                        }] : []),
                       ].map((item, index) => (
                         <div
                           key={index}
@@ -4263,7 +4292,7 @@ export default function NaukriProfilePage() {
                                               </div>
                                               {/* <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Experience 
+                                                  Experience
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 3 years"
@@ -5481,6 +5510,18 @@ export default function NaukriProfilePage() {
                                   handleFormChange("short_desc", e.target.value)
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <CustomSelect
+                                title="Department"
+                                className="border border-gray-200"
+                                options={state.masterDeptList || []}
+                                value={state?.department || ""}
+                                onChange={(selected) =>
+                                  handleFormChange("department", selected ? selected.value : "")
+                                }
                               />
                             </div>
                             <div className="flex flex-col">

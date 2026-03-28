@@ -48,7 +48,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { buildFormData, Failure, useSetState } from "@/utils/function.utils";
+import { buildFormData, Dropdown, Failure, useSetState } from "@/utils/function.utils";
+import CustomSelect from "./dropdown";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
 import { Input } from "../ui/input";
@@ -96,10 +97,12 @@ const Header = () => {
         confirmPassword: "",
         first_name: "",
         last_name: "",
+        department: "",
         terms: false,
         newsletter: false,
         errors: {},
       });
+      loadDepartmentList();
     };
 
     window.addEventListener("openRegisterModal", handleOpenRegisterModal);
@@ -126,28 +129,22 @@ const Header = () => {
     };
   }, [setState]);
 
-  //  const DepartmentOptions = async (
-  //     page = 1,
-  //     search = "",
-  //     loadMore = false,
-  //   ) => {
-  //     try {
-  //       setState({ departmentListLoading: true });
-  //       const res = await Models.department.masterDep(page);
-  //       const dropdown = Dropdown(res?.results, "name");
-  //       setState({
-  //         departmentListLoading: false,
-  //         departmentListPage: page,
-  //         departmentList: loadMore
-  //           ? [...state.departmentList, ...dropdown]
-  //           : dropdown,
-  //         departmentListNext: res?.next,
-  //       });
-  //     } catch (error) {
-  //       console.log("✌️error --->", error);
-  //       setState({ departmentListLoading: false });
-  //     }
-  //   };
+  const loadDepartmentList = async () => {
+    try {
+      let page = 1;
+      let allResults = [];
+      let hasNext = true;
+      while (hasNext) {
+        const res = await Models.department.masterDep({ page });
+        if (res?.results?.length) allResults = [...allResults, ...res.results];
+        hasNext = !!res?.next;
+        page++;
+      }
+      setState({ departmentList: Dropdown(allResults, "name") });
+    } catch (error) {
+      console.log("department error", error);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -190,6 +187,7 @@ const Header = () => {
         ...validateBody,
         newsletter: state.newsletter,
         terms: state.terms,
+        ...(state.department ? { department: state.department } : {}),
       };
 
       console.log("body", body);
@@ -207,6 +205,7 @@ const Header = () => {
         confirmPassword: "",
         first_name: "",
         last_name: "",
+        department: "",
         terms: false,
         newsletter: false,
       });
@@ -442,7 +441,7 @@ const Header = () => {
                     Login
                   </Button>
                   <Button
-                    onClick={() =>
+                    onClick={() => {
                       setState({
                         isOpenReg: true,
                         email: "",
@@ -450,11 +449,13 @@ const Header = () => {
                         confirmPassword: "",
                         first_name: "",
                         last_name: "",
+                        department: "",
                         terms: false,
                         newsletter: false,
                         errors: {},
-                      })
-                    }
+                      });
+                      loadDepartmentList();
+                    }}
                     className="bg-[#f2b31d] hover:bg-[#d9a016] text-[#000] px-8 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-transform active:scale-95 shadow-md"
                   >
                     Register
@@ -530,10 +531,12 @@ const Header = () => {
                               confirmPassword: "",
                               first_name: "",
                               last_name: "",
+                              department: "",
                               terms: false,
                               newsletter: false,
                               errors: {},
                             });
+                            loadDepartmentList();
                             setOpen(false);
                           }}
                           className="w-full bg-[#F2B31D] hover:bg-[#E5A01A] text-white"
@@ -585,10 +588,12 @@ const Header = () => {
                       confirmPassword: "",
                       first_name: "",
                       last_name: "",
+                      department: "",
                       terms: false,
                       newsletter: false,
                       errors: {},
                     });
+                    loadDepartmentList();
                   }}
                   className="text-amber-500 hover:text-amber-600 font-medium"
                 >
@@ -669,6 +674,7 @@ const Header = () => {
             confirmPassword: "",
             first_name: "",
             last_name: "",
+            department: "",
             terms: false,
             newsletter: false,
           });
@@ -767,22 +773,15 @@ const Header = () => {
                 error={state.errors?.password_confirm}
               />
 
-              {/*<CustomMultiSelect
-                title="Choose Department"
-                options={state.jobDetail.department.map((d) => ({
-                  value: d.id,
-                  label: d.name,
-                }))}
-                className="border border-gray-200 bg-white placeholder:!text-gray-500 placeholder:!text-sm h-fit"
-                value={state.department_id || []}
-                onChange={(selected) => {
-                  handleFormChange("department_id", selected);
-                }}
-                placeholder="Select a department"
-                isMulti={true}
-                error={state.errors.department_id}
-                disabled={state.jobDetail.department.length === 1}
-              /> */}
+              <CustomSelect
+                placeholder="Department"
+                options={state.departmentList || []}
+                value={state.department || ""}
+                onChange={(selected) =>
+                  handleFormChange("department", selected ? selected.value : "")
+                }
+                className="border border-gray-200 bg-white"
+              />
 
             </div>
             <div className="gap-4 flex flex-col">
