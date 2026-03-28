@@ -1200,7 +1200,7 @@ const Header = () => {
         setIsOpen={() => {
           setState({ errors: {}, successRegistraion: false });
         }}
-        title="Job Application Success"
+        title="User Registration"
         width="auto"
         hideHeader={true}
         renderComponent={() => (

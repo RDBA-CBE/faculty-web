@@ -59,7 +59,7 @@ const HRRegistrationPage = () => {
 
       await Models.auth.hr_user(body);
 
-       setState({ successRegistraion: true });
+      setState({ successRegistraion: true });
       // router.push("/");
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
@@ -91,18 +91,17 @@ const HRRegistrationPage = () => {
     setIsOpen={() => {
       setState({ errors: {}, successRegistraion: false });
     }}
-    title="Job Application Success"
+    title="HR Enquiry Form"
     width="auto"
     hideHeader={true}
     renderComponent={() => (
       <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
         <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
-          Registration Successfull
+          Enquiry Form Submitted
         </h2>
 
         <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
-          Please Check Your Email Inbox and verify your email address to
-          continue
+          Thanks for your interest. We will contact you soon.
         </p>
       </div>
     )}

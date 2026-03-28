@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import React, { useRef, useCallback } from "react";
+import React, { useRef, useCallback, useState, useMemo } from "react";
 
 const CustomSelect = (props) => {
   const {
@@ -26,31 +26,42 @@ const CustomSelect = (props) => {
     loading,
   } = props;
 
+  const [search, setSearch] = useState("");
+
   const selectedOption = options?.find((option) => option.value === value);
   const loadMoreCalledRef = useRef(false);
   const contentRef = useRef(null);
+
+  // ✅ Filter options locally
+  const filteredOptions = useMemo(() => {
+    if (!search) return options;
+    return options?.filter((opt) =>
+      opt.label.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [options, search]);
 
   const handleScroll = useCallback(
     (e) => {
       if (!loadMore || loading || loadMoreCalledRef.current) return;
       const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
       const isNearBottom = scrollTop + clientHeight >= scrollHeight - 20;
+
       if (isNearBottom) {
         loadMoreCalledRef.current = true;
-        loadMore("");
+        loadMore(search); // ✅ pass search
         setTimeout(() => {
           loadMoreCalledRef.current = false;
         }, 800);
       }
     },
-    [loadMore, loading]
+    [loadMore, loading, search]
   );
 
-  // Attach scroll listener to the inner radix viewport once content mounts
   const handleContentRef = useCallback(
     (node) => {
       contentRef.current = node;
       if (!node || !loadMore) return;
+
       const viewport = node.querySelector("[data-radix-select-viewport]");
       if (viewport) {
         viewport.addEventListener("scroll", handleScroll);
@@ -66,6 +77,7 @@ const CustomSelect = (props) => {
           {title} {required && <span className="text-red-500">*</span>}
         </label>
       )}
+
       <div className="relative">
         <Select
           value={value ? String(value) : ""}
@@ -78,21 +90,49 @@ const CustomSelect = (props) => {
           disabled={disabled}
         >
           <SelectTrigger
-            className={`shadow-none bg-none ${
+            className={`shadow-none ${
               selectedOption ? "pr-10 [&>svg]:hidden" : ""
             } ${className || "border-none"}`}
           >
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
+
           <SelectContent
             ref={handleContentRef}
-            className="max-h-[220px] overflow-y-auto w-[70%] md:w-auto overflow-x-auto md:overflow-x-hidden mx-auto md:mx-0"
+            className="max-h-[260px] overflow-y-auto w-[70%] md:w-auto mx-auto md:mx-0"
           >
-            {options?.map((option) => (
-              <SelectItem key={option.value} value={String(option.value)}>
-                {option.label}
-              </SelectItem>
-            ))}
+            {/* 🔍 SEARCH INPUT */}
+            <div className="p-2 sticky top-0 bg-white z-10">
+              <input
+                type="text"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+
+                  // optional API search
+                  if (loadMore) {
+                    loadMore(e.target.value);
+                  }
+                }}
+                className="w-full px-2 py-1 text-sm border rounded-md outline-none"
+              />
+            </div>
+
+            {/* OPTIONS */}
+            {filteredOptions?.length ? (
+              filteredOptions.map((option) => (
+                <SelectItem key={option.value} value={String(option.value)}>
+                  {option.label}
+                </SelectItem>
+              ))
+            ) : (
+              <div className="py-2 text-center text-sm text-gray-400">
+                No results found
+              </div>
+            )}
+
+            {/* LOADING */}
             {loading && (
               <div className="py-2 text-center text-xs text-gray-400 flex items-center justify-center gap-1">
                 <span className="w-3 h-3 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin inline-block" />
@@ -102,6 +142,7 @@ const CustomSelect = (props) => {
           </SelectContent>
         </Select>
 
+        {/* CLEAR BUTTON */}
         {selectedOption && !disabled && (
           <button
             onClick={() => onChange(null)}
@@ -111,6 +152,7 @@ const CustomSelect = (props) => {
           </button>
         )}
       </div>
+
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
     </div>
   );

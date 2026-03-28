@@ -91,33 +91,59 @@ const loadLocationFilterOptions = async () => {
   }
 };
 
-const departmentList = async () => {
+// const departmentList = async () => {
+//   try {
+//     setState({ departmentListLoading: true });
+
+//     let page = 1;
+//     let allResults: any[] = [];
+//     let hasNext = true;
+
+//     while (hasNext) {
+//       const res: any = await Models.department.masterDep({ page , has_jobs:true });
+
+//       if (res?.results?.length) {
+//         allResults = [...allResults, ...res.results];
+//       }
+
+//       hasNext = !!res?.next;
+//       page++;
+//     }
+
+//     const dropdown = Dropdown(allResults, "name");
+
+//     setState({
+//       departmentList: dropdown,
+//       departmentListLoading: false,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching departments:", error);
+//     setState({ departmentListLoading: false });
+//   }
+// };
+
+const departmentList = async (search = "", page = 1) => {
   try {
     setState({ departmentListLoading: true });
 
-    let page = 1;
-    let allResults: any[] = [];
-    let hasNext = true;
+    const res: any = await Models.department.masterDep({
+      page,
+      search,
+      has_jobs: true,
+    });
 
-    while (hasNext) {
-      const res: any = await Models.department.masterDep({ page , has_jobs:true });
-
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
-      }
-
-      hasNext = !!res?.next;
-      page++;
-    }
-
-    const dropdown = Dropdown(allResults, "name");
+    const dropdown = Dropdown(res?.results || [], "name");
 
     setState({
-      departmentList: dropdown,
+      departmentList: page === 1
+        ? dropdown
+        : [...state.departmentList, ...dropdown],
       departmentListLoading: false,
     });
+
+    return res?.next; // for pagination
   } catch (error) {
-    console.error("Error fetching departments:", error);
+    console.error(error);
     setState({ departmentListLoading: false });
   }
 };

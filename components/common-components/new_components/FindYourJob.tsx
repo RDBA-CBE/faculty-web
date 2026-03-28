@@ -83,9 +83,12 @@ const FindYourJob = () => {
     let page = 1;
     let allResults: any[] = [];
     let hasNext = true;
+     const body = {
+      has_jobs:true
+    }
 
     while (hasNext) {
-      const res: any = await Models.location.list(page);
+      const res: any = await Models.location.list(page, body);
 
       if (res?.results?.length) {
         allResults = [...allResults, ...res.results];
