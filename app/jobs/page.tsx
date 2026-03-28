@@ -774,7 +774,7 @@ ${userName}`;
       });
     } catch (error) {
       setState({ loading: false, jobListLoading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
   };
 
@@ -822,7 +822,7 @@ ${userName}`;
       return res;
     } catch (error) {
       setState({ loading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
   };
 
@@ -1022,7 +1022,7 @@ ${userName}`;
       });
     } catch (error) {
       setState({ loading: false });
-      Failure("Failed to fetch department details");
+      // Failure("Failed to fetch department details");
     }
   };
 

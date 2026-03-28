@@ -309,10 +309,21 @@ export default function NaukriProfilePage() {
         active_job_seeker: res?.active_job_seeker,
         reveal_name: res?.reveal_name,
         newsletter: res?.newsletter,
+        preferred_locations: res?.preferred_locations?.map((item: any) => ({
+          value: item.id,
+          label: item.city || item.name,
+        })) || [],
+        preferred_colleges: res?.preferred_colleges?.map((item: any) => ({
+          value: item.id,
+          label: item.name || item.college_name,
+        })) || [],
       });
-    } catch (error) {
+    } catch (error: any) {
       setState({ loading: false });
-      // Failure("Failed to fetch jobs");
+      if (error?.error === "User Not Found" || error?.message === "User Not Found") {
+        alert("User not found. Please login again.");
+        router.replace("/");
+      }
     }
   };
 
@@ -491,13 +502,13 @@ export default function NaukriProfilePage() {
       } else if (type == "pref") {
         formData.append(
           "preferred_college_ids",
-          JSON.stringify(state.preferred_colleges?.map((item) => Number(item))),
+          JSON.stringify(state.preferred_colleges?.map((item: any) => Number(item?.value || item))),
         );
 
         formData.append(
           "location_ids",
           JSON.stringify(
-            state.preferred_locations?.map((item) => Number(item)),
+            state.preferred_locations?.map((item: any) => Number(item?.value || item)),
           ),
         );
         bodyData = {
@@ -5221,7 +5232,7 @@ export default function NaukriProfilePage() {
                                     placeholder="Select colleges..."
                                     className="border border-gray-200"
                                     options={state.collegeList}
-                                    value={state?.preferred_colleges || ""}
+                                    value={state?.preferred_colleges || []}
                                     onChange={(selected) => {
                                       console.log("✌️selected --->", selected);
                                       setState({
@@ -5239,7 +5250,7 @@ export default function NaukriProfilePage() {
                                     placeholder="Select locations..."
                                     className="border border-gray-200"
                                     options={state.locationList}
-                                    value={state?.preferred_locations || ""}
+                                    value={state?.preferred_locations || []}
                                     onChange={(selected) => {
                                       console.log("✌️selected --->", selected);
                                       setState({

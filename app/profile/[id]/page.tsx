@@ -324,7 +324,7 @@ export default function NaukriProfilePage() {
       });
     } catch (error) {
       setState({ loading: false, jobListLoading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
   };
 

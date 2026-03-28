@@ -37,7 +37,7 @@ const Footer = () => {
       });
     } catch (error) {
       setState({ loading: false });
-      Failure("Failed to fetch jobs");
+      // Failure("Failed to fetch jobs");
     }
   };
 
