@@ -131,7 +131,7 @@ export const hrRegistrationSchema = Yup.object().shape({
   phone: Yup.string()
     .required("Phone number is required")
     .min(10, "Phone number must be at least 10 digits")
-    .max(10, "Phone number must not exceed 10 digits"),
+    .max(12, "Phone number must not exceed 10 digits"),
 
   // password: Yup.string()
   //   .required("Password is required")

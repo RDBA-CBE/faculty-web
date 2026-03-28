@@ -39,6 +39,25 @@ const auth = {
     return promise;
   },
 
+  hr_user: (body: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `hr-registrations/`;
+      instance()
+        .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response?.data);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
   change_password: (body: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `auth/change-password/`;

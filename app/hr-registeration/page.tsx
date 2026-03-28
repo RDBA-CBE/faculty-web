@@ -3,10 +3,11 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { useSetState, Success, Failure } from "@/utils/function.utils";
-import { TextInput } from "@/components/common-components/textInput";
 import CustomPhoneInput from "@/components/common-components/phoneInput";
 import * as Yup from "yup";
 import * as Validation from "@/utils/validation.utils";
+import Models from "@/imports/models.import";
+import { Input } from "@/components/ui/input";
 
 const HRRegistrationPage = () => {
   const router = useRouter();
@@ -17,19 +18,22 @@ const HRRegistrationPage = () => {
     institution: "",
     college: "",
     phone: "",
-    password: "",
-    confirm_password: "",
     submitting: false,
-    errors: {},
+    errors: {} as Record<string, string>,
   });
 
+  // ✅ Correct state update (NO functional setState)
   const handleFormChange = (field: string, value: any) => {
     setState({
       [field]: value,
-      errors: { ...state.errors, [field]: "" },
+      errors: {
+        ...state.errors,
+        [field]: "",
+      },
     });
   };
 
+  // ✅ Submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -40,37 +44,43 @@ const HRRegistrationPage = () => {
         username: state.username,
         email: state.email,
         phone: state.phone,
-        // password: state.password,
-        // password_confirm: state.confirm_password,
-        role: "hr",
         institution: state.institution,
         college: state.college,
+        role: "hr",
       };
 
+      // ✅ Yup validation
       await Validation.hrRegistrationSchema.validate(body, {
         abortEarly: false,
       });
 
-      // await Models.auth.createUser(body);
+      console.log("body", body);
+      
 
-      Success("HR Registration successful!");
+      await Models.auth.hr_user(body);
+
+      Success("Thanks !");
       router.push("/login");
     } catch (error: any) {
-      Failure("Registration failed");
       if (error instanceof Yup.ValidationError) {
-        const validationErrors = {};
-        error.inner.forEach((err) => {
-          validationErrors[err.path] = err?.message;
-        });
-        console.log("✌️validationErrors --->", validationErrors);
+        const validationErrors: Record<string, string> = {};
 
-        setState({ errors: validationErrors });
-      } else {
-        if (error?.data?.error) {
-          // Failure(capitalizeFLetter(error?.data?.error));
-          console.log("error", error);
-        }
+        error.inner.forEach((err: any) => {
+          if (err.path) {
+            validationErrors[err.path] = err.message;
+          }
+        });
+
+        // ✅ Correct state update
+        setState({
+          errors: validationErrors,
+        });
+
+        return;
       }
+
+      Failure("Registration failed");
+      console.log("API error:", error);
     } finally {
       setState({ submitting: false });
     }
@@ -82,87 +92,112 @@ const HRRegistrationPage = () => {
         <div className="bg-white p-8 rounded-xl shadow-lg">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-medium text-[#151515]">
-              HR Registration
+              HR Registration Enquiry
             </h1>
             <p className="text-gray-600 mt-2">
-              Create your account to start managing recruitments.
+              Fill the form to open an HR account to start managing recruitments.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <TextInput
-              title="Username"
-              placeholder="Enter your Username"
-              value={state.username}
-              onChange={(e) => handleFormChange("username", e.target.value)}
-              error={state.errors.username}
-              required
-            />
+          {/* ✅ Disable browser validation */}
+          <form onSubmit={handleSubmit} noValidate className="space-y-6">
 
-            <TextInput
-              title="Email Address"
-              type="email"
-              placeholder="Enter your email"
-              value={state.email}
-              onChange={(e) => handleFormChange("email", e.target.value)}
-              error={state.errors.email}
-              required
-            />
+            {/* Username */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Username <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="Enter your Username"
+                value={state.username}
+                onChange={(e) =>
+                  handleFormChange("username", e.target.value)
+                }
+                className={state.errors.username ? "border-red-500" : ""}
+              />
+              {state.errors.username && (
+                <p className="text-red-500 text-sm mt-1">
+                  {state.errors.username}
+                </p>
+              )}
+            </div>
 
-            <TextInput
-              title="Institution Name"
-              placeholder="Enter institution"
-              value={state.institution}
-              onChange={(e) => handleFormChange("institution", e.target.value)}
-              error={state.errors.institution}
-              required
-            />
+            {/* Email */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Email Address <span className="text-red-500">*</span>
+              </label>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                value={state.email}
+                onChange={(e) =>
+                  handleFormChange("email", e.target.value)
+                }
+                className={state.errors.email ? "border-red-500" : ""}
+              />
+              {state.errors.email && (
+                <p className="text-red-500 text-sm mt-1">
+                  {state.errors.email}
+                </p>
+              )}
+            </div>
 
-            <TextInput
-              title="College Name"
-              placeholder="Enter college"
-              value={state.college}
-              onChange={(e) => handleFormChange("college", e.target.value)}
-              error={state.errors.college}
-              required
-            />
+            {/* Institution */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Institution Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="Enter institution"
+                value={state.institution}
+                onChange={(e) =>
+                  handleFormChange("institution", e.target.value)
+                }
+                className={state.errors.institution ? "border-red-500" : ""}
+              />
+              {state.errors.institution && (
+                <p className="text-red-500 text-sm mt-1">
+                  {state.errors.institution}
+                </p>
+              )}
+            </div>
 
+            {/* College */}
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                College Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                placeholder="Enter college"
+                value={state.college}
+                onChange={(e) =>
+                  handleFormChange("college", e.target.value)
+                }
+                className={state.errors.college ? "border-red-500" : ""}
+              />
+              {state.errors.college && (
+                <p className="text-red-500 text-sm mt-1">
+                  {state.errors.college}
+                </p>
+              )}
+            </div>
+
+            {/* Phone */}
             <CustomPhoneInput
               title="Phone Number"
               value={state.phone}
               onChange={(value) => handleFormChange("phone", value)}
               error={state.errors.phone}
-              required
             />
 
-            {/* <TextInput
-              title="Password"
-              type="password"
-              placeholder="Enter password"
-              value={state.password}
-              onChange={(e) => handleFormChange("password", e.target.value)}
-              error={state.errors.password}
-              required
-            /> */}
-
-            {/* <TextInput
-              title="Confirm Password"
-              type="password"
-              placeholder="Confirm password"
-              value={state.confirm_password}
-              onChange={(e) =>
-                handleFormChange("confirm_password", e.target.value)
-              }
-              error={state.errors.confirm_password}
-              required
-            /> */}
-
+            {/* Submit */}
             <button
               type="submit"
               disabled={state.submitting}
               className="w-full bg-[#1E3786] text-white py-3 rounded-lg font-semibold hover:bg-[#162a69] transition disabled:opacity-50"
             >
-              {state.submitting ? "Registering..." : "Register"}
+              {state.submitting ? "Submitting..." : "Submit Your Interest"}
             </button>
           </form>
         </div>
