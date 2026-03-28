@@ -23,6 +23,7 @@ import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 interface CategoryItem {
   value: number;
   label: string;
+  job_count?: number;
 }
 
 interface SidebarProps {
@@ -59,18 +60,17 @@ interface SidebarProps {
 
 const FilterSection: React.FC<{
   title: string;
-  items: { value: number | string; label: string }[];
-  counts?: number[];
+  items: { value: number | string; label: string; job_count?: number }[];
   selected?: (number | string)[];
   onToggle: (value: number | string) => void;
-}> = ({ title, items, counts, selected = [], onToggle }) => (
+}> = ({ title, items, selected = [], onToggle }) => (
   <div>
     <h3 className="text-md font-semibold text-[#000] mb-3 pt-[15px]">
       {title}
     </h3>
 
     <div className="space-y-2">
-      {items.map((item, idx) => (
+      {items.map((item) => (
         <label
           key={item.value}
           className="flex items-center justify-between group cursor-pointer"
@@ -83,12 +83,12 @@ const FilterSection: React.FC<{
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
             <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors ">
-              {/* {item.label} */}
               {CharSlice(item.label, 32)}
             </span>
           </div>
-
-          {counts && <span className="text-xs text-[#000]">{counts[idx]}</span>}
+          {item.job_count !== undefined && (
+            <span className="text-xs text-[#000]">{item.job_count}</span>
+          )}
         </label>
       ))}
     </div>
@@ -872,26 +872,31 @@ closeModal,
                           </div>
                         )}
 
-                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={(filters.locations ?? []).includes(
-                              item.value
-                            )}
-                            onChange={() =>
-                              onFilterChange({
-                                ...filters,
-                                locations: toggleItem(
-                                  filters.locations,
-                                  item.value
-                                ),
-                              })
-                            }
-                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                          />
-                          <span className="text-sm text-slate-600">
-                            {item.label}
-                          </span>
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(filters.locations ?? []).includes(
+                                item.value
+                              )}
+                              onChange={() =>
+                                onFilterChange({
+                                  ...filters,
+                                  locations: toggleItem(
+                                    filters.locations,
+                                    item.value
+                                  ),
+                                })
+                              }
+                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                            />
+                            <span className="text-sm text-slate-600">
+                              {item.label}
+                            </span>
+                          </div>
+                          {item.job_count !== undefined && (
+                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                          )}
                         </label>
                       </div>
                     );
@@ -1052,26 +1057,31 @@ closeModal,
                           </div>
                         )}
 
-                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={(filters.categories ?? []).includes(
-                              item.value
-                            )}
-                            onChange={() =>
-                              onFilterChange({
-                                ...filters,
-                                categories: toggleItem(
-                                  filters.categories,
-                                  item.value
-                                ),
-                              })
-                            }
-                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                          />
-                          <span className="text-sm text-slate-600">
-                            {item.label}
-                          </span>
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(filters.categories ?? []).includes(
+                                item.value
+                              )}
+                              onChange={() =>
+                                onFilterChange({
+                                  ...filters,
+                                  categories: toggleItem(
+                                    filters.categories,
+                                    item.value
+                                  ),
+                                })
+                              }
+                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                            />
+                            <span className="text-sm text-slate-600">
+                              {item.label}
+                            </span>
+                          </div>
+                          {item.job_count !== undefined && (
+                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                          )}
                         </label>
                       </div>
                     );
@@ -1232,26 +1242,31 @@ closeModal,
                           </div>
                         )}
 
-                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={(filters.department ?? []).includes(
-                              item.value
-                            )}
-                            onChange={() =>
-                              onFilterChange({
-                                ...filters,
-                                department: toggleItem(
-                                  filters.department,
-                                  item.value
-                                ),
-                              })
-                            }
-                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                          />
-                          <span className="text-sm text-slate-600">
-                            {item.label}
-                          </span>
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(filters.department ?? []).includes(
+                                item.value
+                              )}
+                              onChange={() =>
+                                onFilterChange({
+                                  ...filters,
+                                  department: toggleItem(
+                                    filters.department,
+                                    item.value
+                                  ),
+                                })
+                              }
+                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                            />
+                            <span className="text-sm text-slate-600">
+                              {item.label}
+                            </span>
+                          </div>
+                          {item.job_count !== undefined && (
+                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                          )}
                         </label>
                       </div>
                     );
@@ -1411,26 +1426,31 @@ closeModal,
                           </div>
                         )}
 
-                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={(filters.jobRole ?? []).includes(
-                              item.value
-                            )}
-                            onChange={() =>
-                              onFilterChange({
-                                ...filters,
-                                jobRole: toggleItem(
-                                  filters.jobRole,
-                                  item.value
-                                ),
-                              })
-                            }
-                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                          />
-                          <span className="text-sm text-slate-600">
-                            {item.label}
-                          </span>
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(filters.jobRole ?? []).includes(
+                                item.value
+                              )}
+                              onChange={() =>
+                                onFilterChange({
+                                  ...filters,
+                                  jobRole: toggleItem(
+                                    filters.jobRole,
+                                    item.value
+                                  ),
+                                })
+                              }
+                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                            />
+                            <span className="text-sm text-slate-600">
+                              {item.label}
+                            </span>
+                          </div>
+                          {item.job_count !== undefined && (
+                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                          )}
                         </label>
                       </div>
                     );
@@ -1590,26 +1610,31 @@ closeModal,
                           </div>
                         )}
 
-                        <label className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
-                          <input
-                            type="checkbox"
-                            checked={(filters.colleges ?? []).includes(
-                              item.value
-                            )}
-                            onChange={() =>
-                              onFilterChange({
-                                ...filters,
-                                colleges: toggleItem(
-                                  filters.colleges,
-                                  item.value
-                                ),
-                              })
-                            }
-                            className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
-                          />
-                          <span className="text-sm text-slate-600">
-                            {item.label}
-                          </span>
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={(filters.colleges ?? []).includes(
+                                item.value
+                              )}
+                              onChange={() =>
+                                onFilterChange({
+                                  ...filters,
+                                  colleges: toggleItem(
+                                    filters.colleges,
+                                    item.value
+                                  ),
+                                })
+                              }
+                              className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                            />
+                            <span className="text-sm text-slate-600">
+                              {item.label}
+                            </span>
+                          </div>
+                          {item.job_count !== undefined && (
+                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                          )}
                         </label>
                       </div>
                     );

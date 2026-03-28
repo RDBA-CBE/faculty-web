@@ -597,22 +597,27 @@ ${userName}`;
       const locationList = res?.data?.locations?.map((item) => ({
         value: item.id,
         label: item.city,
+        job_count: item.job_count,
       }));
       const collegeList = res?.data?.colleges?.map((item) => ({
         value: item.id,
         label: item.college_name,
+        job_count: item.job_count,
       }));
       const deptList = res?.data?.departments?.map((item) => ({
         value: item.id,
         label: item.department_name,
+        job_count: item.job_count,
       }));
       const categoryList = res?.data?.job_categories?.map((item) => ({
         value: item.id,
         label: item.name,
+        job_count: item.job_count,
       }));
       const jobRoleList = res?.data?.job_roles?.map((item) => ({
         value: item.id,
         label: item.role_name,
+        job_count: item.job_count,
       }));
 
       const experienceList = res?.data?.experiences?.map((item) => ({
