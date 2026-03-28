@@ -112,3 +112,32 @@ export const applicant_feedback = Yup.object().shape({
     otherwise: (schema) => schema.notRequired(),
   }),
 });
+
+
+export const hrRegistrationSchema = Yup.object().shape({
+  username: Yup.string()
+    .required("Username is required"),
+
+  email: Yup.string()
+    .required("Email is required")
+    .email("Enter a valid email address"),
+
+  institution: Yup.string()
+    .required("Institution is required"),
+
+  college: Yup.string()
+    .required("College is required"),
+
+  phone: Yup.string()
+    .required("Phone number is required")
+    .min(10, "Phone number must be at least 10 digits")
+    .max(10, "Phone number must not exceed 10 digits"),
+
+  // password: Yup.string()
+  //   .required("Password is required")
+  //   .min(6, "Password must be at least 6 characters"),
+
+  // confirm_password: Yup.string()
+  //   .required("Confirm Password is required")
+  //   .oneOf([Yup.ref("password")], "Passwords must match"),
+});
