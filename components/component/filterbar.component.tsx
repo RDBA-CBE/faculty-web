@@ -87,7 +87,7 @@ const FilterSection: React.FC<{
             </span>
           </div>
           {item.job_count !== undefined && (
-            <span className="text-xs text-[#000]">{item.job_count}</span>
+            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
           )}
         </label>
       ))}
@@ -895,7 +895,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1080,7 +1080,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1265,7 +1265,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1449,7 +1449,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1633,7 +1633,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E3786] text-[#fff] rounfed-full p-2">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#fff] rounfed-full p-2">{item.job_count}</span>
                           )}
                         </label>
                       </div>
