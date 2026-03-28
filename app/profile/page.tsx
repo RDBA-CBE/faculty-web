@@ -800,13 +800,16 @@ export default function NaukriProfilePage() {
 
       setState({ isCreateExperience: false });
 
+      const isPresent = Boolean(state.is_present);
+      const endDateValue = isPresent ? null : (state.end_date ? DateFormat(state.end_date, "api") : null);
+
       const body = {
         user_id: state.userId,
         company: state.company,
         designation: state.designation,
         start_date: DateFormat(state.start_date, "api"),
-        end_date: state.is_present ? null : DateFormat(state.end_date, "api"),
-        currently_working: state.is_present ? true : false,
+        end_date: endDateValue,
+        currently_working: isPresent,
         job_description: state.job_description,
       };
       console.log("body", body);
@@ -845,13 +848,16 @@ export default function NaukriProfilePage() {
 
       setState({ isEditingExperience: false });
 
+      const isPresent = Boolean(state.is_present);
+      const endDateValue = isPresent ? null : (state.end_date ? DateFormat(state.end_date, "api") : null);
+
       const body = {
         experience_id: state.editingId,
         company: state.company,
         designation: state.designation,
         start_date: DateFormat(state.start_date, "api"),
-        end_date: state.is_present ? null : DateFormat(state.end_date, "api"),
-        currently_working: state.is_present ? true : false,
+        end_date: endDateValue,
+        currently_working: isPresent,
         job_description: state.job_description,
       };
       console.log("body", body);
@@ -2285,7 +2291,7 @@ export default function NaukriProfilePage() {
                                                   onChange={(e) =>
                                                     setState({
                                                       is_present: e.target.checked,
-                                                      end_date: e.target.checked ? "" : state.end_date,
+                                                      end_date: e.target.checked ? null : (state.end_date || null),
                                                     })
                                                   }
                                                   className="h-4 w-4 mt-1 sm:mt-0 rounded border-gray-300 text-[#1E3786]"
@@ -4879,7 +4885,7 @@ export default function NaukriProfilePage() {
                                 </div>
                               </div>
 
-                              <div className=" flex justify-end hidden md:block mt-4">
+                              <div className=" flex justify-end hidden md:block ">
                                 <Button
                                   onClick={() => menusUpdate("qualification")}
                                   className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-fit text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -4967,7 +4973,7 @@ export default function NaukriProfilePage() {
                               ))}
                             </div>
 
-                            <div className=" flex block md:hidden">
+                            <div className=" flex block md:hidden mt-4">
                               <Button
                                 onClick={() => menusUpdate("qualification")}
                                 className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -5633,19 +5639,20 @@ export default function NaukriProfilePage() {
                                     start_date: date,
                                   });
                                 }}
+                                toDate={new Date()}
                               />
                             </div>
 
-                            {state.is_present ? (
+                          
                               <div className="flex items-center gap-2">
                                 <input
                                   type="checkbox"
                                   id="is_present_edit"
-                                  checked={true}
+                                  checked={state.is_present || false}
                                   onChange={(e) =>
                                     setState({
                                       is_present: e.target.checked,
-                                      end_date: e.target.checked ? "" : state.end_date,
+                                      end_date: e.target.checked ? null : (state.end_date || null),
                                     })
                                   }
                                   className="h-4 w-4 rounded border-gray-300 text-[#1E3786]"
@@ -5657,19 +5664,23 @@ export default function NaukriProfilePage() {
                                   Present (Currently working here)
                                 </label>
                               </div>
-                            ) : (
-                              <div className="space-y-2">
-                                <DatePicker
-                                  placeholder="End Date"
-                                  title="End Date"
-                                  closeIcon={true}
-                                  selectedDate={state.end_date}
-                                  onChange={(date) => {
-                                    setState({ end_date: date });
-                                  }}
-                                />
-                              </div>
-                            )}
+                            
+                              {!state.is_present && (
+                                <div className="space-y-2">
+                                  <DatePicker
+                                    placeholder="End Date"
+                                    title="End Date"
+                                    closeIcon={true}
+                                    selectedDate={state.end_date}
+                                    onChange={(date) => {
+                                      setState({ end_date: date });
+                                    }}
+                                    fromDate={state.start_date ? new Date(state.start_date) : undefined}
+                                    toDate={new Date()}
+                                  />
+                                </div>
+                              )}
+                          
 
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">

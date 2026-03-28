@@ -2776,7 +2776,7 @@ ${userName}`;
                           <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
                         )} */}
 
-                        <div className="flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
+                        <div className="hidden lg:flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
                           {/* <div className="flex items-center px-4 flex-grow lg:w-64 ">
                             <MapPin color="#5c5a5a93" size={22} />
 
