@@ -100,7 +100,7 @@ const departmentList = async () => {
     let hasNext = true;
 
     while (hasNext) {
-      const res: any = await Models.department.masterDep({ page });
+      const res: any = await Models.department.masterDep({ page , has_jobs:true });
 
       if (res?.results?.length) {
         allResults = [...allResults, ...res.results];

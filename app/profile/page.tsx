@@ -165,7 +165,7 @@ export default function NaukriProfilePage() {
 
   useEffect(() => {
     experienceList();
-    locationList(1);
+    locationList();
     collegeList();
     appliedJobList();
     getSavedJobs();
@@ -309,40 +309,73 @@ export default function NaukriProfilePage() {
         active_job_seeker: res?.active_job_seeker,
         reveal_name: res?.reveal_name,
         newsletter: res?.newsletter,
-        preferred_locations: res?.preferred_locations?.map((item: any) => ({
-          value: item.id,
-          label: item.city || item.name,
-        })) || [],
-        preferred_colleges: res?.preferred_colleges?.map((item: any) => ({
-          value: item.id,
-          label: item.name || item.college_name,
-        })) || [],
+        preferred_locations:
+          res?.location_ids?.map((item: any) => item) || [],
+        preferred_colleges:
+          res?.preferred_college_ids?.map((item: any) => item) || [],
       });
     } catch (error: any) {
       setState({ loading: false });
-      if (error?.error === "User Not Found" || error?.message === "User Not Found") {
+      if (
+        error?.error === "User Not Found" ||
+        error?.message === "User Not Found"
+      ) {
         alert("User not found. Please login again.");
         router.replace("/");
       }
     }
   };
 
-  const locationList = async (page, search = "") => {
-    console.log("✌️page --->", page);
-    console.log("✌️search --->", search);
-    try {
+  console.log("preferred_locations", state.preferred_locations);
+  console.log("preferred_colleges", state.preferred_colleges);
+
+  // const locationList = async (page, search = "") => {
+  //   console.log("✌️page --->", page);
+  //   console.log("✌️search --->", search);
+  //   try {
+  //     const body = {
+  //       search: page?.search,
+  //     };
+  //     const res: any = await Models.location.list(1, body);
+  //     const dropdown = Dropdown(res?.results, "city");
+  //     setState({
+  //       locationList: dropdown,
+  //     });
+  //   } catch (error) {
+  //     console.log("✌️error --->", error);
+  //   }
+  // };
+
+  const locationList = async (search = "") => {
+  try {
+    let page = 1;
+    let allResults: any[] = [];
+    let hasNext = true;
+
+    while (hasNext) {
       const body = {
-        search: page?.search,
+        search: search || "",
       };
-      const res: any = await Models.location.list(1, body);
-      const dropdown = Dropdown(res?.results, "city");
-      setState({
-        locationList: dropdown,
-      });
-    } catch (error) {
-      console.log("✌️error --->", error);
+
+      const res: any = await Models.location.list(page, body);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next;
+      page++;
     }
-  };
+
+    const dropdown = Dropdown(allResults, "city");
+
+    setState({
+      locationList: dropdown,
+    });
+  } catch (error) {
+    console.log("Error fetching locations:", error);
+  }
+};
 
   const collegeList = async (search = "") => {
     try {
@@ -502,13 +535,21 @@ export default function NaukriProfilePage() {
       } else if (type == "pref") {
         formData.append(
           "preferred_college_ids",
-          JSON.stringify(state.preferred_colleges?.map((item: any) => Number(item?.value || item))),
+          JSON.stringify([
+            ...new Set(
+              state.preferred_colleges?.map((item: any) =>
+                Number(item?.value || item),
+              ),
+            ),
+          ]),
         );
 
         formData.append(
           "location_ids",
           JSON.stringify(
-            state.preferred_locations?.map((item: any) => Number(item?.value || item)),
+            state.preferred_locations?.map((item: any) =>
+              Number(item?.value || item),
+            ),
           ),
         );
         bodyData = {

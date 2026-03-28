@@ -32,6 +32,9 @@ const department = {
     if (data?.page) {
       url += `&page=${data.page}`;
     }
+     if (data?.has_jobs) {
+      url += `&has_jobs=${data.has_jobs}`;
+    }
 
     instance()
       .get(url)

@@ -18,6 +18,7 @@ import {
   Building2,
   Star,
   StarIcon,
+  CrownIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -144,7 +145,7 @@ export const JobCard: React.FC<JobCardProps> = ({
             )}{" "}
             {job?.matches_user_location && (
               <div className="w-fit !h-fit bg-[#1E3786] rounded-3xl px-2 py-[-1px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
-                <MapPin size={12} />
+                <CrownIcon size={12} />
                 Preferred Job
               </div>
             )}

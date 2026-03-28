@@ -17,6 +17,7 @@ import {
   Building2,
   Star,
   StarIcon,
+  CrownIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -147,7 +148,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 {capitalizeFLetter(CharSlice(job?.job_title, 40))}{" "}
                 {job?.matches_user_location && (
                   <div className="w-fit !h-fit bg-[#1E3786] rounded-3xl px-2 py-[-1px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
-                    <MapPin size={12} />
+                    <CrownIcon size={12} />
                     Preferred Job
                   </div>
                 )}

@@ -11,6 +11,10 @@ const location = {
       if (body?.search) {
         params.append("search", body.search);
       }
+
+      if (body?.has_jobs) {
+        params.append("has_jobs", body.has_jobs);
+      }
   
       const url = `job-locations/?ordering=asc&${params.toString()}`;
   
