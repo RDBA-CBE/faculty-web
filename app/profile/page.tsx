@@ -165,7 +165,7 @@ export default function NaukriProfilePage() {
 
   useEffect(() => {
     experienceList();
-    locationList();
+    locationList(1);
     collegeList();
     appliedJobList();
     getSavedJobs();
@@ -329,53 +329,56 @@ export default function NaukriProfilePage() {
   console.log("preferred_locations", state.preferred_locations);
   console.log("preferred_colleges", state.preferred_colleges);
 
-  // const locationList = async (page, search = "") => {
-  //   console.log("✌️page --->", page);
-  //   console.log("✌️search --->", search);
-  //   try {
-  //     const body = {
-  //       search: page?.search,
-  //     };
-  //     const res: any = await Models.location.list(1, body);
-  //     const dropdown = Dropdown(res?.results, "city");
-  //     setState({
-  //       locationList: dropdown,
-  //     });
-  //   } catch (error) {
-  //     console.log("✌️error --->", error);
-  //   }
-  // };
-
-  const locationList = async (search = "") => {
-  try {
-    let page = 1;
-    let allResults: any[] = [];
-    let hasNext = true;
-
-    while (hasNext) {
+  const locationList = async (page, search = "") => {
+    console.log("✌️page --->", page);
+    console.log("✌️search --->", search);
+    try {
       const body = {
-        search: search || "",
+        search: page?.search,
       };
-
-      const res: any = await Models.location.list(page, body);
-
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
-      }
-
-      hasNext = !!res?.next;
-      page++;
+      const res: any = await Models.location.list(1, body);
+      const dropdown = Dropdown(res?.results, "city");
+      setState({
+        locationList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
     }
+  };
 
-    const dropdown = Dropdown(allResults, "city");
+//   const locationList = async (search = "") => {
+//   try {
+//     let page = 1;
+//     let allResults: any[] = [];
+//     let hasNext = true;
 
-    setState({
-      locationList: dropdown,
-    });
-  } catch (error) {
-    console.log("Error fetching locations:", error);
-  }
-};
+//     while (hasNext) {
+//       const body = {
+//         search: search || "",
+//       };
+
+//       const res: any = await Models.location.list(page, body);
+
+//       if (res?.results?.length) {
+//         allResults = [...allResults, ...res.results];
+//       }
+
+//       hasNext = !!res?.next;
+//       page++;
+//     }
+
+//     const dropdown = Dropdown(allResults, "city");
+
+//     setState({
+//       locationList: dropdown,
+//     });
+//   } catch (error) {
+//     console.log("Error fetching locations:", error);
+//   }
+// };
+
+console.log("locationList",state.locationList);
+
 
   const collegeList = async (search = "") => {
     try {
