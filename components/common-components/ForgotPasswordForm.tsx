@@ -9,6 +9,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import * as Yup from "yup";
 import * as Validation from "@/utils/validation.utils";
+import Modal from "./modal";
 
 const ForgotPasswordForm = () => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const ForgotPasswordForm = () => {
     email: "",
     btnLoading: false,
     errors: {},
+    successOpen: false,
   });
 
   const handleFormChange = (field: string, value: string) => {
@@ -47,10 +49,12 @@ const ForgotPasswordForm = () => {
         errors: {},
       });
 
-      Success(
-        res?.message ||
-          "Password reset link sent successfully! Please check your email."
-      );
+      // Success(
+      //   res?.message ||
+      //     "Password reset link sent successfully! Please check your email."
+      // );
+
+      setState({ successOpen: true });
 
       router.push("/");
     } catch (error) {
@@ -71,6 +75,7 @@ const ForgotPasswordForm = () => {
   };
 
   return (
+    <>
     <div className="flex items-center justify-center min-h-screen bg-clr1">
       <div className="w-full max-w-md space-y-6 bg-[#FFFCF3] py-8 px-10 rounded-xl shadow-2xl">
         <div className="flex items-center justify-center w-full mb-6">
@@ -121,6 +126,28 @@ const ForgotPasswordForm = () => {
         </Button>
       </div>
     </div>
+
+     <Modal
+            isOpen={state.successOpen}
+            setIsOpen={() => {
+              setState({ errors: {}, successOpen: false });
+            }}
+            title="Password reset"
+            width="auto"
+            hideHeader={true}
+            renderComponent={() => (
+              <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+                <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
+                    Submited!
+                </h2>
+    
+                <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
+                  Password reset link sent successfully! Please check your email.
+                </p>
+              </div>
+            )}
+          />
+          </>
   );
 };
 

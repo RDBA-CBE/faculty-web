@@ -20,6 +20,7 @@ const HRRegistrationPage = () => {
     college: "",
     phone: "",
     submitting: false,
+    successRegistraion: false, // ✅ add this
     errors: {} as Record<string, string>,
   });
 
@@ -59,7 +60,15 @@ const HRRegistrationPage = () => {
 
       await Models.auth.hr_user(body);
 
-      setState({ successRegistraion: true });
+      setState({
+        username: "",
+        email: "",
+        institution: "",
+        college: "",
+        phone: "",
+        errors: {},
+        successRegistraion: true,
+      });
       // router.push("/");
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
@@ -85,27 +94,6 @@ const HRRegistrationPage = () => {
       setState({ submitting: false });
     }
   };
-
-  <Modal
-    isOpen={state.successRegistraion}
-    setIsOpen={() => {
-      setState({ errors: {}, successRegistraion: false });
-    }}
-    title="HR Enquiry Form"
-    width="auto"
-    hideHeader={true}
-    renderComponent={() => (
-      <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
-        <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
-          Enquiry Form Submitted
-        </h2>
-
-        <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
-          Thanks for your interest. We will contact you soon.
-        </p>
-      </div>
-    )}
-  />;
 
   return (
     <section className="bg-gray-50 min-h-screen flex items-center justify-center py-12 lg:py-20">
@@ -217,6 +205,27 @@ const HRRegistrationPage = () => {
           </form>
         </div>
       </div>
+      <Modal
+        isOpen={state.successRegistraion}
+        setIsOpen={() => {
+          setState({ errors: {}, successRegistraion: false });
+        }}
+        title="HR Enquiry Form"
+        width="auto"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+            <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
+              Enquiry Form Submitted
+            </h2>
+
+            <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
+              Thanks for your interest. We will contact you soon.
+            </p>
+          </div>
+        )}
+      />
+      ;
     </section>
   );
 };

@@ -165,7 +165,7 @@ export default function NaukriProfilePage() {
 
   useEffect(() => {
     experienceList();
-    locationList(1);
+    locationList();
     collegeList();
     appliedJobList();
     getSavedJobs();
@@ -186,6 +186,9 @@ export default function NaukriProfilePage() {
       appliedJobList();
     } else if (state.activeTab == "Saved Jobs") {
       getSavedJobs();
+    } else if (state.activeTab == "Preferrences") {
+      if (!state.locationList?.length) locationList();
+      if (!state.collegeList?.length) collegeList();
     }
   }, [state.activeTab]);
 
@@ -329,56 +332,34 @@ export default function NaukriProfilePage() {
   console.log("preferred_locations", state.preferred_locations);
   console.log("preferred_colleges", state.preferred_colleges);
 
-  const locationList = async (page, search = "") => {
-    console.log("✌️page --->", page);
-    console.log("✌️search --->", search);
+  // const locationList = async (page, search = "") => {
+  //   console.log("✌️page --->", page);
+  //   console.log("✌️search --->", search);
+  //   try {
+  //     const body = {
+  //       search: page?.search,
+  //     };
+  //     const res: any = await Models.location.list(1, body);
+  //     const dropdown = Dropdown(res?.results, "city");
+  //     setState({
+  //       locationList: dropdown,
+  //     });
+  //   } catch (error) {
+  //     console.log("✌️error --->", error);
+  //   }
+  // };
+
+  const locationList = async (params: any = {}) => {
     try {
-      const body = {
-        search: page?.search,
-      };
+      const search = typeof params === "string" ? params : (params?.search || "");
+      const body = { search };
       const res: any = await Models.location.list(1, body);
       const dropdown = Dropdown(res?.results, "city");
-      setState({
-        locationList: dropdown,
-      });
+      setState({ locationList: dropdown });
     } catch (error) {
-      console.log("✌️error --->", error);
+      console.log("Error fetching locations:", error);
     }
   };
-
-//   const locationList = async (search = "") => {
-//   try {
-//     let page = 1;
-//     let allResults: any[] = [];
-//     let hasNext = true;
-
-//     while (hasNext) {
-//       const body = {
-//         search: search || "",
-//       };
-
-//       const res: any = await Models.location.list(page, body);
-
-//       if (res?.results?.length) {
-//         allResults = [...allResults, ...res.results];
-//       }
-
-//       hasNext = !!res?.next;
-//       page++;
-//     }
-
-//     const dropdown = Dropdown(allResults, "city");
-
-//     setState({
-//       locationList: dropdown,
-//     });
-//   } catch (error) {
-//     console.log("Error fetching locations:", error);
-//   }
-// };
-
-console.log("locationList",state.locationList);
-
 
   const collegeList = async (search = "") => {
     try {
