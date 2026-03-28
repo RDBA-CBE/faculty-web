@@ -39,7 +39,7 @@ interface JobCardProps {
     is_saved: boolean;
     department?: any;
     roles?: any;
-    application_status?:any;
+    application_status?: any;
     matches_user_location?: boolean;
   };
   isProfile?: boolean;
@@ -116,25 +116,20 @@ export const JobCard: React.FC<JobCardProps> = ({
             {capitalizeFLetter(job?.application_status)}
           </div>
         )}
-        {job?.matches_user_location && (
-          <div className="w-fit bg-green-600 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
-            <MapPin size={14} />
-            Preferred Job
-          </div>
-        )}
       </div>
 
       {/* Header with Title and Company Logo on Right */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">
+          
           <h3
-            className="font-bold text-gray-900 text-base text-lg"
+            className="font-bold text-gray-900 text-base text-lg flex gap-2 items-center"
             title={
               job?.job_title
                 ? job?.job_title
                 : job?.roles?.length > 0
-                ? job?.roles?.[0]?.role_name
-                : ""
+                  ? job?.roles?.[0]?.role_name
+                  : ""
             }
           >
             {capitalizeFLetter(
@@ -142,10 +137,16 @@ export const JobCard: React.FC<JobCardProps> = ({
                 job?.job_title
                   ? job?.job_title
                   : job?.roles?.length > 0
-                  ? job?.roles?.[0]?.role_name
-                  : "",
-                35
-              )
+                    ? job?.roles?.[0]?.role_name
+                    : "",
+                35,
+              ),
+            )}{" "}
+            {job?.matches_user_location && (
+              <div className="w-fit !h-fit bg-[#1E3786] rounded-3xl px-2 py-[-1px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
+                <MapPin size={12} />
+                Preferred Job
+              </div>
             )}
           </h3>
           <p

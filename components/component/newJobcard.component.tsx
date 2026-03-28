@@ -37,7 +37,7 @@ interface JobCardProps {
     job_description: any;
     is_saved: boolean;
     department?: any;
-    application_status?:any;
+    application_status?: any;
     matches_user_location?: boolean;
   };
   isProfile?: boolean;
@@ -114,12 +114,6 @@ export const NewJobCard: React.FC<JobCardProps> = ({
             {capitalizeFLetter(job?.application_status)}
           </div>
         )}
-        {job?.matches_user_location && (
-          <div className="w-fit bg-green-600 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
-            <MapPin size={14} />
-            Preferred Job
-          </div>
-        )}
       </div>
 
       <div className=" w-full md:w-4/5 flex flex-row gap-5">
@@ -146,8 +140,17 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           {/* Header with Title and Company Logo on Right */}
           <div className="flex justify-between items-start mb-2">
             <div className="flex-1">
-              <h3 className="font-medium text-gray-900 text-[#313131] text-[21px]  " title={job?.job_title}>
-                {capitalizeFLetter(CharSlice(job?.job_title, 40))}
+              <h3
+                className="font-medium text-gray-900 text-[#313131] text-[21px] flex gap-2 items-center "
+                title={job?.job_title}
+              >
+                {capitalizeFLetter(CharSlice(job?.job_title, 40))}{" "}
+                {job?.matches_user_location && (
+                  <div className="w-fit !h-fit bg-[#1E3786] rounded-3xl px-2 py-[-1px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
+                    <MapPin size={12} />
+                    Preferred Job
+                  </div>
+                )}
               </h3>
               <p
                 className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
@@ -198,7 +201,6 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                   // }}
                 >
                   {item.name}
-                 
                 </span>
               ))}
 
