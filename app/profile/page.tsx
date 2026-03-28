@@ -1371,7 +1371,18 @@ export default function NaukriProfilePage() {
   };
 
   const updateInviteStatus = async (type, item) => {
-    console.log("✌️item --->", item);
+    const confirmed = await Swal.fire({
+      title: `${type === "accept" ? "Accept" : "Reject"} Request?`,
+      text: `Are you sure you want to ${type === "accept" ? "accept" : "reject"} this HR request?`,
+      icon: type === "accept" ? "question" : "warning",
+      showCancelButton: true,
+      confirmButtonColor: type === "accept" ? "#1E3786" : "#d33",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: type === "accept" ? "Yes, Accept" : "Yes, Reject",
+      background: "#fff",
+    });
+    if (!confirmed.isConfirmed) return;
+
     setState({ btnLoading: true });
     try {
       const body = {
@@ -5204,9 +5215,24 @@ export default function NaukriProfilePage() {
                               ].map((item) => (
                                 <div
                                   key={item.id}
-                                  onClick={() =>
-                                    handleFormChange(item.key, !item.state)
-                                  }
+                                  onClick={async () => {
+                                    if (item.key === "reveal_name") {
+                                      const result = await Swal.fire({
+                                        title: item.state ? "Hide Your Name?" : "Reveal Your Name?",
+                                        text: item.state
+                                          ? "Your name will be hidden from recruiters."
+                                          : "Your name will be visible to recruiters.",
+                                        icon: "question",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#1E3786",
+                                        cancelButtonColor: "#6b7280",
+                                        confirmButtonText: "Yes, confirm",
+                                        background: "#fff",
+                                      });
+                                      if (!result.isConfirmed) return;
+                                    }
+                                    handleFormChange(item.key, !item.state);
+                                  }}
                                   className={`relative overflow-hidden cursor-pointer border rounded-md p-5 transition-all duration-300 ${
                                     item.state
                                       ? "border-[#1E3786] bg-gradient-to-br from-[#1E3786]/5 to-[#1E3786]/10 shadow-md transform scale-[1.02]"

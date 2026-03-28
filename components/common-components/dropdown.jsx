@@ -78,7 +78,7 @@ const CustomSelect = (props) => {
         </label>
       )}
 
-      <div className="relative">
+      <div className="relative ">
         <Select
           value={value ? String(value) : ""}
           onValueChange={(val) => {
@@ -99,7 +99,7 @@ const CustomSelect = (props) => {
 
           <SelectContent
             ref={handleContentRef}
-            className="max-h-[260px] overflow-y-auto w-[70%] md:w-auto mx-auto md:mx-0"
+            className="max-h-[260px] overflow-y-auto w-[70%] md:w-auto mx-auto md:mx-0  bg-white"
           >
             {/* 🔍 SEARCH INPUT */}
             <div className="p-2 sticky top-0 bg-white z-10">
