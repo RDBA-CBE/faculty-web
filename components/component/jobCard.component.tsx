@@ -40,6 +40,7 @@ interface JobCardProps {
     department?: any;
     roles?: any;
     application_status?:any;
+    matches_user_location?: boolean;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -108,13 +109,21 @@ export const JobCard: React.FC<JobCardProps> = ({
       className="border border-[#c7c7c787] bg-white  p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
       onClick={onClick}
     >
-      {isProfile && (
-       <div className="w-fit bg-[#1E3786] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex gap-2">
-                 {/* • Posted{" "} */}
-                 <StarIcon size={14}  />
-                 {capitalizeFLetter(job?.application_status)}
-               </div>
-      )}
+      <div className="flex flex-wrap gap-2 mb-3">
+        {isProfile && (
+          <div className="w-fit bg-[#1E3786] rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+            <StarIcon size={14} />
+            {capitalizeFLetter(job?.application_status)}
+          </div>
+        )}
+        {job?.matches_user_location && (
+          <div className="w-fit bg-green-600 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+            <MapPin size={14} />
+            Preferred Job
+          </div>
+        )}
+      </div>
+
       {/* Header with Title and Company Logo on Right */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex-1">

@@ -38,6 +38,7 @@ interface JobCardProps {
     is_saved: boolean;
     department?: any;
     application_status?:any;
+    matches_user_location?: boolean;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -106,13 +107,21 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       className=" border-b  border-[#c7c7c787] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
       onClick={onClick}
     >
-       {isProfile && (
-         <div className="w-fit bg-[#1E3786] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex gap-2">
-          {/* • Posted{" "} */}
-          <StarIcon size={14}/>
-          {capitalizeFLetter(job?.application_status)}
-        </div>
-      )}
+      <div className="flex flex-wrap gap-2 mb-3 md:mb-0 md:mr-3">
+        {isProfile && (
+          <div className="w-fit bg-[#1E3786] rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+            <StarIcon size={14} />
+            {capitalizeFLetter(job?.application_status)}
+          </div>
+        )}
+        {job?.matches_user_location && (
+          <div className="w-fit bg-green-600 rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+            <MapPin size={14} />
+            Preferred Job
+          </div>
+        )}
+      </div>
+
       <div className=" w-full md:w-4/5 flex flex-row gap-5">
         {/* Company Logo/Initials on Right */}
         <div className="flex-shrink-0 ml-3 order-1 md:order-0">
