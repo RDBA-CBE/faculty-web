@@ -8,6 +8,7 @@ import * as Yup from "yup";
 import * as Validation from "@/utils/validation.utils";
 import Models from "@/imports/models.import";
 import { Input } from "@/components/ui/input";
+import Modal from "@/components/common-components/modal";
 
 const HRRegistrationPage = () => {
   const router = useRouter();
@@ -55,11 +56,10 @@ const HRRegistrationPage = () => {
       });
 
       console.log("body", body);
-      
 
       await Models.auth.hr_user(body);
 
-      Success("Thanks for your interest!");
+       setState({ successRegistraion: true });
       // router.push("/");
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
@@ -86,6 +86,28 @@ const HRRegistrationPage = () => {
     }
   };
 
+  <Modal
+    isOpen={state.successRegistraion}
+    setIsOpen={() => {
+      setState({ errors: {}, successRegistraion: false });
+    }}
+    title="Job Application Success"
+    width="auto"
+    hideHeader={true}
+    renderComponent={() => (
+      <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+        <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
+          Registration Successfull
+        </h2>
+
+        <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
+          Please Check Your Email Inbox and verify your email address to
+          continue
+        </p>
+      </div>
+    )}
+  />;
+
   return (
     <section className="bg-gray-50 min-h-screen flex items-center justify-center py-12 lg:py-20">
       <div className="w-full max-w-2xl mx-auto px-4">
@@ -95,13 +117,13 @@ const HRRegistrationPage = () => {
               HR Registration Enquiry
             </h1>
             <p className="text-gray-600 mt-2">
-              Fill the form to open an HR account to start managing recruitments.
+              Fill the form to open an HR account to start managing
+              recruitments.
             </p>
           </div>
 
           {/* ✅ Disable browser validation */}
           <form onSubmit={handleSubmit} noValidate className="space-y-6">
-
             {/* Username */}
             <div>
               <label className="block text-sm font-medium mb-1">
@@ -110,9 +132,7 @@ const HRRegistrationPage = () => {
               <Input
                 placeholder="Enter your Username"
                 value={state.username}
-                onChange={(e) =>
-                  handleFormChange("username", e.target.value)
-                }
+                onChange={(e) => handleFormChange("username", e.target.value)}
                 className={state.errors.username ? "border-red-500" : ""}
               />
               {state.errors.username && (
@@ -131,9 +151,7 @@ const HRRegistrationPage = () => {
                 type="email"
                 placeholder="Enter your email"
                 value={state.email}
-                onChange={(e) =>
-                  handleFormChange("email", e.target.value)
-                }
+                onChange={(e) => handleFormChange("email", e.target.value)}
                 className={state.errors.email ? "border-red-500" : ""}
               />
               {state.errors.email && (
@@ -171,9 +189,7 @@ const HRRegistrationPage = () => {
               <Input
                 placeholder="Enter college"
                 value={state.college}
-                onChange={(e) =>
-                  handleFormChange("college", e.target.value)
-                }
+                onChange={(e) => handleFormChange("college", e.target.value)}
                 className={state.errors.college ? "border-red-500" : ""}
               />
               {state.errors.college && (
