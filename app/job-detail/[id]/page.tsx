@@ -97,7 +97,7 @@ import FilterbarNew from "@/components/component/filterbarNew.component";
 import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 // import { Failure, Success } from "@/components/common-components/toast";
 
-export default function JobsPage({ params }: { params: { id: string } }) {
+export default function JobsPage({ params }: { params: { id: string } } & any) {
   const searchParams = useSearchParams();
 
   const router = useRouter();

@@ -9,10 +9,10 @@ import { useRouter } from "next/navigation";
 import PaginationCom from "@/components/component/PaginationCom";
 import Footer from "@/components/common-components/new_components/Footer";
 import SkeletonLoader from "../jobs/SkeletonLoader";
-const [isMobileScreen, setIsMobileScreen] = useState(false);
 
 export default function SavedJobsPage() {
   const router = useRouter();
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
 
   const [state, setState] = useSetState({
     loading: true,
