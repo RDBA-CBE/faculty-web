@@ -1500,20 +1500,3 @@ body {
   }
 }
 
-
-
-/* When filterbar popup is open, disable pointer events on sheet so portal popup receives all events */
-body.filterbar-popup-open [data-radix-popper-content-wrapper],
-body.filterbar-popup-open [data-state="open"][role="dialog"] {
-  pointer-events: none !important;
-}
-
-/* Disable pointer events on sheet overlay + content when filterbar popup is open */
-body.filterbar-popup-open [data-state="open"].fixed.z-50 {
-  pointer-events: none !important;
-}
-
-/* Keep pointer events active on the filterbar popup itself */
-body.filterbar-popup-open .filterbar-popup {
-  pointer-events: auto !important;
-}

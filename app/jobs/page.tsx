@@ -2849,6 +2849,7 @@ ${userName}`;
                       <Sheet
                         open={isMobileFilterOpen}
                         onOpenChange={setIsMobileFilterOpen}
+                        modal={false}
                       >
                         <SheetTrigger asChild>
                           <Button variant="outline" className="w-auto">
@@ -2859,13 +2860,8 @@ ${userName}`;
                         <SheetContent
                           side="bottom"
                           className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
-                          onInteractOutside={(e) => {
-                            if (
-                              (e.target as Element)?.closest(".filterbar-popup")
-                            ) {
-                              e.preventDefault();
-                            }
-                          }}
+                          onInteractOutside={(e) => e.preventDefault()}
+                          onPointerDownOutside={(e) => e.preventDefault()}
                         >
                           <div className="flex items-center justify-between px-4 pb-3 border-b">
                             <SheetTitle className="text-lg font-semibold">
