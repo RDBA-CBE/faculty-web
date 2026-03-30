@@ -189,7 +189,8 @@ export default function NaukriProfilePage() {
       SECTION_IDS.forEach((sectionId) => {
         const section = document.getElementById(sectionId);
         if (section) {
-          const sectionTop = section.getBoundingClientRect().top + window.scrollY;
+          const sectionTop =
+            section.getBoundingClientRect().top + window.scrollY;
           if (scrollPosition >= sectionTop) {
             currentSubSection = sectionId.replace("-section", "");
           }
@@ -264,7 +265,6 @@ export default function NaukriProfilePage() {
   };
 
   console.log("userDetail", state.userDetail);
-  
 
   const locationList = async (page, search = "") => {
     console.log("✌️page --->", page);
@@ -552,7 +552,10 @@ export default function NaukriProfilePage() {
   const DirectdownloadResume = async () => {
     try {
       const url = state.userDetail?.resume_url;
-      if (!url) { Failure("No resume available to download."); return; }
+      if (!url) {
+        Failure("No resume available to download.");
+        return;
+      }
       const response = await fetch(url, { mode: "cors" });
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
@@ -1107,7 +1110,7 @@ export default function NaukriProfilePage() {
     });
   };
 
-const scrollToSection = (sectionId: string) => {
+  const scrollToSection = (sectionId: string) => {
     const subSectionId = sectionId.replace("-section", "");
     isManualScrollRef.current = true;
 
@@ -1156,13 +1159,21 @@ const scrollToSection = (sectionId: string) => {
   const links = [
     { id: "resume", label: "Resume/login", section: "resume-section" },
     { id: "headline", label: "Profile Summary", section: "headline-section" },
-   
+
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
-    { id: "publications", label: "Publications", section: "publications-section" },
+    {
+      id: "publications",
+      label: "Publications",
+      section: "publications-section",
+    },
     { id: "skills", label: "Skills", section: "skills-section" },
-    { id: "achievements", label: "Achievements", section: "achievements-section" },
+    {
+      id: "achievements",
+      label: "Achievements",
+      section: "achievements-section",
+    },
   ];
 
   // const toggleSection = (section: string) => {
@@ -1341,34 +1352,38 @@ const scrollToSection = (sectionId: string) => {
             ) : (
               <>
                 {/* Profile Header - Will hide on scroll */}
-                {(state.userDetail?.reveal_name == false)  ? (
+                {state.userDetail?.reveal_name == false ? (
                   <Card className="!rounded-none bg-clr2  border shadow-none  mb-2 overflow-hidden px-4 ">
                     <div className="absolute"></div>
                     <CardContent className="relative py-4 px-0 mx-0">
                       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
-                       
                         {/* Profile Info - Enhanced */}
                         <div className="flex-1 w-full">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                            <div className="text-center sm:text-left">
-                              
-                              {state?.userDetail?.short_desc && (
-                                <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                                  {state?.userDetail?.short_desc}
-                                </p>
-                              )}
-                              {(state?.userDetail?.current_company ||
-                                state?.userDetail?.current_location) && (
-                                <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                                  <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                            {(state?.userDetail?.short_desc ||
+                              state?.userDetail?.current_company ||
+                              state?.userDetail?.current_location ||
+                              state?.userDetail?.current_position) && (
+                              <div className="text-center sm:text-left">
+                                {state?.userDetail?.short_desc && (
+                                  <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
+                                    {state?.userDetail?.short_desc}
+                                  </p>
+                                )}
+                                {(state?.userDetail?.current_company ||
+                                  state?.userDetail?.current_location) && (
+                                  <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
+                                    <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                  <span className="text-sm">
-                                    {state?.userDetail?.current_position} - {state?.userDetail?.current_company} -{" "}
-                                    {state?.userDetail?.current_location}
-                                  </span>
-                                </div>
-                              )}
-                            </div>
+                                    <span className="text-sm">
+                                      {state?.userDetail?.current_position} -{" "}
+                                      {state?.userDetail?.current_company} -{" "}
+                                      {state?.userDetail?.current_location}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
                                 <p className="text-xs text-gray-500 whitespace-nowrap">
@@ -1396,15 +1411,13 @@ const scrollToSection = (sectionId: string) => {
                               "Not specified",
                             color: "text-[#f2b31d]",
                           },
-                         
+
                           {
                             icon: Calendar,
                             label:
                               state?.userDetail?.experience || "Not specified",
                             color: "text-[#f2b31d]",
                           },
-                          
-                         
                         ].map((item, index) => (
                           <div
                             key={index}
@@ -1416,7 +1429,6 @@ const scrollToSection = (sectionId: string) => {
                             <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
                               {item.label}
                             </span>
-                            
                           </div>
                         ))}
                       </div>
@@ -1464,16 +1476,22 @@ const scrollToSection = (sectionId: string) => {
                                 </p>
                               )}
                               {(state?.userDetail?.current_company ||
-                                state?.userDetail?.current_location) && (
-                                <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                                  <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                              state?.userDetail?.current_position ||
+                              state?.userDetail?.current_location) && (
+                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                  <span className="text-sm">
-                                    {state?.userDetail?.current_company} -{" "}
-                                    {state?.userDetail?.current_location}
-                                  </span>
-                                </div>
-                              )}
+                                <span className="text-sm">
+                                  {[
+                                    state?.userDetail?.current_company,
+                                    state?.userDetail?.current_position,
+                                    state?.userDetail?.current_location,
+                                  ]
+                                    .filter(Boolean) // removes null/undefined/empty
+                                    .join(" - ")}
+                                </span>
+                              </div>
+                            )}
                             </div>
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
@@ -1572,14 +1590,16 @@ const scrollToSection = (sectionId: string) => {
                                       }
                                       className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
                                         ${
-                                          state.activeProfileSubSection === item.id
+                                          state.activeProfileSubSection ===
+                                          item.id
                                             ? "bg-[#1E3786] !text-[#fff]"
                                             : " hover:bg-white/80"
                                         }`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          state.activeProfileSubSection === item.id
+                                          state.activeProfileSubSection ===
+                                          item.id
                                             ? "!text-[#fff]"
                                             : "text-[#000]"
                                         }`}
@@ -1778,7 +1798,8 @@ const scrollToSection = (sectionId: string) => {
                                             </div>
 
                                             <div className="flex gap-2 flex-wrap">
-                                              {state?.userDetail?.resume_url && (
+                                              {state?.userDetail
+                                                ?.resume_url && (
                                                 <>
                                                   <button
                                                     className="bg-[#1E3786] text-white px-3 py-1 text-xs rounded-lg"
@@ -1788,17 +1809,22 @@ const scrollToSection = (sectionId: string) => {
                                                   </button>
                                                   <button
                                                     className="border border-[#1E3786] rounded-md px-1 py-1"
-                                                    onClick={DirectdownloadResume}
+                                                    onClick={
+                                                      DirectdownloadResume
+                                                    }
                                                     title="Download Resume"
                                                   >
                                                     <Download
                                                       size={10}
-                                                      style={{ height: "15px", width: "15px" }}
+                                                      style={{
+                                                        height: "15px",
+                                                        width: "15px",
+                                                      }}
                                                       className="text-[#1E3786]"
                                                     />
                                                   </button>
                                                 </>
-                                              ) }
+                                              )}
                                             </div>
                                           </div>
                                         </div>
@@ -1966,7 +1992,6 @@ const scrollToSection = (sectionId: string) => {
                             </CardContent>
                           </Card>
 
-                          
                           {/* Employment Section */}
                           <Card
                             id="employment-section"
@@ -1994,7 +2019,13 @@ const scrollToSection = (sectionId: string) => {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("employment"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("employment");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.employment ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -2209,14 +2240,14 @@ const scrollToSection = (sectionId: string) => {
                                                           )}{" "}
                                                           to{" "}
                                                           {emp.end_date &&
-                                                            DateFormat(
-                                                              emp.end_date,
-                                                              "date",
-                                                            )
+                                                          DateFormat(
+                                                            emp.end_date,
+                                                            "date",
+                                                          )
                                                             ? DateFormat(
-                                                              emp.end_date,
-                                                              "date",
-                                                            )
+                                                                emp.end_date,
+                                                                "date",
+                                                              )
                                                             : "Present"}
                                                         </span>
                                                         {/* <span className="ml-1">
@@ -2230,44 +2261,46 @@ const scrollToSection = (sectionId: string) => {
 
                                                   {/* Job Description */}
                                                   {emp.job_description && (
-                                                  <div className="bg-white rounded-lg py-4 px-2 border mb-2">
-                                                    <p className="text-gray-700 leading-relaxed text-sm">
-                                                      {expandedDesc[emp.id]
-                                                        ? emp.job_description
-                                                        : emp.job_description?.slice(
-                                                            0,
-                                                            280,
+                                                    <div className="bg-white rounded-lg py-4 px-2 border mb-2">
+                                                      <p className="text-gray-700 leading-relaxed text-sm">
+                                                        {expandedDesc[emp.id]
+                                                          ? emp.job_description
+                                                          : emp.job_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedDesc[
+                                                          emp.id
+                                                        ] &&
+                                                          emp.job_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {emp.job_description &&
+                                                          emp.job_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [emp.id]:
+                                                                      !prev[
+                                                                        emp.id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedDesc[
+                                                                emp.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedDesc[emp.id] &&
-                                                        emp.job_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {emp.job_description &&
-                                                        emp.job_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [emp.id]:
-                                                                    !prev[
-                                                                      emp.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedDesc[
-                                                              emp.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
-                                                  </div>
+                                                      </p>
+                                                    </div>
                                                   )}
 
                                                   {/* Key Skills */}
@@ -2385,7 +2418,13 @@ const scrollToSection = (sectionId: string) => {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("education"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("education");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.education ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -2706,7 +2745,13 @@ const scrollToSection = (sectionId: string) => {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("projects"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("projects");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.projects ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -3040,63 +3085,64 @@ const scrollToSection = (sectionId: string) => {
 
                                                   {/* Project Description */}
                                                   {project.project_description && (
-                                                  <div className="bg-white rounded-lg p-4 border  mb-4">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedProjectDesc[
-                                                        project.id
-                                                      ]
-                                                        ? project.project_description
-                                                        : project.project_description?.slice(
-                                                            0,
-                                                            280,
+                                                    <div className="bg-white rounded-lg p-4 border  mb-4">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedProjectDesc[
+                                                          project.id
+                                                        ]
+                                                          ? project.project_description
+                                                          : project.project_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedProjectDesc[
+                                                          project.id
+                                                        ] &&
+                                                          project
+                                                            .project_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {project.project_description &&
+                                                          project
+                                                            .project_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedProjectDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [project.id]:
+                                                                      !prev[
+                                                                        project
+                                                                          .id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedProjectDesc[
+                                                                project.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedProjectDesc[
-                                                        project.id
-                                                      ] &&
-                                                        project
-                                                          .project_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {project.project_description &&
-                                                        project
-                                                          .project_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedProjectDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [project.id]:
-                                                                    !prev[
-                                                                      project.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedProjectDesc[
-                                                              project.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
+                                                      </p>
 
-                                                    {project.funding_details && (
-                                                      <div className="mt-4">
-                                                        <h5 className="text-sm font-semibold text-gray-700 mb-1">
-                                                          Funding Details
-                                                        </h5>
-                                                        <p className="text-gray-700 leading-relaxed text-sm">
-                                                          {
-                                                            project.funding_details
-                                                          }
-                                                        </p>
-                                                      </div>
-                                                    )}
-                                                  </div>
+                                                      {project.funding_details && (
+                                                        <div className="mt-4">
+                                                          <h5 className="text-sm font-semibold text-gray-700 mb-1">
+                                                            Funding Details
+                                                          </h5>
+                                                          <p className="text-gray-700 leading-relaxed text-sm">
+                                                            {
+                                                              project.funding_details
+                                                            }
+                                                          </p>
+                                                        </div>
+                                                      )}
+                                                    </div>
                                                   )}
 
                                                   {/* Technologies */}
@@ -3212,7 +3258,13 @@ const scrollToSection = (sectionId: string) => {
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <span onClick={(e) => { e.stopPropagation(); toggleSection("publications"); }} className="cursor-pointer">
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("publications");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
                                     {state.expandedSections.publications ? (
                                       <ChevronUp className="w-5 h-5 text-gray-500" />
                                     ) : (
@@ -3468,50 +3520,50 @@ const scrollToSection = (sectionId: string) => {
 
                                                   {/* Publication Description */}
                                                   {pub.publication_description && (
-                                                  <div className="bg-white rounded-lg p-4 border  ">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedPublicationDesc[
-                                                        pub.id
-                                                      ]
-                                                        ? pub.publication_description
-                                                        : pub.publication_description?.slice(
-                                                            0,
-                                                            280,
+                                                    <div className="bg-white rounded-lg p-4 border  ">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedPublicationDesc[
+                                                          pub.id
+                                                        ]
+                                                          ? pub.publication_description
+                                                          : pub.publication_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedPublicationDesc[
+                                                          pub.id
+                                                        ] &&
+                                                          pub
+                                                            .publication_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {pub.publication_description &&
+                                                          pub
+                                                            .publication_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedPublicationDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [pub.id]:
+                                                                      !prev[
+                                                                        pub.id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedPublicationDesc[
+                                                                pub.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedPublicationDesc[
-                                                        pub.id
-                                                      ] &&
-                                                        pub
-                                                          .publication_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {pub.publication_description &&
-                                                        pub
-                                                          .publication_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedPublicationDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [pub.id]:
-                                                                    !prev[
-                                                                      pub.id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedPublicationDesc[
-                                                              pub.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
-                                                  </div>
+                                                      </p>
+                                                    </div>
                                                   )}
                                                 </div>
                                               </div>
@@ -3784,7 +3836,6 @@ const scrollToSection = (sectionId: string) => {
                             </CardContent>
                           </Card>
 
-
                           {/* Achievements Section */}
                           <Card
                             id="achievements-section"
@@ -4021,66 +4072,66 @@ const scrollToSection = (sectionId: string) => {
 
                                                   {/* Achievement Description */}
                                                   {achievement.achievement_description && (
-                                                  <div className="bg-white rounded-lg p-4 border">
-                                                    <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-                                                      {expandedAchievementDesc[
-                                                        achievement.id
-                                                      ]
-                                                        ? achievement.achievement_description
-                                                        : achievement.achievement_description?.slice(
-                                                            0,
-                                                            280,
+                                                    <div className="bg-white rounded-lg p-4 border">
+                                                      <p className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
+                                                        {expandedAchievementDesc[
+                                                          achievement.id
+                                                        ]
+                                                          ? achievement.achievement_description
+                                                          : achievement.achievement_description?.slice(
+                                                              0,
+                                                              280,
+                                                            )}
+                                                        {!expandedAchievementDesc[
+                                                          achievement.id
+                                                        ] &&
+                                                          achievement
+                                                            .achievement_description
+                                                            ?.length > 280 &&
+                                                          "..."}
+                                                        {achievement.achievement_description &&
+                                                          achievement
+                                                            .achievement_description
+                                                            .length > 280 && (
+                                                            <button
+                                                              onClick={() =>
+                                                                setExpandedAchievementDesc(
+                                                                  (prev) => ({
+                                                                    ...prev,
+                                                                    [achievement.id]:
+                                                                      !prev[
+                                                                        achievement
+                                                                          .id
+                                                                      ],
+                                                                  }),
+                                                                )
+                                                              }
+                                                              className="text-blue-600 text-sm font-medium hover:underline ml-1"
+                                                            >
+                                                              {expandedAchievementDesc[
+                                                                achievement.id
+                                                              ]
+                                                                ? "Read Less"
+                                                                : "Read More"}
+                                                            </button>
                                                           )}
-                                                      {!expandedAchievementDesc[
-                                                        achievement.id
-                                                      ] &&
-                                                        achievement
-                                                          .achievement_description
-                                                          ?.length > 280 &&
-                                                        "..."}
-                                                      {achievement.achievement_description &&
-                                                        achievement
-                                                          .achievement_description
-                                                          .length > 280 && (
-                                                          <button
-                                                            onClick={() =>
-                                                              setExpandedAchievementDesc(
-                                                                (prev) => ({
-                                                                  ...prev,
-                                                                  [achievement.id]:
-                                                                    !prev[
-                                                                      achievement
-                                                                        .id
-                                                                    ],
-                                                                }),
-                                                              )
-                                                            }
-                                                            className="text-blue-600 text-sm font-medium hover:underline ml-1"
-                                                          >
-                                                            {expandedAchievementDesc[
-                                                              achievement.id
-                                                            ]
-                                                              ? "Read Less"
-                                                              : "Read More"}
-                                                          </button>
-                                                        )}
-                                                    </p>
+                                                      </p>
 
-                                                    {achievement.achievement_file_url && (
-                                                      <a
-                                                        className="flex items-center text-gray-700 leading-relaxed text-sm"
-                                                        href={
-                                                          achievement.achievement_file_url
-                                                        }
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                      >
-                                                        {" "}
-                                                        View file
-                                                        <File className="w-3 h-3 ml-2" />
-                                                      </a>
-                                                    )}
-                                                  </div>
+                                                      {achievement.achievement_file_url && (
+                                                        <a
+                                                          className="flex items-center text-gray-700 leading-relaxed text-sm"
+                                                          href={
+                                                            achievement.achievement_file_url
+                                                          }
+                                                          target="_blank"
+                                                          rel="noopener noreferrer"
+                                                        >
+                                                          {" "}
+                                                          View file
+                                                          <File className="w-3 h-3 ml-2" />
+                                                        </a>
+                                                      )}
+                                                    </div>
                                                   )}
                                                 </div>
                                               </div>
@@ -4494,9 +4545,9 @@ const scrollToSection = (sectionId: string) => {
                                 No Requests Yet
                               </h4>
                               <p className="text-gray-500 text-center max-w-sm">
-                                You haven&apos;t received any contact requests from
-                                recruiters. Keep your profile updated to attract
-                                more opportunities!
+                                You haven&apos;t received any contact requests
+                                from recruiters. Keep your profile updated to
+                                attract more opportunities!
                               </p>
                             </CardContent>
                           </Card>
