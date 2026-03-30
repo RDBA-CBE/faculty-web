@@ -189,7 +189,7 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                   <p
                     key={item.id}
                     onClick={() => {
-                      router.push(`/jobs?id=${item.id}`);
+                      router.push(`/job-detail/${item.id}`);
                       if (pathname === "/jobs") {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }

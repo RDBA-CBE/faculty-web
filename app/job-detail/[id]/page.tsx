@@ -92,15 +92,16 @@ import ChipFilters from "@/components/component/chipFilters.component";
 import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
-import SkeletonLoader from "./SkeletonLoader";
+
 import FilterbarNew from "@/components/component/filterbarNew.component";
+import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 // import { Failure, Success } from "@/components/common-components/toast";
 
-export default function JobsPage() {
+export default function JobsPage({ params }: { params: { id: string } }) {
   const searchParams = useSearchParams();
 
   const router = useRouter();
-  const jobIdParam = searchParams.get("id");
+  const jobIdParam = params.id;
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
@@ -450,12 +451,8 @@ ${userName}`;
       );
 
       if (scrollContainer && jobElement) {
-        const containerRect = scrollContainer.getBoundingClientRect();
-        const elementRect = jobElement.getBoundingClientRect();
-        const offset = elementRect.top - containerRect.top;
-
         scrollContainer.scrollTo({
-          top: scrollContainer.scrollTop + offset,
+          top: jobElement.offsetTop - scrollContainer.offsetTop,
           behavior: "smooth",
         });
       }
@@ -476,14 +473,7 @@ ${userName}`;
   }, [selectedJob, isTabScreen]);
 
   useEffect(() => {
-    jobList(1);
-    jobTypeList();
-    // experienceList();
-    // DatePosted();
-    // salaryRangeList();
-    // tagsList();
-    filterList();
-    masterExperienceList()
+    masterExperienceList();
   }, []);
 
   useEffect(() => {
@@ -834,7 +824,7 @@ ${userName}`;
   useEffect(() => {
     if (jobIdParam) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setState({ jobID: jobIdParam });
+      setState({ jobID: jobIdParam, loading: true });
       jobDetail(jobIdParam).then((res) => {
         if (res) {
           setSelectedJob(res);
@@ -1332,14 +1322,43 @@ ${userName}`;
         <div className="bg-[#1E3786] py-[10px] md:py-[10px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
             <h1 className="!text-white text-[24px] md:text-[35px] font-medium md:font-semibold">
-              Jobs
+              Job Detail
             </h1>
           </div>
         </div>
 
         <div className="section-wid  py-8 lg:py-6">
           <main>
-            {isTabScreen && selectedJob ? (
+            {state.loading && !selectedJob ? (
+              <div className="flex gap-2 pb-4 pt-2 items-start">
+                <div className="flex-1 space-y-4 p-3">
+                  <div className="bg-white p-6 border border-[#c7c7c787]">
+                    <div className="flex gap-4 mb-6">
+                      <SkeletonLoader type="rect" width={64} height={64} className="rounded-3xl" />
+                      <div className="flex-1">
+                        <SkeletonLoader type="text" width="40%" height={32} className="mb-2" />
+                        <SkeletonLoader type="text" width="20%" height={20} />
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <SkeletonLoader type="text" width={100} />
+                      <SkeletonLoader type="text" width={100} />
+                      <SkeletonLoader type="text" width={100} />
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="flex-1 bg-white p-6 border border-[#c7c7c787]">
+                      <SkeletonLoader type="text" width="30%" height={24} className="mb-4" />
+                      <SkeletonLoader type="text" count={8} />
+                    </div>
+                    <div className="w-80 flex-shrink-0 bg-white p-6 border border-[#c7c7c787]">
+                      <SkeletonLoader type="text" width="50%" height={24} className="mb-4" />
+                      <SkeletonLoader type="text" count={5} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : isTabScreen && selectedJob ? (
               <div
                 className={`space-y-6 transition-all duration-500 ease-in-out transform ${
                   isAnimating
@@ -1786,7 +1805,7 @@ ${userName}`;
                   </p>
                 </div>
               </div>
-            ) : isDesktopScreen && selectedJob && showJobDetail ? (
+            ) : (isDesktopScreen || (!isTabScreen && !isMobileScreen)) && selectedJob ? (
               <>
                 <div className="flex justify-between">
                   <Breadcrumb />
@@ -1827,7 +1846,20 @@ ${userName}`;
                         className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
                         onScroll={handleSidebarScroll}
                       >
-                        {state.jobList?.map((job) => (
+                        {state.jobListLoading ? (
+                          Array.from({ length: 6 }).map((_, i) => (
+                            <div key={i} className="px-2 py-5 border-b border-[#c7c7c787]">
+                              <div className="flex flex-row gap-4">
+                                <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
+                                <div className="flex-1">
+                                  <SkeletonLoader type="text" width="70%" height={14} className="mb-2" />
+                                  <SkeletonLoader type="text" width="50%" height={12} className="mb-2" />
+                                  <SkeletonLoader type="text" width="40%" height={12} />
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : state.jobList?.map((job) => (
                           <div
                             key={job.id}
                             id={`job-list-item-${job.id}`}
@@ -1835,6 +1867,7 @@ ${userName}`;
                               setSelectedJob(job);
                               setState({ jobID: job.id });
                               jobDetail(job.id);
+                              router.replace(`/job-detail/${job.id}`, { scroll: false });
                             }}
                             className={`cursor-pointer px-2 py-5 transition-all   ${
                               selectedJob?.id === job.id
@@ -2283,7 +2316,8 @@ ${userName}`;
                               </button> */}
                               <div>
                                 <button
-                                  onClick={() => setSelectedJob(null)}
+                                  // onClick={() => setSelectedJob(null)}
+                                  onClick={() => router.back()}
                                   className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
                                 >
                                   <ArrowLeft size={14} className="mt-[3px]" />
@@ -2661,539 +2695,7 @@ ${userName}`;
                   </div>
                 </div>
               </>
-            ) : (
-              <div className="relative flex flex-col lg:flex-row gap-4">
-                <div
-                  className={`fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity ${
-                    isSidebarOpen
-                      ? "opacity-100"
-                      : "opacity-0 pointer-events-none"
-                  }`}
-                  onClick={() => setIsSidebarOpen(false)}
-                />
-
-                {/* Mobile STICKY SIDEBAR */}
-                <div
-                  className={`fixed lg:hidden z-50 left-0 top-0 h-full w-80 bg-clr1 transition-transform ${
-                    isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-                  }`}
-                >
-                  <Filterbar
-                    filters={filters}
-                    onFilterChange={setFilters}
-                    categoryList={state?.categoryList}
-                    locationList={state?.locationList}
-                    jobTypeList={state?.jobTypeList}
-                    experienceList={state?.experienceList}
-                    collegeList={state?.collegeList}
-                    deptList={state?.deptList}
-                    datePostedList={state?.datePostedList}
-                    salaryRangeList={state?.salaryRangeList}
-                    jobRoleList={state?.jobRoleList}
-                    tagsList={state?.tagsList}
-                    loading={state.loading}
-                    closeModal={() => {
-                      window.scrollTo({
-                        top: 0,
-                        behavior: "smooth",
-                      });
-                      setIsMobileFilterOpen(false);
-                    }}
-
-                    // filterList={state.filterList}
-                    // filters={filters}
-                    // // onFilterChange={(data: any) => setFilters(data)}
-                    // onFilterChange={(data: any) => {
-                    //   console.log("✌️data --->", data);
-
-                    //   setFilters(data);
-                    // }}
-                    // loading={state.loading}
-                  />
-                </div>
-
-                {/* DESKTOP STICKY SIDEBAR */}
-                <div
-                  className="w-80 hidden lg:block shrink-0 relative"
-                  ref={sidebarWrapperRef}
-                >
-                  {/* make the filter wrapper scrollable if it grows taller than viewport */}
-                  <div
-                    className="bg-clr2 border border-[#c7c7c787] "
-                    ref={sidebarRef}
-                  >
-                    <Filterbar
-                      // filterList={state.filterList}
-                      // filters={filters}
-                      // // onFilterChange={setFilters}
-                      // onFilterChange={(data: any) => {
-                      //   console.log("✌️data --->", data);
-
-                      //   setFilters(data);
-                      // }}
-                      // loading={state.loading}
-                      filters={filters}
-                      onFilterChange={setFilters}
-                      categoryList={state?.categoryList}
-                      locationList={state?.locationList}
-                      jobTypeList={state?.jobTypeList}
-                      experienceList={state?.experienceList}
-                      collegeList={state?.collegeList}
-                      deptList={state?.deptList}
-                      datePostedList={state?.datePostedList}
-                      salaryRangeList={state?.salaryRangeList}
-                      jobRoleList={state?.jobRoleList}
-                      tagsList={state?.tagsList}
-                      loading={state.loading}
-                      closeModal={() => {
-                        window.scrollTo({
-                          top: 0,
-                          behavior: "smooth",
-                        });
-                        setIsMobileFilterOpen(false);
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex-grow relative" ref={jobListContainerRef}>
-                  {/* content input header start */}
-                  <div ref={searchBarWrapperRef}>
-                    <div
-                      ref={searchBarRef}
-                      className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
-                    >
-                      <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
-                        <div className="flex-grow flex items-center ps-3 md:px-6 py-2  lg:py-0 w-full lg:w-auto ">
-                          <Search color="#5c5a5a93" size={22} />
-                          <input
-                            type="text"
-                            placeholder="Search by: Job tittle, Position, Keyword..."
-                            className="w-full pl-4 bg-transparent text-sm  focus:outline-none placeholder:text-[#313131] placeholder:font-normal font-medium  text-black"
-                            value={state.search}
-                            onChange={(e) =>
-                              setState({ search: e.target.value })
-                            }
-                          />
-                        </div>
-
-                        {/* {isWideScreen && (
-                          <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                        )} */}
-
-                        <div className="hidden lg:flex items-center w-full lg:w-auto lg:p-1 gap-2 border-t lg:border-t-0 border-slate-100">
-                          {/* <div className="flex items-center px-4 flex-grow lg:w-64 ">
-                            <MapPin color="#5c5a5a93" size={22} />
-
-                            <CustomSelect
-                              options={state.locationList}
-                              value={filters.locations}
-                              onChange={(selected) =>
-                                setFilters({
-                                  ...filters,
-                                  locations: selected ? selected.value : null,
-                                })
-                              }
-                              className="py-0 border-none"
-                              placeholder="Location"
-                            />
-                           
-                            <button className="p-2 text-slate-400 hover:text-amber-500 transition-colors"></button>
-                          </div> */}
-
-                          {/* {isWideScreen && (
-                            <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
-                          )} */}
-
-                          {isWideScreen && (
-                            <div className="hidden lg:flex items-center gap-1 px-2 ">
-                              <button
-                                onClick={() => setViewType("grid")}
-                                className={`p-2 rounded-md transition-colors ${
-                                  viewType === "grid"
-                                    ? "bg-[#1E3786] text-white"
-                                    : "text-gray-400 hover:bg-gray-100"
-                                }`}
-                              >
-                                <LayoutGrid size={15} />
-                              </button>
-
-                              <button
-                                onClick={() => setViewType("list")}
-                                className={`p-2 rounded-md transition-colors ${
-                                  viewType === "list"
-                                    ? "bg-[#1E3786] text-white"
-                                    : "text-gray-400 hover:bg-gray-100"
-                                }`}
-                              >
-                                <List size={15} />
-                              </button>
-                            </div>
-                          )}
-
-                          {/* <button
-                      className="hover-bg-[#F2B31D]  text-md border border-xl border-[#F2B31D] rounded rounded-3xl  px-6 py-1  hover:bg-[#E5A519] transition-colors text-black hover:text-white"
-                      onClick={() => jobList(state?.page)}
-                    >
-                      Find Job
-                    </button> */}
-                        </div>
-                      </div>
-
-                      {/* content body job list */}
-                    </div>
-                  </div>
-
-                  <div className="py-4 lg:hidden flex items-center justify-between">
-                    <div className="lg:hidden">
-                      <Sheet
-                        open={isMobileFilterOpen}
-                        onOpenChange={setIsMobileFilterOpen}
-                      >
-                        <SheetTrigger asChild>
-                          <Button variant="outline" className="w-auto">
-                            <Filter className="mr-2 h-4 w-4" />
-                            Filters
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                          side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
-                        >
-                          <div className="flex items-center justify-between px-4 pb-3 border-b">
-                            <SheetTitle className="text-lg font-semibold">
-                              Filter Jobs
-                            </SheetTitle>
-                            <div className="flex items-center gap-2 justify-center">
-                              {isFilterApplied() && (
-                                <button
-                                  onClick={() => setIsMobileFilterOpen(false)}
-                                  className=" bg-[#1E3786] w-fit  text-sm border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                                >
-                                  Apply
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setIsMobileFilterOpen(false)}
-                                className="p-1 hover:bg-clr2 rounded-full"
-                              >
-                                <X size={20} className="text-gray-500" />
-                              </button>
-                            </div>
-                          </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
-                            <Filterbar
-                              // filterList={state.filterList}
-                              // filters={filters}
-                              // // onFilterChange={setFilters}
-                              // onFilterChange={(data: any) => {
-                              //   console.log("✌️data --->", data);
-
-                              //   setFilters(data);
-                              // }}
-                              filters={filters}
-                              onFilterChange={setFilters}
-                              categoryList={state?.categoryList}
-                              locationList={state?.locationList}
-                              jobTypeList={state?.jobTypeList}
-                              experienceList={state?.experienceList}
-                              collegeList={state?.collegeList}
-                              deptList={state?.deptList}
-                              datePostedList={state?.datePostedList}
-                              salaryRangeList={state?.salaryRangeList}
-                              jobRoleList={state?.jobRoleList}
-                              tagsList={state?.tagsList}
-                              loading={state.loading}
-                              closeModal={() => {
-                                window.scrollTo({
-                                  top: 0,
-                                  behavior: "smooth",
-                                });
-                                setIsMobileFilterOpen(false);
-                              }}
-                            />
-                          </div>
-                        </SheetContent>
-                      </Sheet>
-                    </div>
-                  </div>
-
-                  <ChipFilters
-                    filters={filters}
-                    onFilterChange={setFilters}
-                    categoryList={state?.categoryList}
-                    jobTypeList={state?.jobTypeList}
-                    experienceList={state?.experienceList}
-                    datePostedList={state?.datePostedList}
-                    salaryRangeList={state?.salaryRangeList}
-                    tagsList={state?.tagsList}
-                    collegeList={state?.collegeList}
-                    deptList={state?.deptList}
-                    locationList={state?.locationList}
-                    jobRoleList={state?.jobRoleList}
-                  />
-
-                  {state.loading || state.jobListLoading ? (
-                    <div
-                      className={`grid mt-5 ${
-                        viewType === "grid" || !isWideScreen
-                          ? "grid-cols-1 xl:grid-cols-2"
-                          : "grid-cols-1"
-                      }`}
-                      style={{ gap: "20px" }}
-                    >
-                      {Array.from({ length: 6 }).map((_, index) => (
-                        <div
-                          key={index}
-                          className="bg-white p-6 rounded-lg border border-[#c7c7c787]"
-                        >
-                          <div className="flex justify-between items-start mb-4">
-                            <div className="flex gap-4 w-full">
-                              <SkeletonLoader
-                                type="circle"
-                                width={48}
-                                height={48}
-                              />
-                              <div className="flex-1">
-                                <SkeletonLoader
-                                  type="text"
-                                  width="60%"
-                                  height={20}
-                                  style={{ marginBottom: 8 }}
-                                />
-                                <SkeletonLoader
-                                  type="text"
-                                  width="40%"
-                                  height={16}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex gap-2 mb-4">
-                            <SkeletonLoader
-                              type="rect"
-                              width={80}
-                              height={24}
-                              className="rounded-full"
-                            />
-                            <SkeletonLoader
-                              type="rect"
-                              width={80}
-                              height={24}
-                              className="rounded-full"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <SkeletonLoader type="text" width="100%" />
-                            <SkeletonLoader type="text" width="80%" />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : state.jobList?.length > 0 ? (
-                    <>
-                      {(() => {
-                        const isGridView = viewType === "grid" || !isWideScreen;
-                        return (
-                          <div
-                            className={`grid mt-5 ${
-                              isGridView
-                                ? "grid-cols-1 xl:grid-cols-2"
-                                : "grid-cols-1"
-                            } ${
-                              !isGridView &&
-                              "bg-white px-5 border border-[#c7c7c787]"
-                            }`}
-                            style={{
-                              gap: "10px",
-                            }}
-                          >
-                            {/* {filteredJobs.map((job) => ( */}
-                            {state.jobList?.map((job: any) => (
-                              <div
-                                key={job.id}
-                                onClick={() => {
-                                  if (isTabScreen) {
-                                    setIsAnimating(false);
-                                    setTimeout(() => {
-                                      setSelectedJob(job);
-                                      setState({ jobID: job.id });
-                                      setIsAnimating(true);
-                                      jobDetail(job.id);
-                                      window.scrollTo({
-                                        top: 0,
-                                        behavior: "smooth",
-                                      });
-                                    }, 100);
-                                  } else {
-                                    setSelectedJob(job);
-                                    setState({ jobID: job.id });
-                                    jobDetail(job.id);
-                                    if (isDesktopScreen) setShowJobDetail(true);
-                                    window.scrollTo({
-                                      top: 0,
-                                      behavior: "smooth",
-                                    });
-                                  }
-                                }}
-                                className="cursor-pointer transition-transform hover:scale-10 job-card-item"
-                              >
-                                {isGridView ? (
-                                  <JobCard
-                                    job={job}
-                                    updateList={() => jobList(state?.page)}
-                                    onCollegeClick={(e, id) =>
-                                      getCollege(e, id)
-                                    }
-                                    onDepartmentClick={(e, id) =>
-                                      getDepartment(e, id)
-                                    }
-                                    onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
-                                  }
-                                  />
-                                ) : (
-                                  <NewJobCard
-                                    job={job}
-                                    updateList={() => jobList(state?.page)}
-                                    onCollegeClick={(e, id) =>
-                                      getCollege(e, id)
-                                    }
-                                    onDepartmentClick={(e, id) =>
-                                      getDepartment(e, id)
-                                    }
-                                    onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
-                                  }
-                                  />
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        );
-                      })()}
-
-                      {/* {(state.next || state?.prev) && (
-                        <div className="flex justify-end items-center mt-10">
-                          <PaginationComTwo
-                            activeNumber={handlePageChange}
-                            totalPage={state.count}
-                            currentPages={state.page}
-                            pageSize={state.pageSize}
-                          />
-                        </div>
-                      )} */}
-
-                      {state.isFetchingMore && (
-                        <div
-                          className={`grid mt-5 ${
-                            viewType === "grid" || !isWideScreen
-                              ? "grid-cols-1 xl:grid-cols-2"
-                              : "grid-cols-1"
-                          }`}
-                          style={{ gap: "20px" }}
-                        >
-                          {Array.from({ length: 2 }).map((_, index) => (
-                            <div
-                              key={index}
-                              className="bg-white p-6 rounded-lg border border-[#c7c7c787]"
-                            >
-                              <div className="flex justify-between items-start mb-4">
-                                <div className="flex gap-4 w-full">
-                                  <SkeletonLoader
-                                    type="circle"
-                                    width={48}
-                                    height={48}
-                                  />
-                                  <div className="flex-1">
-                                    <SkeletonLoader
-                                      type="text"
-                                      width="60%"
-                                      height={20}
-                                      style={{ marginBottom: 8 }}
-                                    />
-                                    <SkeletonLoader
-                                      type="text"
-                                      width="40%"
-                                      height={16}
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex gap-2 mb-4">
-                                <SkeletonLoader
-                                  type="rect"
-                                  width={80}
-                                  height={24}
-                                  className="rounded-full"
-                                />
-                                <SkeletonLoader
-                                  type="rect"
-                                  width={80}
-                                  height={24}
-                                  className="rounded-full"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <SkeletonLoader type="text" width="100%" />
-                                <SkeletonLoader type="text" width="80%" />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center py-20 bg-clr1 rounded-2xl border border-slate-100">
-                      <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-                        <svg
-                          className="w-10 h-10 text-slate-300"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                          />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-bold text-slate-900 mb-1">
-                        No jobs found
-                      </h3>
-                      <p className="text-slate-500 text-sm">
-                        Try adjusting your filters to find more results.
-                      </p>
-                      <button
-                        // onClick={() =>
-                        //   setFilters({
-                        //     searchQuery: "",
-                        //     location: "",
-                        //     categories: [],
-                        //     jobTypes: [],
-                        //     experienceLevels: [],
-                        //     datePosted: "All",
-                        //     salaryRange: [0, 9999],
-                        //     tags: [],
-                        //     experience: "",
-                        //   })
-                        // }
-                        className="mt-6 text-amber-600 font-bold hover:underline"
-                        onClick={handleClearFilters}
-                      >
-                        Clear all filters
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            ) : null}
 
             {/* Mobile Job Detail Sheet */}
             {isMobileScreen && (

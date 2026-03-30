@@ -87,7 +87,7 @@ const FilterSection: React.FC<{
             </span>
           </div>
           {item.job_count !== undefined && (
-            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[8.5px] py-1">{item.job_count}</span>
           )}
         </label>
       ))}
@@ -1678,12 +1678,13 @@ closeModal,
               onClick={() => {
                 const minVal = minExp === "" ? 0 : parseInt(minExp);
                 const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
+                const range = Array.from({ length: maxVal - minVal + 1 }, (_, i) => minVal + i);
 
                 onFilterChange({
                   ...filters,
                   minExperience: minExp,
                   maxExperience: maxExp,
-                  experienceLevels: [ minVal, maxVal],
+                  experienceLevels: range,
                 });
                 closeModal()
 
