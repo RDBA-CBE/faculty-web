@@ -38,8 +38,12 @@ const job = {
       if (body.jobTypes) {
         url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
-      if (body.experience) {
-        url += `&experience_id=${encodeURIComponent(body.experience)}`;
+      if (body.min_experience !== undefined && body.min_experience !== "") {
+        url += `&min_experience=${encodeURIComponent(body.min_experience)}`;
+      }
+
+      if (body.max_experience !== undefined && body.max_experience !== "") {
+        url += `&max_experience=${encodeURIComponent(body.max_experience)}`;
       }
 
       if (body.colleges) {
@@ -188,12 +192,16 @@ const job = {
         params.push(`department_master_id=${body.department}`);
       }
 
-      if (body?.experience?.length>0) {
-        params.push(`experience_id=${body.experience}`);
+      if (body?.min_experience !== undefined && body?.min_experience !== "") {
+        params.push(`min_experience=${body.min_experience}`);
       }
 
-      if (body?.is_fresher === false) {
-        params.push(`is_fresher=false`);
+      if (body?.max_experience !== undefined && body?.max_experience !== "") {
+        params.push(`max_experience=${body.max_experience}`);
+      }
+
+      if (body?.is_fresher === true || body?.is_fresher === false) {
+        params.push(`is_fresher=${body.is_fresher}`);
       }
 
       

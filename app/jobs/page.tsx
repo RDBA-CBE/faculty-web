@@ -1209,21 +1209,17 @@ ${userName}`;
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0) {
-      body.experience = filters.experienceLevels;
+    if (filters?.minExperience !== "" && filters?.minExperience !== undefined && filters?.minExperience !== null) {
+      body.min_experience = filters.minExperience;
+    }
+
+    if (filters?.maxExperience !== "" && filters?.maxExperience !== undefined && filters?.maxExperience !== null) {
+      body.max_experience = filters.maxExperience;
     }
 
     if (filters?.is_fresher === true || filters?.is_fresher === false) {
       body.is_fresher = filters.is_fresher;
     }
-
-    // if (filters?.minExperience) {
-    //   body.min_experience = filters.minExperience;
-    // }
-
-    // if (filters?.maxExperience) {
-    //   body.max_experience = filters.maxExperience;
-    // }
 
     if (filters?.salaryRange?.length > 0) {
       body.salary_range = filters.salaryRange;
