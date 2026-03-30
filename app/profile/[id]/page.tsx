@@ -63,8 +63,10 @@ import CustomMultiSelect from "@/components/common-components/multi-select";
 import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
+import { useParams } from "next/navigation";
 
 export default function NaukriProfilePage() {
+  const params = useParams();
   const [activeTab, setActiveTab] = useState("resume");
   const isManualScrollRef = useRef(false);
 
@@ -138,13 +140,13 @@ export default function NaukriProfilePage() {
   }, []);
 
   useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem("user") || "null");
-    if (profile?.id) {
-      setState({ userId: profile.id });
+    const urlUserId = params?.id;
+    if (urlUserId) {
+      setState({ userId: urlUserId });
     } else {
       setState({ loading: false });
     }
-  }, []);
+  }, [params?.id]);
 
   useEffect(() => {
     if (state.activeTab == "Applications") {
@@ -1105,7 +1107,7 @@ export default function NaukriProfilePage() {
     });
   };
 
-  const scrollToSection = (sectionId: string) => {
+const scrollToSection = (sectionId: string) => {
     const subSectionId = sectionId.replace("-section", "");
     isManualScrollRef.current = true;
 
@@ -1135,20 +1137,9 @@ export default function NaukriProfilePage() {
         isManualScrollRef.current = false;
         setState({ activeProfileSubSection: subSectionId });
       },
-      { once: true }
+      { once: true },
     );
   };
-
-  const links = [
-    { id: "resume", label: "Resume/login", section: "resume-section" },
-    { id: "headline", label: "Profile Summary", section: "headline-section" },
-    { id: "skills", label: "Skills", section: "skills-section" },
-    { id: "employment", label: "Experience", section: "employment-section" },
-    { id: "education", label: "Education", section: "education-section" },
-    { id: "projects", label: "Projects", section: "projects-section" },
-    { id: "publications", label: "Publications", section: "publications-section" },
-    { id: "achievements", label: "Achievements", section: "achievements-section" },
-  ];
 
   const toggleSection = (section: string) => {
     setState({
@@ -1161,6 +1152,30 @@ export default function NaukriProfilePage() {
       },
     });
   };
+
+  const links = [
+    { id: "resume", label: "Resume/login", section: "resume-section" },
+    { id: "headline", label: "Profile Summary", section: "headline-section" },
+   
+    { id: "employment", label: "Experience", section: "employment-section" },
+    { id: "education", label: "Education", section: "education-section" },
+    { id: "projects", label: "Projects", section: "projects-section" },
+    { id: "publications", label: "Publications", section: "publications-section" },
+    { id: "skills", label: "Skills", section: "skills-section" },
+    { id: "achievements", label: "Achievements", section: "achievements-section" },
+  ];
+
+  // const toggleSection = (section: string) => {
+  //   setState({
+  //     expandedSections: {
+  //       ...state.expandedSections,
+  //       [section]:
+  //         !state.expandedSections[
+  //           section as keyof typeof state.expandedSections
+  //         ],
+  //     },
+  //   });
+  // };
 
   const handleFormChange = (field, value) => {
     setState({
@@ -1763,7 +1778,7 @@ export default function NaukriProfilePage() {
                                             </div>
 
                                             <div className="flex gap-2 flex-wrap">
-                                              {state?.userDetail?.resume_url ? (
+                                              {state?.userDetail?.resume_url && (
                                                 <>
                                                   <button
                                                     className="bg-[#1E3786] text-white px-3 py-1 text-xs rounded-lg"
@@ -1783,19 +1798,7 @@ export default function NaukriProfilePage() {
                                                     />
                                                   </button>
                                                 </>
-                                              ) : (
-                                                <button
-                                                  className="border border-[#1E3786] rounded-md px-1 py-1"
-                                                  title="No Resume"
-                                                  disabled
-                                                >
-                                                  <PlusIcon
-                                                    size={10}
-                                                    style={{ height: "15px", width: "15px" }}
-                                                    className="text-gray-400"
-                                                  />
-                                                </button>
-                                              )}
+                                              ) }
                                             </div>
                                           </div>
                                         </div>
@@ -1963,217 +1966,7 @@ export default function NaukriProfilePage() {
                             </CardContent>
                           </Card>
 
-                          {/* Skills Section */}
-                          <Card
-                            id="skills-section"
-                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
-                          >
-                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
-                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
-
-                            <CardContent className="relative py-4 px-2">
-                              <div
-                                className="flex items-center justify-between  cursor-pointer"
-                                onClick={() => toggleSection("skills")}
-                              >
-                                <div className="flex items-center gap-4">
-                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
-                                    <Code className="w-4 h-4 text-white transform -rotate-3" />
-                                  </div>
-                                  <div>
-                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                      Skills
-                                    </h3>
-                                    <p className="text-sm text-gray-500">
-                                      Your technical expertise
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  {state.expandedSections.skills ? (
-                                    <ChevronUp className="w-5 h-5 text-gray-500" />
-                                  ) : (
-                                    <ChevronDown className="w-5 h-5 text-gray-500" />
-                                  )}
-                                </div>
-                              </div>
-
-                              <AnimatePresence>
-                                {state.expandedSections.skills && (
-                                  <motion.div
-                                    initial={{ opacity: 0, height: 0 }}
-                                    animate={{ opacity: 1, height: "auto" }}
-                                    exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                  >
-                                    {/* Add Skill Form */}
-                                    <AnimatePresence>
-                                      {state.isEditingSkills && (
-                                        <motion.div
-                                          initial={{
-                                            opacity: 0,
-                                            height: 0,
-                                            y: -20,
-                                          }}
-                                          animate={{
-                                            opacity: 1,
-                                            height: "auto",
-                                            y: 0,
-                                          }}
-                                          exit={{
-                                            opacity: 0,
-                                            height: 0,
-                                            y: -20,
-                                          }}
-                                          transition={{
-                                            duration: 0.3,
-                                            ease: "easeOut",
-                                          }}
-                                          className="mb-8 relative"
-                                        >
-                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
-                                          <div className="relative bg-white/80  rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
-                                            <div className="flex items-center gap-3 mb-6">
-                                              <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
-                                                <Plus className="w-4 h-4 text-white" />
-                                              </div>
-                                              <h4 className="text-xl font-bold text-gray-900">
-                                                Add New Skill
-                                              </h4>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                              <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700">
-                                                  Skill Name
-                                                </label>
-                                                <Input
-                                                  placeholder="e.g., JavaScript"
-                                                  value={state.skill || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "skill",
-                                                      e.target.value,
-                                                    )
-                                                  }
-                                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
-                                                />
-                                              </div>
-                                              {/* <div className="space-y-2">
-                                                <label className="text-sm font-semibold text-gray-700">
-                                                  Experience 
-                                                </label>
-                                                <Input
-                                                  placeholder="e.g., 3 years"
-                                                  value={state.skillForm.experience}
-                                                  onChange={(e) =>
-                                                    setState({
-                                                      skillForm: {
-                                                        ...state.skillForm,
-                                                        experience: e.target.value,
-                                                      },
-                                                    })
-                                                  }
-                                                  className="border-gray-200 focus:border-green-500 focus:ring-green-500"
-                                                />
-                                              </div> */}
-                                            </div>
-
-                                            <div className="flex gap-3">
-                                              <Button
-                                                onClick={addSkill}
-                                                // onClick={() => {
-                                                //   if (
-                                                //     state.userDetail?.skills?.length === 0
-                                                //   ) {
-                                                //     addSkill();
-                                                //   } else {
-                                                //     updateSkill();
-                                                //   }
-                                                // }}
-                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                              >
-                                                <CheckCircle className="w-4 h-4 mr-2" />
-                                                Save Skill
-                                              </Button>
-                                              <Button
-                                                variant="outline"
-                                                onClick={() =>
-                                                  setState({
-                                                    isEditingSkills: false,
-                                                  })
-                                                }
-                                                className="border-gray-300 hover:bg-gray-50"
-                                              >
-                                                Cancel
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        </motion.div>
-                                      )}
-                                    </AnimatePresence>
-
-                                    {/* Skills List - Chip Format */}
-                                    <div className="flex flex-wrap gap-3 pt-5">
-                                      {state?.userDetail?.skills?.map(
-                                        (skill, index) => (
-                                          <motion.div
-                                            key={skill.id}
-                                            initial={{ opacity: 0, scale: 0.8 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: index * 0.05 }}
-                                            className="group relative"
-                                          >
-                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
-                                              <span className="text-[#1E3786] font-medium text-sm">
-                                                {skill.name}
-                                              </span>
-                                              {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
-                                              {skill.experience}
-                                            </span> */}
-                                            </div>
-                                          </motion.div>
-                                        ),
-                                      )}
-                                    </div>
-
-                                    {/* Empty State */}
-                                    {(state.userDetail?.skills?.length === 0 ||
-                                      !state.userDetail?.skills?.length) && (
-                                      <motion.div
-                                        initial={{ opacity: 0, scale: 0.9 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        className="text-center py-8"
-                                      >
-                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                          <Code className="w-8 h-8 text-[#1E3786]/60" />
-                                        </div>
-                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                                          No Skills Added
-                                        </h4>
-                                        <p className="text-gray-500 mb-4">
-                                          Add your technical skills as chips
-                                        </p>
-                                        <Button
-                                          onClick={() =>
-                                            setState({
-                                              isEditingSkills: true,
-                                              skill: "",
-                                            })
-                                          }
-                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
-                                        >
-                                          <Plus className="w-4 h-4 mr-2" />
-                                          Add Skills
-                                        </Button>
-                                      </motion.div>
-                                    )}
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </CardContent>
-                          </Card>
-
+                          
                           {/* Employment Section */}
                           <Card
                             id="employment-section"
@@ -3779,6 +3572,218 @@ export default function NaukriProfilePage() {
                               </AnimatePresence>
                             </CardContent>
                           </Card>
+
+                          {/* Skills Section */}
+                          <Card
+                            id="skills-section"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                          >
+                            {/* <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-3xl"></div>
+                            <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-[#3b82f6]/20 to-[#3b82f6]/20 rounded-full blur-2xl"></div> */}
+
+                            <CardContent className="relative py-4 px-2">
+                              <div
+                                className="flex items-center justify-between  cursor-pointer"
+                                onClick={() => toggleSection("skills")}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform rotate-3">
+                                    <Code className="w-4 h-4 text-white transform -rotate-3" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                      Skills
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                      Your technical expertise
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  {state.expandedSections.skills ? (
+                                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                                  )}
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {state.expandedSections.skills && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    {/* Add Skill Form */}
+                                    <AnimatePresence>
+                                      {state.isEditingSkills && (
+                                        <motion.div
+                                          initial={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          animate={{
+                                            opacity: 1,
+                                            height: "auto",
+                                            y: 0,
+                                          }}
+                                          exit={{
+                                            opacity: 0,
+                                            height: 0,
+                                            y: -20,
+                                          }}
+                                          transition={{
+                                            duration: 0.3,
+                                            ease: "easeOut",
+                                          }}
+                                          className="mb-8 relative"
+                                        >
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="relative bg-white/80  rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
+                                            <div className="flex items-center gap-3 mb-6">
+                                              <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
+                                                <Plus className="w-4 h-4 text-white" />
+                                              </div>
+                                              <h4 className="text-xl font-bold text-gray-900">
+                                                Add New Skill
+                                              </h4>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Skill Name
+                                                </label>
+                                                <Input
+                                                  placeholder="e.g., JavaScript"
+                                                  value={state.skill || ""}
+                                                  onChange={(e) =>
+                                                    handleFormChange(
+                                                      "skill",
+                                                      e.target.value,
+                                                    )
+                                                  }
+                                                  className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                />
+                                              </div>
+                                              {/* <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Experience 
+                                                </label>
+                                                <Input
+                                                  placeholder="e.g., 3 years"
+                                                  value={state.skillForm.experience}
+                                                  onChange={(e) =>
+                                                    setState({
+                                                      skillForm: {
+                                                        ...state.skillForm,
+                                                        experience: e.target.value,
+                                                      },
+                                                    })
+                                                  }
+                                                  className="border-gray-200 focus:border-green-500 focus:ring-green-500"
+                                                />
+                                              </div> */}
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                              <Button
+                                                onClick={addSkill}
+                                                // onClick={() => {
+                                                //   if (
+                                                //     state.userDetail?.skills?.length === 0
+                                                //   ) {
+                                                //     addSkill();
+                                                //   } else {
+                                                //     updateSkill();
+                                                //   }
+                                                // }}
+                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                              >
+                                                <CheckCircle className="w-4 h-4 mr-2" />
+                                                Save Skill
+                                              </Button>
+                                              <Button
+                                                variant="outline"
+                                                onClick={() =>
+                                                  setState({
+                                                    isEditingSkills: false,
+                                                  })
+                                                }
+                                                className="border-gray-300 hover:bg-gray-50"
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+
+                                    {/* Skills List - Chip Format */}
+                                    <div className="flex flex-wrap gap-3 pt-5">
+                                      {state?.userDetail?.skills?.map(
+                                        (skill, index) => (
+                                          <motion.div
+                                            key={skill.id}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            className="group relative"
+                                          >
+                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                              <span className="text-[#1E3786] font-medium text-sm">
+                                                {skill.name}
+                                              </span>
+                                              {/* <span className="text-purple-600 text-xs bg-white/100 px-2 py-0.5 rounded-full">
+                                              {skill.experience}
+                                            </span> */}
+                                            </div>
+                                          </motion.div>
+                                        ),
+                                      )}
+                                    </div>
+
+                                    {/* Empty State */}
+                                    {(state.userDetail?.skills?.length === 0 ||
+                                      !state.userDetail?.skills?.length) && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <Code className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Skills Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-4">
+                                          Add your technical skills as chips
+                                        </p>
+                                        <Button
+                                          onClick={() =>
+                                            setState({
+                                              isEditingSkills: true,
+                                              skill: "",
+                                            })
+                                          }
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                        >
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Skills
+                                        </Button>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </CardContent>
+                          </Card>
+
 
                           {/* Achievements Section */}
                           <Card
