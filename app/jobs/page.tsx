@@ -2739,7 +2739,7 @@ ${userName}`;
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787] "
+                    className="bg-clr2 border border-[#c7c7c787] overflow-y-scroll max-h-[85vh] scrollbar-thin  scrollbar-hide hover:scrollbar-default pb-14"
                     ref={sidebarRef}
                   >
                     <Filterbar

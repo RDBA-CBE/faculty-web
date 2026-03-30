@@ -1371,17 +1371,22 @@ export default function NaukriProfilePage() {
                                   </p>
                                 )}
                                 {(state?.userDetail?.current_company ||
-                                  state?.userDetail?.current_location) && (
-                                  <div className="text-gray-600 flex items-center gap-2 justify-center sm:justify-start mt-2">
-                                    <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                              state?.userDetail?.current_position ||
+                              state?.userDetail?.current_location) && (
+                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                    <span className="text-sm">
-                                      {state?.userDetail?.current_position} -{" "}
-                                      {state?.userDetail?.current_company} -{" "}
-                                      {state?.userDetail?.current_location}
-                                    </span>
-                                  </div>
-                                )}
+                                <span className="text-sm">
+                                  {[
+                                    state?.userDetail?.current_company,
+                                    state?.userDetail?.current_position,
+                                    state?.userDetail?.current_location,
+                                  ]
+                                    .filter(Boolean) // removes null/undefined/empty
+                                    .join(" - ")}
+                                </span>
+                              </div>
+                            )}
                               </div>
                             )}
                             <div className="flex-shrink-0">

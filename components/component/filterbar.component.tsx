@@ -864,19 +864,19 @@ closeModal,
                     const showHeader = currentLetter !== prevLetter;
 
                     return (
-                      <div key={item.value} className={`break-inside-avoid `}>
+                      <div key={item.value} className={`break-inside-avoid mb-2`}>
                         {showHeader && (
                           <div
                             ref={(el) => {
                               if (el) alphabetRefs.current[currentLetter] = el;
                             }}
-                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                            className="font-semibold text-sm text-slate-700 mb-1"
                           >
                             {currentLetter}
                           </div>
                         )}
 
-                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50  rounded">
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -899,7 +899,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -912,6 +912,14 @@ closeModal,
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="pt-3">
+                <button
+                  onClick={() => { setShowAllLocations(false); closeModal(); }}
+                  className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                >
+                  Show Results
+                </button>
               </div>
             </div>
             </>
@@ -1050,19 +1058,19 @@ closeModal,
                     const showHeader = currentLetter !== prevLetter;
 
                     return (
-                      <div key={item.value} className={`break-inside-avoid `}>
+                      <div key={item.value} className={`break-inside-avoid mb-2`}>
                         {showHeader && (
                           <div
                             ref={(el) => {
                               if (el) alphabetRefs.current[currentLetter] = el;
                             }}
-                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                            className="font-semibold text-sm text-slate-700  mb-1"
                           >
                             {currentLetter}
                           </div>
                         )}
 
-                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50  rounded">
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -1085,7 +1093,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1098,6 +1106,14 @@ closeModal,
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="pt-3 ">
+                <button
+                  onClick={() => { setShowAllCategories(false); closeModal(); }}
+                  className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                >
+                  Show Results
+                </button>
               </div>
             </div>
             </>
@@ -1236,19 +1252,19 @@ closeModal,
                     const showHeader = currentLetter !== prevLetter;
 
                     return (
-                      <div key={item.value} className={`break-inside-avoid `}>
+                      <div key={item.value} className={`break-inside-avoid mb-2`}>
                         {showHeader && (
                           <div
                             ref={(el) => {
                               if (el) alphabetRefs.current[currentLetter] = el;
                             }}
-                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                            className="font-semibold text-sm text-slate-700  mb-1"
                           >
                             {currentLetter}
                           </div>
                         )}
 
-                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 rounded">
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -1271,7 +1287,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1284,6 +1300,14 @@ closeModal,
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="pt-3">
+                <button
+                  onClick={() => { setShowAllDept(false); closeModal(); }}
+                  className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                >
+                  Show Results
+                </button>
               </div>
             </div>
             </>
@@ -1421,19 +1445,19 @@ closeModal,
                     const showHeader = currentLetter !== prevLetter;
 
                     return (
-                      <div key={item.value} className={`break-inside-avoid `}>
+                      <div key={item.value} className={`break-inside-avoid mb-2`}>
                         {showHeader && (
                           <div
                             ref={(el) => {
                               if (el) alphabetRefs.current[currentLetter] = el;
                             }}
-                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                            className="font-semibold text-sm text-slate-700  mb-1"
                           >
                             {currentLetter}
                           </div>
                         )}
 
-                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50  rounded">
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -1456,7 +1480,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1469,6 +1493,14 @@ closeModal,
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="pt-3">
+                <button
+                  onClick={() => { setShowAllJobRoles(false); closeModal(); }}
+                  className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                >
+                  Show Results
+                </button>
               </div>
             </div>
             </>
@@ -1606,19 +1638,19 @@ closeModal,
                     const showHeader = currentLetter !== prevLetter;
 
                     return (
-                      <div key={item.value} className={`break-inside-avoid `}>
+                      <div key={item.value} className={`break-inside-avoid mb-2`}>
                         {showHeader && (
                           <div
                             ref={(el) => {
                               if (el) alphabetRefs.current[currentLetter] = el;
                             }}
-                            className="font-semibold text-sm text-slate-700 mt-2 mb-1"
+                            className="font-semibold text-sm text-slate-700 mb-1"
                           >
                             {currentLetter}
                           </div>
                         )}
 
-                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 p-1 rounded">
+                        <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50  rounded">
                           <div className="flex items-center gap-2">
                             <input
                               type="checkbox"
@@ -1641,7 +1673,7 @@ closeModal,
                             </span>
                           </div>
                           {item.job_count !== undefined && (
-                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-2 py-1">{item.job_count}</span>
+                            <span className="text-xs  bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
                           )}
                         </label>
                       </div>
@@ -1654,6 +1686,14 @@ closeModal,
                     </p>
                   )}
                 </div>
+              </div>
+              <div className="pt-3">
+                <button
+                  onClick={() => { setShowAllColleges(false); closeModal(); }}
+                  className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                >
+                  Show Results
+                </button>
               </div>
             </div>
             </>
