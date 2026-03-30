@@ -180,9 +180,8 @@ const job = {
         params.push(`department_master_id=${body.department}`);
       }
 
-      if (body?.experience?.length > 0) {
-        const expArray = Array.isArray(body.experience) ? body.experience : [body.experience];
-        expArray.forEach((val) => params.push(`experience_id=${val}`));
+      if (body?.experience?.length>0) {
+        params.push(`experience_id=${body.experience}`);
       }
 
       
