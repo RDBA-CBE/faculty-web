@@ -655,17 +655,37 @@ ${userName}`;
 
   const masterExperienceList = async () => {
     try {
-      const res: any = await Models.masterExperience.list();
-      const dropdown = res?.results?.map((item: any) => ({
-        value: item.name,
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+
+      while (hasNext) {
+        const res: any = await Models.masterExperience.list(page);
+
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+
+        // ✅ Works for both cases (now + future)
+        hasNext = !!res?.next;
+        page++;
+
+        // 🛑 Safety break (if backend doesn't paginate yet)
+        if (!res?.next) break;
+      }
+
+      const dropdown = allResults.map((item: any) => ({
+        value: item.value, // ✅ better
         label: item.name,
       }));
+
+      console.log("masterExperienceList dropdown", dropdown);
 
       setState({
         masterExperienceList: dropdown,
       });
     } catch (error) {
-      console.log("✌️error --->", error);
+      console.log("Error fetching experience list:", error);
     }
   };
 
@@ -1295,8 +1315,8 @@ ${userName}`;
       department: [],
       jobRole: [],
       jobRoleList: [],
-    })
-    setIsMobileFilterOpen(false)
+    });
+    setIsMobileFilterOpen(false);
 
     setState({ search: "" });
   };
@@ -1334,9 +1354,19 @@ ${userName}`;
                 <div className="flex-1 space-y-4 p-3">
                   <div className="bg-white p-6 border border-[#c7c7c787]">
                     <div className="flex gap-4 mb-6">
-                      <SkeletonLoader type="rect" width={64} height={64} className="rounded-3xl" />
+                      <SkeletonLoader
+                        type="rect"
+                        width={64}
+                        height={64}
+                        className="rounded-3xl"
+                      />
                       <div className="flex-1">
-                        <SkeletonLoader type="text" width="40%" height={32} className="mb-2" />
+                        <SkeletonLoader
+                          type="text"
+                          width="40%"
+                          height={32}
+                          className="mb-2"
+                        />
                         <SkeletonLoader type="text" width="20%" height={20} />
                       </div>
                     </div>
@@ -1348,11 +1378,21 @@ ${userName}`;
                   </div>
                   <div className="flex gap-4">
                     <div className="flex-1 bg-white p-6 border border-[#c7c7c787]">
-                      <SkeletonLoader type="text" width="30%" height={24} className="mb-4" />
+                      <SkeletonLoader
+                        type="text"
+                        width="30%"
+                        height={24}
+                        className="mb-4"
+                      />
                       <SkeletonLoader type="text" count={8} />
                     </div>
                     <div className="w-80 flex-shrink-0 bg-white p-6 border border-[#c7c7c787]">
-                      <SkeletonLoader type="text" width="50%" height={24} className="mb-4" />
+                      <SkeletonLoader
+                        type="text"
+                        width="50%"
+                        height={24}
+                        className="mb-4"
+                      />
                       <SkeletonLoader type="text" count={5} />
                     </div>
                   </div>
@@ -1377,20 +1417,20 @@ ${userName}`;
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
                 > */}
-                  {/* <ArrowLeft size={20} /> */}
-                  <div className="flex justify-between w-full">
-                    <Breadcrumb />
-                    <div>
-                      <button
-                        onClick={() => setSelectedJob(null)}
-                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
-                      >
-                        <ArrowLeft size={14} className="mt-[3px]" />
-                        Back
-                      </button>
-                    </div>
+                {/* <ArrowLeft size={20} /> */}
+                <div className="flex justify-between w-full">
+                  <Breadcrumb />
+                  <div>
+                    <button
+                      onClick={() => setSelectedJob(null)}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
                   </div>
-                  {/* <span className="font-medium">Back to Jobs</span> */}
+                </div>
+                {/* <span className="font-medium">Back to Jobs</span> */}
                 {/* </button> */}
 
                 {/* Job Header */}
@@ -1805,7 +1845,8 @@ ${userName}`;
                   </p>
                 </div>
               </div>
-            ) : (isDesktopScreen || (!isTabScreen && !isMobileScreen)) && selectedJob ? (
+            ) : (isDesktopScreen || (!isTabScreen && !isMobileScreen)) &&
+              selectedJob ? (
               <>
                 <div className="flex justify-between">
                   <Breadcrumb />
@@ -1846,131 +1887,155 @@ ${userName}`;
                         className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
                         onScroll={handleSidebarScroll}
                       >
-                        {state.jobListLoading ? (
-                          Array.from({ length: 6 }).map((_, i) => (
-                            <div key={i} className="px-2 py-5 border-b border-[#c7c7c787]">
-                              <div className="flex flex-row gap-4">
-                                <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
-                                <div className="flex-1">
-                                  <SkeletonLoader type="text" width="70%" height={14} className="mb-2" />
-                                  <SkeletonLoader type="text" width="50%" height={12} className="mb-2" />
-                                  <SkeletonLoader type="text" width="40%" height={12} />
+                        {state.jobListLoading
+                          ? Array.from({ length: 6 }).map((_, i) => (
+                              <div
+                                key={i}
+                                className="px-2 py-5 border-b border-[#c7c7c787]"
+                              >
+                                <div className="flex flex-row gap-4">
+                                  <SkeletonLoader
+                                    type="rect"
+                                    width={24}
+                                    height={24}
+                                    className="rounded-lg flex-shrink-0"
+                                  />
+                                  <div className="flex-1">
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="70%"
+                                      height={14}
+                                      className="mb-2"
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="50%"
+                                      height={12}
+                                      className="mb-2"
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="40%"
+                                      height={12}
+                                    />
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))
-                        ) : state.jobList?.map((job) => (
-                          <div
-                            key={job.id}
-                            id={`job-list-item-${job.id}`}
-                            onClick={() => {
-                              setSelectedJob(job);
-                              setState({ jobID: job.id });
-                              jobDetail(job.id);
-                              router.replace(`/job-detail/${job.id}`, { scroll: false });
-                            }}
-                            className={`cursor-pointer px-2 py-5 transition-all   ${
-                              selectedJob?.id === job.id
-                                ? "border border-[#1E3786] bg-[#fff]  "
-                                : "border-b border-[#c7c7c787]"
-                            }`}
-                          >
-                            <div className="flex flex-row gap-4 justify-between">
-                              <div className="flex flex-row gap-4">
-                                <div>
-                                  {job?.college?.college_logo ? (
-                                    <img
-                                      src={job?.college?.college_logo}
-                                      alt={job?.college?.name}
-                                      className="w-6 h-6  object-contain"
-                                    />
-                                  ) : (
-                                    <div
-                                      className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
-                                        selectedJob?.id === job.id
-                                          ? "text-white bg-gray-400 text-xs"
-                                          : " text-white bg-gray-400 text-xs"
-                                      }  font-semibold flex-shrink-0`}
-                                    >
-                                      {job.college?.name
-                                        ?.slice(0, 1)
-                                        .toUpperCase()}
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <div className="flex items-start gap-3">
-                                    <div className="min-w-0 flex-1">
-                                      <h3
-                                        className={`font-semibold  leading-tight mb-1 ${
-                                          selectedJob?.id === job.id
-                                            ? ""
-                                            : "text-gray-900"
-                                        }`}
-                                        title={job_title(job)}
-                                      >
-                                        {capitalizeFLetter(
-                                          CharSlice(job_title(job), 20),
-                                        )}
-                                      </h3>
-                                      <p
-                                        className={`cursor-pointer ${
-                                          selectedJob?.id === job.id
-                                            ? ""
-                                            : "text-gray-600 hover:underline"
-                                        } text-sm font-normal`}
-                                        // onClick={(e) => getCollege(e, job.college?.id)}
-                                      >
-                                        {CharSlice(job.college?.name, 20)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  {/* Header */}
-                                  {/* Experience and Salary */}
-                                  <div
-                                    className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
-                                      selectedJob?.id === job.id
-                                        ? ""
-                                        : "text-gray-600"
-                                    }`}
-                                  >
-                                    <div className="flex gap-2">
-                                      <Briefcase
-                                        className={`${
-                                          selectedJob?.id === job.id && ""
-                                        } w-3 h-3 flex-1 text-[#E6AB1D]`}
-                                      />
-                                      <span
-                                        className={`text-[12px] pt-[-2px] ${
-                                          selectedJob?.id === job.id && ""
-                                        }`}
-                                      >
-                                        {job.experiences?.name}
-                                      </span>
-                                    </div>
-
-                                    {job?.college?.address && (
-                                      <div className="flex  gap-1">
-                                        <MapPin
-                                          className={`${
-                                            selectedJob?.id === job.id && ""
-                                          } w-3 h-3 text-[#E6AB1D] flex-1`}
+                            ))
+                          : state.jobList?.map((job) => (
+                              <div
+                                key={job.id}
+                                id={`job-list-item-${job.id}`}
+                                onClick={() => {
+                                  setSelectedJob(job);
+                                  setState({ jobID: job.id });
+                                  jobDetail(job.id);
+                                  router.replace(`/job-detail/${job.id}`, {
+                                    scroll: false,
+                                  });
+                                }}
+                                className={`cursor-pointer px-2 py-5 transition-all   ${
+                                  selectedJob?.id === job.id
+                                    ? "border border-[#1E3786] bg-[#fff]  "
+                                    : "border-b border-[#c7c7c787]"
+                                }`}
+                              >
+                                <div className="flex flex-row gap-4 justify-between">
+                                  <div className="flex flex-row gap-4">
+                                    <div>
+                                      {job?.college?.college_logo ? (
+                                        <img
+                                          src={job?.college?.college_logo}
+                                          alt={job?.college?.name}
+                                          className="w-6 h-6  object-contain"
                                         />
-                                        <span
-                                          className={`text-[12px] pt-[-2px] ${
-                                            selectedJob?.id === job.id &&
-                                            "text-[12px]"
-                                          }`}
+                                      ) : (
+                                        <div
+                                          className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
+                                            selectedJob?.id === job.id
+                                              ? "text-white bg-gray-400 text-xs"
+                                              : " text-white bg-gray-400 text-xs"
+                                          }  font-semibold flex-shrink-0`}
                                         >
-                                          {job.locations
-                                            ?.map((item) => item.city)
-                                            .join(", ")}
-                                          {/* {job?.college?.address} */}
-                                        </span>
+                                          {job.college?.name
+                                            ?.slice(0, 1)
+                                            .toUpperCase()}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <div className="flex items-start gap-3">
+                                        <div className="min-w-0 flex-1">
+                                          <h3
+                                            className={`font-semibold  leading-tight mb-1 ${
+                                              selectedJob?.id === job.id
+                                                ? ""
+                                                : "text-gray-900"
+                                            }`}
+                                            title={job_title(job)}
+                                          >
+                                            {capitalizeFLetter(
+                                              CharSlice(job_title(job), 20),
+                                            )}
+                                          </h3>
+                                          <p
+                                            className={`cursor-pointer ${
+                                              selectedJob?.id === job.id
+                                                ? ""
+                                                : "text-gray-600 hover:underline"
+                                            } text-sm font-normal`}
+                                            // onClick={(e) => getCollege(e, job.college?.id)}
+                                          >
+                                            {CharSlice(job.college?.name, 20)}
+                                          </p>
+                                        </div>
                                       </div>
-                                    )}
+                                      {/* Header */}
+                                      {/* Experience and Salary */}
+                                      <div
+                                        className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
+                                          selectedJob?.id === job.id
+                                            ? ""
+                                            : "text-gray-600"
+                                        }`}
+                                      >
+                                        <div className="flex gap-2">
+                                          <Briefcase
+                                            className={`${
+                                              selectedJob?.id === job.id && ""
+                                            } w-3 h-3 flex-1 text-[#E6AB1D]`}
+                                          />
+                                          <span
+                                            className={`text-[12px] pt-[-2px] ${
+                                              selectedJob?.id === job.id && ""
+                                            }`}
+                                          >
+                                            {job.experiences?.name}
+                                          </span>
+                                        </div>
 
-                                    {/* <div className="flex items-center gap-1">
+                                        {job?.college?.address && (
+                                          <div className="flex  gap-1">
+                                            <MapPin
+                                              className={`${
+                                                selectedJob?.id === job.id && ""
+                                              } w-3 h-3 text-[#E6AB1D] flex-1`}
+                                            />
+                                            <span
+                                              className={`text-[12px] pt-[-2px] ${
+                                                selectedJob?.id === job.id &&
+                                                "text-[12px]"
+                                              }`}
+                                            >
+                                              {job.locations
+                                                ?.map((item) => item.city)
+                                                .join(", ")}
+                                              {/* {job?.college?.address} */}
+                                            </span>
+                                          </div>
+                                        )}
+
+                                        {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -1994,35 +2059,35 @@ ${userName}`;
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Building2 className="w-4 h-4 text-[#ffb400] " />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Building2 className="w-4 h-4 text-[#ffb400] " />
 
-                                    <span className="flex items-center gap-2">
-                                      {job?.department
-                                        ?.slice(0, 1)
-                                        .map((item, index) => (
-                                          <span
-                                            key={index}
-                                            className="cursor-pointer text-[12px]"
-                                            // onClick={(e) => {
-                                            //   e.stopPropagation();
-                                            //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                            // }}
-                                          >
-                                            {item.name}
-                                          </span>
-                                        ))}
+                                        <span className="flex items-center gap-2">
+                                          {job?.department
+                                            ?.slice(0, 1)
+                                            .map((item, index) => (
+                                              <span
+                                                key={index}
+                                                className="cursor-pointer text-[12px]"
+                                                // onClick={(e) => {
+                                                //   e.stopPropagation();
+                                                //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                                // }}
+                                              >
+                                                {item.name}
+                                              </span>
+                                            ))}
 
-                                      {/* If more than 2 departments */}
-                                      {job?.department?.length > 2 && (
-                                        <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
-                                          +{job.department.length - 2}
-                                        </div>
-                                      )}
-                                    </span>
-                                  </div>
-                                  {/* Location
+                                          {/* If more than 2 departments */}
+                                          {job?.department?.length > 2 && (
+                                            <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
+                                              +{job.department.length - 2}
+                                            </div>
+                                          )}
+                                        </span>
+                                      </div>
+                                      {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -2045,18 +2110,18 @@ ${userName}`;
                                   .join(", ")}
                               </span>
                             </div> */}
-                                  {/* Footer */}
-                                  {/* <div
+                                      {/* Footer */}
+                                      {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                                  {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                      {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                                  {/* <div
+                                      {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -2079,35 +2144,35 @@ ${userName}`;
                                     : "Just now"}
                                 </span>
                               </div> */}
-                                  {/* </div> */}
-                                </div>
-                              </div>
+                                      {/* </div> */}
+                                    </div>
+                                  </div>
 
-                              <div>
-                                <div className="flex justify-between items-start mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => handleSaveToggle(job)}
-                                      disabled={isSaving === job.id}
-                                      className="p-1 -m-1"
-                                      // aria-label={
-                                      //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                      // }
-                                    >
-                                      {job?.is_saved ? (
-                                        <div className="flex items-center ">
-                                          <BookmarkCheck
-                                            className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
-                                          />
-                                        </div>
-                                      ) : (
-                                        <>
-                                          <Bookmark className="w-5 h-5 " />
-                                        </>
-                                      )}
-                                    </button>
+                                  <div>
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={() => handleSaveToggle(job)}
+                                          disabled={isSaving === job.id}
+                                          className="p-1 -m-1"
+                                          // aria-label={
+                                          //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                          // }
+                                        >
+                                          {job?.is_saved ? (
+                                            <div className="flex items-center ">
+                                              <BookmarkCheck
+                                                className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
+                                              />
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <Bookmark className="w-5 h-5 " />
+                                            </>
+                                          )}
+                                        </button>
 
-                                    {/* <RWebShare
+                                        {/* <RWebShare
                               data={{
                                 title: "Faculty Plus",
                                 text: "Check this out!",
@@ -2119,12 +2184,12 @@ ${userName}`;
                             >
                               <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                             </RWebShare> */}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            ))}
                         {state.isFetchingMore && (
                           <div className="space-y-4 px-2">
                             {[1, 2].map((i) => (
@@ -3469,7 +3534,7 @@ ${userName}`;
                             </span>
                           </div>
 
-                          {state.collegeDetail?.college_types  && (
+                          {state.collegeDetail?.college_types && (
                             <div className="flex items-start gap-2">
                               <Building className="w-4 h-4 text-[#F2B31D] " />
                               <span className="line-clamp-2">

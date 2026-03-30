@@ -1,10 +1,9 @@
 import instance from "@/utils/axios.utils";
 
-
 const masterExperience = {
-  list: () => {
+  list: (page = 1) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `master-experiences/?ordering=asc`;
+      let url = `master-experiences/?ordering=asc&page=${page}`;
 
       instance()
         .get(url)

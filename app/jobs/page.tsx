@@ -665,20 +665,40 @@ ${userName}`;
 
   const masterExperienceList = async () => {
     try {
-      const res: any = await Models.masterExperience.list();
-      const dropdown = res?.results?.map((item: any) => ({
-        value: item.name,
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+
+      while (hasNext) {
+        const res: any = await Models.masterExperience.list(page);
+
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+
+        // ✅ Works for both cases (now + future)
+        hasNext = !!res?.next;
+        page++;
+
+        // 🛑 Safety break (if backend doesn't paginate yet)
+        if (!res?.next) break;
+      }
+
+      const dropdown = allResults.map((item: any) => ({
+        value: item.value, // ✅ better
         label: item.name,
       }));
+
+      console.log("masterExperienceList dropdown", dropdown);
 
       setState({
         masterExperienceList: dropdown,
       });
     } catch (error) {
-      console.log("✌️error --->", error);
+      console.log("Error fetching experience list:", error);
     }
   };
-
+  
   const collegeList = async () => {
     try {
       const body = {

@@ -667,9 +667,12 @@ closeModal,
   // const alphabets = ["#", ..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
   const alphabets = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")];
 
+  console.log("deptList", deptList);
+  
+
   const DepartfilteredList = deptList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase())
+      c.label?.toLowerCase()?.includes(deptSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
@@ -679,7 +682,7 @@ closeModal,
 
   const collegefilteredList = collegeList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(deptSearchQuery.toLowerCase())
+      c.label?.toLowerCase().includes(deptSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
@@ -689,7 +692,7 @@ closeModal,
 
   const jobRoleFilteredList = jobRoleList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(jobRoleSearchQuery.toLowerCase())
+      c.label?.toLowerCase().includes(jobRoleSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
@@ -699,7 +702,7 @@ closeModal,
 
   const categoryFilteredList = categoryList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(categorySearchQuery.toLowerCase())
+      c.label?.toLowerCase().includes(categorySearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
@@ -709,7 +712,7 @@ closeModal,
 
   const locationFilteredList = locationList
     ?.filter((c) =>
-      c.label.toLowerCase().includes(locationSearchQuery.toLowerCase())
+      c.label?.toLowerCase().includes(locationSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
