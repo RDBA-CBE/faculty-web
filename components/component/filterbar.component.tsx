@@ -38,6 +38,7 @@ interface SidebarProps {
     department: any[];
     minExperience?: string;
     maxExperience?: string;
+    is_fresher?: boolean;
     jobRole?: any[];
     locations?: any[];
     jobRoleList: any[];
@@ -1724,18 +1725,26 @@ closeModal,
             />
             <button
               onClick={() => {
-                const minVal = minExp === "" ? 0 : parseInt(minExp);
-                const maxVal = maxExp === "" ? 100 : parseInt(maxExp);
-                const range = Array.from({ length: maxVal - minVal + 1 }, (_, i) => minVal + i);
+                const minVal = minExp === "" ? null : parseInt(minExp);
+                const maxVal = maxExp === "" ? null : parseInt(maxExp);
+
+                let isFresher: boolean | undefined = undefined;
+                if (minVal !== null || maxVal !== null) {
+                  isFresher = (minVal !== null && minVal === 0) || (maxVal !== null && maxVal === 0);
+                }
+
+                const min = minVal ?? 0;
+                const max = maxVal ?? 100;
+                const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
                 onFilterChange({
                   ...filters,
                   minExperience: minExp,
                   maxExperience: maxExp,
                   experienceLevels: range,
+                  ...(isFresher !== undefined ? { is_fresher: isFresher } : {}),
                 });
                 closeModal()
-
               }}
               className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
             >

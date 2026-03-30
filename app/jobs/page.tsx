@@ -167,6 +167,9 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
+    is_fresher: null,
+    minExperience:"",
+    maxExperience:"",
   });
   console.log("✌️filters --->", filters);
 
@@ -1210,6 +1213,10 @@ ${userName}`;
       body.experience = filters.experienceLevels;
     }
 
+    if (filters?.is_fresher === true || filters?.is_fresher === false) {
+      body.is_fresher = filters.is_fresher;
+    }
+
     // if (filters?.minExperience) {
     //   body.min_experience = filters.minExperience;
     // }
@@ -1325,6 +1332,9 @@ ${userName}`;
       department: [],
       jobRole: [],
       jobRoleList: [],
+      minExperience: "",
+      maxExperience: "",
+      is_fresher: undefined,
     });
     setIsMobileFilterOpen(false);
 

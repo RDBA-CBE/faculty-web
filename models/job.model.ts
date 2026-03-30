@@ -66,6 +66,10 @@ const job = {
         url += `&date_posted_after=${body.date_posted_after}`;
       }
 
+      if (body.is_fresher === true || body.is_fresher === false) {
+        url += `&is_fresher=${body.is_fresher}`;
+      }
+
       instance()
         .get(url)
         .then((res) => {
@@ -133,6 +137,10 @@ const job = {
         url += `&date_posted_after=${body.date_posted_after}`;
       }
 
+      if (body.is_fresher) {
+        url += `&is_fresher=${body.is_fresher}`;
+      }     
+
       instance()
         .get(url)
         .then((res) => {
@@ -182,6 +190,10 @@ const job = {
 
       if (body?.experience?.length>0) {
         params.push(`experience_id=${body.experience}`);
+      }
+
+      if (body?.is_fresher === false) {
+        params.push(`is_fresher=false`);
       }
 
       
