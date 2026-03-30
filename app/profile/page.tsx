@@ -77,6 +77,7 @@ export default function NaukriProfilePage() {
   const [expandedPublicationDesc, setExpandedPublicationDesc] = useState({});
   const [expandedAchievementDesc, setExpandedAchievementDesc] = useState({});
   const [expandedAbout, setExpandedAbout] = useState(false);
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
 
   const sidebarRef = useRef(null);
   const sidebarWrapperRef = useRef(null);
@@ -84,6 +85,13 @@ export default function NaukriProfilePage() {
   const wrapperRef = useRef(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileScreen(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const [state, setState] = useSetState({
     // Profile Data
@@ -5362,9 +5370,9 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
+                                    isMobileScreen
+                                      ? router.push(`/jobs?id=${job?.job_id || job?.id}`)
+                                      : router.push(`/job-detail/${job?.job_id || job?.id}`)
                                   }
                                 />
                               ) : (
@@ -5379,9 +5387,9 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
+                                    isMobileScreen
+                                      ? router.push(`/jobs?id=${job?.job_id || job?.id}`)
+                                      : router.push(`/job-detail/${job?.job_id || job?.id}`)
                                   }
                                 />
                               )}
@@ -5436,9 +5444,9 @@ export default function NaukriProfilePage() {
                                   console.log("first")
                                 }
                                 onClick={() =>
-                                  router.push(
-                                    `/job-detail/${job?.job?.id || job?.id}`,
-                                  )
+                                  isMobileScreen
+                                    ? router.push(`/jobs?id=${job?.job?.id || job?.id}`)
+                                    : router.push(`/job-detail/${job?.job?.id || job?.id}`)
                                 }
                               />
                             </div>

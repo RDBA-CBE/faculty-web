@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, X } from "lucide-react";
 import { Failure, Success, useSetState } from "@/utils/function.utils";
@@ -10,6 +10,14 @@ import { useRouter, usePathname } from "next/navigation";
 const Footer = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileScreen(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const [state, setState] = useSetState({
     count: 0,
     jobList: [],
@@ -189,7 +197,9 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                   <p
                     key={item.id}
                     onClick={() => {
-                      router.push(`/job-detail/${item.id}`);
+                      isMobileScreen
+                        ? router.push(`/jobs?id=${item.id}`)
+                        : router.push(`/job-detail/${item.id}`);
                       if (pathname === "/jobs") {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }

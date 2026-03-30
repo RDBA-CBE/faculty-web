@@ -483,7 +483,7 @@ ${userName}`;
     // salaryRangeList();
     // tagsList();
     filterList();
-    masterExperienceList()
+    masterExperienceList();
   }, []);
 
   useEffect(() => {
@@ -1305,8 +1305,8 @@ ${userName}`;
       department: [],
       jobRole: [],
       jobRoleList: [],
-    })
-    setIsMobileFilterOpen(false)
+    });
+    setIsMobileFilterOpen(false);
 
     setState({ search: "" });
   };
@@ -2859,6 +2859,13 @@ ${userName}`;
                         <SheetContent
                           side="bottom"
                           className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
+                          onInteractOutside={(e) => {
+                            if (
+                              (e.target as Element)?.closest(".filterbar-popup")
+                            ) {
+                              e.preventDefault();
+                            }
+                          }}
                         >
                           <div className="flex items-center justify-between px-4 pb-3 border-b">
                             <SheetTitle className="text-lg font-semibold">
@@ -3049,10 +3056,14 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
-                                  }
+                                      isMobileScreen
+                                        ? router.push(
+                                            `/jobs?id=${job?.job_id || job?.id}`,
+                                          )
+                                        : router.push(
+                                            `/job-detail/${job?.job_id || job?.id}`,
+                                          )
+                                    }
                                   />
                                 ) : (
                                   <NewJobCard
@@ -3065,10 +3076,14 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                    router.push(
-                                      `/job-detail/${job?.job_id || job?.id}`,
-                                    )
-                                  }
+                                      isMobileScreen
+                                        ? router.push(
+                                            `/jobs?id=${job?.job_id || job?.id}`,
+                                          )
+                                        : router.push(
+                                            `/job-detail/${job?.job_id || job?.id}`,
+                                          )
+                                    }
                                   />
                                 )}
                               </div>
@@ -3967,7 +3982,7 @@ ${userName}`;
                             </span>
                           </div>
 
-                          {state.collegeDetail?.college_types  && (
+                          {state.collegeDetail?.college_types && (
                             <div className="flex items-start gap-2">
                               <Building className="w-4 h-4 text-[#F2B31D] " />
                               <span className="line-clamp-2">

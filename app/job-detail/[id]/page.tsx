@@ -1367,7 +1367,7 @@ ${userName}`;
                 }`}
               >
                 {/* Back Button */}
-                <button
+                {/* <button
                   onClick={() => {
                     setIsAnimating(false);
                     setTimeout(() => {
@@ -1376,9 +1376,9 @@ ${userName}`;
                     }, 300);
                   }}
                   className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-                >
+                > */}
                   {/* <ArrowLeft size={20} /> */}
-                  <div className="flex justify-between">
+                  <div className="flex justify-between w-full">
                     <Breadcrumb />
                     <div>
                       <button
@@ -1391,7 +1391,7 @@ ${userName}`;
                     </div>
                   </div>
                   {/* <span className="font-medium">Back to Jobs</span> */}
-                </button>
+                {/* </button> */}
 
                 {/* Job Header */}
                 {/* Job Header Card */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import PaginationCom from "@/components/component/PaginationCom";
 import Footer from "@/components/common-components/new_components/Footer";
 import SkeletonLoader from "../jobs/SkeletonLoader";
+const [isMobileScreen, setIsMobileScreen] = useState(false);
 
 export default function SavedJobsPage() {
   const router = useRouter();
@@ -22,7 +23,12 @@ export default function SavedJobsPage() {
     prev: null,
     userId: null,
   });
-
+  useEffect(() => {
+    const handleResize = () => setIsMobileScreen(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   /**
    * Load user from localStorage ONCE
    */
@@ -129,8 +135,18 @@ export default function SavedJobsPage() {
                   </div>
                 </div>
                 <div className="flex gap-2 mb-4">
-                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
-                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                  <SkeletonLoader
+                    type="rect"
+                    width={80}
+                    height={24}
+                    className="rounded-full"
+                  />
+                  <SkeletonLoader
+                    type="rect"
+                    width={80}
+                    height={24}
+                    className="rounded-full"
+                  />
                 </div>
                 <div className="space-y-2">
                   <SkeletonLoader type="text" width="100%" />
@@ -148,7 +164,12 @@ export default function SavedJobsPage() {
                   <div
                     key={item.id || item.id}
                     className="cursor-pointer transition-transform hover:scale-105"
-                    onClick={() => router.push(`/job-detail/${item.id}`)}
+                    onClick={() =>
+                      isMobileScreen
+                        ? router.push(`/jobs?id=${item.id}`)
+                        : router.push(`/job-detail/${item.id}`)
+                    }
+                    
                   >
                     <JobCard
                       job={item?.job}

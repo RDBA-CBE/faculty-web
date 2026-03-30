@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 // import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
@@ -50,6 +50,14 @@ const categories = [
 
 const FindYourJob = () => {
   const router = useRouter();
+  const [isMobileScreen, setIsMobileScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobileScreen(window.innerWidth < 768);
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   const [state, setState] = useSetState({
     count: 0,
     jobList: [],
@@ -360,7 +368,7 @@ const FindYourJob = () => {
              hover:border-gray-400
              hover:-translate-y-1
              hover:shadow-2xl hover:shadow-gray-500 h-full "
-                    onClick={() => router.push(`/job-detail/${job.id}`)}
+                    onClick={() => isMobileScreen ? router.push(`/jobs?id=${job.id}`) : router.push(`/job-detail/${job.id}`)}
                   >
                     <div className="flex items-start justify-between mb-3 h-full">
                       <div className="flex  items-start gap-3 w-full h-full">
@@ -464,7 +472,7 @@ const FindYourJob = () => {
                             <div className="flex items-center justify-between w-100 pt-3">
                               <button
                                 onClick={() =>
-                                  router.push(`/job-detail/${job.id}`)
+                                  isMobileScreen ? router.push(`/jobs?id=${job.id}`) : router.push(`/job-detail/${job.id}`)
                                 }
                                 className="border border-[#1E3786] text-[#fff] px-5 py-1.5 rounded-full text-sm font-medium bg-[#1E3786] group-hover:bg-[#fff] group-hover:!text-[#1E3786] transition"
                               >
@@ -590,7 +598,7 @@ const FindYourJob = () => {
 
                       <div className="relative flex items-center justify-end">
                         <button
-                          onClick={() => router.push(`/job-detail/${job.id}`)}
+                          onClick={() => isMobileScreen ? router.push(`/jobs?id=${job.id}`) : router.push(`/job-detail/${job.id}`)}
                           className="relative z-10 border border-black text-[#595959] px-5 py-1 rounded-full text-base font-small hover:bg-[#1E3786] hover:text-white transition flex items-center gap-2"
                         >
                           Apply Now
