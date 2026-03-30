@@ -67,6 +67,7 @@ import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 import HrRequestTable from "@/components/component/HrRequestTable.component";
+import CustomPhoneInput from "@/components/common-components/phoneInput";
 
 export default function NaukriProfilePage() {
   const isManualScrollRef = useRef(false);
@@ -4530,7 +4531,7 @@ export default function NaukriProfilePage() {
                                             transition={{ delay: index * 0.05 }}
                                             className="group relative"
                                           >
-                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-2 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-1 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
                                               <span className="text-[#1E3786] font-medium text-sm">
                                                 {skill.name}
                                               </span>
@@ -5626,12 +5627,12 @@ export default function NaukriProfilePage() {
                             </div>
 
                             <div className="space-y-2">
-                              <Input
+                              <CustomPhoneInput
                                 title="Phone"
                                 required
                                 value={state.phone}
                                 onChange={(e) =>
-                                  handleFormChange("phone", e.target.value)
+                                  handleFormChange("phone", e)
                                 }
                                 error={state?.errors?.phone}
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
