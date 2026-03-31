@@ -1404,22 +1404,15 @@ ${userName}`;
                 }`}
               >
                 {/* Back Button */}
-                <button
-                  onClick={() => {
-                    setIsAnimating(false);
-                    setTimeout(() => {
-                      setSelectedJob(null);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }, 300);
-                  }}
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
-                >
+                
                   {/* <ArrowLeft size={20} /> */}
-                  <div className="flex justify-between">
+                  <div className="flex justify-between w-full">
                     <Breadcrumb />
                     <div>
                       <button
-                        onClick={() => setSelectedJob(null)}
+                        onClick={() =>{ setSelectedJob(null)
+                          router.replace("/jobs");}
+                         }
                         className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
                       >
                         <ArrowLeft size={14} className="mt-[3px]" />
@@ -1428,7 +1421,7 @@ ${userName}`;
                     </div>
                   </div>
                   {/* <span className="font-medium">Back to Jobs</span> */}
-                </button>
+                
 
                 {/* Job Header */}
                 {/* Job Header Card */}
@@ -2343,7 +2336,8 @@ ${userName}`;
                               </button> */}
                               <div>
                                 <button
-                                  onClick={() => setSelectedJob(null)}
+                                  onClick={() => {setSelectedJob(null)
+                                     router.replace("/jobs");}}
                                   className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
                                 >
                                   <ArrowLeft size={14} className="mt-[3px]" />
