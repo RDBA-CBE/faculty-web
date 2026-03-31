@@ -570,6 +570,7 @@ ${userName}`;
     // Skip initial render when filters are being loaded from URL params
     if (!isInitialized.current) {
       isInitialized.current = true;
+      jobList(1);
       return;
     }
 
@@ -1887,12 +1888,14 @@ ${userName}`;
                             key={job.id}
                             id={`job-list-item-${job.id}`}
                             onClick={() => {
-                              if (isMobileScreen) {
+                              
                                 router.push(`/jobs?id=${job.id}`);
-                              } else {
-                                router.push(`/job-detail/${job.id}`);
+                             
+                                setSelectedJob(job);
+                                setState({ jobID: job.id });
+                                jobDetail(job.id);
                               }
-                            }}
+                            }
                             className={`cursor-pointer px-2 py-5 transition-all   ${
                               selectedJob?.id === job.id
                                 ? "border border-[#1E3786] bg-[#fff]  "
@@ -3078,11 +3081,39 @@ ${userName}`;
                             {state.jobList?.map((job: any) => (
                               <div
                                 key={job.id}
+                                // onClick={() => {
+                                //   if (isMobileScreen) {
+                                //     router.push(`/jobs?id=${job.id}`);
+                                //   } else {
+                                //     setSelectedJob(job);
+                                //     setState({ jobID: job.id });
+                                //     jobDetail(job.id);
+                                //     if (isDesktopScreen) setShowJobDetail(true);
+                                //     window.scrollTo({ top: 0, behavior: "smooth" });
+                                //   }
+                                // }}
                                 onClick={() => {
-                                  if (isMobileScreen) {
-                                    router.push(`/jobs?id=${job.id}`);
+                                  if (isTabScreen) {
+                                    setIsAnimating(false);
+                                    setTimeout(() => {
+                                      setSelectedJob(job);
+                                      setState({ jobID: job.id });
+                                      setIsAnimating(true);
+                                      jobDetail(job.id);
+                                      window.scrollTo({
+                                        top: 0,
+                                        behavior: "smooth",
+                                      });
+                                    }, 100);
                                   } else {
-                                    router.push(`/job-detail/${job.id}`);
+                                    setSelectedJob(job);
+                                    setState({ jobID: job.id });
+                                    jobDetail(job.id);
+                                    if (isDesktopScreen) setShowJobDetail(true);
+                                    window.scrollTo({
+                                      top: 0,
+                                      behavior: "smooth",
+                                    });
                                   }
                                 }}
                                 className="cursor-pointer transition-transform hover:scale-10 job-card-item"
@@ -3098,12 +3129,8 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                      isMobileScreen
-                                        ? router.push(
+                                      router.push(
                                             `/jobs?id=${job?.job_id || job?.id}`,
-                                          )
-                                        : router.push(
-                                            `/job-detail/${job?.job_id || job?.id}`,
                                           )
                                     }
                                   />
@@ -3118,12 +3145,8 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                      isMobileScreen
-                                        ? router.push(
+                                      router.push(
                                             `/jobs?id=${job?.job_id || job?.id}`,
-                                          )
-                                        : router.push(
-                                            `/job-detail/${job?.job_id || job?.id}`,
                                           )
                                     }
                                   />

@@ -5372,9 +5372,7 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    isMobileScreen
-                                      ? router.push(`/jobs?id=${job?.job_id || job?.id}`)
-                                      : router.push(`/job-detail/${job?.job_id || job?.id}`)
+                                    router.push(`/jobs?id=${job?.job_id || job?.id}`)
                                   }
                                 />
                               ) : (
@@ -5389,9 +5387,7 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    isMobileScreen
-                                      ? router.push(`/jobs?id=${job?.job_id || job?.id}`)
-                                      : router.push(`/job-detail/${job?.job_id || job?.id}`)
+                                    router.push(`/jobs?id=${job?.job_id || job?.id}`)
                                   }
                                 />
                               )}
@@ -5446,9 +5442,7 @@ export default function NaukriProfilePage() {
                                   console.log("first")
                                 }
                                 onClick={() =>
-                                  isMobileScreen
-                                    ? router.push(`/jobs?id=${job?.job?.id || job?.id}`)
-                                    : router.push(`/job-detail/${job?.job?.id || job?.id}`)
+                                    router.push(`/jobs?id=${job?.job?.id || job?.id}`)
                                 }
                               />
                             </div>

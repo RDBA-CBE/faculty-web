@@ -165,9 +165,7 @@ export default function SavedJobsPage() {
                     key={item.id || item.id}
                     className="cursor-pointer transition-transform hover:scale-105"
                     onClick={() =>
-                      isMobileScreen
-                        ? router.push(`/jobs?id=${item.id}`)
-                        : router.push(`/job-detail/${item.id}`)
+                      router.push(`/jobs?id=${item.id}`)
                     }
                     
                   >
