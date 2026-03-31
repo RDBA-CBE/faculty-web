@@ -75,7 +75,7 @@ const ChangePasswordForm = () => {
 
       Success(res?.message || "Password changed successfully!");
 
-      window.dispatchEvent(new CustomEvent("openLoginModal"));
+      // window.dispatchEvent(new CustomEvent("openLoginModal"));
       router.push("/");
     } catch (error) {
       setState({ btnLoading: false });

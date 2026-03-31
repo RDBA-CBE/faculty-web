@@ -575,8 +575,6 @@ ${userName}`;
     filters.locations,
     filters.jobTypes,
     filters.experienceLevels,
-    filters.minExperience,
-    filters.maxExperience,
     filters.is_fresher,
     filters.datePosted,
     filters.salaryRange,

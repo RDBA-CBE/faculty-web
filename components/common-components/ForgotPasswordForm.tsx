@@ -56,7 +56,6 @@ const ForgotPasswordForm = () => {
 
       setState({ successOpen: true });
 
-      router.push("/");
     } catch (error) {
       setState({ btnLoading: false });
       if (error instanceof Yup.ValidationError) {
@@ -131,6 +130,7 @@ const ForgotPasswordForm = () => {
             isOpen={state.successOpen}
             setIsOpen={() => {
               setState({ errors: {}, successOpen: false });
+              router.push("/");
             }}
             title="Password reset"
             width="auto"

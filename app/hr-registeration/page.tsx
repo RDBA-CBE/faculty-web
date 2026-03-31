@@ -21,7 +21,8 @@ const HRRegistrationPage = () => {
     college: "",
     phone: "",
     submitting: false,
-    successRegistraion: false, // ✅ add this
+    successRegistraion: false,
+    apiError: "",
     errors: {} as Record<string, string>,
   });
 
@@ -29,6 +30,7 @@ const HRRegistrationPage = () => {
   const handleFormChange = (field: string, value: any) => {
     setState({
       [field]: value,
+      apiError: "",
       errors: {
         ...state.errors,
         [field]: "",
@@ -69,6 +71,7 @@ const HRRegistrationPage = () => {
         phone: "",
         errors: {},
         successRegistraion: true,
+        apiError: ""
       });
       // router.push("/");
     } catch (error: any) {
@@ -89,8 +92,10 @@ const HRRegistrationPage = () => {
         return;
       }
 
-      Failure("Registration failed");
+      // Failure("Registration failed");
       console.log("API error:", error);
+      const msg = error?.response?.data?.error || error?.error || "Registration failed. Please try again.";
+      setState({ apiError: msg });
     } finally {
       setState({ submitting: false });
     }
@@ -204,6 +209,13 @@ const HRRegistrationPage = () => {
                 onChange={(value) => handleFormChange("phone", value)}
                 error={state.errors.phone}
               />
+
+              {/* API Error */}
+              {state.apiError && (
+                <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+                  {state.apiError}
+                </p>
+              )}
 
               {/* Submit */}
               <button
