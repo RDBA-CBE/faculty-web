@@ -1,3 +1,5 @@
+"use client";
+
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
@@ -9,6 +11,15 @@ import { BASEURL } from "./constant.utils";
 let api: AxiosInstance | null = null;
 let isRefreshing = false;
 let failedQueue: any[] = [];
+
+/**
+ * 🔥 ADDED: Cross-tab logout trigger (no existing code removed)
+ */
+export const triggerLogout = () => {
+  // Notify other tabs BEFORE clearing (storage event fires on other tabs only)
+  localStorage.setItem("logout", Date.now().toString());
+  localStorage.clear();
+};
 
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
@@ -47,8 +58,8 @@ export const instance = (): AxiosInstance => {
     async (error: AxiosError | any) => {
       const originalRequest: any = error.config;
 
-      console.log("error",error);
-      
+      console.log("error", error);
+
       if (
         error.response?.data?.error === "invalid or expired token" &&
         !originalRequest._retry
@@ -57,10 +68,12 @@ export const instance = (): AxiosInstance => {
 
         const refreshToken = localStorage.getItem("refresh");
 
+        /**
+         * ❌ UPDATED (minimal): replaced logout logic
+         */
         if (!refreshToken) {
+          triggerLogout();
           window.location.href = "/";
-          localStorage.clear();
-
           return Promise.reject(error);
         }
 
@@ -68,7 +81,8 @@ export const instance = (): AxiosInstance => {
           return new Promise((resolve, reject) => {
             failedQueue.push({
               resolve: (token: string) => {
-                originalRequest.headers["Authorization"] = "Bearer " + token;
+                originalRequest.headers["Authorization"] =
+                  "Bearer " + token;
                 resolve(api(originalRequest));
               },
               reject: (err: any) => reject(err),
@@ -91,15 +105,22 @@ export const instance = (): AxiosInstance => {
             localStorage.setItem("token", access);
             localStorage.setItem("refresh", refresh);
 
-            api!.defaults.headers.common["Authorization"] = "Bearer " + access;
-            originalRequest.headers["Authorization"] = "Bearer " + access;
+            api!.defaults.headers.common["Authorization"] =
+              "Bearer " + access;
+            originalRequest.headers["Authorization"] =
+              "Bearer " + access;
 
             processQueue(null, access);
             resolve(api!(originalRequest));
           } catch (err) {
             processQueue(err, null);
-            localStorage.clear();
+
+            /**
+             * ❌ UPDATED (minimal): replaced logout logic
+             */
+            triggerLogout();
             window.location.href = "/";
+
             reject(err);
           } finally {
             isRefreshing = false;

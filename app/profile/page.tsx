@@ -68,6 +68,7 @@ import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 import HrRequestTable from "@/components/component/HrRequestTable.component";
 import CustomPhoneInput from "@/components/common-components/phoneInput";
+import { triggerLogout } from "@/utils/axios.utils";
 
 export default function NaukriProfilePage() {
   const isManualScrollRef = useRef(false);
@@ -332,7 +333,7 @@ export default function NaukriProfilePage() {
         error?.error === "User Not Found" ||
         error?.message === "User Not Found"
       ) {
-        alert("User not found. Please login again.");
+        triggerLogout();
         router.replace("/");
       }
     }
