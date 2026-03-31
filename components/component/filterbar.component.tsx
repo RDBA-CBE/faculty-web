@@ -687,7 +687,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   const collegefilteredList = collegeList
     ?.filter((c) =>
-      c.label?.toLowerCase().includes(deptSearchQuery.toLowerCase())
+      c.label?.toLowerCase().includes(collegeSearchQuery.toLowerCase())
     )
     ?.sort((a, b) => a.label.localeCompare(b.label));
 
