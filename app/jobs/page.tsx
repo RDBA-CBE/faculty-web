@@ -139,6 +139,8 @@ export default function JobsPage() {
     filterList: [],
     showApplyChoiceModal: false,
     isMessageEdited: false,
+    masterDeptList: [],
+    masterJobRoleList: [],
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -483,6 +485,8 @@ ${userName}`;
     jobTypeList();
     filterList();
     masterExperienceList();
+    masterDeptList();
+    masterJobRoleList();
     jobList(1);
   }, []);
 
@@ -779,6 +783,50 @@ ${userName}`;
       });
     } catch (error) {
       console.log("✌️error --->", error);
+    }
+  };
+
+  const masterDeptList = async () => {
+    try {
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+      while (hasNext) {
+        const res: any = await Models.department.masterDep({ page, has_jobs: true });
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+        hasNext = !!res?.next;
+        page++;
+      }
+      const dropdown = Dropdown(allResults, "name");
+      setState({
+        masterDeptList: dropdown,
+      });
+    } catch (error) {
+      console.error("Error fetching master departments:", error);
+    }
+  };
+
+  const masterJobRoleList = async () => {
+    try {
+      let page = 1;
+      let allResults: any[] = [];
+      let hasNext = true;
+      while (hasNext) {
+        const res: any = await Models.category.jobRoleList(page);
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+        hasNext = !!res?.next;
+        page++;
+      }
+      const dropdown = Dropdown(allResults, "role_name");
+      setState({
+        masterJobRoleList: dropdown,
+      });
+    } catch (error) {
+      console.error("Error fetching master job roles:", error);
     }
   };
 
@@ -2954,9 +3002,9 @@ ${userName}`;
                     salaryRangeList={state?.salaryRangeList}
                     tagsList={state?.tagsList}
                     collegeList={state?.collegeList}
-                    deptList={state?.deptList}
+                    deptList={state?.masterDeptList}
                     locationList={state?.locationList}
-                    jobRoleList={state?.jobRoleList}
+                    jobRoleList={state?.masterJobRoleList}
                   />
 
                   {state.loading || state.jobListLoading ? (

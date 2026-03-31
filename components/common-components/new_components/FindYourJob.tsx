@@ -360,6 +360,16 @@ const FindYourJob = () => {
                   </div>
                 ))}
               </div>
+            ) : state?.jobList?.length === 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6 min-h-[300px]">
+                <div className="sm:col-span-2 flex flex-col items-center justify-center h-full py-16 text-center">
+                  <div className="w-16 h-16 bg-[#1E3786]/10 rounded-full flex items-center justify-center mb-4">
+                    <Briefcase className="w-8 h-8 text-[#1E3786]/50" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-1">No Jobs Found</h4>
+                  <p className="text-sm text-gray-500">Try adjusting your filters or search criteria.</p>
+                </div>
+              </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6">
                 {state?.jobList.slice(0, 6)?.map((job) => (

@@ -1500,3 +1500,40 @@ body {
   }
 }
 
+.custom-toast {
+  width: 95vw !important;        /* ✅ wide toast */
+  max-width: 500px !important;   /* ✅ limit on large screens */
+  margin: 0 auto !important;     /* ✅ center align */
+  border-radius: 10px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px;
+}
+
+/* Smaller text */
+.custom-toast-title {
+  font-size: 12px !important;   /* ✅ smaller text */
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* Reduce icon size slightly */
+.custom-toast-icon {
+  transform: scale(0.85);
+  margin-right: 4px !important;
+}
+
+/* Fix top spacing for mobile */
+.swal2-container {
+  padding-top: 10px !important;
+}
+
+
+/* success */
+
+/* Default (Desktop) */
+
+
+/* Title */
+

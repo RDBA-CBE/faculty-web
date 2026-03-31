@@ -18,17 +18,22 @@ export const Success = (message: string, positions?: SweetAlertPosition) => {
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
-    background: "#000000",
+    background: "#000",
+    width: "95vw", // ✅ make it wide
+    padding: "10px 14px",
+
+   
+
     customClass: {
-      popup: "custom-success-toast",
-      title: "custom-success-title",
-      icon: "custom-success-icon",
+      popup: "custom-toast",
+     title: "custom-toast-title",
+      icon: "custom-toast-icon",
     },
+
     didOpen: (toast) => {
-      // Ensure text is white and medium font weight
       const title = toast.querySelector(".swal2-title");
       if (title) {
-        title.classList.add("text-white", "font-medium");
+        title.classList.add("text-white", "text-xs", "font-normal");
       }
     },
   });
@@ -39,31 +44,62 @@ export const Success = (message: string, positions?: SweetAlertPosition) => {
   });
 };
 
+// export const Failure = (message: string, positions?: SweetAlertPosition) => {
+//   const toast = Swal.mixin({
+//     toast: true,
+//     position: positions || "top",
+//     showConfirmButton: false,
+//     timer: 3000,
+//     timerProgressBar: true,
+//     background: "#000000",
+//     customClass: {
+//       popup: "custom-success-toast",
+//       title: "custom-success-title",
+//       icon: "custom-success-icon",
+//     },
+//     didOpen: (toast) => {
+//       // Ensure text is white and medium font weight
+//       const title = toast.querySelector(".swal2-title");
+//       if (title) {
+//         title.classList.add("text-white", "font-medium");
+//       }
+//     },
+//   });
+//   toast.fire({
+//     icon: "error",
+//     title: message,
+//     padding: "10px 20px",
+//   });
+// };
+
 export const Failure = (message: string, positions?: SweetAlertPosition) => {
   const toast = Swal.mixin({
     toast: true,
-    position: positions || "top",
+    position: positions || "top", // ✅ keep top center
     showConfirmButton: false,
     timer: 3000,
     timerProgressBar: true,
-    background: "#000000",
+    background: "#000",
+    width: "95vw", // ✅ make it wide
+    padding: "10px 14px",
+
     customClass: {
-      popup: "custom-success-toast",
-      title: "custom-success-title",
-      icon: "custom-success-icon",
+      popup: "custom-toast",
+      title: "custom-toast-title",
+      icon: "custom-toast-icon",
     },
+
     didOpen: (toast) => {
-      // Ensure text is white and medium font weight
       const title = toast.querySelector(".swal2-title");
       if (title) {
-        title.classList.add("text-white", "font-medium");
+        title.classList.add("text-white", "text-xs", "font-normal"); // ✅ smaller text
       }
     },
   });
+
   toast.fire({
     icon: "error",
     title: message,
-    padding: "10px 20px",
   });
 };
 
