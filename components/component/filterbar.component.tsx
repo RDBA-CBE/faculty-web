@@ -56,7 +56,9 @@ interface SidebarProps {
   deptList?: any[];
   loading?: boolean;
   jobRoleList: any[];
-  closeModal?:any
+  closeModal?:any;
+  masterExperienceRaw?: { id: number; name: string; value: string }[];
+  filterExperienceRaw?: { id: number; name: string; value: string }[];
 }
 
 const FilterSection: React.FC<{
@@ -203,7 +205,9 @@ const Filterbar: React.FC<SidebarProps> = ({
   deptList,
   loading,
   jobRoleList,
-closeModal,
+  closeModal,
+  masterExperienceRaw = [],
+  filterExperienceRaw = [],
 }) => {
   const isMobile = useIsMobile();
   const [showAllColleges, setShowAllColleges] = useState(false);
@@ -275,6 +279,7 @@ closeModal,
 
   const [minExp, setMinExp] = useState(filters.minExperience ?? "");
   const [maxExp, setMaxExp] = useState(filters.maxExperience ?? "");
+  const [expError, setExpError] = useState("");
 
   useEffect(() => {
     setMinExp(filters.minExperience ?? "");
@@ -1711,7 +1716,7 @@ closeModal,
               min="0"
               placeholder="Min"
               value={minExp}
-              onChange={(e) => setMinExp(e.target.value)}
+              onChange={(e) => { setMinExp(e.target.value); setExpError(""); }}
               className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
             />
             <span className="text-slate-400">-</span>
@@ -1720,7 +1725,7 @@ closeModal,
               min="0"
               placeholder="Max"
               value={maxExp}
-              onChange={(e) => setMaxExp(e.target.value)}
+              onChange={(e) => { setMaxExp(e.target.value); setExpError(""); }}
               className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/50"
             />
             <button
@@ -1728,29 +1733,51 @@ closeModal,
                 const minVal = minExp === "" ? null : parseInt(minExp);
                 const maxVal = maxExp === "" ? null : parseInt(maxExp);
 
+                const min = minVal ?? 0;
+                const max = maxVal ?? 100;
+
+                // Step 1: find masterExperience IDs whose range is fully within [min, max]
+                const matchedIds = masterExperienceRaw
+                  .filter((item) => {
+                    const parsed = parseExperienceLabel(item.name);
+                    if (!parsed) return false;
+                    return parsed.min >= min && parsed.max <= max;
+                  })
+                  .map((item) => item.id);
+
+                // Step 2: cross-check with filterExperienceRaw (has job_count)
+                const filterExpIds = new Set(filterExperienceRaw.map((e) => e.id));
+                const validIds = matchedIds.filter((id) => filterExpIds.has(id));
+
+                if ((minVal !== null || maxVal !== null) && validIds.length === 0) {
+                  setExpError(`No jobs found for ${min}-${max} years experience`);
+                  return;
+                }
+
+                setExpError("");
+
                 let isFresher: boolean | undefined = undefined;
                 if (minVal !== null || maxVal !== null) {
                   isFresher = (minVal !== null && minVal === 0) || (maxVal !== null && maxVal === 0);
                 }
 
-                const min = minVal ?? 0;
-                const max = maxVal ?? 100;
-                const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-
                 onFilterChange({
                   ...filters,
                   minExperience: minExp,
                   maxExperience: maxExp,
-                  experienceLevels: range,
+                  experienceLevels: validIds,
                   ...(isFresher !== undefined ? { is_fresher: isFresher } : {}),
                 });
-                closeModal()
+                closeModal();
               }}
               className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
             >
               <ArrowRight size={16} />
             </button>
           </div>
+          {expError && (
+            <p className="text-red-500 text-xs mt-1">{expError}</p>
+          )}
 
           {/* <div
             className="flex justify-end text-sm underline cursor-pointer mt-1"

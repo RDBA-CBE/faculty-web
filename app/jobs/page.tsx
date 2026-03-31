@@ -630,6 +630,7 @@ ${userName}`;
 
       setState({
         filterList: res?.data,
+        filterExperienceRaw: res?.data?.experiences ?? [], // raw with id for cross-check
         locationList,
         collegeList,
         deptList,
@@ -688,14 +689,13 @@ ${userName}`;
       }
 
       const dropdown = allResults.map((item: any) => ({
-        value: item.value, // ✅ better
+        value: item.value,
         label: item.name,
       }));
 
-      console.log("masterExperienceList dropdown", dropdown);
-
       setState({
         masterExperienceList: dropdown,
+        masterExperienceRaw: allResults, // raw with id, name for range matching
       });
     } catch (error) {
       console.log("Error fetching experience list:", error);
@@ -1209,13 +1209,18 @@ ${userName}`;
       body.jobTypes = filters.jobTypes;
     }
 
-    if (filters?.minExperience !== "" && filters?.minExperience !== undefined && filters?.minExperience !== null) {
-      body.min_experience = filters.minExperience;
+    if (filters?.experienceLevels?.length > 0) {
+      body.experience_id = filters.experienceLevels;
     }
 
-    if (filters?.maxExperience !== "" && filters?.maxExperience !== undefined && filters?.maxExperience !== null) {
-      body.max_experience = filters.maxExperience;
-    }
+
+    // if (filters?.minExperience !== "" && filters?.minExperience !== undefined && filters?.minExperience !== null) {
+    //   body.min_experience = filters.minExperience;
+    // }
+
+    // if (filters?.maxExperience !== "" && filters?.maxExperience !== undefined && filters?.maxExperience !== null) {
+    //   body.max_experience = filters.maxExperience;
+    // }
 
     if (filters?.is_fresher === true || filters?.is_fresher === false) {
       body.is_fresher = filters.is_fresher;
@@ -2718,6 +2723,8 @@ ${userName}`;
                     jobRoleList={state?.jobRoleList}
                     tagsList={state?.tagsList}
                     loading={state.loading}
+                    masterExperienceRaw={state?.masterExperienceRaw ?? []}
+                    filterExperienceRaw={state?.filterExperienceRaw ?? []}
                     closeModal={() => {
                       window.scrollTo({
                         top: 0,
@@ -2771,6 +2778,8 @@ ${userName}`;
                       jobRoleList={state?.jobRoleList}
                       tagsList={state?.tagsList}
                       loading={state.loading}
+                      masterExperienceRaw={state?.masterExperienceRaw ?? []}
+                      filterExperienceRaw={state?.filterExperienceRaw ?? []}
                       closeModal={() => {
                         window.scrollTo({
                           top: 0,
@@ -2933,6 +2942,8 @@ ${userName}`;
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
+                              masterExperienceRaw={state?.masterExperienceRaw ?? []}
+                              filterExperienceRaw={state?.filterExperienceRaw ?? []}
                               closeModal={() => {
                                 window.scrollTo({
                                   top: 0,
