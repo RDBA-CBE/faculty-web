@@ -572,13 +572,15 @@ ${userName}`;
     filters?.categories,
     filters.locations,
     filters.jobTypes,
-    filters.experienceLevels,
+    filters.minExperience,
+    filters.maxExperience,
+    filters.is_fresher,
     filters.datePosted,
     filters.salaryRange,
     filters?.tags,
     filters?.colleges,
     filters?.department,
-    filters,
+    filters?.jobRole,
   ]);
 
   const categoryList = async () => {
