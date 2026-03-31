@@ -244,6 +244,7 @@ ${userName}`;
   const jobListSidebarWrapperRef = useRef<HTMLDivElement>(null);
   const jobDetailContainerRef = useRef<HTMLDivElement>(null);
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
+  const isInitialized = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -479,12 +480,8 @@ ${userName}`;
   }, [selectedJob, isTabScreen]);
 
   useEffect(() => {
-    jobList(1);
     jobTypeList();
-    // experienceList();
-    // DatePosted();
-    // salaryRangeList();
-    // tagsList();
+    
     filterList();
     masterExperienceList();
   }, []);
@@ -565,6 +562,11 @@ ${userName}`;
   }, [departmentParam]);
 
   useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      jobList(1);
+      return;
+    }
     jobList(1);
     filterList();
   }, [
