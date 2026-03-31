@@ -40,12 +40,15 @@ import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 
 const categories = [
   { name: "Assistant Professor", count: 20 },
+  
+  { name: "Lab Technician", count: 33 },  
+  { name: "Professor", count: 33 },
   { name: "Research Associate", count: 14 },
   { name: "Academic Coordinator", count: 52 },
-  { name: "Lab Instructor", count: 33 },
+  
   { name: "Associate Professor", count: 14 },
   { name: "Academic Coordinator", count: 52 },
-  { name: "Lab Instructor", count: 33 },
+  
 ];
 
 const FindYourJob = () => {

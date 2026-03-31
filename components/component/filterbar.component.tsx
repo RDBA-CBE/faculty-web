@@ -1760,6 +1760,8 @@ const Filterbar: React.FC<SidebarProps> = ({
 
                 onFilterChange({
                   ...filtersRef.current,
+                  minExperience: String(min),
+                  maxExperience: maxVal !== null ? String(max) : "",
                   experienceLevels: validIds,
                 });
                 setTimeout(() => closeModal(), 100);
