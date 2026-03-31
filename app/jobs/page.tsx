@@ -167,7 +167,6 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
-    is_fresher: null,
     minExperience:"",
     maxExperience:"",
   });
@@ -623,7 +622,7 @@ ${userName}`;
 
       setState({
         filterList: res?.data,
-        filterExperienceRaw: res?.data?.experiences ?? [], // raw with id for cross-check
+        filterExperienceRaw: res?.data?.experiences ?? [],
         locationList,
         collegeList,
         deptList,
@@ -1207,10 +1206,6 @@ ${userName}`;
       body.experience_id = f.experienceLevels;
     }
 
-    if (f?.is_fresher === true || f?.is_fresher === false) {
-      body.is_fresher = f.is_fresher;
-    }
-
     if (f?.salaryRange?.length > 0) {
       body.salary_range = f.salaryRange;
     }
@@ -1316,7 +1311,6 @@ ${userName}`;
       jobRoleList: [],
       minExperience: "",
       maxExperience: "",
-      is_fresher: undefined,
     });
     setIsMobileFilterOpen(false);
 

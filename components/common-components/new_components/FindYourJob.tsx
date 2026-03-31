@@ -574,7 +574,7 @@ const FindYourJob = () => {
                         <Building2 className="w-4 h-4 text-[#ffb400]" />
 
                         <span className="flex items-center gap-3 text-sm text-[#6D6C6C]">
-                          {job?.department?.slice(0, 1).map((item, index) => (
+                          {job?.department?.slice(0, 2).map((item, index) => (
                             <span
                               key={index}
                               className="cursor-pointer  "

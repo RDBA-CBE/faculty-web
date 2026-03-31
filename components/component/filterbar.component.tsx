@@ -38,7 +38,6 @@ interface SidebarProps {
     department: any[];
     minExperience?: string;
     maxExperience?: string;
-    is_fresher?: boolean;
     jobRole?: any[];
     locations?: any[];
     jobRoleList: any[];
@@ -58,7 +57,6 @@ interface SidebarProps {
   jobRoleList: any[];
   closeModal?:any;
   masterExperienceRaw?: { id: number; name: string; value: string }[];
-  filterExperienceRaw?: { id: number; name: string; value: string }[];
 }
 
 const FilterSection: React.FC<{
@@ -207,7 +205,6 @@ const Filterbar: React.FC<SidebarProps> = ({
   jobRoleList,
   closeModal,
   masterExperienceRaw = [],
-  filterExperienceRaw = [],
 }) => {
   const isMobile = useIsMobile();
   const [showAllColleges, setShowAllColleges] = useState(false);
@@ -1736,8 +1733,8 @@ const Filterbar: React.FC<SidebarProps> = ({
                 const min = minVal ?? 0;
                 const max = maxVal ?? 100;
 
-                // Step 1: find masterExperience IDs whose range is fully within [min, max]
-                const matchedIds = masterExperienceRaw
+                // Find masterExperience IDs whose range is fully within [min, max]
+                const validIds = masterExperienceRaw
                   .filter((item) => {
                     const parsed = parseExperienceLabel(item.name);
                     if (!parsed) return false;
@@ -1745,28 +1742,18 @@ const Filterbar: React.FC<SidebarProps> = ({
                   })
                   .map((item) => item.id);
 
-                // Step 2: cross-check with filterExperienceRaw (has job_count)
-                const filterExpIds = new Set(filterExperienceRaw.map((e) => e.id));
-                const validIds = matchedIds.filter((id) => filterExpIds.has(id));
-
-                if ((minVal !== null || maxVal !== null) && validIds.length === 0) {
+                if (validIds.length === 0) {
                   setExpError(`No jobs found for ${min}-${max} years experience`);
                   return;
                 }
 
                 setExpError("");
 
-                let isFresher: boolean | undefined = undefined;
-                if (minVal !== null || maxVal !== null) {
-                  isFresher = (minVal !== null && minVal === 0) || (maxVal !== null && maxVal === 0);
-                }
-
                 onFilterChange({
                   ...filtersRef.current,
                   minExperience: minExp,
                   maxExperience: maxExp,
                   experienceLevels: validIds,
-                  ...(isFresher !== undefined ? { is_fresher: isFresher } : {}),
                 });
                 closeModal();
               }}
