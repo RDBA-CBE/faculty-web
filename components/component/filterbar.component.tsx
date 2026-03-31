@@ -57,6 +57,7 @@ interface SidebarProps {
   jobRoleList: any[];
   closeModal?:any;
   masterExperienceRaw?: { id: number; name: string; value: string }[];
+  filterExperienceRaw?: { id: number; name: string }[];
 }
 
 const FilterSection: React.FC<{
@@ -205,6 +206,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   jobRoleList,
   closeModal,
   masterExperienceRaw = [],
+  filterExperienceRaw = [],
 }) => {
   const isMobile = useIsMobile();
   const [showAllColleges, setShowAllColleges] = useState(false);
