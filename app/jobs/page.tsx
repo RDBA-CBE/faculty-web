@@ -246,7 +246,8 @@ ${userName}`;
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
   const prevFilterBodyRef = useRef<string>("");
-  const hasSetInitialBodyRef = useRef(false);
+  const filtersRef = useRef(filters);
+  useEffect(() => { filtersRef.current = filters; }, [filters]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -483,9 +484,9 @@ ${userName}`;
 
   useEffect(() => {
     jobTypeList();
-    
     filterList();
     masterExperienceList();
+    jobList(1);
   }, []);
 
   useEffect(() => {
@@ -495,14 +496,10 @@ ${userName}`;
     }
   }, [searchParam]);
 
-  // Initialize filters from URL params without triggering API calls
   useEffect(() => {
     const locationQuery = locationParam ? [parseInt(locationParam, 10)] : [];
     if (JSON.stringify(locationQuery) !== JSON.stringify(filters.locations)) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        locations: locationQuery,
-      }));
+      setFilters((prevFilters) => ({ ...prevFilters, locations: locationQuery }));
     }
   }, [locationParam]);
 
@@ -512,10 +509,7 @@ ${userName}`;
       filters.colleges.length !== collegeQuery.length ||
       (collegeQuery.length > 0 && filters.colleges[0] !== collegeQuery[0])
     ) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        colleges: collegeQuery,
-      }));
+      setFilters((prevFilters) => ({ ...prevFilters, colleges: collegeQuery }));
     }
   }, [collegeParam]);
 
@@ -525,69 +519,44 @@ ${userName}`;
       filters.jobRole.length !== jobRoleQuery.length ||
       (jobRoleQuery.length > 0 && filters.jobRole[0] !== jobRoleQuery[0])
     ) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        jobRole: jobRoleQuery,
-      }));
+      setFilters((prevFilters) => ({ ...prevFilters, jobRole: jobRoleQuery }));
     }
   }, [jobRoleParam]);
 
   useEffect(() => {
-    const jobCategoryQuery = jobcategoryParam
-      ? [parseInt(jobcategoryParam, 10)]
-      : [];
+    const jobCategoryQuery = jobcategoryParam ? [parseInt(jobcategoryParam, 10)] : [];
     if (
       filters.categories.length !== jobCategoryQuery.length ||
-      (jobCategoryQuery.length > 0 &&
-        filters.categories[0] !== jobCategoryQuery[0])
+      (jobCategoryQuery.length > 0 && filters.categories[0] !== jobCategoryQuery[0])
     ) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        categories: jobCategoryQuery,
-      }));
+      setFilters((prevFilters) => ({ ...prevFilters, categories: jobCategoryQuery }));
     }
   }, [jobcategoryParam]);
 
   useEffect(() => {
-    const departmentQuery = departmentParam
-      ? [parseInt(departmentParam, 10)]
-      : [];
+    const departmentQuery = departmentParam ? [parseInt(departmentParam, 10)] : [];
     if (
       filters.department.length !== departmentQuery.length ||
-      (departmentQuery.length > 0 &&
-        filters.department[0] !== departmentQuery[0])
+      (departmentQuery.length > 0 && filters.department[0] !== departmentQuery[0])
     ) {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        department: departmentQuery,
-      }));
+      setFilters((prevFilters) => ({ ...prevFilters, department: departmentQuery }));
     }
   }, [departmentParam]);
 
-  // Single effect for loading jobs and filter lists when filters change
-  // This effect runs after filters are initialized from URL params
+  // Filter change effect - runs when filters actually change
   useEffect(() => {
-    // Skip initial render when filters are being loaded from URL params
     if (!isInitialized.current) {
       isInitialized.current = true;
-      jobList(1);
+      // Store the initial body
+      prevFilterBodyRef.current = JSON.stringify(bodyData());
       return;
     }
 
-    // Generate the body to check if meaningful filters exist
-    const currentBody = bodyData();
-    const currentBodyString = JSON.stringify(currentBody);
-    
-    // On first meaningful run after initialization, just set the baseline without calling API
-    if (!hasSetInitialBodyRef.current) {
-      hasSetInitialBodyRef.current = true;
-      prevFilterBodyRef.current = currentBodyString;
-      return;
-    }
-    
-    // Only call jobList if the body has changed
-    if (currentBodyString !== prevFilterBodyRef.current) {
-      prevFilterBodyRef.current = currentBodyString;
+    const currentBody = JSON.stringify(bodyData());
+
+    // Only call API if the filter body has actually changed
+    if (currentBody !== prevFilterBodyRef.current) {
+      prevFilterBodyRef.current = currentBody;
       jobList(1);
       filterList();
     }
@@ -597,7 +566,6 @@ ${userName}`;
     filters.locations,
     filters.jobTypes,
     filters.experienceLevels,
-    filters.is_fresher,
     filters.datePosted,
     filters.salaryRange,
     filters?.tags,
@@ -1205,6 +1173,7 @@ ${userName}`;
   };
 
   const bodyData = () => {
+    const f = filtersRef.current;
     const body: any = {};
     if (debouncedSearch) {
       body.search = debouncedSearch;
@@ -1214,69 +1183,56 @@ ${userName}`;
         state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
     }
 
-    if (filters?.categories?.length > 0) {
-      body.category = filters.categories;
+    if (f?.categories?.length > 0) {
+      body.category = f.categories;
     }
 
-    if (filters?.jobRole?.length > 0) {
-      body.job_role = filters.jobRole;
+    if (f?.jobRole?.length > 0) {
+      body.job_role = f.jobRole;
     }
 
-    if (filters?.department?.length > 0) {
-      body.department = filters.department;
+    if (f?.department?.length > 0) {
+      body.department = f.department;
     }
 
-    if (filters?.locations?.length > 0) {
-      body.location = filters.locations;
+    if (f?.locations?.length > 0) {
+      body.location = f.locations;
     }
 
-    if (filters?.jobTypes?.length > 0) {
-      body.jobTypes = filters.jobTypes;
+    if (f?.jobTypes?.length > 0) {
+      body.jobTypes = f.jobTypes;
     }
 
-    if (filters?.experienceLevels?.length > 0) {
-      body.experience_id = filters.experienceLevels;
+    if (f?.experienceLevels?.length > 0) {
+      body.experience_id = f.experienceLevels;
     }
 
-
-    // if (filters?.minExperience !== "" && filters?.minExperience !== undefined && filters?.minExperience !== null) {
-    //   body.min_experience = filters.minExperience;
-    // }
-
-    // if (filters?.maxExperience !== "" && filters?.maxExperience !== undefined && filters?.maxExperience !== null) {
-    //   body.max_experience = filters.maxExperience;
-    // }
-
-    if (filters?.is_fresher === true || filters?.is_fresher === false) {
-      body.is_fresher = filters.is_fresher;
+    if (f?.is_fresher === true || f?.is_fresher === false) {
+      body.is_fresher = f.is_fresher;
     }
 
-    if (filters?.salaryRange?.length > 0) {
-      body.salary_range = filters.salaryRange;
+    if (f?.salaryRange?.length > 0) {
+      body.salary_range = f.salaryRange;
     }
 
-    if (filters?.colleges?.length > 0) {
-      body.colleges = filters.colleges;
+    if (f?.colleges?.length > 0) {
+      body.colleges = f.colleges;
     }
 
-    if (filters?.categories?.length > 0) {
-      body.category = filters.categories;
+    if (f?.tags?.length > 0) {
+      body.tags = f.tags?.map((tag) => tag.value).join(",");
     }
 
-    if (filters?.tags?.length > 0) {
-      body.tags = filters.tags?.map((tag) => tag.value).join(",");
-    }
-
-    if (filters?.datePosted?.length > 0) {
+    if (f?.datePosted?.length > 0) {
       const durationMap = {
         "24h": 1,
         "7d": 7,
         "15d": 15,
         "30d": 30,
-        "last-mon": 30, // Approximation
+        "last-mon": 30,
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0),
+        ...f.datePosted.map((d) => durationMap[d] || 0),
       );
 
       if (maxDays === 1) {
