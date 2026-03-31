@@ -245,6 +245,8 @@ ${userName}`;
   const jobDetailContainerRef = useRef<HTMLDivElement>(null);
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
+  const prevFilterBodyRef = useRef<string>("");
+  const hasSetInitialBodyRef = useRef(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -493,6 +495,7 @@ ${userName}`;
     }
   }, [searchParam]);
 
+  // Initialize filters from URL params without triggering API calls
   useEffect(() => {
     const locationQuery = locationParam ? [parseInt(locationParam, 10)] : [];
     if (JSON.stringify(locationQuery) !== JSON.stringify(filters.locations)) {
@@ -561,14 +564,32 @@ ${userName}`;
     }
   }, [departmentParam]);
 
+  // Single effect for loading jobs and filter lists when filters change
+  // This effect runs after filters are initialized from URL params
   useEffect(() => {
+    // Skip initial render when filters are being loaded from URL params
     if (!isInitialized.current) {
       isInitialized.current = true;
-      jobList(1);
       return;
     }
-    jobList(1);
-    filterList();
+
+    // Generate the body to check if meaningful filters exist
+    const currentBody = bodyData();
+    const currentBodyString = JSON.stringify(currentBody);
+    
+    // On first meaningful run after initialization, just set the baseline without calling API
+    if (!hasSetInitialBodyRef.current) {
+      hasSetInitialBodyRef.current = true;
+      prevFilterBodyRef.current = currentBodyString;
+      return;
+    }
+    
+    // Only call jobList if the body has changed
+    if (currentBodyString !== prevFilterBodyRef.current) {
+      prevFilterBodyRef.current = currentBodyString;
+      jobList(1);
+      filterList();
+    }
   }, [
     debouncedSearch,
     filters?.categories,
