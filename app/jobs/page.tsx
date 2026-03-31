@@ -167,8 +167,6 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
-    minExperience:"",
-    maxExperience:"",
   });
   console.log("✌️filters --->", filters);
 
@@ -246,7 +244,7 @@ ${userName}`;
   const isInitialized = useRef(false);
   const prevFilterBodyRef = useRef<string>("");
   const filtersRef = useRef(filters);
-  useEffect(() => { filtersRef.current = filters; }, [filters]);
+  filtersRef.current = filters; // always sync, no useEffect needed
 
   useEffect(() => {
     const handleScroll = () => {
@@ -498,7 +496,10 @@ ${userName}`;
   useEffect(() => {
     const locationQuery = locationParam ? [parseInt(locationParam, 10)] : [];
     if (JSON.stringify(locationQuery) !== JSON.stringify(filters.locations)) {
-      setFilters((prevFilters) => ({ ...prevFilters, locations: locationQuery }));
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        locations: locationQuery,
+      }));
     }
   }, [locationParam]);
 
@@ -523,22 +524,34 @@ ${userName}`;
   }, [jobRoleParam]);
 
   useEffect(() => {
-    const jobCategoryQuery = jobcategoryParam ? [parseInt(jobcategoryParam, 10)] : [];
+    const jobCategoryQuery = jobcategoryParam
+      ? [parseInt(jobcategoryParam, 10)]
+      : [];
     if (
       filters.categories.length !== jobCategoryQuery.length ||
-      (jobCategoryQuery.length > 0 && filters.categories[0] !== jobCategoryQuery[0])
+      (jobCategoryQuery.length > 0 &&
+        filters.categories[0] !== jobCategoryQuery[0])
     ) {
-      setFilters((prevFilters) => ({ ...prevFilters, categories: jobCategoryQuery }));
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        categories: jobCategoryQuery,
+      }));
     }
   }, [jobcategoryParam]);
 
   useEffect(() => {
-    const departmentQuery = departmentParam ? [parseInt(departmentParam, 10)] : [];
+    const departmentQuery = departmentParam
+      ? [parseInt(departmentParam, 10)]
+      : [];
     if (
       filters.department.length !== departmentQuery.length ||
-      (departmentQuery.length > 0 && filters.department[0] !== departmentQuery[0])
+      (departmentQuery.length > 0 &&
+        filters.department[0] !== departmentQuery[0])
     ) {
-      setFilters((prevFilters) => ({ ...prevFilters, department: departmentQuery }));
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        department: departmentQuery,
+      }));
     }
   }, [departmentParam]);
 
@@ -693,7 +706,7 @@ ${userName}`;
       console.log("Error fetching experience list:", error);
     }
   };
-  
+
   const collegeList = async () => {
     try {
       const body = {
@@ -1226,9 +1239,7 @@ ${userName}`;
         "30d": 30,
         "last-mon": 30,
       };
-      const maxDays = Math.max(
-        ...f.datePosted.map((d) => durationMap[d] || 0),
-      );
+      const maxDays = Math.max(...f.datePosted.map((d) => durationMap[d] || 0));
 
       if (maxDays === 1) {
         body.date_posted_after = moment()
@@ -1309,8 +1320,6 @@ ${userName}`;
       department: [],
       jobRole: [],
       jobRoleList: [],
-      minExperience: "",
-      maxExperience: "",
     });
     setIsMobileFilterOpen(false);
 
@@ -1354,24 +1363,24 @@ ${userName}`;
                 }`}
               >
                 {/* Back Button */}
-                
-                  {/* <ArrowLeft size={20} /> */}
-                  <div className="flex justify-between w-full">
-                    <Breadcrumb />
-                    <div>
-                      <button
-                        onClick={() =>{ setSelectedJob(null)
-                          router.replace("/jobs");}
-                         }
-                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
-                      >
-                        <ArrowLeft size={14} className="mt-[3px]" />
-                        Back
-                      </button>
-                    </div>
+
+                {/* <ArrowLeft size={20} /> */}
+                <div className="flex justify-between w-full">
+                  <Breadcrumb />
+                  <div>
+                    <button
+                      onClick={() => {
+                        setSelectedJob(null);
+                        router.replace("/jobs");
+                      }}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
+                    >
+                      <ArrowLeft size={14} className="mt-[3px]" />
+                      Back
+                    </button>
                   </div>
-                  {/* <span className="font-medium">Back to Jobs</span> */}
-                
+                </div>
+                {/* <span className="font-medium">Back to Jobs</span> */}
 
                 {/* Job Header */}
                 {/* Job Header Card */}
@@ -1831,14 +1840,12 @@ ${userName}`;
                             key={job.id}
                             id={`job-list-item-${job.id}`}
                             onClick={() => {
-                              
-                                router.push(`/jobs?id=${job.id}`);
-                             
-                                setSelectedJob(job);
-                                setState({ jobID: job.id });
-                                jobDetail(job.id);
-                              }
-                            }
+                              router.push(`/jobs?id=${job.id}`);
+
+                              setSelectedJob(job);
+                              setState({ jobID: job.id });
+                              jobDetail(job.id);
+                            }}
                             className={`cursor-pointer px-2 py-5 transition-all   ${
                               selectedJob?.id === job.id
                                 ? "border border-[#1E3786] bg-[#fff]  "
@@ -2286,8 +2293,10 @@ ${userName}`;
                               </button> */}
                               <div>
                                 <button
-                                  onClick={() => {setSelectedJob(null)
-                                     router.replace("/jobs");}}
+                                  onClick={() => {
+                                    setSelectedJob(null);
+                                    router.replace("/jobs");
+                                  }}
                                   className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
                                 >
                                   <ArrowLeft size={14} className="mt-[3px]" />
@@ -2915,8 +2924,12 @@ ${userName}`;
                               jobRoleList={state?.jobRoleList}
                               tagsList={state?.tagsList}
                               loading={state.loading}
-                              masterExperienceRaw={state?.masterExperienceRaw ?? []}
-                              filterExperienceRaw={state?.filterExperienceRaw ?? []}
+                              masterExperienceRaw={
+                                state?.masterExperienceRaw ?? []
+                              }
+                              filterExperienceRaw={
+                                state?.filterExperienceRaw ?? []
+                              }
                               closeModal={() => {
                                 window.scrollTo({
                                   top: 0,
@@ -3074,8 +3087,8 @@ ${userName}`;
                                     }
                                     onClick={() =>
                                       router.push(
-                                            `/jobs?id=${job?.job_id || job?.id}`,
-                                          )
+                                        `/jobs?id=${job?.job_id || job?.id}`,
+                                      )
                                     }
                                   />
                                 ) : (
@@ -3090,8 +3103,8 @@ ${userName}`;
                                     }
                                     onClick={() =>
                                       router.push(
-                                            `/jobs?id=${job?.job_id || job?.id}`,
-                                          )
+                                        `/jobs?id=${job?.job_id || job?.id}`,
+                                      )
                                     }
                                   />
                                 )}
@@ -4096,7 +4109,7 @@ ${userName}`;
                       </div>
 
                       {/* ================= Achievements ================= */}
-                      {state.collegeDetail?.recent_achievements && (
+                      {state.collegeDetail?.recent_achievements?.length > 0 && (
                         <div className="space-y-2 sm:space-y-3">
                           <h4 className="font-semibold text-gray-800 text-sm sm:text-base">
                             Achievements
@@ -4119,16 +4132,17 @@ ${userName}`;
                       )}
 
                       {/* ================= Summary ================= */}
-                      {state.collegeDetail?.summary && (
-                        <div className="bg-gray-50 rounded-xl p-4 sm:p-5">
-                          <h4 className="font-semibold mb-2 text-gray-800 text-sm sm:text-base">
-                            Summary
-                          </h4>
-                          <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
-                            {state.collegeDetail?.summary}
-                          </p>
-                        </div>
-                      )}
+                      {state.collegeDetail?.summary &&
+                        state.collegeDetail?.summary !== "null" && (
+                          <div className="bg-gray-50 rounded-xl p-4 sm:p-5">
+                            <h4 className="font-semibold mb-2 text-gray-800 text-sm sm:text-base">
+                              Summary
+                            </h4>
+                            <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
+                              {state.collegeDetail?.summary}
+                            </p>
+                          </div>
+                        )}
                     </>
                   )}
                 </div>
@@ -4184,7 +4198,7 @@ ${userName}`;
                       state.departmentDetail && (
                         <>
                           {/* ================= Header ================= */}
-                          <div className="pb-4 md:pb-6 border-b text-center sm:text-left">
+                          <div className="pb-4 md:pb-6  text-center sm:text-left">
                             <h2 className="text-2xl sm:text-3xl font-semibold text-[#1E3786]">
                               {state.departmentDetail?.department_name}
                             </h2>
@@ -4195,42 +4209,48 @@ ${userName}`;
                           </div>
 
                           {/* ================= Stats Section ================= */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-                            {state.departmentDetail?.department_extras?.[0]
-                              .nba_accreditation && (
-                              <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-5 md:p-6">
-                                <div className="flex items-center gap-3 mb-3">
-                                  <img
-                                    src="/assets/images/nba.png"
-                                    alt="NBA Logo"
-                                    className="h-6 sm:h-8 object-contain"
-                                  />
-                                  <p className="text-base sm:text-lg font-semibold text-[#1E3786]">
-                                    NBA Accreditation
-                                  </p>
+                          {(state.departmentDetail?.department_extras?.[0]
+                                .nba_accreditation ||
+                            state.departmentDetail?.department_extras?.[0]
+                                ?.intake_per_year > 0) && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 border-t">
+                              {state.departmentDetail?.department_extras?.[0]
+                                .nba_accreditation && (
+                                <div className="bg-white rounded-2xl shadow-sm border p-4 sm:p-5 md:p-6">
+                                  <div className="flex items-center gap-3 mb-3">
+                                    <img
+                                      src="/assets/images/nba.png"
+                                      alt="NBA Logo"
+                                      className="h-6 sm:h-8 object-contain"
+                                    />
+                                    <p className="text-base sm:text-lg font-semibold text-[#1E3786]">
+                                      NBA Accreditation
+                                    </p>
+                                  </div>
+
+                                  <span className="inline-flex px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-100 text-green-700">
+                                    Accredited
+                                  </span>
                                 </div>
+                              )}
 
-                                <span className="inline-flex px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold bg-green-100 text-green-700">
-                                  Accredited
-                                </span>
-                              </div>
-                            )}
-
-                            {state.departmentDetail?.department_extras?.[0]
-                              ?.intake_per_year > 0 && (
-                              <div className="bg-[#1E3786] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
-                                <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                                  Intake Per Year
-                                </p>
-                                <h3 className="text-2xl sm:text-3xl font-bold mt-2">
-                                  {
-                                    state.departmentDetail
-                                      ?.department_extras?.[0]?.intake_per_year
-                                  }
-                                </h3>
-                              </div>
-                            )}
-                          </div>
+                              {state.departmentDetail?.department_extras?.[0]
+                                ?.intake_per_year > 0 && (
+                                <div className="bg-[#1E3786] text-white rounded-2xl p-5 md:p-6 text-center shadow-sm">
+                                  <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                    Intake Per Year
+                                  </p>
+                                  <h3 className="text-2xl sm:text-3xl font-bold mt-2">
+                                    {
+                                      state.departmentDetail
+                                        ?.department_extras?.[0]
+                                        ?.intake_per_year
+                                    }
+                                  </h3>
+                                </div>
+                              )}
+                            </div>
+                          )}
 
                           {/* ================= Achievements ================= */}
                           {state.departmentDetail?.department_extras?.[0]

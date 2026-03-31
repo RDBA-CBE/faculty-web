@@ -276,14 +276,9 @@ const Filterbar: React.FC<SidebarProps> = ({
   const alphabetRefs = useRef({});
   const listRef = useRef(null);
 
-  const [minExp, setMinExp] = useState(filters.minExperience ?? "");
-  const [maxExp, setMaxExp] = useState(filters.maxExperience ?? "");
+  const [minExp, setMinExp] = useState("");
+  const [maxExp, setMaxExp] = useState("");
   const [expError, setExpError] = useState("");
-
-  useEffect(() => {
-    setMinExp(filters.minExperience ?? "");
-    setMaxExp(filters.maxExperience ?? "");
-  }, [filters.minExperience, filters.maxExperience]);
 
   useEffect(() => {
     filtersRef.current = filters;
@@ -623,14 +618,26 @@ const Filterbar: React.FC<SidebarProps> = ({
       salaryRange: [],
       tags: [],
       colleges: [],
-      minExperience: "",
-      maxExperience: "",
       jobRole: [],
       locations: [],
       jobRoleList: [],
-      
+      department: [],
     });
-    closeModal()
+    setCollegeSearchQuery("");
+    setDeptSearchQuery("");
+    setJobRoleSearchQuery("");
+    setCategorySearchQuery("");
+    setLocationSearchQuery("");
+    setSelectedAlphabet(null);
+    setMinExp("");
+    setMaxExp("");
+    setExpError("");
+    setShowAllColleges(false);
+    setShowAllDept(false);
+    setShowAllJobRoles(false);
+    setShowAllCategories(false);
+    setShowAllLocations(false);
+    closeModal();
   };
 
   if (loading) {
@@ -1753,11 +1760,9 @@ const Filterbar: React.FC<SidebarProps> = ({
 
                 onFilterChange({
                   ...filtersRef.current,
-                  minExperience: minExp,
-                  maxExperience: maxExp,
                   experienceLevels: validIds,
                 });
-                closeModal();
+                setTimeout(() => closeModal(), 100);
               }}
               className="bg-[#1E3786] text-white p-2 rounded-md hover:bg-[#1E3786]/90 transition-colors"
             >
