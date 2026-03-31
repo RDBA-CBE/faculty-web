@@ -38,13 +38,13 @@ const job = {
       if (body.jobTypes) {
         url += `&job_type_id=${encodeURIComponent(body.jobTypes)}`;
       }
-      if (body.min_experience !== undefined && body.min_experience !== "") {
-        url += `&min_experience=${encodeURIComponent(body.min_experience)}`;
-      }
+      // if (body.min_experience !== undefined && body.min_experience !== "") {
+      //   url += `&min_experience=${encodeURIComponent(body.min_experience)}`;
+      // }
 
-      if (body.max_experience !== undefined && body.max_experience !== "") {
-        url += `&max_experience=${encodeURIComponent(body.max_experience)}`;
-      }
+      // if (body.max_experience !== undefined && body.max_experience !== "") {
+      //   url += `&max_experience=${encodeURIComponent(body.max_experience)}`;
+      // }
 
       if (body.colleges) {
         url += `&college=${encodeURIComponent(body.colleges)}`;
@@ -70,9 +70,7 @@ const job = {
         url += `&date_posted_after=${body.date_posted_after}`;
       }
 
-      if (body.is_fresher === true || body.is_fresher === false) {
-        url += `&is_fresher=${body.is_fresher}`;
-      }
+  
 
       if (body.experience_id?.length > 0) {
         url += `&experience_id=${encodeURIComponent(body.experience_id)}`;
@@ -145,10 +143,7 @@ const job = {
         url += `&date_posted_after=${body.date_posted_after}`;
       }
 
-      if (body.is_fresher) {
-        url += `&is_fresher=${body.is_fresher}`;
-      }     
-
+    
       instance()
         .get(url)
         .then((res) => {
@@ -208,9 +203,6 @@ const job = {
         params.push(`experience_id=${encodeURIComponent(body.experience_id)}`);
       }
 
-      if (body?.is_fresher === true || body?.is_fresher === false) {
-        params.push(`is_fresher=${body.is_fresher}`);
-      }
 
       
 

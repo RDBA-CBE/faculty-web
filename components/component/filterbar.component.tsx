@@ -616,7 +616,7 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   const handleClearFilters = () => {
     onFilterChange({
-      ...filters,
+      ...filtersRef.current,
       categories: [],
       jobTypes: [],
       experienceLevels: [],
@@ -746,8 +746,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               selected={filters.locations}
               onToggle={(value) =>
                 onFilterChange({
-                  ...filters,
-                  locations: toggleItem(filters.locations, value),
+                  ...filtersRef.current,
+                  locations: toggleItem(filtersRef.current.locations, value),
                 })
               }
             />
@@ -891,9 +891,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                               )}
                               onChange={() =>
                                 onFilterChange({
-                                  ...filters,
+                                  ...filtersRef.current,
                                   locations: toggleItem(
-                                    filters.locations,
+                                    filtersRef.current.locations,
                                     item.value
                                   ),
                                 })
@@ -940,8 +940,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               selected={filters.categories}
               onToggle={(value) =>
                 onFilterChange({
-                  ...filters,
-                  categories: toggleItem(filters.categories, value),
+                  ...filtersRef.current,
+                  categories: toggleItem(filtersRef.current.categories, value),
                 })
               }
             />
@@ -1085,9 +1085,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                               )}
                               onChange={() =>
                                 onFilterChange({
-                                  ...filters,
+                                  ...filtersRef.current,
                                   categories: toggleItem(
-                                    filters.categories,
+                                    filtersRef.current.categories,
                                     item.value
                                   ),
                                 })
@@ -1134,8 +1134,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               selected={filters.department}
               onToggle={(value) =>
                 onFilterChange({
-                  ...filters,
-                  department: toggleItem(filters.department, value),
+                  ...filtersRef.current,
+                  department: toggleItem(filtersRef.current.department, value),
                 })
               }
             />
@@ -1279,9 +1279,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                               )}
                               onChange={() =>
                                 onFilterChange({
-                                  ...filters,
+                                  ...filtersRef.current,
                                   department: toggleItem(
-                                    filters.department,
+                                    filtersRef.current.department,
                                     item.value
                                   ),
                                 })
@@ -1328,8 +1328,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               selected={filters.jobRole}
               onToggle={(value) =>
                 onFilterChange({
-                  ...filters,
-                  jobRole: toggleItem(filters.jobRole, value),
+                  ...filtersRef.current,
+                  jobRole: toggleItem(filtersRef.current.jobRole, value),
                 })
               }
             />
@@ -1472,9 +1472,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                               )}
                               onChange={() =>
                                 onFilterChange({
-                                  ...filters,
+                                  ...filtersRef.current,
                                   jobRole: toggleItem(
-                                    filters.jobRole,
+                                    filtersRef.current.jobRole,
                                     item.value
                                   ),
                                 })
@@ -1521,8 +1521,8 @@ const Filterbar: React.FC<SidebarProps> = ({
               selected={filters.colleges}
               onToggle={(value) =>
                 onFilterChange({
-                  ...filters,
-                  colleges: toggleItem(filters.colleges, value),
+                  ...filtersRef.current,
+                  colleges: toggleItem(filtersRef.current.colleges, value),
                 })
               }
             />
@@ -1665,9 +1665,9 @@ const Filterbar: React.FC<SidebarProps> = ({
                               )}
                               onChange={() =>
                                 onFilterChange({
-                                  ...filters,
+                                  ...filtersRef.current,
                                   colleges: toggleItem(
-                                    filters.colleges,
+                                    filtersRef.current.colleges,
                                     item.value
                                   ),
                                 })
@@ -1762,7 +1762,7 @@ const Filterbar: React.FC<SidebarProps> = ({
                 }
 
                 onFilterChange({
-                  ...filters,
+                  ...filtersRef.current,
                   minExperience: minExp,
                   maxExperience: maxExp,
                   experienceLevels: validIds,
