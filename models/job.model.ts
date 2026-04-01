@@ -116,6 +116,10 @@ const job = {
         url += `&experience=${encodeURIComponent(body.experience)}`;
       }
 
+      if (body.status) {
+        url += `&application_status_id=${encodeURIComponent(body.status)}`;
+      }
+
       if (body.colleges) {
         url += `&college=${encodeURIComponent(body.colleges)}`;
       }

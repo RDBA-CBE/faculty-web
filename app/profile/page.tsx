@@ -180,6 +180,7 @@ export default function NaukriProfilePage() {
     appliedJobList();
     getSavedJobs();
     masterDepartmentList();
+    fetchApplicationStatuses();
     applicationStatus()
   }, []);
 
@@ -400,7 +401,7 @@ export default function NaukriProfilePage() {
     }
   };
 
-  const appliedJobList = async (page = 1, append = false) => {
+  const appliedJobList = async (page = 1, append = false, status = state.selectedStatus) => {
     try {
       if (append) {
         setState({ isFetchingMore: true });
@@ -408,7 +409,8 @@ export default function NaukriProfilePage() {
         setState({ jobListLoading: true });
       }
 
-      const body = {};
+      const body: any = {};
+      if (status) body.status = status;
 
       const profile = JSON.parse(localStorage.getItem("user") || "null");
       const res: any = await Models.job.appliedJobList(profile?.id, body, page);
@@ -1287,6 +1289,18 @@ export default function NaukriProfilePage() {
     window.addEventListener("scroll", handleInfiniteScroll);
     return () => window.removeEventListener("scroll", handleInfiniteScroll);
   }, [state.appliedNext, state.isFetchingMore, state.savedNext, state.isSavedFetchingMore, state.page, state.savedPage, state.activeTab]);
+
+  const fetchApplicationStatuses = async () => {
+    try {
+      const res: any = await Models.applications.application_status();
+      const filtered = (res || []).filter(
+        (s: any) => s.name !== "Completed" && s.name !== "Joined"
+      );
+      setState({ applicationStatuses: filtered });
+    } catch (error) {
+      console.log("error fetching statuses", error);
+    }
+  };
 
   const experienceList = async () => {
     try {
@@ -5378,7 +5392,42 @@ export default function NaukriProfilePage() {
                         </Card>
                       </div>
                     ) : state.activeTab == "My Applications" ? (
-                      state.jobList?.length > 0 ? (
+                      <>
+                        {/* Status Filter Chips */}
+                        {state.applicationStatuses?.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mb-4">
+                            <button
+                              onClick={() => {
+                                setState({ selectedStatus: "", page: 1 });
+                                appliedJobList(1, false, "");
+                              }}
+                              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                                !state.selectedStatus
+                                  ? "bg-[#1E3786] text-white border-[#1E3786]"
+                                  : "bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]"
+                              }`}
+                            >
+                              All
+                            </button>
+                            {state.applicationStatuses.map((s: any) => (
+                              <button
+                                key={s.id}
+                                onClick={() => {
+                                  setState({ selectedStatus: s.id, page: 1 });
+                                  appliedJobList(1, false, s.id);
+                                }}
+                                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                                  state.selectedStatus === s.id
+                                    ? "bg-[#1E3786] text-white border-[#1E3786]"
+                                    : "bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]"
+                                }`}
+                              >
+                                {s.name}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      {state.jobList?.length > 0 ? (
                         <>
                         <div
                           className={`grid  ${
@@ -5473,7 +5522,8 @@ export default function NaukriProfilePage() {
                             </Button>
                           </CardContent>
                         </Card>
-                      )
+                      )}
+                      </>
                     ) : state.activeTab == "Saved Jobs" ? (
                       state?.savedJobList?.length > 0 ? (
                         <>
