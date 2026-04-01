@@ -43,7 +43,7 @@ interface JobCardProps {
   };
   isProfile?: boolean;
   onClick?: () => void;
-  updateList?: () => void;
+  updateList?: (jobId: number, isSaved: boolean) => void;
   onCollegeClick?: (e: React.MouseEvent, id: number) => void;
   onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
@@ -91,7 +91,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
         await Models.save.create(body);
         Success("Job saved successfully.");
       }
-      updateList();
+      updateList(job.id, !job.is_saved);
       // }
 
       // Refetch job list to get the latest saved status and save_id

@@ -1141,8 +1141,15 @@ ${userName}`;
         await Models.save.create(body);
         Success("Job saved successfully.");
       }
-      jobList(state?.page);
-      jobDetail(job.id);
+      // Update is_saved in place without refetching
+      setState({
+        jobList: state.jobList.map((j: any) =>
+          j.id === job.id ? { ...j, is_saved: !job.is_saved } : j
+        ),
+        jobDetail: state.jobDetail?.id === job.id
+          ? { ...state.jobDetail, is_saved: !job.is_saved }
+          : state.jobDetail,
+      });
       // }
 
       // Refetch job list to get the latest saved status and save_id
@@ -3284,7 +3291,7 @@ ${userName}`;
                                 {isGridView ? (
                                   <JobCard
                                     job={job}
-                                    updateList={() => jobList(state?.page)}
+                                    updateList={(jobId, isSaved) => setState({ jobList: state.jobList.map((j: any) => j.id === jobId ? { ...j, is_saved: isSaved } : j) })}
                                     onCollegeClick={(e, id) =>
                                       getCollege(e, id)
                                     }
@@ -3300,7 +3307,7 @@ ${userName}`;
                                 ) : (
                                   <NewJobCard
                                     job={job}
-                                    updateList={() => jobList(state?.page)}
+                                    updateList={(jobId, isSaved) => setState({ jobList: state.jobList.map((j: any) => j.id === jobId ? { ...j, is_saved: isSaved } : j) })}
                                     onCollegeClick={(e, id) =>
                                       getCollege(e, id)
                                     }
