@@ -156,6 +156,11 @@ export default function JobsPage() {
   const [isWideScreen, setIsWideScreen] = useState(false);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [preferredOnly, setPreferredOnly] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem("token"));
+  }, []);
 
   const handlePreferredToggle = () => {
     const next = !preferredOnly;
@@ -2996,6 +3001,7 @@ ${userName}`;
 
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
+                              {isLoggedIn && (
                               <button
                                 onClick={handlePreferredToggle}
                                 className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
@@ -3010,6 +3016,7 @@ ${userName}`;
                                 />
                                 Preferred Jobs
                               </button>
+                              )}
                               <button
                                 onClick={() => setViewType("grid")}
                                 className={`p-2 rounded-md transition-colors ${
@@ -3140,6 +3147,7 @@ ${userName}`;
                         <BookmarkCheck size={13} />
                         Preferred Jobs
                       </button> */}
+                      {isLoggedIn && (
                       <button
                         onClick={handlePreferredToggle}
                         className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
@@ -3154,6 +3162,7 @@ ${userName}`;
                         />
                         Preferred Jobs
                       </button>
+                      )}
                     </div>
                   </div>
 

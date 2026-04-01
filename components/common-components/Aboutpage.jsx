@@ -128,12 +128,12 @@ process while providing academic professionals with access to verified career op
       <section className="bg-white pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="max-w-7xl 0px] mx-auto text-center">
-            <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-5">
+            {/* <p className="uppercase text-xs tracking-widest font-medium text-[#6C757D] mb-5">
               What we do
-            </p>
+            </p> */}
           </div>
           <h2 className="text-2xl font-medium text-[#151515] text-center mb-12">
-            Lorem ipsum dolor sit amet <br /> consectetur. Tortor
+            What We Do
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
