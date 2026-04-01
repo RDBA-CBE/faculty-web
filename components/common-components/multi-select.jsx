@@ -106,14 +106,16 @@ const CustomSelect = (props) => {
                   className="bg-gray-200 px-2 py-0.5 rounded text-xs flex items-center gap-1"
                 >
                   {opt.label}
-                  <X
-                    className="w-3 h-3 cursor-pointer"
-                    onPointerDown={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      handleSelect(opt.value);
-                    }}
-                  />
+                  {!disabled && (
+                    <X
+                      className="w-3 h-3 cursor-pointer"
+                      onPointerDown={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleSelect(opt.value);
+                      }}
+                    />
+                  )}
                 </span>
               ))}
             </div>

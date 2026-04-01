@@ -1500,8 +1500,17 @@ body {
   }
 }
 
+.error-toast .swal2-timer-progress-bar {
+  background: #F27474 !important;
+}
+
+.success-toast .swal2-timer-progress-bar {
+  background: #22c55e !important;
+}
+
+@media (max-width: 776px){
 .custom-toast {
-  width: 95vw !important;        /* ✅ wide toast */
+  width: 70vw !important;        /* ✅ wide toast */
   max-width: 500px !important;   /* ✅ limit on large screens */
   margin: 0 auto !important;     /* ✅ center align */
   border-radius: 10px !important;
@@ -1527,6 +1536,7 @@ body {
 /* Fix top spacing for mobile */
 .swal2-container {
   padding-top: 10px !important;
+}
 }
 
 

@@ -19,14 +19,12 @@ export const Success = (message: string, positions?: SweetAlertPosition) => {
     timer: 3000,
     timerProgressBar: true,
     background: "#000",
-    width: "95vw", // ✅ make it wide
+    // width: "95vw", // ✅ make it wide
     padding: "10px 14px",
-
-   
 
     customClass: {
       popup: "custom-toast",
-     title: "custom-toast-title",
+      title: "custom-toast-title",
       icon: "custom-toast-icon",
     },
 
@@ -80,11 +78,11 @@ export const Failure = (message: string, positions?: SweetAlertPosition) => {
     timer: 3000,
     timerProgressBar: true,
     background: "#000",
-    width: "95vw", // ✅ make it wide
+    // width: "95vw",
     padding: "10px 14px",
 
     customClass: {
-      popup: "custom-toast",
+      popup: "custom-toast error-toast",
       title: "custom-toast-title",
       icon: "custom-toast-icon",
     },
@@ -285,7 +283,7 @@ export const formatTimeRange = (date, time, intervalMinutes) => {
   const end = moment(start).add(intervalMinutes, "minutes");
 
   return `${start.format("MMMM D, YYYY")} at ${start.format(
-    "h:mm A"
+    "h:mm A",
   )} - ${end.format("h:mm A")}`;
 };
 
@@ -356,7 +354,7 @@ export const buildFormData = (data: Record<string, any>): FormData => {
       value.forEach((item, index) => {
         formData.append(
           `${key}`,
-          item instanceof File || item instanceof Blob ? item : String(item)
+          item instanceof File || item instanceof Blob ? item : String(item),
         );
       });
     }
@@ -405,7 +403,7 @@ export const getTime = (startDate, startTime) => {
     hours,
     minutes,
     seconds,
-    milliseconds
+    milliseconds,
   );
   return combinedDate;
 };
@@ -502,7 +500,7 @@ export const formatToINRS = (price: number | string): string => {
 
 export const formatPriceRange = (
   minPrice: number | string | null,
-  maxPrice: number | string | null
+  maxPrice: number | string | null,
 ): string => {
   if (minPrice === null && maxPrice === null) {
     return "Price on request";
