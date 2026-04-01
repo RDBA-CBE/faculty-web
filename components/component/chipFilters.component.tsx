@@ -182,17 +182,19 @@ const ChipFilters = ({
     });
   });
 
-  filters.department?.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(deptList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          department: filters.department.filter((v) => v !== value),
-        });
-      },
+  if (deptList?.length > 0) {
+    filters.department?.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(deptList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            department: filters.department.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // Tags
   filters.tags.forEach((value) => {
