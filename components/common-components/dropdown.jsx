@@ -109,12 +109,13 @@ const CustomSelect = (props) => {
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-
-                  // optional API search
                   if (loadMore) {
                     loadMore(e.target.value);
                   }
                 }}
+                onKeyDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
                 className="w-full px-2 py-1 text-sm border rounded-md outline-none"
               />
             </div>

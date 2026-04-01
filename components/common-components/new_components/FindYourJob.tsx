@@ -637,9 +637,7 @@ const FindYourJob = () => {
                     <div
                       key={index}
                       onClick={() =>
-                        router.push(
-                          `/jobs?search=${encodeURIComponent(category.label)}`,
-                        )
+                        router.push(`/jobs?job-category=${category.value}`)
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#1E3786] cursor-pointer transition"
                     >

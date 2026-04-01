@@ -30,198 +30,105 @@ const ChipFilters = ({
 }) => {
   const activeFilters = [];
 
-  const findLabel = (list, value) => {
-    return (
-      list?.find((item) => String(item?.value) === String(value))?.label ||
-      value
-    );
+  const findLabel = (list, value) =>
+    list?.find((item) => String(item?.value) === String(value))?.label ?? null;
+
+  const push = (label, onRemove) => {
+    if (label !== null && label !== undefined) activeFilters.push({ label, onRemove });
   };
 
   // Search Query
   if (filters.searchQuery) {
-    activeFilters.push({
-      label: `Search: "${filters.searchQuery}"`,
-      onRemove: () => onFilterChange({ ...filters, searchQuery: "" }),
-    });
+    push(`Search: "${filters.searchQuery}"`, () => onFilterChange({ ...filters, searchQuery: "" }));
   }
 
   // Location
-  if (locationList?.length > 0) {
-    filters.locations?.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(locationList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            locations: filters.locations.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  filters.locations?.forEach((value) => {
+    push(findLabel(locationList, value), () =>
+      onFilterChange({ ...filters, locations: filters.locations.filter((v) => v !== value) })
+    );
+  });
 
   // Job Types
-  if (jobTypeList?.length > 0) {
-    filters.jobTypes.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(jobTypeList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            jobTypes: filters.jobTypes.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  filters.jobTypes?.forEach((value) => {
+    push(findLabel(jobTypeList, value), () =>
+      onFilterChange({ ...filters, jobTypes: filters.jobTypes.filter((v) => v !== value) })
+    );
+  });
 
   // Experience Range
   if (filters.experienceLevels?.includes("Open to all experience levels")) {
-    activeFilters.push({
-      label: "Open to all experience levels",
-      onRemove: () =>
-        onFilterChange({
-          ...filters,
-          minExperience: "",
-          maxExperience: "",
-          experienceLevels: [],
-        }),
-    });
+    push("Open to all experience levels", () =>
+      onFilterChange({ ...filters, minExperience: "", maxExperience: "", experienceLevels: [] })
+    );
   } else if (filters.minExperience || filters.maxExperience) {
     const min = filters.minExperience || "0";
     const max = filters.maxExperience || "";
-    const label = max
-      ? `Experience: ${min} - ${max} Years`
-      : `Experience: ${min}+ Years`;
-    activeFilters.push({
-      label,
-      onRemove: () =>
-        onFilterChange({
-          ...filters,
-          minExperience: "",
-          maxExperience: "",
-          experienceLevels: [],
-        }),
-    });
+    push(
+      max ? `Experience: ${min} - ${max} Years` : `Experience: ${min}+ Years`,
+      () => onFilterChange({ ...filters, minExperience: "", maxExperience: "", experienceLevels: [] })
+    );
   }
 
   // Categories
-  if (categoryList?.length > 0) {
-    filters.categories.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(categoryList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            categories: filters.categories.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  filters.categories?.forEach((value) => {
+    push(findLabel(categoryList, value), () =>
+      onFilterChange({ ...filters, categories: filters.categories.filter((v) => v !== value) })
+    );
+  });
 
-  // jobrole
-  if (jobRoleList?.length > 0) {
-    filters.jobRole?.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(jobRoleList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            jobRole: filters.jobRole.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  // Job Role
+  filters.jobRole?.forEach((value) => {
+    push(findLabel(jobRoleList, value), () =>
+      onFilterChange({ ...filters, jobRole: filters.jobRole.filter((v) => v !== value) })
+    );
+  });
 
   // Date Posted
-  if (datePostedList?.length > 0) {
-    filters?.datePosted?.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(datePostedList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            datePosted: filters.datePosted.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
-
-  // Salary Range
-  // Salary Range
-  if (filters.salaryRange && filters.salaryRange.length > 0) {
-    const selectedRanges = filters?.salaryRange?.map((value) =>
-      findLabel(salaryRangeList, value)
+  filters?.datePosted?.forEach((value) => {
+    push(findLabel(datePostedList, value), () =>
+      onFilterChange({ ...filters, datePosted: filters.datePosted.filter((v) => v !== value) })
     );
+  });
 
-    // Extract min and max numbers
+  // Salary Range
+  if (filters.salaryRange?.length > 0) {
+    const selectedRanges = filters.salaryRange
+      .map((value) => findLabel(salaryRangeList, value))
+      .filter(Boolean);
     const numbers = selectedRanges.flatMap((range) => {
       const match = range.match(/\d+/g);
       return match ? match.map(Number) : [];
     });
-
     if (numbers.length > 0) {
       const min = Math.min(...numbers);
       const max = Math.max(...numbers);
-
-      activeFilters.push({
-        label: `Salary: ${min} - ${max} Lakhs`,
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            salaryRange: [],
-          });
-        },
-      });
+      push(`Salary: ${min} - ${max} Lakhs`, () =>
+        onFilterChange({ ...filters, salaryRange: [] })
+      );
     }
   }
 
   // Colleges
-  if (collegeList?.length > 0) {
-    filters.colleges?.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(collegeList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            colleges: filters.colleges.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  filters.colleges?.forEach((value) => {
+    push(findLabel(collegeList, value), () =>
+      onFilterChange({ ...filters, colleges: filters.colleges.filter((v) => v !== value) })
+    );
+  });
 
-  if (deptList?.length > 0) {
-    filters.department?.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(deptList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            department: filters.department.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  // Department
+  filters.department?.forEach((value) => {
+    push(findLabel(deptList, value), () =>
+      onFilterChange({ ...filters, department: filters.department.filter((v) => v !== value) })
+    );
+  });
 
   // Tags
-  if (tagsList?.length > 0) {
-    filters.tags.forEach((value) => {
-      activeFilters.push({
-        label: findLabel(tagsList, value),
-        onRemove: () => {
-          onFilterChange({
-            ...filters,
-            tags: filters.tags.filter((v) => v !== value),
-          });
-        },
-      });
-    });
-  }
+  filters.tags?.forEach((value) => {
+    push(findLabel(tagsList, value), () =>
+      onFilterChange({ ...filters, tags: filters.tags.filter((v) => v !== value) })
+    );
+  });
 
   if (activeFilters.length === 0) {
     return null;
