@@ -698,7 +698,7 @@ ${userName}`;
       }
 
       const dropdown = allResults.map((item: any) => ({
-        value: item.value,
+        value: item.name,
         label: item.name,
       }));
 
@@ -1883,7 +1883,20 @@ ${userName}`;
                         className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
                         onScroll={handleSidebarScroll}
                       >
-                        {state.jobList?.map((job) => (
+                        {state.jobListLoading
+                          ? Array.from({ length: 6 }).map((_, i) => (
+                              <div key={i} className="px-2 py-5 border-b border-[#c7c7c787]">
+                                <div className="flex flex-row gap-4">
+                                  <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
+                                  <div className="flex-1">
+                                    <SkeletonLoader type="text" width="70%" height={14} className="mb-2" />
+                                    <SkeletonLoader type="text" width="50%" height={12} className="mb-2" />
+                                    <SkeletonLoader type="text" width="40%" height={12} />
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          : state.jobList?.map((job) => (
                           <div
                             key={job.id}
                             id={`job-list-item-${job.id}`}
