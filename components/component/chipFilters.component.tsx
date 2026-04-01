@@ -46,30 +46,34 @@ const ChipFilters = ({
   }
 
   // Location
-  filters.locations?.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(locationList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          locations: filters.locations.filter((v) => v !== value),
-        });
-      },
+  if (locationList?.length > 0) {
+    filters.locations?.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(locationList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            locations: filters.locations.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // Job Types
-  filters.jobTypes.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(jobTypeList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          jobTypes: filters.jobTypes.filter((v) => v !== value),
-        });
-      },
+  if (jobTypeList?.length > 0) {
+    filters.jobTypes.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(jobTypeList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            jobTypes: filters.jobTypes.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // Experience Range
   if (filters.experienceLevels?.includes("Open to all experience levels")) {
@@ -102,43 +106,49 @@ const ChipFilters = ({
   }
 
   // Categories
-  filters.categories.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(categoryList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          categories: filters.categories.filter((v) => v !== value),
-        });
-      },
+  if (categoryList?.length > 0) {
+    filters.categories.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(categoryList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            categories: filters.categories.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // jobrole
-  filters.jobRole?.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(jobRoleList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          jobRole: filters.jobRole.filter((v) => v !== value),
-        });
-      },
+  if (jobRoleList?.length > 0) {
+    filters.jobRole?.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(jobRoleList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            jobRole: filters.jobRole.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // Date Posted
-  filters?.datePosted?.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(datePostedList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          datePosted: filters.datePosted.filter((v) => v !== value),
-        });
-      },
+  if (datePostedList?.length > 0) {
+    filters?.datePosted?.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(datePostedList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            datePosted: filters.datePosted.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   // Salary Range
   // Salary Range
@@ -170,17 +180,19 @@ const ChipFilters = ({
   }
 
   // Colleges
-  filters.colleges?.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(collegeList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          colleges: filters.colleges.filter((v) => v !== value),
-        });
-      },
+  if (collegeList?.length > 0) {
+    filters.colleges?.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(collegeList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            colleges: filters.colleges.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   if (deptList?.length > 0) {
     filters.department?.forEach((value) => {
@@ -197,17 +209,19 @@ const ChipFilters = ({
   }
 
   // Tags
-  filters.tags.forEach((value) => {
-    activeFilters.push({
-      label: findLabel(tagsList, value),
-      onRemove: () => {
-        onFilterChange({
-          ...filters,
-          tags: filters.tags.filter((v) => v !== value),
-        });
-      },
+  if (tagsList?.length > 0) {
+    filters.tags.forEach((value) => {
+      activeFilters.push({
+        label: findLabel(tagsList, value),
+        onRemove: () => {
+          onFilterChange({
+            ...filters,
+            tags: filters.tags.filter((v) => v !== value),
+          });
+        },
+      });
     });
-  });
+  }
 
   if (activeFilters.length === 0) {
     return null;

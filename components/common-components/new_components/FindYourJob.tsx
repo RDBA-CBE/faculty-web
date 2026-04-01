@@ -633,18 +633,18 @@ const FindYourJob = () => {
 
               <div className="bg-white px-6 pb-6 pt-5 bg-[url('/assets/images/Faculty/card-bg.png')] bg-cover bg-center bg-no-repeat">
                 <div className="space-y-3 mb-6">
-                  {categories.map((category, index) => (
+                  {(state.jobCatList || []).map((category, index) => (
                     <div
                       key={index}
                       onClick={() =>
                         router.push(
-                          `/jobs?search=${encodeURIComponent(category.name)}`,
+                          `/jobs?search=${encodeURIComponent(category.label)}`,
                         )
                       }
                       className="flex items-center gap-2 text-gray-800 hover:text-[#1E3786] cursor-pointer transition"
                     >
                       <ChevronRight className="w-4 h-4 text-[#1F1F1F]" />
-                      <span className="text-[#1F1F1F]">{category.name}</span>
+                      <span className="text-[#1F1F1F]">{category.label}</span>
                     </div>
                   ))}
                 </div>

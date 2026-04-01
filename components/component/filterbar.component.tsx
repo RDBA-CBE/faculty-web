@@ -614,6 +614,8 @@ const Filterbar: React.FC<SidebarProps> = ({
       categories: [],
       jobTypes: [],
       experienceLevels: [],
+      minExperience: "",
+      maxExperience: "",
       datePosted: [],
       salaryRange: [],
       tags: [],

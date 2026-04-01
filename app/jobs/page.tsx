@@ -169,6 +169,8 @@ export default function JobsPage() {
     department: departmentParam ? [parseInt(departmentParam, 10)] : [],
     jobRole: jobRoleParam ? [parseInt(jobRoleParam, 10)] : [],
     jobRoleList: [],
+    minExperience: "",
+    maxExperience: "",
   });
   console.log("✌️filters --->", filters);
 
@@ -606,19 +608,79 @@ ${userName}`;
     try {
       const body = bodyData();
       const res: any = await Models.job.filterList(body);
-      const locationList = res?.data?.locations?.map((item) => ({
+      let locationList = res?.data?.locations?.map((item) => ({
         value: item.id,
         label: item.city,
         job_count: item.job_count,
-      }));
+      })) || [];
+
+      // Fetch and merge missing locations from URL parameters
+      if (filters.locations && filters.locations.length > 0) {
+        const existingLocationIds = locationList.map((loc) => loc.value);
+        const missingLocationIds = filters.locations.filter(
+          (id) => !existingLocationIds.includes(id)
+        );
+
+        if (missingLocationIds.length > 0) {
+          try {
+            const allLocationsRes: any = await Models.location.list(1);
+            const allLocations = allLocationsRes?.results || [];
+            
+            const missingLocations = allLocations
+              .filter((loc: any) => missingLocationIds.includes(loc.id))
+              .map((item: any) => ({
+                value: item.id,
+                label: item.city || item.name,
+                job_count: 0,
+              }));
+
+            locationList = [...locationList, ...missingLocations];
+          } catch (error) {
+            console.log("✌️error fetching missing locations --->", error);
+          }
+        }
+      }
+
+      let deptList = res?.data?.departments?.map((item) => ({
+        value: item.id,
+        label: item.department_name,
+        job_count: item.job_count,
+      })) || [];
+
+      // Fetch and merge missing departments from URL parameters
+      if (filters.department && filters.department.length > 0) {
+        const existingDeptIds = deptList.map((dept) => dept.value);
+        const missingDeptIds = filters.department.filter(
+          (id) => !existingDeptIds.includes(id)
+        );
+
+        if (missingDeptIds.length > 0) {
+          try {
+            // Fetch all departments using the master list
+            const allDeptsRes: any = await Models.department.masterDep({
+              page: 1,
+              has_jobs: true,
+            });
+            const allDepts = allDeptsRes?.results || [];
+            
+            const missingDepts = allDepts
+              .filter((dept: any) => missingDeptIds.includes(dept.id))
+              .map((item: any) => ({
+                value: item.id,
+                label: item.name,
+                job_count: 0,
+              }));
+
+            deptList = [...deptList, ...missingDepts];
+          } catch (error) {
+            console.log("✌️error fetching missing departments --->", error);
+          }
+        }
+      }
+
       const collegeList = res?.data?.colleges?.map((item) => ({
         value: item.id,
         label: item.college_name,
-        job_count: item.job_count,
-      }));
-      const deptList = res?.data?.departments?.map((item) => ({
-        value: item.id,
-        label: item.department_name,
         job_count: item.job_count,
       }));
       const categoryList = res?.data?.job_categories?.map((item) => ({
@@ -1359,6 +1421,8 @@ ${userName}`;
       categories: [],
       jobTypes: [],
       experienceLevels: [],
+      minExperience: "",
+      maxExperience: "",
       datePosted: [],
       salaryRange: [],
       tags: [],

@@ -33,7 +33,7 @@ const department = {
       url += `&page=${data.page}`;
     }
      if (data?.has_jobs) {
-      url += `&has_jobs=${data.has_jobs}`;
+      url += `&has_job=${data.has_jobs}`;
     }
 
     instance()
