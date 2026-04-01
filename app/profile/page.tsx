@@ -5511,7 +5511,7 @@ export default function NaukriProfilePage() {
                               <Mail className="w-10 h-10 text-gray-400" />
                             </div>
                             <h4 className="text-lg font-bold text-gray-900 mb-1">
-                              No Job Applied Yet
+                              No Job 
                             </h4>
                             <Button
                               onClick={() => router.push("/jobs")}
