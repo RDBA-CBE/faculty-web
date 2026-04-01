@@ -69,6 +69,10 @@ const job = {
         url += `&experience_id=${encodeURIComponent(body.experience_id)}`;
       }
 
+      if (body.preferred_jobs) {
+        url += `&matches_user_location=true`;
+      }
+
       instance()
         .get(url)
         .then((res) => {

@@ -53,6 +53,7 @@ import {
   Award,
   Building,
   ArrowRight,
+  CrownIcon,
 } from "lucide-react";
 import { useMemo, useState, useEffect, useRef, useLayoutEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -154,6 +155,13 @@ export default function JobsPage() {
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
   const [isWideScreen, setIsWideScreen] = useState(false);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
+  const [preferredOnly, setPreferredOnly] = useState(false);
+
+  const handlePreferredToggle = () => {
+    const next = !preferredOnly;
+    setPreferredOnly(next);
+    jobList(1, false, next);
+  };
   const [filters, setFilters] = useState({
     searchQuery: "",
     locations: locationParam ? [parseInt(locationParam, 10)] : [],
@@ -608,24 +616,25 @@ ${userName}`;
     try {
       const body = bodyData();
       const res: any = await Models.job.filterList(body);
-      let locationList = res?.data?.locations?.map((item) => ({
-        value: item.id,
-        label: item.city,
-        job_count: item.job_count,
-      })) || [];
+      let locationList =
+        res?.data?.locations?.map((item) => ({
+          value: item.id,
+          label: item.city,
+          job_count: item.job_count,
+        })) || [];
 
       // Fetch and merge missing locations from URL parameters
       if (filters.locations && filters.locations.length > 0) {
         const existingLocationIds = locationList.map((loc) => loc.value);
         const missingLocationIds = filters.locations.filter(
-          (id) => !existingLocationIds.includes(id)
+          (id) => !existingLocationIds.includes(id),
         );
 
         if (missingLocationIds.length > 0) {
           try {
             const allLocationsRes: any = await Models.location.list(1);
             const allLocations = allLocationsRes?.results || [];
-            
+
             const missingLocations = allLocations
               .filter((loc: any) => missingLocationIds.includes(loc.id))
               .map((item: any) => ({
@@ -641,17 +650,18 @@ ${userName}`;
         }
       }
 
-      let deptList = res?.data?.departments?.map((item) => ({
-        value: item.id,
-        label: item.department_name,
-        job_count: item.job_count,
-      })) || [];
+      let deptList =
+        res?.data?.departments?.map((item) => ({
+          value: item.id,
+          label: item.department_name,
+          job_count: item.job_count,
+        })) || [];
 
       // Fetch and merge missing departments from URL parameters
       if (filters.department && filters.department.length > 0) {
         const existingDeptIds = deptList.map((dept) => dept.value);
         const missingDeptIds = filters.department.filter(
-          (id) => !existingDeptIds.includes(id)
+          (id) => !existingDeptIds.includes(id),
         );
 
         if (missingDeptIds.length > 0) {
@@ -662,7 +672,7 @@ ${userName}`;
               has_jobs: true,
             });
             const allDepts = allDeptsRes?.results || [];
-            
+
             const missingDepts = allDepts
               .filter((dept: any) => missingDeptIds.includes(dept.id))
               .map((item: any) => ({
@@ -854,7 +864,10 @@ ${userName}`;
       let allResults: any[] = [];
       let hasNext = true;
       while (hasNext) {
-        const res: any = await Models.department.masterDep({ page, has_jobs: true });
+        const res: any = await Models.department.masterDep({
+          page,
+          has_jobs: true,
+        });
         if (res?.results?.length) {
           allResults = [...allResults, ...res.results];
         }
@@ -892,7 +905,11 @@ ${userName}`;
     }
   };
 
-  const jobList = async (page = 1, append = false) => {
+  const jobList = async (
+    page = 1,
+    append = false,
+    preferred = preferredOnly,
+  ) => {
     try {
       if (append) {
         setState({ isFetchingMore: true });
@@ -901,6 +918,7 @@ ${userName}`;
       }
 
       const body = bodyData();
+      if (preferred) body.preferred_jobs = true;
 
       const res: any = await Models.job.list(page, body);
       setState({
@@ -1949,130 +1967,152 @@ ${userName}`;
                       >
                         {state.jobListLoading
                           ? Array.from({ length: 6 }).map((_, i) => (
-                              <div key={i} className="px-2 py-5 border-b border-[#c7c7c787]">
+                              <div
+                                key={i}
+                                className="px-2 py-5 border-b border-[#c7c7c787]"
+                              >
                                 <div className="flex flex-row gap-4">
-                                  <SkeletonLoader type="rect" width={24} height={24} className="rounded-lg flex-shrink-0" />
+                                  <SkeletonLoader
+                                    type="rect"
+                                    width={24}
+                                    height={24}
+                                    className="rounded-lg flex-shrink-0"
+                                  />
                                   <div className="flex-1">
-                                    <SkeletonLoader type="text" width="70%" height={14} className="mb-2" />
-                                    <SkeletonLoader type="text" width="50%" height={12} className="mb-2" />
-                                    <SkeletonLoader type="text" width="40%" height={12} />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="70%"
+                                      height={14}
+                                      className="mb-2"
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="50%"
+                                      height={12}
+                                      className="mb-2"
+                                    />
+                                    <SkeletonLoader
+                                      type="text"
+                                      width="40%"
+                                      height={12}
+                                    />
                                   </div>
                                 </div>
                               </div>
                             ))
                           : state.jobList?.map((job) => (
-                          <div
-                            key={job.id}
-                            id={`job-list-item-${job.id}`}
-                            onClick={() => {
-                              router.push(`/jobs?id=${job.id}`);
+                              <div
+                                key={job.id}
+                                id={`job-list-item-${job.id}`}
+                                onClick={() => {
+                                  router.push(`/jobs?id=${job.id}`);
 
-                              setSelectedJob(job);
-                              setState({ jobID: job.id });
-                              jobDetail(job.id);
-                            }}
-                            className={`cursor-pointer px-2 py-5 transition-all   ${
-                              selectedJob?.id === job.id
-                                ? "border border-[#1E3786] bg-[#fff]  "
-                                : "border-b border-[#c7c7c787]"
-                            }`}
-                          >
-                            <div className="flex flex-row gap-4 justify-between">
-                              <div className="flex flex-row gap-4">
-                                <div>
-                                  {job?.college?.college_logo ? (
-                                    <img
-                                      src={job?.college?.college_logo}
-                                      alt={job?.college?.name}
-                                      className="w-6 h-6  object-contain"
-                                    />
-                                  ) : (
-                                    <div
-                                      className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
-                                        selectedJob?.id === job.id
-                                          ? "text-white bg-gray-400 text-xs"
-                                          : " text-white bg-gray-400 text-xs"
-                                      }  font-semibold flex-shrink-0`}
-                                    >
-                                      {job.college?.name
-                                        ?.slice(0, 1)
-                                        .toUpperCase()}
-                                    </div>
-                                  )}
-                                </div>
-                                <div>
-                                  <div className="flex items-start gap-3">
-                                    <div className="min-w-0 flex-1">
-                                      <h3
-                                        className={`font-semibold  leading-tight mb-1 ${
-                                          selectedJob?.id === job.id
-                                            ? ""
-                                            : "text-gray-900"
-                                        }`}
-                                        title={job_title(job)}
-                                      >
-                                        {capitalizeFLetter(
-                                          CharSlice(job_title(job), 20),
-                                        )}
-                                      </h3>
-                                      <p
-                                        className={`cursor-pointer ${
-                                          selectedJob?.id === job.id
-                                            ? ""
-                                            : "text-gray-600 hover:underline"
-                                        } text-sm font-normal`}
-                                        // onClick={(e) => getCollege(e, job.college?.id)}
-                                      >
-                                        {CharSlice(job.college?.name, 20)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  {/* Header */}
-                                  {/* Experience and Salary */}
-                                  <div
-                                    className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
-                                      selectedJob?.id === job.id
-                                        ? ""
-                                        : "text-gray-600"
-                                    }`}
-                                  >
-                                    <div className="flex gap-2">
-                                      <Briefcase
-                                        className={`${
-                                          selectedJob?.id === job.id && ""
-                                        } w-3 h-3 flex-1 text-[#E6AB1D]`}
-                                      />
-                                      <span
-                                        className={`text-[12px] pt-[-2px] ${
-                                          selectedJob?.id === job.id && ""
-                                        }`}
-                                      >
-                                        {job.experiences?.name}
-                                      </span>
-                                    </div>
-
-                                    {job?.college?.address && (
-                                      <div className="flex  gap-1">
-                                        <MapPin
-                                          className={`${
-                                            selectedJob?.id === job.id && ""
-                                          } w-3 h-3 text-[#E6AB1D] flex-1`}
+                                  setSelectedJob(job);
+                                  setState({ jobID: job.id });
+                                  jobDetail(job.id);
+                                }}
+                                className={`cursor-pointer px-2 py-5 transition-all   ${
+                                  selectedJob?.id === job.id
+                                    ? "border border-[#1E3786] bg-[#fff]  "
+                                    : "border-b border-[#c7c7c787]"
+                                }`}
+                              >
+                                <div className="flex flex-row gap-4 justify-between">
+                                  <div className="flex flex-row gap-4">
+                                    <div>
+                                      {job?.college?.college_logo ? (
+                                        <img
+                                          src={job?.college?.college_logo}
+                                          alt={job?.college?.name}
+                                          className="w-6 h-6  object-contain"
                                         />
-                                        <span
-                                          className={`text-[12px] pt-[-2px] ${
-                                            selectedJob?.id === job.id &&
-                                            "text-[12px]"
-                                          }`}
+                                      ) : (
+                                        <div
+                                          className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
+                                            selectedJob?.id === job.id
+                                              ? "text-white bg-gray-400 text-xs"
+                                              : " text-white bg-gray-400 text-xs"
+                                          }  font-semibold flex-shrink-0`}
                                         >
-                                          {job.locations
-                                            ?.map((item) => item.city)
-                                            .join(", ")}
-                                          {/* {job?.college?.address} */}
-                                        </span>
+                                          {job.college?.name
+                                            ?.slice(0, 1)
+                                            .toUpperCase()}
+                                        </div>
+                                      )}
+                                    </div>
+                                    <div>
+                                      <div className="flex items-start gap-3">
+                                        <div className="min-w-0 flex-1">
+                                          <h3
+                                            className={`font-semibold  leading-tight mb-1 ${
+                                              selectedJob?.id === job.id
+                                                ? ""
+                                                : "text-gray-900"
+                                            }`}
+                                            title={job_title(job)}
+                                          >
+                                            {capitalizeFLetter(
+                                              CharSlice(job_title(job), 20),
+                                            )}
+                                          </h3>
+                                          <p
+                                            className={`cursor-pointer ${
+                                              selectedJob?.id === job.id
+                                                ? ""
+                                                : "text-gray-600 hover:underline"
+                                            } text-sm font-normal`}
+                                            // onClick={(e) => getCollege(e, job.college?.id)}
+                                          >
+                                            {CharSlice(job.college?.name, 20)}
+                                          </p>
+                                        </div>
                                       </div>
-                                    )}
+                                      {/* Header */}
+                                      {/* Experience and Salary */}
+                                      <div
+                                        className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
+                                          selectedJob?.id === job.id
+                                            ? ""
+                                            : "text-gray-600"
+                                        }`}
+                                      >
+                                        <div className="flex gap-2">
+                                          <Briefcase
+                                            className={`${
+                                              selectedJob?.id === job.id && ""
+                                            } w-3 h-3 flex-1 text-[#E6AB1D]`}
+                                          />
+                                          <span
+                                            className={`text-[12px] pt-[-2px] ${
+                                              selectedJob?.id === job.id && ""
+                                            }`}
+                                          >
+                                            {job.experiences?.name}
+                                          </span>
+                                        </div>
 
-                                    {/* <div className="flex items-center gap-1">
+                                        {job?.college?.address && (
+                                          <div className="flex  gap-1">
+                                            <MapPin
+                                              className={`${
+                                                selectedJob?.id === job.id && ""
+                                              } w-3 h-3 text-[#E6AB1D] flex-1`}
+                                            />
+                                            <span
+                                              className={`text-[12px] pt-[-2px] ${
+                                                selectedJob?.id === job.id &&
+                                                "text-[12px]"
+                                              }`}
+                                            >
+                                              {job.locations
+                                                ?.map((item) => item.city)
+                                                .join(", ")}
+                                              {/* {job?.college?.address} */}
+                                            </span>
+                                          </div>
+                                        )}
+
+                                        {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -2096,35 +2136,35 @@ ${userName}`;
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <Building2 className="w-4 h-4 text-[#ffb400] " />
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <Building2 className="w-4 h-4 text-[#ffb400] " />
 
-                                    <span className="flex items-center gap-2">
-                                      {job?.department
-                                        ?.slice(0, 1)
-                                        .map((item, index) => (
-                                          <span
-                                            key={index}
-                                            className="cursor-pointer text-[12px]"
-                                            // onClick={(e) => {
-                                            //   e.stopPropagation();
-                                            //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                            // }}
-                                          >
-                                            {item.name}
-                                          </span>
-                                        ))}
+                                        <span className="flex items-center gap-2">
+                                          {job?.department
+                                            ?.slice(0, 1)
+                                            .map((item, index) => (
+                                              <span
+                                                key={index}
+                                                className="cursor-pointer text-[12px]"
+                                                // onClick={(e) => {
+                                                //   e.stopPropagation();
+                                                //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                                // }}
+                                              >
+                                                {item.name}
+                                              </span>
+                                            ))}
 
-                                      {/* If more than 2 departments */}
-                                      {job?.department?.length > 2 && (
-                                        <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
-                                          +{job.department.length - 2}
-                                        </div>
-                                      )}
-                                    </span>
-                                  </div>
-                                  {/* Location
+                                          {/* If more than 2 departments */}
+                                          {job?.department?.length > 2 && (
+                                            <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
+                                              +{job.department.length - 2}
+                                            </div>
+                                          )}
+                                        </span>
+                                      </div>
+                                      {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -2147,18 +2187,18 @@ ${userName}`;
                                   .join(", ")}
                               </span>
                             </div> */}
-                                  {/* Footer */}
-                                  {/* <div
+                                      {/* Footer */}
+                                      {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                                  {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                      {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                                  {/* <div
+                                      {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -2181,35 +2221,35 @@ ${userName}`;
                                     : "Just now"}
                                 </span>
                               </div> */}
-                                  {/* </div> */}
-                                </div>
-                              </div>
+                                      {/* </div> */}
+                                    </div>
+                                  </div>
 
-                              <div>
-                                <div className="flex justify-between items-start mb-3">
-                                  <div className="flex items-center gap-2">
-                                    <button
-                                      onClick={() => handleSaveToggle(job)}
-                                      disabled={isSaving === job.id}
-                                      className="p-1 -m-1"
-                                      // aria-label={
-                                      //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                      // }
-                                    >
-                                      {job?.is_saved ? (
-                                        <div className="flex items-center ">
-                                          <BookmarkCheck
-                                            className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
-                                          />
-                                        </div>
-                                      ) : (
-                                        <>
-                                          <Bookmark className="w-5 h-5 " />
-                                        </>
-                                      )}
-                                    </button>
+                                  <div>
+                                    <div className="flex justify-between items-start mb-3">
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={() => handleSaveToggle(job)}
+                                          disabled={isSaving === job.id}
+                                          className="p-1 -m-1"
+                                          // aria-label={
+                                          //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                          // }
+                                        >
+                                          {job?.is_saved ? (
+                                            <div className="flex items-center ">
+                                              <BookmarkCheck
+                                                className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
+                                              />
+                                            </div>
+                                          ) : (
+                                            <>
+                                              <Bookmark className="w-5 h-5 " />
+                                            </>
+                                          )}
+                                        </button>
 
-                                    {/* <RWebShare
+                                        {/* <RWebShare
                               data={{
                                 title: "Faculty Plus",
                                 text: "Check this out!",
@@ -2221,12 +2261,12 @@ ${userName}`;
                             >
                               <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                             </RWebShare> */}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          </div>
-                        ))}
+                            ))}
                         {state.isFetchingMore && (
                           <div className="space-y-4 px-2">
                             {[1, 2].map((i) => (
@@ -2950,6 +2990,20 @@ ${userName}`;
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
                               <button
+                                onClick={handlePreferredToggle}
+                                className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                                  preferredOnly
+                                    ? "bg-[#1E3786] text-white border-none"
+                                    : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                                }`}
+                              >
+                                <CrownIcon
+                                  size={13}
+                                  className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                                />
+                                Preferred Jobs
+                              </button>
+                              <button
                                 onClick={() => setViewType("grid")}
                                 className={`p-2 rounded-md transition-colors ${
                                   viewType === "grid"
@@ -2987,85 +3041,112 @@ ${userName}`;
                   </div>
 
                   <div className="py-4 lg:hidden flex items-center justify-between">
-                    <div className="lg:hidden">
-                      <Sheet
-                        open={isMobileFilterOpen}
-                        onOpenChange={setIsMobileFilterOpen}
-                        modal={false}
-                      >
-                        <SheetTrigger asChild>
-                          <Button variant="outline" className="w-auto">
-                            <Filter className="mr-2 h-4 w-4" />
-                            Filters
-                          </Button>
-                        </SheetTrigger>
-                        <SheetContent
-                          side="bottom"
-                          className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
-                          onInteractOutside={(e) => e.preventDefault()}
-                          onPointerDownOutside={(e) => e.preventDefault()}
+                    <div className="flex items-center gap-2">
+                      <div className="lg:hidden">
+                        <Sheet
+                          open={isMobileFilterOpen}
+                          onOpenChange={setIsMobileFilterOpen}
+                          modal={false}
                         >
-                          <div className="flex items-center justify-between px-4 pb-3 border-b">
-                            <SheetTitle className="text-lg font-semibold">
-                              Filter Jobs
-                            </SheetTitle>
-                            <div className="flex items-center gap-2 justify-center">
-                              {isFilterApplied() && (
+                          <SheetTrigger asChild>
+                            <Button variant="outline" className="w-auto">
+                              <Filter className="mr-2 h-4 w-4" />
+                              Filters
+                            </Button>
+                          </SheetTrigger>
+                          <SheetContent
+                            side="bottom"
+                            className="h-[80vh] overflow-y-scroll scrollbar-hide scrollbar-thin hover:scrollbar-default rounded-t-3xl [&>button]:hidden"
+                            onInteractOutside={(e) => e.preventDefault()}
+                            onPointerDownOutside={(e) => e.preventDefault()}
+                          >
+                            <div className="flex items-center justify-between px-4 pb-3 border-b">
+                              <SheetTitle className="text-lg font-semibold">
+                                Filter Jobs
+                              </SheetTitle>
+                              <div className="flex items-center gap-2 justify-center">
+                                {isFilterApplied() && (
+                                  <button
+                                    onClick={() => setIsMobileFilterOpen(false)}
+                                    className=" bg-[#1E3786] w-fit  text-sm border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                                  >
+                                    Apply
+                                  </button>
+                                )}
                                 <button
                                   onClick={() => setIsMobileFilterOpen(false)}
-                                  className=" bg-[#1E3786] w-fit  text-sm border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                                  className="p-1 hover:bg-clr2 rounded-full"
                                 >
-                                  Apply
+                                  <X size={20} className="text-gray-500" />
                                 </button>
-                              )}
-                              <button
-                                onClick={() => setIsMobileFilterOpen(false)}
-                                className="p-1 hover:bg-clr2 rounded-full"
-                              >
-                                <X size={20} className="text-gray-500" />
-                              </button>
+                              </div>
                             </div>
-                          </div>
-                          <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
-                            <Filterbar
-                              // filterList={state.filterList}
-                              // filters={filters}
-                              // // onFilterChange={setFilters}
-                              // onFilterChange={(data: any) => {
-                              //   console.log("✌️data --->", data);
+                            <div className="px-4 overflow-y-scroll scrollbar-hide hover:scrollbar-default max-h-[calc(80vh-100px)]">
+                              <Filterbar
+                                // filterList={state.filterList}
+                                // filters={filters}
+                                // // onFilterChange={setFilters}
+                                // onFilterChange={(data: any) => {
+                                //   console.log("✌️data --->", data);
 
-                              //   setFilters(data);
-                              // }}
-                              filters={filters}
-                              onFilterChange={setFilters}
-                              categoryList={state?.categoryList}
-                              locationList={state?.locationList}
-                              jobTypeList={state?.jobTypeList}
-                              experienceList={state?.experienceList}
-                              collegeList={state?.collegeList}
-                              deptList={state?.deptList}
-                              datePostedList={state?.datePostedList}
-                              salaryRangeList={state?.salaryRangeList}
-                              jobRoleList={state?.jobRoleList}
-                              tagsList={state?.tagsList}
-                              loading={state.loading}
-                              masterExperienceRaw={
-                                state?.masterExperienceRaw ?? []
-                              }
-                              filterExperienceRaw={
-                                state?.filterExperienceRaw ?? []
-                              }
-                              closeModal={() => {
-                                window.scrollTo({
-                                  top: 0,
-                                  behavior: "smooth",
-                                });
-                                setIsMobileFilterOpen(false);
-                              }}
-                            />
-                          </div>
-                        </SheetContent>
-                      </Sheet>
+                                //   setFilters(data);
+                                // }}
+                                filters={filters}
+                                onFilterChange={setFilters}
+                                categoryList={state?.categoryList}
+                                locationList={state?.locationList}
+                                jobTypeList={state?.jobTypeList}
+                                experienceList={state?.experienceList}
+                                collegeList={state?.collegeList}
+                                deptList={state?.deptList}
+                                datePostedList={state?.datePostedList}
+                                salaryRangeList={state?.salaryRangeList}
+                                jobRoleList={state?.jobRoleList}
+                                tagsList={state?.tagsList}
+                                loading={state.loading}
+                                masterExperienceRaw={
+                                  state?.masterExperienceRaw ?? []
+                                }
+                                filterExperienceRaw={
+                                  state?.filterExperienceRaw ?? []
+                                }
+                                closeModal={() => {
+                                  window.scrollTo({
+                                    top: 0,
+                                    behavior: "smooth",
+                                  });
+                                  setIsMobileFilterOpen(false);
+                                }}
+                              />
+                            </div>
+                          </SheetContent>
+                        </Sheet>
+                      </div>
+                      {/* <button
+                        onClick={handlePreferredToggle}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                          preferredOnly
+                            ? "bg-[#1E3786] text-white"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        }`}
+                      >
+                        <BookmarkCheck size={13} />
+                        Preferred Jobs
+                      </button> */}
+                      <button
+                        onClick={handlePreferredToggle}
+                        className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                          preferredOnly
+                            ? "bg-[#1E3786] text-white border-none"
+                            : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                        }`}
+                      >
+                        <CrownIcon
+                          size={13}
+                          className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                        />
+                        Preferred Jobs
+                      </button>
                     </div>
                   </div>
 
@@ -4335,9 +4416,9 @@ ${userName}`;
 
                           {/* ================= Stats Section ================= */}
                           {(state.departmentDetail?.department_extras?.[0]
-                                .nba_accreditation ||
+                            .nba_accreditation ||
                             state.departmentDetail?.department_extras?.[0]
-                                ?.intake_per_year > 0) && (
+                              ?.intake_per_year > 0) && (
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 border-t">
                               {state.departmentDetail?.department_extras?.[0]
                                 .nba_accreditation && (
