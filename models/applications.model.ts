@@ -139,5 +139,26 @@ console.log('✌️hashtoken --->', hashtoken);
     });
     return promise;
   },
+
+  application_status: () => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `application-statuses/`;
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response.message);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+  
 };
 export default applications;

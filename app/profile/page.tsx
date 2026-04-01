@@ -180,6 +180,7 @@ export default function NaukriProfilePage() {
     appliedJobList();
     getSavedJobs();
     masterDepartmentList();
+    applicationStatus()
   }, []);
 
   useEffect(() => {
@@ -410,9 +411,9 @@ export default function NaukriProfilePage() {
       const body = {};
 
       const profile = JSON.parse(localStorage.getItem("user") || "null");
-      const res: any = await Models.job.appliedJobList(profile?.id, body);
+      const res: any = await Models.job.appliedJobList(profile?.id, body, page);
       setState({
-        loading: false, // For initial load
+        loading: false,
         jobListLoading: false,
         isFetchingMore: false,
         appliedCount: res?.count || 0,
@@ -420,35 +421,37 @@ export default function NaukriProfilePage() {
         jobList: append
           ? [...state.jobList, ...(res?.results || [])]
           : res?.results || [],
-        next: res?.next,
-        prev: res?.previous,
+        appliedNext: res?.next,
         page: page,
       });
     } catch (error) {
       setState({ loading: false, jobListLoading: false });
-      // Failure("Failed to fetch jobs");
     }
   };
 
-  const getSavedJobs = async (page = 1) => {
+  const getSavedJobs = async (page = 1, append = false) => {
     try {
-      setState({ loading: true });
+      if (append) {
+        setState({ isSavedFetchingMore: true });
+      } else {
+        setState({ loading: true });
+      }
       const profile = JSON.parse(localStorage.getItem("user") || "null");
 
       const res: any = await Models.save.list(page, profile?.id);
 
       setState({
         loading: false,
-        savedJobList: res?.results || [],
+        isSavedFetchingMore: false,
+        savedJobList: append
+          ? [...(state.savedJobList || []), ...(res?.results || [])]
+          : res?.results || [],
         savedCount: res?.count || 0,
-        count: res?.count || 0,
-        next: res?.next ?? null,
-        prev: res?.previous ?? null,
-        page,
+        savedNext: res?.next ?? null,
+        savedPage: page,
       });
     } catch (error) {
-      // console.error("Error fetching saved jobs:", error);
-      setState({ loading: false });
+      setState({ loading: false, isSavedFetchingMore: false });
     }
   };
 
@@ -1267,6 +1270,24 @@ export default function NaukriProfilePage() {
     }
   };
 
+  useEffect(() => {
+    const handleInfiniteScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.documentElement.scrollHeight - 800
+      ) {
+        if (state.appliedNext && !state.isFetchingMore && state.activeTab === "My Applications") {
+          appliedJobList(state.page + 1, true);
+        }
+        if (state.savedNext && !state.isSavedFetchingMore && state.activeTab === "Saved Jobs") {
+          getSavedJobs(state.savedPage + 1, true);
+        }
+      }
+    };
+    window.addEventListener("scroll", handleInfiniteScroll);
+    return () => window.removeEventListener("scroll", handleInfiniteScroll);
+  }, [state.appliedNext, state.isFetchingMore, state.savedNext, state.isSavedFetchingMore, state.page, state.savedPage, state.activeTab]);
+
   const experienceList = async () => {
     try {
       const res: any = await Models.masterExperience.list();
@@ -1278,6 +1299,23 @@ export default function NaukriProfilePage() {
 
       setState({
         experienceList: dropdown,
+      });
+    } catch (error) {
+      console.log("✌️error --->", error);
+    }
+  };
+
+  const applicationStatus = async () => {
+    try {
+      const res: any = await Models.applications.application_status();
+
+      const dropdown = res?.results?.map((item: any) => ({
+        value: item.name,
+        label: item.name,
+      }));
+
+      setState({
+        applicationStatus: dropdown,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -5341,6 +5379,7 @@ export default function NaukriProfilePage() {
                       </div>
                     ) : state.activeTab == "My Applications" ? (
                       state.jobList?.length > 0 ? (
+                        <>
                         <div
                           className={`grid  ${
                             !state.isGridView
@@ -5394,6 +5433,28 @@ export default function NaukriProfilePage() {
                             </div>
                           ))}
                         </div>
+                        {state.appliedNext && (
+                          <div className="grid grid-cols-1 xl:grid-cols-2 mt-2" style={{ gap: "10px" }}>
+                            {Array.from({ length: 2 }).map((_, i) => (
+                              <div key={i} className="bg-white p-6 rounded-lg border border-[#c7c7c787]">
+                                <div className="flex gap-4 mb-4">
+                                  <SkeletonLoader type="circle" width={48} height={48} />
+                                  <div className="flex-1">
+                                    <SkeletonLoader type="text" width="60%" height={20} style={{ marginBottom: 8 }} />
+                                    <SkeletonLoader type="text" width="40%" height={16} />
+                                  </div>
+                                </div>
+                                <div className="flex gap-2 mb-4">
+                                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                                </div>
+                                <SkeletonLoader type="text" width="100%" />
+                                <SkeletonLoader type="text" width="80%" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        </>
                       ) : (
                         <Card className="bg-white border-2   border-dashed border-gray-200 shadow-none rounded-md">
                           <CardContent className="flex flex-col items-center justify-center py-16">
@@ -5415,6 +5476,7 @@ export default function NaukriProfilePage() {
                       )
                     ) : state.activeTab == "Saved Jobs" ? (
                       state?.savedJobList?.length > 0 ? (
+                        <>
                         <div
                           className={`grid  ${
                             !state.isGridView
@@ -5448,6 +5510,28 @@ export default function NaukriProfilePage() {
                             </div>
                           ))}
                         </div>
+                        {state.savedNext && (
+                          <div className="grid grid-cols-1 xl:grid-cols-2 mt-2" style={{ gap: "10px" }}>
+                            {Array.from({ length: 2 }).map((_, i) => (
+                              <div key={i} className="bg-white p-6 rounded-lg border border-[#c7c7c787]">
+                                <div className="flex gap-4 mb-4">
+                                  <SkeletonLoader type="circle" width={48} height={48} />
+                                  <div className="flex-1">
+                                    <SkeletonLoader type="text" width="60%" height={20} style={{ marginBottom: 8 }} />
+                                    <SkeletonLoader type="text" width="40%" height={16} />
+                                  </div>
+                                </div>
+                                <div className="flex gap-2 mb-4">
+                                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                                  <SkeletonLoader type="rect" width={80} height={24} className="rounded-full" />
+                                </div>
+                                <SkeletonLoader type="text" width="100%" />
+                                <SkeletonLoader type="text" width="80%" />
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        </>
                       ) : (
                         <Card className="bg-white border-2 border-dashed border-gray-200 shadow-none rounded-md">
                           <CardContent className="flex flex-col items-center justify-center py-16">

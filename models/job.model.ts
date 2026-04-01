@@ -89,9 +89,9 @@ const job = {
     return promise;
   },
 
-  appliedJobList: (userId, body) => {
+  appliedJobList: (userId, body, page = 1) => {
     let promise = new Promise((resolve, reject) => {
-      let url = `users/${userId}/applied-jobs/`;
+      let url = `users/${userId}/applied-jobs/?page=${page}`;
       if (body?.search) {
         url += `&search=${encodeURIComponent(body.search)}`;
       }
