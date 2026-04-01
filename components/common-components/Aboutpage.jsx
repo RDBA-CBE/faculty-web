@@ -327,8 +327,7 @@ process while providing academic professionals with access to verified career op
             What can I do With Faculty Pro?
           </h2>
           <p className="text-gray-600 mb-8">
-            Lorem ipsum dolor sit amet consectetur. Quam sit nullam ac
-            scelerisque mi varius tellus feugiat.
+            FacultyPro is a specialized platform connecting academic talent with leading educational institutions
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-5">

@@ -2999,24 +2999,25 @@ ${userName}`;
                             <div className="hidden lg:block w-px h-6 bg-[#000]/40"></div>
                           )} */}
 
+                          {isLoggedIn && (
+                            <button
+                              onClick={handlePreferredToggle}
+                              className={`hidden lg:flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                                preferredOnly
+                                  ? "bg-[#1E3786] text-white border-none"
+                                  : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                              }`}
+                            >
+                              <CrownIcon
+                                size={13}
+                                className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                              />
+                              Preferred Jobs
+                            </button>
+                          )}
+
                           {isWideScreen && (
                             <div className="hidden lg:flex items-center gap-1 px-2 ">
-                              {isLoggedIn && (
-                              <button
-                                onClick={handlePreferredToggle}
-                                className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
-                                  preferredOnly
-                                    ? "bg-[#1E3786] text-white border-none"
-                                    : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
-                                }`}
-                              >
-                                <CrownIcon
-                                  size={13}
-                                  className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
-                                />
-                                Preferred Jobs
-                              </button>
-                              )}
                               <button
                                 onClick={() => setViewType("grid")}
                                 className={`p-2 rounded-md transition-colors ${
