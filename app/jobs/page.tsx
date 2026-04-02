@@ -204,7 +204,7 @@ useEffect(() => {
   
   // On subsequent visits (like refresh), check conditions
   const allParams = Array.from(searchParams.keys());
-  const hasOtherParams = allParams.some((key) => key !== "slug" && key !== "id");
+  const hasOtherParams = allParams.some((key) => key !== "slug" && key !== "id" && key !== "job-category");
   
   // If there are params other than slug, clear them on refresh
   if (hasOtherParams) {
