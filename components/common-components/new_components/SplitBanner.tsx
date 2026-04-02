@@ -21,6 +21,7 @@ const SplitBanner = () => {
     JobCatList();
     JobRoleList();
     departmentList();
+    dataCount()
   }, []);
 
 
@@ -88,6 +89,30 @@ const loadLocationFilterOptions = async () => {
   } catch (error) {
     console.error("Error fetching job roles:", error);
     setState({ jobRoleListLoading: false });
+  }
+};
+
+const dataCount = async () => {
+  try {
+    setState({ loading: true });
+
+    const res: any = await Models.colleges.dashboard();
+
+    const categories = res?.data?.colleges_by_job_category || {};
+
+    setState({
+      loading: false,
+      dataCount: res?.data,
+
+      // ✅ directly storing required values
+      engineering: categories["Engineering"] || 0,
+      arts: categories["Arts and Science"] || 0,
+      pharmacy: categories["Pharmacy"] || 0,
+    });
+
+  } catch (error) {
+    setState({ loading: false });
+    // Failure("Failed to fetch jobs");
   }
 };
 
@@ -348,7 +373,7 @@ const departmentList = async (search = "", page = 1) => {
               {/* {state?.filteredJobCatList?.map((item: any, i) => ( */}
               <div>
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                  100+
+                  {state?.engineering}+
                 </div>
                 <div className="text-white text-sm">
                   Engineering Colleges <br /> Requirement
@@ -356,7 +381,7 @@ const departmentList = async (search = "", page = 1) => {
               </div>
               <div>
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                  70+
+                  {state?.arts}+
                 </div>
                 <div className="text-white text-sm">
                   Arts Colleges
@@ -365,7 +390,7 @@ const departmentList = async (search = "", page = 1) => {
               </div>
               <div>
                 <div className="text-2xl md:text-3xl lg:text-3xl font-semibold text-white mb-1">
-                  80+
+                  {state?.pharmacy}+
                 </div>
                 <div className="text-white text-sm">
                   Pharmacy Colleges
