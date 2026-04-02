@@ -190,6 +190,46 @@ export default function JobsPage() {
 
   const debouncedSearch = useDebounce(state.search, 500);
 
+  // Add this useEffect after your other useEffect hooks (around line 350-400)
+
+useEffect(() => {
+  const slugParam = searchParams.get("slug");
+  const hasVisited = sessionStorage.getItem("jobs_page_visited");
+  
+  // If it's the first visit to this page, mark it
+  if (!hasVisited) {
+    sessionStorage.setItem("jobs_page_visited", "true");
+    return;
+  }
+  
+  // On subsequent visits (like refresh), check conditions
+  const allParams = Array.from(searchParams.keys());
+  const hasOtherParams = allParams.some((key) => key !== "slug" && key !== "id");
+  
+  // If there are params other than slug, clear them on refresh
+  if (hasOtherParams) {
+    if (slugParam) {
+      // Keep slug and id if present
+      const idParam = searchParams.get("id");
+      const newUrl = idParam 
+        ? `/jobs?slug=${slugParam}&id=${idParam}` 
+        : `/jobs?slug=${slugParam}`;
+      router.replace(newUrl);
+    } else {
+      // No slug, replace with /jobs
+      router.replace("/jobs");
+    }
+    sessionStorage.removeItem("jobs_page_visited");
+  }
+}, [searchParams, router]);
+
+// Clean up on component unmount
+useEffect(() => {
+  return () => {
+    sessionStorage.removeItem("jobs_page_visited");
+  };
+}, []);
+
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
       const collegeName =
