@@ -142,24 +142,24 @@ export default function NaukriProfilePage() {
     getSavedJobs();
   }, []);
 
-  // useEffect(() => {
-  //   const urlUserId = params?.id;
-  //   if (urlUserId) {
-  //     setState({ userId: urlUserId });
-  //   } else {
-  //     setState({ loading: false });
-  //   }
-  // }, [params?.id]);
-
   useEffect(() => {
-  const urlUserId = searchParams.get("id");
+    const urlUserId = params?.id;
+    if (urlUserId) {
+      setState({ userId: urlUserId });
+    } else {
+      setState({ loading: false });
+    }
+  }, [params?.id]);
 
-  if (urlUserId) {
-    setState({ userId: urlUserId });
-  } else {
-    setState({ loading: false });
-  }
-}, [searchParams]);
+//   useEffect(() => {
+//   const urlUserId = searchParams.get("id");
+
+//   if (urlUserId) {
+//     setState({ userId: urlUserId });
+//   } else {
+//     setState({ loading: false });
+//   }
+// }, [searchParams]);
 
   useEffect(() => {
     if (state.activeTab == "Applications") {
