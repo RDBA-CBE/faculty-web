@@ -5460,7 +5460,7 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(`/jobs?id=${job?.job_id || job?.id}`)
+                                    router.push(`/jobs?slug=${job?.slug}`)
                                   }
                                 />
                               ) : (
@@ -5475,7 +5475,7 @@ export default function NaukriProfilePage() {
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(`/jobs?id=${job?.job_id || job?.id}`)
+                                    router.push(`/jobs?slug=${job?.slug}`)
                                   }
                                 />
                               )}
@@ -5554,7 +5554,7 @@ export default function NaukriProfilePage() {
                                   console.log("first")
                                 }
                                 onClick={() =>
-                                    router.push(`/jobs?id=${job?.job?.id || job?.id}`)
+                                    router.push(`/jobs?slug=${job?.job?.slug || job?.slug}`)
                                 }
                               />
                             </div>

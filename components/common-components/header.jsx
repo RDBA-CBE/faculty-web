@@ -301,14 +301,14 @@ const Header = () => {
       title: "Jobs",
       url: "/jobs",
     },
-    {
-      title: "About Us",
-      url: "/about",
-    },
-    {
-      title: "Contact Us",
-      url: "/contact",
-    },
+    // {
+    //   title: "About Us",
+    //   url: "/about",
+    // },
+    // {
+    //   title: "Contact Us",
+    //   url: "/contact",
+    // },
   ];
 
   const handleFormChange = (field, value) => {
@@ -331,6 +331,7 @@ const Header = () => {
       >
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
+            <div className="flex gap-10">
             {/* Logo */}
             <div className="flex items-center flex-shrink-0">
               <Link href="/" className="flex items-center space-x-3">
@@ -343,10 +344,12 @@ const Header = () => {
                   Faculty Pro
                 </span> */}
               </Link>
+
+              
             </div>
 
             {/* Navigation Menu (Desktop) */}
-            <nav className="hidden lg:flex items-center absolute left-1/2 transform -translate-x-1/2">
+            <nav className="hidden lg:flex items-center ">
               <div className="flex items-center space-x-8">
                 {navigationMenu.map((menu) => {
                   const isActive =
@@ -376,6 +379,8 @@ const Header = () => {
                 })}
               </div>
             </nav>
+
+            </div>
 
             {/* Right Side - Auth & Mobile Menu */}
             <div className="flex items-center space-x-4 flex-shrink-0">

@@ -101,7 +101,8 @@ export default function JobsPage() {
   const searchParams = useSearchParams();
 
   const router = useRouter();
-  const jobIdParam = searchParams.get("id");
+  const jobIdParam = searchParams.get("slug");
+  const jobIdFromQuery = searchParams.get("id");
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
@@ -170,7 +171,7 @@ export default function JobsPage() {
   const [filters, setFilters] = useState({
     searchQuery: "",
     locations: locationParam ? [parseInt(locationParam, 10)] : [],
-    categories: [],
+    categories: jobcategoryParam ? [parseInt(jobcategoryParam, 10)] : [],
     jobTypes: [],
     experienceLevels: [],
     datePosted: [],
@@ -993,17 +994,19 @@ ${userName}`;
   };
 
   useEffect(() => {
-    if (jobIdParam) {
+    if (jobIdFromQuery ) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      setState({ jobID: jobIdParam });
-      jobDetail(jobIdParam).then((res) => {
+      
+      // Fetch job detail directly using the ID
+      setState({ jobID: jobIdFromQuery });
+      jobDetail(jobIdFromQuery).then((res) => {
         if (res) {
           setSelectedJob(res);
           setShowJobDetail(true);
         }
       });
     }
-  }, [jobIdParam]);
+  }, [jobIdFromQuery]);
 
   useEffect(() => {
     const checkPendingApply = () => {
@@ -2017,7 +2020,7 @@ ${userName}`;
                                 key={job.id}
                                 id={`job-list-item-${job.id}`}
                                 onClick={() => {
-                                  router.push(`/jobs?id=${job.id}`);
+                                  router.push(`/jobs?slug=${job.slug}`);
 
                                   setSelectedJob(job);
                                   setState({ jobID: job.id });
@@ -3309,9 +3312,7 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                      router.push(
-                                        `/jobs?id=${job?.job_id || job?.id}`,
-                                      )
+                                      router.push(`/jobs?slug=${job?.slug}`)
                                     }
                                   />
                                 ) : (
@@ -3325,9 +3326,7 @@ ${userName}`;
                                       getDepartment(e, id)
                                     }
                                     onClick={() =>
-                                      router.push(
-                                        `/jobs?id=${job?.job_id || job?.id}`,
-                                      )
+                                      router.push(`/jobs?slug=${job?.slug}`)
                                     }
                                   />
                                 )}

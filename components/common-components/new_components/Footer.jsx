@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, X } from "lucide-react";
-import { Failure, Success, useSetState } from "@/utils/function.utils";
+import { Dropdown, Failure, Success, useSetState } from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -27,6 +27,7 @@ const Footer = () => {
   });
   useEffect(() => {
     jobList(1);
+    JobCatList()
   }, []);
 
   const jobList = async (page = 1) => {
@@ -77,6 +78,33 @@ const Footer = () => {
       }
     }
   };
+
+    const JobCatList = async () => {
+      try {
+        let page = 1;
+        let allResults = [];
+        let hasNext = true;
+    
+        while (hasNext) {
+          const res = await Models.category.list(page,);
+    
+          if (res?.results?.length) {
+            allResults = [...allResults, ...res.results];
+          }
+    
+          hasNext = !!res?.next;
+          page++;
+        }
+    
+        const dropdown = Dropdown(allResults, "name");
+    
+        setState({
+          jobCatList: dropdown,
+        });
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
 
   return (
     <footer className="relative w-full bg-clr1">
@@ -174,42 +202,79 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                     Jobs
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     href="/contact"
                     className="text-white hover:text-gray-400 transition-colors"
                   >
                     Contact Us
                   </a>
-                </li>
+                </li> */}
               </ul>
             </div>
 
-            <div className="md:col-span-4">
+            <div className="md:col-span-2">
               <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
                 Recent Jobs
               </h3>
               <div
-                className="grid grid-cols-2  gap-y-2 text-md text-gray-400"
+                className="grid   gap-y-2 text-md text-gray-400"
                 style={{ rowGap: "10px" }}
               >
                 {state?.jobList?.slice(0, 4)?.map((item, index) => (
                   <p
                     key={item.id}
                     onClick={() => {
-                      isMobileScreen
-                        ? router.push(`/jobs?id=${item.id}`)
-                        : router.push(`/job-detail/${item.id}`);
+                      router.push(`/jobs?slug=${item.slug}`);
                       if (pathname === "/jobs") {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
+                   
                     className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                   >
                     {item?.job_title}
                   </p>
                 ))}
               </div>
+            </div>
+
+            <div className="md:col-span-2">
+              <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+                Job Category
+              </h3>
+              <ul className="space-y-3 text-md text-gray-400">
+                {state?.jobCatList?.slice(0, 4)?.map((item) => (
+                  <li key={item.value}>
+                    <p
+                      href={`/jobs?category=${item.value}`}
+                      className="text-white hover:text-gray-400 transition-colors cursor-pointer"
+                      onClick={() => {
+                        router.push(`/jobs?job-category=${item.value}`);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                    >
+                      {item.label}
+                    </p>
+                  </li>
+                ))}
+                {/* <li>
+                  <a
+                    href="/privacy-policy"
+                    className="text-white hover:text-gray-400 transition-colors"
+                  >
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/terms-conditions"
+                    className="text-white hover:text-gray-400 transition-colors"
+                  >
+                    Terms & Conditions
+                  </a>
+                </li> */}
+              </ul>
             </div>
 
             <div className="md:col-span-2">
@@ -239,18 +304,10 @@ reputable colleges and institutions seeking excellence in teaching, research, an
 
           {/* Socials and Copyright */}
           <div className="mt-8 flex flex-col items-center gap-6">
-            <div className="flex gap-4">
-              {/* {[Facebook, X, Instagram, Linkedin].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
-                >
-                  <Icon className="w-5 h-5 md:w-15 md:h-15" />
-                </a>
-              ))} */}
+            {/* <div className="flex gap-4">
+              
               <a
-                // key={i}
+               
                 href="#"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
@@ -258,17 +315,17 @@ reputable colleges and institutions seeking excellence in teaching, research, an
               </a>
 
               <a
-                // key={i}
+                
                 href="#"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 {" "}
                 𝕏
-                {/* <Icon className="w-5 h-5 md:w-15 md:h-15" /> */}
+               
               </a>
 
               <a
-                // key={i}
+                
                 href="#"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
@@ -276,13 +333,13 @@ reputable colleges and institutions seeking excellence in teaching, research, an
               </a>
 
               <a
-                // key={i}
+               
                 href="#"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
               </a>
-            </div>
+            </div> */}
             <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
               Copyright 2026 © Faculty Pro. Concept by{" "}
               <a
