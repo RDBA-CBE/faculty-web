@@ -3,9 +3,15 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Facebook, Twitter, Instagram, Linkedin, X } from "lucide-react";
-import { Dropdown, Failure, Success, useSetState } from "@/utils/function.utils";
+import {
+  Dropdown,
+  Failure,
+  Success,
+  useSetState,
+} from "@/utils/function.utils";
 import Models from "@/imports/models.import";
 import { useRouter, usePathname } from "next/navigation";
+import Modal from "../modal";
 
 const Footer = () => {
   const router = useRouter();
@@ -27,7 +33,7 @@ const Footer = () => {
   });
   useEffect(() => {
     jobList(1);
-    JobCatList()
+    JobCatList();
   }, []);
 
   const jobList = async (page = 1) => {
@@ -69,8 +75,8 @@ const Footer = () => {
       };
 
       const res = await Models.auth.newsletter(body);
-      Success("Subscribed successfully! Thank you for joining our newsletter.");
-      setState({ email: "" });
+      // Success("Subscribed successfully! Thank you for joining our newsletter.");
+      setState({ email: "" , successSubscription: true});
     } catch (error) {
       if (error?.response?.data?.error) {
         Failure(error?.response?.data?.error);
@@ -79,130 +85,134 @@ const Footer = () => {
     }
   };
 
-    const JobCatList = async () => {
-      try {
-        let page = 1;
-        let allResults = [];
-        let hasNext = true;
-    
-        while (hasNext) {
-          const res = await Models.category.list(page,);
-    
-          if (res?.results?.length) {
-            allResults = [...allResults, ...res.results];
-          }
-    
-          hasNext = !!res?.next;
-          page++;
+  const JobCatList = async () => {
+    try {
+      let page = 1;
+      let allResults = [];
+      let hasNext = true;
+
+      while (hasNext) {
+        const res = await Models.category.list(page);
+
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
         }
-    
-        const dropdown = Dropdown(allResults, "name");
-    
-        setState({
-          jobCatList: dropdown,
-        });
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+
+        hasNext = !!res?.next;
+        page++;
       }
-    };
+
+      const dropdown = Dropdown(allResults, "name");
+
+      setState({
+        jobCatList: dropdown,
+      });
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
 
   return (
-    <footer className="relative w-full bg-clr1">
-      {/* 1. Subscribe Section - This container centers the narrow yellow card */}
-      <div className="sm:container mx-auto  relative z-20">
-        <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between  p-6 md:p-10 min-h-[180px] relative shadow-xl md:translate-y-[30%]">
-          {/* Text & Input Content */}
-          <div className="w-full md:w-1/2 text-black z-10">
-            <h2 className="text-2xl md:text-2xl font-medium text-[#1C1C1C] mb-2">
-              Stay Informed About Academic Opportunities
-            </h2>
-            <p className="text-sm opacity-90 mb-6 max-w-md leading-tight">
-              Receive timely updates on the latest faculty openings, institutional recruitment announcements, and
-academic career opportunities.
-            </p>
+    <>
+      <footer className="relative w-full bg-clr1">
+        {/* 1. Subscribe Section - This container centers the narrow yellow card */}
+        <div className="sm:container mx-auto  relative z-20">
+          <div className="max-w-5xl mx-auto bg-[#F2B31D] flex flex-col md:flex-row items-center justify-between  p-6 md:p-10 min-h-[180px] relative shadow-xl md:translate-y-[30%]">
+            {/* Text & Input Content */}
+            <div className="w-full md:w-1/2 text-black z-10">
+              <h2 className="text-2xl md:text-2xl font-medium text-[#1C1C1C] mb-2">
+                Stay Informed About Academic Opportunities
+              </h2>
+              <p className="text-sm opacity-90 mb-6 max-w-md leading-tight">
+                Receive timely updates on the latest faculty openings,
+                institutional recruitment announcements, and academic career
+                opportunities.
+              </p>
 
-            {/* Input Group */}
-            <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
-              <input
-                type="email"
-                value={state?.email}
-                onChange={(e) => setState({ email: e.target.value })}
-                placeholder="Enter Your Email Address..."
-                className="flex-grow px-4 py-2 rounded-full outline-none text-[#373535] text-sm bg-transparent placeholder:text-[#373535]"
-              />
-              <button
-                onClick={() => handleSubscribe()}
-                className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-semibold px-5 md:px-6 py-2 rounded-full text-sm"
-              >
-                Subscribe
-              </button>
+              {/* Input Group */}
+              <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
+                <input
+                  type="email"
+                  value={state?.email}
+                  onChange={(e) => setState({ email: e.target.value })}
+                  placeholder="Enter Your Email Address..."
+                  className="flex-grow px-4 py-2 rounded-full outline-none text-[#373535] text-sm bg-transparent placeholder:text-[#373535]"
+                />
+                <button
+                  onClick={() => handleSubscribe()}
+                  className="bg-[#F2B31D] hover:bg-black hover:text-white transition-all text-black font-semibold px-5 md:px-6 py-2 rounded-full text-sm"
+                >
+                  Subscribe
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Group Image - Overlapping the top */}
-          <div className="hidden md:block absolute bottom-0 right-4 w-[45%] h-[140%] pointer-events-none">
-            <Image
-              src="/assets/images/group.png"
-              alt="Faculty Group"
-              fill
-              className="object-contain object-bottom"
-              priority
-            />
+            {/* Group Image - Overlapping the top */}
+            <div className="hidden md:block absolute bottom-0 right-4 w-[45%] h-[140%] pointer-events-none">
+              <Image
+                src="/assets/images/group.png"
+                alt="Faculty Group"
+                fill
+                className="object-contain object-bottom"
+                priority
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* 2. Main Footer Section - This takes the full screen width */}
-      <div
-        className="w-full bg-[#1E3786] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
-        // style={{
-        //   backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
-        //   backgroundSize: "cover",
-        //   backgroundPosition: "center",
-        // }}
-      >
-        <div className="section-wid ">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
-            {/* Logo Column */}
-            <div className="md:col-span-4 space-y-4">
-              <div className="relative w-[180px] h-9">
-                <Image
-                  src="/assets/images/footer_logo.png"
-                  alt="Faculty Group"
-                  fill
-                  className="h-full  w-full"
-                  priority
-                />
+        {/* 2. Main Footer Section - This takes the full screen width */}
+        <div
+          className="w-full bg-[#1E3786] text-white pt-16 md:pt-[180px] pb-12 mt-[-10px]"
+          // style={{
+          //   backgroundImage: `url('/assets/images/Faculty/footer_bg.png')`,
+          //   backgroundSize: "cover",
+          //   backgroundPosition: "center",
+          // }}
+        >
+          <div className="section-wid ">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 border-b border-white/10 pb-12">
+              {/* Logo Column */}
+              <div className="md:col-span-4 space-y-4">
+                <div className="relative w-[180px] h-9">
+                  <Image
+                    src="/assets/images/footer_logo.png"
+                    alt="Faculty Group"
+                    fill
+                    className="h-full  w-full"
+                    priority
+                  />
+                </div>
+                <p className="text-md text-white leading-relaxed max-w-sm">
+                  FacultyPro is a specialized academic recruitment platform
+                  connecting qualified educators with reputable colleges and
+                  institutions seeking excellence in teaching, research, and
+                  academic leadership.
+                </p>
               </div>
-              <p className="text-md text-white leading-relaxed max-w-sm">
-               FacultyPro is a specialized academic recruitment platform connecting qualified educators with
-reputable colleges and institutions seeking excellence in teaching, research, and academic leadership.
-              </p>
-            </div>
 
-            {/* Links Columns */}
-            <div className="md:col-span-2">
-              <h3 className="text-md md:text-lg font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider text-[#fff]">
-                Useful links
-              </h3>
-              <ul className="space-y-3 text-xs text-gray-400">
-                <li>
-                  <a
-                    href="/about"
-                    className="text-white hover:text-gray-400 transition-colors"
-                  >
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/jobs"
-                    className="text-white hover:text-gray-400 transition-colors"
-                  >
-                    Jobs
-                  </a>
-                </li>
-                {/* <li>
+              {/* Links Columns */}
+              <div className="md:col-span-2">
+                <h3 className="text-md md:text-lg font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider text-[#fff]">
+                  Useful links
+                </h3>
+                <ul className="space-y-3 text-xs text-gray-400">
+                  <li>
+                    <a
+                      href="/about"
+                      className="text-white hover:text-gray-400 transition-colors"
+                    >
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/jobs"
+                      className="text-white hover:text-gray-400 transition-colors"
+                    >
+                      Jobs
+                    </a>
+                  </li>
+                  {/* <li>
                   <a
                     href="/contact"
                     className="text-white hover:text-gray-400 transition-colors"
@@ -210,55 +220,54 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                     Contact Us
                   </a>
                 </li> */}
-              </ul>
-            </div>
-
-            <div className="md:col-span-2">
-              <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
-                Recent Jobs
-              </h3>
-              <div
-                className="grid   gap-y-2 text-md text-gray-400"
-                style={{ rowGap: "10px" }}
-              >
-                {state?.jobList?.slice(0, 4)?.map((item, index) => (
-                  <p
-                    key={item.id}
-                    onClick={() => {
-                      router.push(`/jobs?slug=${item.slug}`);
-                      if (pathname === "/jobs") {
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }
-                    }}
-                   
-                    className="text-white hover:text-gray-400 transition-colors cursor-pointer"
-                  >
-                    {item?.job_title}
-                  </p>
-                ))}
+                </ul>
               </div>
-            </div>
 
-            <div className="md:col-span-2">
-              <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
-                Job Category
-              </h3>
-              <ul className="space-y-3 text-md text-gray-400">
-                {state?.jobCatList?.slice(0, 4)?.map((item) => (
-                  <li key={item.value}>
+              <div className="md:col-span-2">
+                <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+                  Recent Jobs
+                </h3>
+                <div
+                  className="grid   gap-y-2 text-md text-gray-400"
+                  style={{ rowGap: "10px" }}
+                >
+                  {state?.jobList?.slice(0, 4)?.map((item, index) => (
                     <p
-                      href={`/jobs?category=${item.value}`}
-                      className="text-white hover:text-gray-400 transition-colors cursor-pointer"
+                      key={item.id}
                       onClick={() => {
-                        router.push(`/jobs?job-category=${item.value}`);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                        router.push(`/jobs?slug=${item.slug}`);
+                        if (pathname === "/jobs") {
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }
                       }}
+                      className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                     >
-                      {item.label}
+                      {item?.job_title}
                     </p>
-                  </li>
-                ))}
-                {/* <li>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2">
+                <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+                  Job Category
+                </h3>
+                <ul className="space-y-3 text-md text-gray-400">
+                  {state?.jobCatList?.slice(0, 4)?.map((item) => (
+                    <li key={item.value}>
+                      <p
+                        href={`/jobs?category=${item.value}`}
+                        className="text-white hover:text-gray-400 transition-colors cursor-pointer"
+                        onClick={() => {
+                          router.push(`/jobs?job-category=${item.value}`);
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }}
+                      >
+                        {item.label}
+                      </p>
+                    </li>
+                  ))}
+                  {/* <li>
                   <a
                     href="/privacy-policy"
                     className="text-white hover:text-gray-400 transition-colors"
@@ -274,37 +283,37 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                     Terms & Conditions
                   </a>
                 </li> */}
-              </ul>
+                </ul>
+              </div>
+
+              <div className="md:col-span-2">
+                <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
+                  Official links
+                </h3>
+                <ul className="space-y-3 text-md text-gray-400">
+                  <li>
+                    <a
+                      href="/privacy-policy"
+                      className="text-white hover:text-gray-400 transition-colors"
+                    >
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/terms-conditions"
+                      className="text-white hover:text-gray-400 transition-colors"
+                    >
+                      Terms & Conditions
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
 
-            <div className="md:col-span-2">
-              <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
-                Official links
-              </h3>
-              <ul className="space-y-3 text-md text-gray-400">
-                <li>
-                  <a
-                    href="/privacy-policy"
-                    className="text-white hover:text-gray-400 transition-colors"
-                  >
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="/terms-conditions"
-                    className="text-white hover:text-gray-400 transition-colors"
-                  >
-                    Terms & Conditions
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Socials and Copyright */}
-          <div className="mt-8 flex flex-col items-center gap-6">
-            {/* <div className="flex gap-4">
+            {/* Socials and Copyright */}
+            <div className="mt-8 flex flex-col items-center gap-6">
+              {/* <div className="flex gap-4">
               
               <a
                
@@ -340,20 +349,42 @@ reputable colleges and institutions seeking excellence in teaching, research, an
                 <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
               </a>
             </div> */}
-            <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
-              Copyright 2026 © Faculty Pro. Concept by{" "}
-              <a
-                href="http://irepute.in/"
-                target="_blank"
-                className="text-underline"
-              >
-                repute
-              </a>
-            </p>
+              <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
+                Copyright 2026 © Faculty Pro. Concept by{" "}
+                <a
+                  href="http://irepute.in/"
+                  target="_blank"
+                  className="text-underline"
+                >
+                  repute
+                </a>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-    </footer>
+      </footer>
+
+      <Modal
+        isOpen={state.successSubscription}
+        setIsOpen={() => {
+          setState({ errors: {}, successSubscription: false });
+        }}
+        title="User Subscription"
+        width="auto"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+            <h2 className="text-xl font-bold text-green-500 mb-6 z-10">
+              Subscription Successfull. 
+            </h2>
+
+            <p className="text-gray-600  max-w-lg text-sm leading-relaxed z-10">
+               Thank you for joining our newsletter.
+            </p>
+          </div>
+        )}
+      />
+    </>
   );
 };
 

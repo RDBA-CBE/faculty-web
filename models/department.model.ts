@@ -49,6 +49,29 @@ const department = {
   });
 },
 
+acadamicRes: (data: any = {}) => {
+  return new Promise((resolve, reject) => {
+    let url = `additional-academic-responsibilities/?ordering=asc`;
+
+    // ✅ add page support
+    if (data?.page) {
+      url += `&page=${data.page}`;
+    }
+     
+
+    instance()
+      .get(url)
+      .then((res) => resolve(res.data))
+      .catch((error) => {
+        if (error.response) {
+          reject(error.response.message);
+        } else {
+          reject(error);
+        }
+      });
+  });
+},
+
   depdetails: (id: any) => {
     let promise = new Promise((resolve, reject) => {
       let url = `departments/${id}/`;
