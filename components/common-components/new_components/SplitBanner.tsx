@@ -147,26 +147,32 @@ const dataCount = async () => {
 //   }
 // };
 
-const departmentList = async (search = "", page = 1) => {
+const departmentList = async (search = "") => {
   try {
     setState({ departmentListLoading: true });
 
-    const res: any = await Models.department.masterDep({
-      page,
-      search,
-      has_jobs: true,
-    });
+    let page = 1;
+    let hasNext = true;
+    let allDepartments: any[] = [];
 
-    const dropdown = Dropdown(res?.results || [], "name");
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({
+        page,
+        search,
+        has_jobs: true,
+      });
+
+      const dropdown = Dropdown(res?.results || [], "name");
+      allDepartments = [...allDepartments, ...dropdown];
+
+      hasNext = !!res?.next;
+      page++;
+    }
 
     setState({
-      departmentList: page === 1
-        ? dropdown
-        : [...state.departmentList, ...dropdown],
+      departmentList: allDepartments,
       departmentListLoading: false,
     });
-
-    return res?.next; // for pagination
   } catch (error) {
     console.error(error);
     setState({ departmentListLoading: false });

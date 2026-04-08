@@ -905,29 +905,34 @@ ${userName}`;
   };
 
   const masterDeptList = async () => {
-    try {
-      let page = 1;
-      let allResults: any[] = [];
-      let hasNext = true;
-      while (hasNext) {
-        const res: any = await Models.department.masterDep({
-          page,
-          has_jobs: true,
-        });
-        if (res?.results?.length) {
-          allResults = [...allResults, ...res.results];
-        }
-        hasNext = !!res?.next;
-        page++;
-      }
-      const dropdown = Dropdown(allResults, "name");
-      setState({
-        masterDeptList: dropdown,
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
+
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({
+        page,
+        has_jobs: true,
       });
-    } catch (error) {
-      console.error("Error fetching master departments:", error);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next; // 👈 check next page
+      page++; // 👈 increment page
     }
-  };
+
+    const dropdown = Dropdown(allResults, "name");
+
+    setState({
+      masterDeptList: dropdown,
+    });
+  } catch (error) {
+    console.error("Error fetching master departments:", error);
+  }
+};
 
   const masterJobRoleList = async () => {
     try {

@@ -1268,26 +1268,34 @@ export default function NaukriProfilePage() {
   };
 
   const masterDepartmentList = async () => {
-    try {
-      let page = 1;
-      let allResults: any[] = [];
-      let hasNext = true;
-      while (hasNext) {
-        const res: any = await Models.department.masterDep({ page });
-        if (res?.results?.length) allResults = [...allResults, ...res.results];
-        hasNext = !!res?.next;
-        page++;
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
+
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({ page });
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
       }
-      setState({
-        masterDeptList: allResults.map((item: any) => ({
-          value: item.id,
-          label: item.name,
-        })),
-      });
-    } catch (error) {
-      console.log("department error", error);
+
+      hasNext = !!res?.next; // 👈 check if more pages exist
+      page++; // 👈 move to next page
     }
-  };
+
+    setState({
+      masterDeptList: allResults.map((item: any) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    });
+  } catch (error) {
+    console.log("department error", error);
+  }
+};
+
+  
 
   useEffect(() => {
     const handleInfiniteScroll = () => {
