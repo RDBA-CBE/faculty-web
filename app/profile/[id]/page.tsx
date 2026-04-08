@@ -64,8 +64,7 @@ import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 import { useParams } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function NaukriProfilePage() {
   const params = useParams();
@@ -83,6 +82,7 @@ export default function NaukriProfilePage() {
   const sidebarWrapperRef = useRef(null);
   const footerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const router = useRouter();
 
   const [state, setState] = useSetState({
     // Profile Data
@@ -151,15 +151,15 @@ export default function NaukriProfilePage() {
     }
   }, [params?.id]);
 
-//   useEffect(() => {
-//   const urlUserId = searchParams.get("id");
+  //   useEffect(() => {
+  //   const urlUserId = searchParams.get("id");
 
-//   if (urlUserId) {
-//     setState({ userId: urlUserId });
-//   } else {
-//     setState({ loading: false });
-//   }
-// }, [searchParams]);
+  //   if (urlUserId) {
+  //     setState({ userId: urlUserId });
+  //   } else {
+  //     setState({ loading: false });
+  //   }
+  // }, [searchParams]);
 
   useEffect(() => {
     if (state.activeTab == "Applications") {
@@ -260,6 +260,7 @@ export default function NaukriProfilePage() {
   const userDetail = async (userId) => {
     try {
       const res: any = await Models.profile.details(userId);
+
       setState({
         loading: false,
         userDetail: res,
@@ -271,9 +272,17 @@ export default function NaukriProfilePage() {
         reveal_name: res?.reveal_name,
         newsletter: res?.newsletter,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.log("error", error);
       setState({ loading: false });
-      // Failure("Failed to fetch jobs");
+
+      if (
+        error?.error === "User Not Found" ||
+        error?.message === "User Not Found"
+      ) {
+        alert("User Not Found"); // 👈 native browser alert
+        router.back(); // 👈 runs AFTER alert is closed
+      }
     }
   };
 
@@ -1371,21 +1380,21 @@ export default function NaukriProfilePage() {
                     <CardContent className="relative py-4 px-0 mx-0">
                       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                         <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
-                            {state.userDetail?.reveal_name === false ? (
-                              <div className="w-full h-full bg-gray-300 animate-pulse" />
-                            ) : (
-                              <img
-                                src={
-                                  state.userDetail?.profile_logo_url ||
-                                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                                }
-                                alt="Profile"
-                                width={128}
-                                height={128}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
+                          {state.userDetail?.reveal_name === false ? (
+                            <div className="w-full h-full bg-gray-300 animate-pulse" />
+                          ) : (
+                            <img
+                              src={
+                                state.userDetail?.profile_logo_url ||
+                                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                              }
+                              alt="Profile"
+                              width={128}
+                              height={128}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
                         {/* Profile Info - Enhanced */}
                         <div className="flex-1 w-full">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -1403,39 +1412,37 @@ export default function NaukriProfilePage() {
                                 )}
                               </div>
 
-                               {(state?.userDetail?.short_desc ||
-                              state?.userDetail?.current_company ||
-                              state?.userDetail?.current_location ||
-                              state?.userDetail?.current_position) && (
-                              <div className="text-center sm:text-left">
-                                {state?.userDetail?.short_desc && (
-                                  <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                                    {state?.userDetail?.short_desc}
-                                  </p>
-                                )}
-                                {(state?.userDetail?.current_company ||
-                              state?.userDetail?.current_position ||
-                              state?.userDetail?.current_location) && (
-                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
-                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                              {(state?.userDetail?.short_desc ||
+                                state?.userDetail?.current_company ||
+                                state?.userDetail?.current_location ||
+                                state?.userDetail?.current_position) && (
+                                <div className="text-center sm:text-left">
+                                  {state?.userDetail?.short_desc && (
+                                    <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
+                                      {state?.userDetail?.short_desc}
+                                    </p>
+                                  )}
+                                  {(state?.userDetail?.current_company ||
+                                    state?.userDetail?.current_position ||
+                                    state?.userDetail?.current_location) && (
+                                    <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                      <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                <span className="text-sm">
-                                  {[
-                                    state?.userDetail?.current_company,
-                                    state?.userDetail?.current_position,
-                                    state?.userDetail?.current_location,
-                                  ]
-                                    .filter(Boolean) // removes null/undefined/empty
-                                    .join(" - ")}
-                                </span>
-                              </div>
-                            )}
-                              </div>
-                            )}
-                            
+                                      <span className="text-sm">
+                                        {[
+                                          state?.userDetail?.current_company,
+                                          state?.userDetail?.current_position,
+                                          state?.userDetail?.current_location,
+                                        ]
+                                          .filter(Boolean) // removes null/undefined/empty
+                                          .join(" - ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                           
-                           
+
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
                                 <p className="text-xs text-gray-500 whitespace-nowrap">
@@ -1480,7 +1487,6 @@ export default function NaukriProfilePage() {
                             alwaysShow: false,
                           },
 
-                          
                           {
                             icon: Mail,
                             label: state?.userDetail?.email || "Not specified",
@@ -1495,20 +1501,21 @@ export default function NaukriProfilePage() {
                             alwaysShow: false,
                           },
                           ...(state?.userDetail?.department_id
-                                                    ? [
-                                                        {
-                                                          icon: Briefcase,
-                                                          label: (() => {
-                                                            const found = state?.masterDeptList?.find(
-                                                              (d: any) =>
-                                                                d.value == state.userDetail.department_id,
-                                                            );
-                                                            return found ? found.label : "";
-                                                          })(),
-                                                          color: "text-[#f2b31d]",
-                                                        },
-                                                      ]
-                                                    : []),
+                            ? [
+                                {
+                                  icon: Briefcase,
+                                  label: (() => {
+                                    const found = state?.masterDeptList?.find(
+                                      (d: any) =>
+                                        d.value ==
+                                        state.userDetail.department_id,
+                                    );
+                                    return found ? found.label : "";
+                                  })(),
+                                  color: "text-[#f2b31d]",
+                                },
+                              ]
+                            : []),
                         ].map((item, index) => (
                           <div
                             key={index}
@@ -1517,7 +1524,8 @@ export default function NaukriProfilePage() {
                             <item.icon
                               className={`w-4 h-4 ${item.color} flex-shrink-0`}
                             />
-                            {state.userDetail?.reveal_name === false && !item.alwaysShow ? (
+                            {state.userDetail?.reveal_name === false &&
+                            !item.alwaysShow ? (
                               <div className="h-3 w-20 bg-gray-300 rounded animate-pulse" />
                             ) : (
                               <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
@@ -1571,22 +1579,22 @@ export default function NaukriProfilePage() {
                                 </p>
                               )}
                               {(state?.userDetail?.current_company ||
-                              state?.userDetail?.current_position ||
-                              state?.userDetail?.current_location) && (
-                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
-                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                                state?.userDetail?.current_position ||
+                                state?.userDetail?.current_location) && (
+                                <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                  <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                <span className="text-sm">
-                                  {[
-                                    state?.userDetail?.current_company,
-                                    state?.userDetail?.current_position,
-                                    state?.userDetail?.current_location,
-                                  ]
-                                    .filter(Boolean) // removes null/undefined/empty
-                                    .join(" - ")}
-                                </span>
-                              </div>
-                            )}
+                                  <span className="text-sm">
+                                    {[
+                                      state?.userDetail?.current_company,
+                                      state?.userDetail?.current_position,
+                                      state?.userDetail?.current_location,
+                                    ]
+                                      .filter(Boolean) // removes null/undefined/empty
+                                      .join(" - ")}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
@@ -2458,8 +2466,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Employment History
                                         </h4>
-                                      
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -2766,8 +2772,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Education History
                                         </h4>
-                                       
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3259,7 +3263,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Projects Added
                                         </h4>
-                                      
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3633,8 +3636,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Publications Added
                                         </h4>
-                                       
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3831,8 +3832,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-lg font-semibold text-gray-900 mb-2">
                                           No Skills Added
                                         </h4>
-                                      
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -4161,8 +4160,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Achievements Added
                                         </h4>
-                                       
-                                       
                                       </motion.div>
                                     )}
                                   </motion.div>

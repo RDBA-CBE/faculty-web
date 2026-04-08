@@ -1318,14 +1318,22 @@ export default function NaukriProfilePage() {
   const fetchApplicationStatuses = async () => {
     try {
       const res: any = await Models.applications.application_status();
-      const filtered = (res || []).filter(
-        (s: any) => s.name !== "Completed" && s.name !== "Joined"
-      );
+      const order = ["Applied", "Interview Scheduled", "Selected", "Waitlisted", "Rejected"];
+      const filtered = (res || [])
+        .filter((s: any) => s.name !== "Completed" && s.name !== "Joined")
+        .sort((a: any, b: any) => {
+          const ai = order.indexOf(a.name);
+          const bi = order.indexOf(b.name);
+          return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+        });
       setState({ applicationStatuses: filtered });
     } catch (error) {
       console.log("error fetching statuses", error);
     }
   };
+
+  console.log("applicationStatuses", state.applicationStatuses);
+  
 
   const experienceList = async () => {
     try {

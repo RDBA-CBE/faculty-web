@@ -1245,7 +1245,7 @@ const Header = () => {
               Login Failed
             </h2>
 
-            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+            <p className="text-black font-semibold max-w-lg text-md leading-relaxed z-10">
               {state.loginErrorMessage}
             </p>
 
@@ -1273,7 +1273,7 @@ const Header = () => {
               Registration Failed
             </h2>
 
-            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+            <p className="text-black font-seminibold max-w-lg text-md leading-relaxed z-10">
               {state.registrationErrorMessage}
             </p>
 
