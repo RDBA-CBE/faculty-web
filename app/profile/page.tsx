@@ -34,6 +34,9 @@ import {
   Book,
   Router,
   ArrowRight,
+  MailIcon,
+  PhoneCall,
+  Building,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -59,6 +62,7 @@ import { log } from "console";
 import { DatePicker } from "@/components/common-components/datePicker";
 import { start } from "repl";
 import Footer from "@/components/common-components/new_components/Footer";
+import Modal from "@/components/common-components/modal";
 import TextArea from "@/components/common-components/textArea";
 import SkeletonLoader from "../jobs/SkeletonLoader";
 import { PROFILE_TABS } from "@/utils/constant.utils";
@@ -143,8 +147,10 @@ export default function NaukriProfilePage() {
     slet_cleared: false,
     active_job_seeker: false,
     reveal_name: false,
-    activeTab: "Profile", // Default main tab
-    activeProfileSubSection: "resume", // Default sub-section within Profile tab
+    activeTab: "Profile",
+    activeProfileSubSection: "resume",
+    collegeDetail: null,
+    showCollegeModal: false,
   });
 
   // Use a separate useEffect to initialize activeTab from URL on component mount
@@ -457,6 +463,17 @@ export default function NaukriProfilePage() {
     }
   };
 
+  const getCollege = async (e: any, id: any) => {
+    e.stopPropagation();
+    try {
+      setState({ loading: true });
+      const res: any = await Models.colleges.details(id);
+      setState({ collegeDetail: res, showCollegeModal: true, loading: false });
+    } catch (error) {
+      setState({ loading: false });
+      Failure("Failed to fetch college details");
+    }
+  };
   const profileUpdate = async () => {
     try {
       setState({ btnLoading: true });
@@ -990,9 +1007,9 @@ export default function NaukriProfilePage() {
         institution: state.institution,
         degree: state.degree,
         field: state.field,
-        startYear: state.startYear,
-        endYear: state.endYear,
-        grade: state.grade,
+        start_year: state.start_year,
+        end_year: state.end_year,
+        grade: state.cgpa,
         project: state.project,
       };
       console.log("body", body);
@@ -1662,7 +1679,7 @@ export default function NaukriProfilePage() {
 
                     {/* Profile Details Grid - Enhanced */}
                     <div
-                      className="flex flex-wrap    mt-4"
+                      className="flex flex-wrap  mt-4"
                       style={{ gap: "5px" }}
                     >
                       {[
@@ -5453,7 +5470,7 @@ export default function NaukriProfilePage() {
                                   job={job}
                                   updateList={() => appliedJobList(state?.page)}
                                   onCollegeClick={(e, id) =>
-                                    console.log("first")
+                                    getCollege(e, id)
                                   }
                                   onDepartmentClick={(e, id) =>
                                     console.log("first")
@@ -5468,7 +5485,7 @@ export default function NaukriProfilePage() {
                                   job={job}
                                   updateList={() => appliedJobList(state?.page)}
                                   onCollegeClick={(e, id) =>
-                                    console.log("first")
+                                    getCollege(e, id)
                                   }
                                   onDepartmentClick={(e, id) =>
                                     console.log("first")
@@ -5549,7 +5566,7 @@ export default function NaukriProfilePage() {
                               <JobCard
                                 job={job?.job}
                                 updateList={() => getSavedJobs(state?.page)}
-                                onCollegeClick={(e, id) => console.log("first")}
+                                onCollegeClick={(e, id) => getCollege(e, id)}
                                 onDepartmentClick={(e, id) =>
                                   console.log("first")
                                 }
@@ -6695,6 +6712,95 @@ export default function NaukriProfilePage() {
       <div ref={footerRef}>
         <Footer />
       </div>
+      <Modal
+        isOpen={state.showCollegeModal}
+        setIsOpen={() => setState({ showCollegeModal: false, collegeDetail: null })}
+        title="College Details"
+        width="700px"
+        renderComponent={() => (
+          <div className="p-4 sm:p-5 md:p-6 space-y-5 md:space-y-6 max-h-[75vh] overflow-y-auto">
+            {state.loading ? (
+              <div className="space-y-6">
+                <div className="flex gap-4 items-center border-b pb-4">
+                  <SkeletonLoader type="rect" width={80} height={80} className="rounded-xl" />
+                  <div className="flex-1">
+                    <SkeletonLoader type="text" width="60%" height={24} style={{ marginBottom: 8 }} />
+                    <SkeletonLoader type="text" width="40%" height={16} />
+                  </div>
+                </div>
+                <SkeletonLoader type="text" count={3} />
+              </div>
+            ) : (
+              <>
+                <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 md:gap-5 pb-4 md:pb-5 border-b text-center sm:text-left">
+                  {state.collegeDetail?.college_logo ? (
+                    <img src={state.collegeDetail.college_logo} alt={state.collegeDetail.college_name} className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl object-cover border shadow-sm" />
+                  ) : (
+                    <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl bg-gray-400 flex items-center justify-center text-white font-bold text-xl shadow">
+                      {state.collegeDetail?.college_name?.charAt(0)?.toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-[#1E3786]">{state.collegeDetail?.college_name}</h2>
+                    <p className="text-xs sm:text-sm text-gray-500">{state.collegeDetail?.institution_name}</p>
+                  </div>
+                </div>
+                <div className="bg-gray-50 rounded-xl p-3 sm:p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-2 sm:mb-3">Contact Info</h3>
+                  <div className="space-y-2 text-xs sm:text-sm text-gray-600">
+                    <div className="flex items-center gap-2"><MailIcon className="w-4 h-4 text-[#F2B31D]" /><span>{state.collegeDetail?.college_email}</span></div>
+                    <div className="flex items-center gap-2"><PhoneCall className="w-4 h-4 text-[#F2B31D]" /><span>{state.collegeDetail?.college_phone}</span></div>
+                    <div className="flex items-start gap-2"><MapPin className="w-4 h-4 text-[#F2B31D]" /><span>{state.collegeDetail?.college_address}</span></div>
+                    {state.collegeDetail?.college_types && (
+                      <div className="flex items-start gap-2"><Building className="w-4 h-4 text-[#F2B31D]" /><span>{state.collegeDetail?.college_types?.map((item: any) => item?.name)?.join(", ")}</span></div>
+                    )}
+                  </div>
+                </div>
+                {state.collegeDetail?.naac_accreditations?.length > 0 && (
+                  <div className="bg-white shadow-md rounded-2xl p-4 sm:p-5">
+                    <h3 className="text-base sm:text-lg font-semibold text-[#1E3786] mb-3">NAAC & Accreditation</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {state.collegeDetail?.naac_accreditations?.map((item: any, index: number) => (
+                        <span key={index} className="px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-green-100 text-green-700">{item.grade}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {state.collegeDetail?.intake_per_year && (
+                    <div className="bg-[#1E3786] text-white rounded-xl p-4 text-center">
+                      <p className="text-sm font-semibold">Intake Per Year</p>
+                      <h3 className="text-2xl font-bold mt-1">{state.collegeDetail?.intake_per_year}</h3>
+                    </div>
+                  )}
+                  {state.collegeDetail?.total_strength && (
+                    <div className="bg-[#F2B31D] text-white rounded-xl p-4 text-center">
+                      <p className="text-sm font-semibold">Total Strength</p>
+                      <h3 className="text-2xl font-bold mt-1">{state.collegeDetail?.total_strength}</h3>
+                    </div>
+                  )}
+                </div>
+                {state.collegeDetail?.recent_achievements?.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-gray-800 text-sm sm:text-base">Achievements</h4>
+                    <ul className="space-y-2 text-xs sm:text-sm text-gray-700">
+                      {state.collegeDetail?.recent_achievements?.map((item: any, index: number) => (
+                        <li key={index} className="flex items-start gap-2"><Award className="w-5 h-5 text-[#F2B31D] shrink-0" />{item.achievement}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {state.collegeDetail?.summary && state.collegeDetail?.summary !== "null" && (
+                  <div className="bg-gray-50 rounded-xl p-4">
+                    <h4 className="font-semibold mb-2 text-gray-800 text-sm sm:text-base">Summary</h4>
+                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">{state.collegeDetail?.summary}</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      />
     </>
   );
 }
