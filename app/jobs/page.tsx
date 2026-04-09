@@ -1577,12 +1577,18 @@ ${userName}`;
                 <div className="bg-clr2 rounded-lg   p-6 ">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
-                        {/* • Posted{" "} */}
-                        {moment(state?.jobDetail?.created_at).isValid() &&
-                        moment(state?.jobDetail?.created_at).year() > 1900
-                          ? moment(state?.jobDetail?.created_at).fromNow()
-                          : "Just now"}
+                      <div className="flex items-center gap-2 mb-5">
+                        <div className="w-fit bg-[#1E37861A] rounded-3xl px-5 py-1 text-[10px] text-[#000]">
+                          {moment(state?.jobDetail?.created_at).isValid() &&
+                          moment(state?.jobDetail?.created_at).year() > 1900
+                            ? moment(state?.jobDetail?.created_at).fromNow()
+                            : "Just now"}
+                        </div>
+                        {state?.jobDetail?.immediate_join && (
+                          <div className="w-fit bg-green-100 rounded-3xl px-3 py-1 text-[10px] text-green-700 font-semibold">
+                            ⚡ Immediate Hiring
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-start gap-4">
                         {state?.jobDetail?.college?.college_logo ? (
@@ -2412,17 +2418,23 @@ ${userName}`;
                         <div className=" border-b    pb-2">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
-                                {/* • Posted{" "} */}
-                                {moment(
-                                  state?.jobDetail?.created_at,
-                                ).isValid() &&
-                                moment(state?.jobDetail?.created_at).year() >
-                                  1900
-                                  ? moment(
-                                      state?.jobDetail?.created_at,
-                                    ).fromNow()
-                                  : "Just now"}
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="w-fit bg-[#1E37861A] rounded-3xl px-3 py-1 text-[12px] text-[#000]">
+                                  {moment(
+                                    state?.jobDetail?.created_at,
+                                  ).isValid() &&
+                                  moment(state?.jobDetail?.created_at).year() >
+                                    1900
+                                    ? moment(
+                                        state?.jobDetail?.created_at,
+                                      ).fromNow()
+                                    : "Just now"}
+                                </div>
+                                {state?.jobDetail?.immediate_join && (
+                                  <div className="w-fit bg-green-100 rounded-3xl px-3 py-1 text-[12px] text-green-700 font-semibold">
+                                    ⚡ Immediate Hiring
+                                  </div>
+                                )}
                               </div>
                               <div className="flex items-start gap-4 h-full mb-1">
                                 {state?.jobDetail?.college?.college_logo ? (
@@ -3548,7 +3560,6 @@ ${userName}`;
                                 {state.jobDetail?.college?.name}
                               </p>
                               <div className="flex items-center gap-2 mt-2">
-                                {/* <Star className="w-4 h-4 text-amber-400 fill-current" /> */}
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
@@ -3556,6 +3567,11 @@ ${userName}`;
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
+                                {state?.jobDetail?.immediate_join && (
+                                  <span className="bg-green-100 rounded-full px-2 py-0.5 text-[10px] text-green-700 font-semibold">
+                                    ⚡ Immediate Hiring
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>

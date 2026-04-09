@@ -350,6 +350,12 @@ export default function NaukriProfilePage() {
         triggerLogout();
         router.replace("/");
       }
+
+      if(error) {
+        alert("User Not Found");
+        triggerLogout();
+        router.replace("/");
+      }
     }
   };
 
@@ -1753,6 +1759,41 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                         </div>
                       </div>
                     </div>
+
+                    {/* Profile Strength */}
+                    {state.userDetail?.profile_completion_percentage !== undefined && (
+                      <div className="mt-4 mb-1">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs font-semibold text-gray-600">Profile Strength</span>
+                          <span
+                            className="text-xs font-bold px-2 py-0.5 rounded-full"
+                            style={{
+                              color:
+                                state.userDetail.profile_completion_percentage >= 80 ? "#16a34a" :
+                                state.userDetail.profile_completion_percentage >= 50 ? "#d97706" : "#dc2626",
+                              background:
+                                state.userDetail.profile_completion_percentage >= 80 ? "#dcfce7" :
+                                state.userDetail.profile_completion_percentage >= 50 ? "#fef3c7" : "#fee2e2",
+                            }}
+                          >
+                            {state.userDetail.profile_completion_percentage >= 80 ? "Strong" :
+                             state.userDetail.profile_completion_percentage >= 50 ? "Moderate" : "Weak"}
+                            {" · "}{state.userDetail.profile_completion_percentage}%
+                          </span>
+                        </div>
+                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full transition-all duration-700"
+                            style={{
+                              width: `${state.userDetail.profile_completion_percentage}%`,
+                              background:
+                                state.userDetail.profile_completion_percentage >= 80 ? "#16a34a" :
+                                state.userDetail.profile_completion_percentage >= 50 ? "#f59e0b" : "#ef4444",
+                            }}
+                          />
+                        </div>
+                      </div>
+                    )}
 
                     {/* Profile Details Grid - Enhanced */}
                     <div
