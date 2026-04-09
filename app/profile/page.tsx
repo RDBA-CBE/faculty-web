@@ -1680,10 +1680,10 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                   <CardContent className="relative py-4 px-0 mx-0">
                     <div className="flex flex-row items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
-                      <div className="relative flex-shrink-0">
+                      <div className="relative flex-shrink-0 w-24 h-24">
                         {/* Circular progress ring */}
                         <svg
-                          className="absolute  w-[calc(100%+16px)] h-[calc(100%+16px)] -rotate-90"
+                          className="absolute inset-0 w-full h-full -rotate-90"
                           viewBox="0 0 96 96"
                         >
                           <circle
@@ -1706,7 +1706,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             style={{ transition: "stroke-dashoffset 0.7s ease" }}
                           />
                         </svg>
-                        <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                        {/* Profile image centered inside ring */}
+                        <div className="absolute inset-[6px] rounded-full border-2 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                           <img
                             src={
                               state.userDetail?.profile_logo_url ||
@@ -1721,7 +1722,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                         {/* Percentage badge */}
                         {state.userDetail?.profile_completion_percentage !== undefined && (
                           <div
-                            className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md whitespace-nowrap"
+                            className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md whitespace-nowrap z-10"
                             style={{
                               background:
                                 (state.userDetail.profile_completion_percentage) >= 80 ? "#16a34a" :
