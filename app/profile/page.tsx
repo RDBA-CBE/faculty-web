@@ -1683,14 +1683,14 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                       <div className="relative flex-shrink-0">
                         {/* Circular progress ring */}
                         <svg
-                          className="absolute -inset-1.5 w-[calc(100%+12px)] h-[calc(100%+12px)] -rotate-90"
+                          className="absolute  w-[calc(100%+16px)] h-[calc(100%+16px)] -rotate-90"
                           viewBox="0 0 96 96"
                         >
                           <circle
                             cx="48" cy="48" r="44"
                             fill="none"
                             stroke="#e5e7eb"
-                            strokeWidth="4"
+                            strokeWidth="5"
                           />
                           <circle
                             cx="48" cy="48" r="44"
@@ -1699,7 +1699,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               (state.userDetail?.profile_completion_percentage || 0) >= 80 ? "#16a34a" :
                               (state.userDetail?.profile_completion_percentage || 0) >= 50 ? "#f59e0b" : "#ef4444"
                             }
-                            strokeWidth="4"
+                            strokeWidth="5"
                             strokeLinecap="round"
                             strokeDasharray={`${2 * Math.PI * 44}`}
                             strokeDashoffset={`${2 * Math.PI * 44 * (1 - (state.userDetail?.profile_completion_percentage || 0) / 100)}`}
