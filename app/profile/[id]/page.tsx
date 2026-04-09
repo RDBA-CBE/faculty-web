@@ -111,6 +111,7 @@ export default function NaukriProfilePage() {
     expandedSections: {
       resume: true,
       headline: true,
+      academic: true,
       skills: true,
       employment: true,
       education: true,
@@ -140,6 +141,7 @@ export default function NaukriProfilePage() {
     collegeList(1);
     appliedJobList();
     getSavedJobs();
+    acadamicResponsibility();
   }, []);
 
   useEffect(() => {
@@ -264,6 +266,7 @@ export default function NaukriProfilePage() {
       setState({
         loading: false,
         userDetail: res,
+        additional_academic_ids: res?.additional_academic_responsibility_ids || [],
         phd_completed: res?.phd_completed,
         net_cleared: res?.net_cleared,
         set_cleared: res?.set_cleared,
@@ -287,6 +290,26 @@ export default function NaukriProfilePage() {
   };
 
   console.log("userDetail", state.userDetail);
+
+  const acadamicResponsibility = async () => {
+    try {
+      let page = 1, hasNext = true, allResults: any[] = [];
+      while (hasNext) {
+        const res: any = await Models.department.acadamicRes({ page });
+        if (res?.results?.length) allResults = [...allResults, ...res.results];
+        hasNext = !!res?.next;
+        page++;
+      }
+      setState({
+        acadamicResponsibilityList: allResults.map((item: any) => ({
+          value: item.id,
+          label: item.responsibility_title,
+        })),
+      });
+    } catch (error) {
+      console.log("acadamic Responsibility error", error);
+    }
+  };
 
   const locationList = async (page, search = "") => {
     console.log("✌️page --->", page);
@@ -1181,7 +1204,7 @@ export default function NaukriProfilePage() {
   const links = [
     { id: "resume", label: "Resume/login", section: "resume-section" },
     { id: "headline", label: "Profile Summary", section: "headline-section" },
-
+    { id: "academic", label: "Academic Responsibility", section: "academic-section" },
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
@@ -1380,7 +1403,7 @@ export default function NaukriProfilePage() {
                     <CardContent className="relative py-4 px-0 mx-0">
                       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                         <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
-                          {state.userDetail?.reveal_name === false ? (
+                          { state.userDetail?.reveal_name == false ? (
                             <div className="w-full h-full bg-gray-300 animate-pulse" />
                           ) : (
                             <img
@@ -1400,7 +1423,7 @@ export default function NaukriProfilePage() {
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div className="text-center sm:text-left">
                               <div className="flex items-center gap-2 justify-center sm:justify-start">
-                                {state.userDetail?.reveal_name === false ? (
+                                {state.userDetail?.reveal_name == false ? (
                                   <div className="h-6 w-48 bg-gray-300 rounded animate-pulse" />
                                 ) : (
                                   <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -1524,7 +1547,7 @@ export default function NaukriProfilePage() {
                             <item.icon
                               className={`w-4 h-4 ${item.color} flex-shrink-0`}
                             />
-                            {state.userDetail?.reveal_name === false &&
+                            {state.userDetail?.reveal_name == false &&
                             !item.alwaysShow ? (
                               <div className="h-3 w-20 bg-gray-300 rounded animate-pulse" />
                             ) : (
@@ -2089,6 +2112,89 @@ export default function NaukriProfilePage() {
                                         </div>
                                       </div>
                                     </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </CardContent>
+                          </Card>
+
+                          {/* Additional Academic Responsibility Section */}
+                          <Card
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                          >
+                            <CardContent className="relative py-4 px-2">
+                              <div
+                                className="flex items-center justify-between cursor-pointer"
+                                onClick={() => toggleSection("academic")}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform">
+                                    <GraduationCap className="w-4 h-4 text-white transform" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                       Academic Responsibility
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                      Academic roles and responsibilities
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  {state.expandedSections.academic ? (
+                                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                                  )}
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {state.expandedSections.academic && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    <div className="flex flex-wrap gap-3 pt-5">
+                                      {(state.additional_academic_ids || []).map(
+                                        (item: any, index: number) => {
+                                          const label = typeof item === "object"
+                                            ? item.label
+                                            : state.acadamicResponsibilityList?.find((r: any) => r.value === item)?.label || item;
+                                          return (
+                                            <motion.div
+                                              key={index}
+                                              initial={{ opacity: 0, scale: 0.8 }}
+                                              animate={{ opacity: 1, scale: 1 }}
+                                              transition={{ delay: index * 0.05 }}
+                                            >
+                                              <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 border border-[#3b82f6]/30 rounded-full px-4 py-1 flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+                                                <span className="text-[#1E3786] font-medium text-sm">
+                                                  {label}
+                                                </span>
+                                              </div>
+                                            </motion.div>
+                                          );
+                                        },
+                                      )}
+                                    </div>
+
+                                    {(!state.additional_academic_ids?.length) && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <GraduationCap className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Responsibilities Added
+                                        </h4>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -3839,6 +3945,8 @@ export default function NaukriProfilePage() {
                               </AnimatePresence>
                             </CardContent>
                           </Card>
+
+                          
 
                           {/* Achievements Section */}
                           <Card

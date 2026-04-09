@@ -2385,7 +2385,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   </div>
                                   <div>
                                     <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
-                                      Additional Academic Responsibility
+                                       Academic Responsibility
                                     </h3>
                                     <p className="text-sm text-gray-500">
                                       Your academic roles and responsibilities
