@@ -1681,6 +1681,31 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                     <div className="flex flex-row items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
                       <div className="relative flex-shrink-0">
+                        {/* Circular progress ring */}
+                        <svg
+                          className="absolute -inset-1.5 w-[calc(100%+12px)] h-[calc(100%+12px)] -rotate-90"
+                          viewBox="0 0 96 96"
+                        >
+                          <circle
+                            cx="48" cy="48" r="44"
+                            fill="none"
+                            stroke="#e5e7eb"
+                            strokeWidth="4"
+                          />
+                          <circle
+                            cx="48" cy="48" r="44"
+                            fill="none"
+                            stroke={
+                              (state.userDetail?.profile_completion_percentage || 0) >= 80 ? "#16a34a" :
+                              (state.userDetail?.profile_completion_percentage || 0) >= 50 ? "#f59e0b" : "#ef4444"
+                            }
+                            strokeWidth="4"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 44}`}
+                            strokeDashoffset={`${2 * Math.PI * 44 * (1 - (state.userDetail?.profile_completion_percentage || 0) / 100)}`}
+                            style={{ transition: "stroke-dashoffset 0.7s ease" }}
+                          />
+                        </svg>
                         <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                           <img
                             src={
@@ -1693,9 +1718,19 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        {/* <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold whitespace-nowrap">
-                  {state.profileCompletion}%
-                </div> */}
+                        {/* Percentage badge */}
+                        {state.userDetail?.profile_completion_percentage !== undefined && (
+                          <div
+                            className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md whitespace-nowrap"
+                            style={{
+                              background:
+                                (state.userDetail.profile_completion_percentage) >= 80 ? "#16a34a" :
+                                (state.userDetail.profile_completion_percentage) >= 50 ? "#f59e0b" : "#ef4444",
+                            }}
+                          >
+                            {state.userDetail.profile_completion_percentage}%
+                          </div>
+                        )}
                       </div>
 
                       {/* Profile Info - Enhanced */}
@@ -1759,41 +1794,6 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                         </div>
                       </div>
                     </div>
-
-                    {/* Profile Strength */}
-                    {state.userDetail?.profile_completion_percentage !== undefined && (
-                      <div className="mt-4 mb-1">
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-semibold text-gray-600">Profile Strength</span>
-                          <span
-                            className="text-xs font-bold px-2 py-0.5 rounded-full"
-                            style={{
-                              color:
-                                state.userDetail.profile_completion_percentage >= 80 ? "#16a34a" :
-                                state.userDetail.profile_completion_percentage >= 50 ? "#d97706" : "#dc2626",
-                              background:
-                                state.userDetail.profile_completion_percentage >= 80 ? "#dcfce7" :
-                                state.userDetail.profile_completion_percentage >= 50 ? "#fef3c7" : "#fee2e2",
-                            }}
-                          >
-                            {state.userDetail.profile_completion_percentage >= 80 ? "Strong" :
-                             state.userDetail.profile_completion_percentage >= 50 ? "Moderate" : "Weak"}
-                            {" · "}{state.userDetail.profile_completion_percentage}%
-                          </span>
-                        </div>
-                        <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-700"
-                            style={{
-                              width: `${state.userDetail.profile_completion_percentage}%`,
-                              background:
-                                state.userDetail.profile_completion_percentage >= 80 ? "#16a34a" :
-                                state.userDetail.profile_completion_percentage >= 50 ? "#f59e0b" : "#ef4444",
-                            }}
-                          />
-                        </div>
-                      </div>
-                    )}
 
                     {/* Profile Details Grid - Enhanced */}
                     <div
