@@ -19,6 +19,7 @@ import {
   Star,
   StarIcon,
   CrownIcon,
+  BellRing,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -42,6 +43,7 @@ interface JobCardProps {
     roles?: any;
     application_status?: any;
     matches_user_location?: boolean;
+    immediate_join?: boolean;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -107,7 +109,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <div
-      className="border border-[#c7c7c787] bg-white  p-5 hover:shadow-md transition-all duration-200 cursor-pointer group"
+      className="border border-[#c7c7c787] bg-white p-5 hover:shadow-md transition-all duration-200 cursor-pointer group h-full flex flex-col"
       onClick={onClick}
     >
       <div className="flex flex-wrap gap-2 mb-3">
@@ -120,7 +122,28 @@ export const JobCard: React.FC<JobCardProps> = ({
       </div>
 
       {/* Header with Title and Company Logo on Right */}
-      <div className="flex justify-between items-start mb-2">
+      <div className="flex justify-between items-start mb-2 gap-3">
+        {/* Company Logo/Initials on Right */}
+        <div
+          className="flex-shrink-0 mt-1"
+          onClick={(e) => onCollegeClick(e, job?.college?.id)}
+        >
+          {job?.college?.college_logo ? (
+            <img
+              src={job?.college?.college_logo}
+              alt="company logo"
+              style={{ objectFit: "contain" }}
+              className="w-10 h-10 rounded-lg object-cover border border-gray-300"
+            />
+          ) : (
+            <div
+              className={`w-10 h-10 rounded-lg bg-gray-500 flex items-center justify-center text-white font-semibold text-sm`}
+            >
+              {job?.college?.name?.charAt(0).toUpperCase()}
+            </div>
+          )}
+        </div>
+
         <div className="flex-1">
           <h3
             className="font-bold text-gray-900 text-base text-lg flex gap-2 items-center"
@@ -158,26 +181,15 @@ export const JobCard: React.FC<JobCardProps> = ({
           </p>
         </div>
 
-        {/* Company Logo/Initials on Right */}
-        <div
-          className="flex-shrink-0 ml-3"
-          onClick={(e) => onCollegeClick(e, job?.college?.id)}
-        >
-          {job?.college?.college_logo ? (
-            <img
-              src={job?.college?.college_logo}
-              alt="company logo"
-              style={{ objectFit: "contain" }}
-              className="w-10 h-10 rounded-lg object-cover border border-gray-100"
-            />
-          ) : (
-            <div
-              className={`w-10 h-10 rounded-lg bg-gray-500 flex items-center justify-center text-white font-semibold text-sm`}
-            >
-              {job?.college?.name?.charAt(0).toUpperCase()}
+        {/* Immediate Hiring icon - top right */}
+        {job?.immediate_join && (
+          <div className="relative group/tip flex-shrink-0 mt-1">
+            <BellRing className="w-4 h-4 text-green-600 fill-green-500 cursor-pointer" />
+            <div className="absolute top-full right-0 mt-1 px-2 py-0.5 bg-green-600 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10">
+              Immediate Hiring
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Experience and Location */}
@@ -219,17 +231,16 @@ export const JobCard: React.FC<JobCardProps> = ({
         {/* </span> */}
       </div>
       {/* Job Description */}
-      {job?.job_description && (
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-          {job?.job_description}
-          {/* {job?.job_description ||
-          "Looking for a skilled professional to join our team. Great opportunity for career growth and development in a dynamic work environment."} */}
-        </p>
-      )}
+      <div className="flex-1">
+        {job?.job_description && (
+          <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+            {job?.job_description}
+          </p>
+        )}
+      </div>
       {/* Footer with Posted Date and Save Button */}
       <div className="flex items-center justify-between pt-2 border-t border-gray-100 mt-auto">
         <div className="flex items-center gap-1 text-sm text-gray-500">
-          {/* <Clock className="w-3.5 h-3.5" /> */}
           {moment(job?.created_at).isValid() &&
           moment(job?.created_at).year() > 1900
             ? moment(job?.created_at).fromNow()

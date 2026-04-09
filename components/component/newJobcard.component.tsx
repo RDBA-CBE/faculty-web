@@ -18,6 +18,7 @@ import {
   Star,
   StarIcon,
   CrownIcon,
+  BellRing,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -40,6 +41,7 @@ interface JobCardProps {
     department?: any;
     application_status?: any;
     matches_user_location?: boolean;
+    immediate_join?: boolean;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -152,6 +154,14 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                     Preferred Job
                   </div>
                 )}
+                {job?.immediate_join && (
+                  <div className="relative group/tip">
+                    <BellRing className="w-4 h-4 text-green-600 fill-green-500 cursor-pointer" />
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-0.5 bg-green-600 text-white text-[10px] rounded whitespace-nowrap opacity-0 group-hover/tip:opacity-100 transition-opacity pointer-events-none z-10">
+                      Immediate Hiring
+                    </div>
+                  </div>
+                )}
               </h3>
               <p
                 className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
@@ -206,8 +216,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
       </div>
       <div className="w-full md:w-1/5  flex flex-row md:flex-col justify-between">
         <div className="flex items-center justifyfy-end gap-2 pt-2 order-1 md:order-0 mb-3">
-          <div className="flex font-normal items-center gap-1 text-sm text-[#565656] ">
-            {/* <Clock className="w-3.5 h-3.5" /> */}
+          <div className="flex font-normal items-center gap-2 text-sm text-[#565656] ">
             {moment(job?.created_at).isValid() &&
             moment(job?.created_at).year() > 1900
               ? moment(job?.created_at).fromNow()

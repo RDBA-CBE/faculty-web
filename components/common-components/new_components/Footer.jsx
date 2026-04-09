@@ -350,14 +350,16 @@ const Footer = () => {
               </a>
             </div> */}
               <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
-                Copyright 2026 © Faculty Pro. Concept by{" "}
+                Copyright 2026 © Sree Vidhya E-Learning Solutions
+
+                 {/* Concept by{" "}
                 <a
                   href="http://irepute.in/"
                   target="_blank"
                   className="text-underline"
                 >
                   repute
-                </a>
+                </a> */}
               </p>
             </div>
           </div>

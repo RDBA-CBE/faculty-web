@@ -3356,7 +3356,7 @@ ${userName}`;
                                     });
                                   }
                                 }}
-                                className="cursor-pointer transition-transform hover:scale-10 job-card-item"
+                                className="cursor-pointer transition-transform hover:scale-10 job-card-item h-full"
                               >
                                 {isGridView ? (
                                   <JobCard

@@ -31,6 +31,7 @@ import {
   PlusIcon,
   File,
   Book,
+  LocateFixed,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -1707,31 +1708,28 @@ export default function NaukriProfilePage() {
                                   Quick Links
                                 </h3>
 
-                                <div className="space-y-2">
+                                 <div className="space-y-2">
                                   {links.map((item) => (
                                     <div
                                       key={item.id}
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
-                                        ${
-                                          state.activeProfileSubSection ===
-                                          item.id
-                                            ? "bg-[#1E3786] !text-[#fff]"
-                                            : " hover:bg-white/80"
-                                        }`}
+                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all hover:bg-white/80`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          state.activeProfileSubSection ===
-                                          item.id
-                                            ? "!text-[#fff]"
+                                          state.activeProfileSubSection === item.id
+                                            ? "text-[#1E3786]"
                                             : "text-[#000]"
                                         }`}
                                       >
                                         {item.label}
                                       </span>
+                                      {state.activeProfileSubSection === item.id && (
+                                        // <div className="w-2 h-2 rounded-full bg-[#F2B31D] flex-shrink-0" />
+                                        <LocateFixed className="w-5 h-5 text-[#F2B31D] flex-shrink-0 " />
+                                      )}
                                     </div>
                                   ))}
                                 </div>
