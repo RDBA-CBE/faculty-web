@@ -669,30 +669,14 @@ ${userName}`;
           job_count: item.job_count,
         })) || [];
 
-      // Fetch and merge missing locations from URL parameters
+      // Remove selected locations that no longer exist in the filtered results
       if (filters.locations && filters.locations.length > 0) {
-        const existingLocationIds = locationList.map((loc) => loc.value);
-        const missingLocationIds = filters.locations.filter(
-          (id) => !existingLocationIds.includes(id),
+        const validLocationIds = locationList.map((loc) => loc.value);
+        const validSelected = filters.locations.filter((id) =>
+          validLocationIds.includes(id)
         );
-
-        if (missingLocationIds.length > 0) {
-          try {
-            const allLocationsRes: any = await Models.location.list(1);
-            const allLocations = allLocationsRes?.results || [];
-
-            const missingLocations = allLocations
-              .filter((loc: any) => missingLocationIds.includes(loc.id))
-              .map((item: any) => ({
-                value: item.id,
-                label: item.city || item.name,
-                job_count: 0,
-              }));
-
-            locationList = [...locationList, ...missingLocations];
-          } catch (error) {
-            console.log("✌️error fetching missing locations --->", error);
-          }
+        if (validSelected.length !== filters.locations.length) {
+          setFilters((prev) => ({ ...prev, locations: validSelected }));
         }
       }
 
