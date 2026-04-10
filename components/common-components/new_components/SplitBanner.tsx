@@ -274,7 +274,7 @@ const departmentList = async (search = "") => {
             {/* Heading */}
             <div className="space-y-5">
               <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
-                Are You A Faculty? <br /> Find Your Right Oppurtunity
+                Are You A Faculty? <br /> Find Your Right Opportunity
               </h1>
               {/* <p className="text-[#F0F0F0CC] max-w-xl text-base lg:text-lg leading-relaxed">
                 FacultyPro connects qualified academic professionals with
