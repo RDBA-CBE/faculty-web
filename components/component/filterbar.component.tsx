@@ -87,7 +87,7 @@ const FilterSection: React.FC<{
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
             <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors ">
-              {CharSlice(item.label, 32)}
+              {CharSlice(item.label, 28)}
             </span>
           </div>
           {item.job_count !== undefined && (
