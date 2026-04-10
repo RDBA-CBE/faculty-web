@@ -1663,7 +1663,7 @@ ${userName}`;
                         {state?.jobDetail?.salary_range_obj?.name}
                       </span>
 
-                      {state?.jobDetail?.college?.address && (
+                      {state?.jobDetail?.locations?.length > 0 && (
                         <span className="flex items-center gap-3">
                           <MapPin className="w-4 h-4 text-[#E6AB1D]" />
                           {capitalizeFLetter(
@@ -1904,7 +1904,7 @@ ${userName}`;
                         ))}
                       </div>
                     </div>
-                    {state?.jobDetail?.college?.address && (
+                    {state?.jobDetail?.locations?.length > 0 && (
                       <div>
                         <span className="flex gap-2 text-md font-medium  pb-1">
                           <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -2157,7 +2157,7 @@ ${userName}`;
                                           </span>
                                         </div>
 
-                                        {job?.college?.address && (
+                                        {job.locations?.length > 0 && (
                                           <div className="flex  gap-1">
                                             <MapPin
                                               className={`${
@@ -2506,7 +2506,7 @@ ${userName}`;
                                     )}
                                     {state?.jobDetail?.salary_range_obj?.name}
                                   </span>
-                                  {state?.jobDetail?.college?.address && (
+                                  {state?.jobDetail?.locations?.length > 0 && (
                                     <span className="flex items-center gap-3">
                                       <MapPin className="w-4 h-4 text-[#E6AB1D]" />
                                       {capitalizeFLetter(
@@ -2815,7 +2815,7 @@ ${userName}`;
                                   </div>
                                 </div>
 
-                                {state?.jobDetail?.college?.address && (
+                                {state?.jobDetail?.locations?.length > 0 &&  (
                                   <div>
                                     <span className="flex gap-2 text-md font-medium  pb-1">
                                       <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -3778,7 +3778,7 @@ ${userName}`;
                                 )}
                               </div>
                             </div>
-                            {state?.jobDetail?.college?.address && (
+                            {state?.jobDetail?.locations?.length > 0  && (
                               <div>
                                 <span className="flex gap-2 text-sm font-medium  pb-1">
                                   <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}

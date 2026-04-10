@@ -196,11 +196,20 @@ export default function NaukriProfilePage() {
   }, []);
 
   useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem("user") || "null");
-    if (profile?.id) {
-      setState({ userId: profile.id });
-    } else {
+    try {
+      const profile = JSON.parse(localStorage.getItem("user") || "null");
+      if (profile?.id) {
+        setState({ userId: profile.id });
+      } else {
+        setState({ loading: false });
+        Failure("User not found. Please log in again.");
+        triggerLogout();
+        router.replace("/");
+      }
+    } catch {
       setState({ loading: false });
+      triggerLogout();
+      router.replace("/");
     }
   }, []);
 
@@ -325,7 +334,9 @@ export default function NaukriProfilePage() {
   }, []);
 
   const userDetail = async (userId) => {
+    console.log("fetching user details for userId:", userId); 
     try {
+      console.log("fetching user details for userId in try:", userId);
       const res: any = await Models.profile.details(userId);
       setState({
         loading: false,
@@ -350,12 +361,7 @@ export default function NaukriProfilePage() {
         error?.error === "User Not Found" ||
         error?.message === "User Not Found"
       ) {
-        triggerLogout();
-        router.replace("/");
-      }
-
-      if(error) {
-        alert("User Not Found");
+        Failure("User not found. Please log in again.");
         triggerLogout();
         router.replace("/");
       }
@@ -746,6 +752,8 @@ export default function NaukriProfilePage() {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
       customClass: {
         title: "text-gray-800",
         htmlContainer: "text-gray-600",
@@ -868,10 +876,21 @@ export default function NaukriProfilePage() {
   // };
 
   const deleteSkill = async (skillId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
-      // const body = { skill_id: skillId };
       const res = await Models.skill.delete(skillId);
-
       console.log("deleted skill", res);
       userDetail(state.userId);
     } catch (error) {
@@ -992,9 +1011,21 @@ export default function NaukriProfilePage() {
   };
 
   const deleteEmployment = async (experienceId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.experience.delete(experienceId);
-
       console.log("deleted experience", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1059,10 +1090,22 @@ export default function NaukriProfilePage() {
   };
 
   const deleteEducation = async (educationId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const body = { education_id: educationId };
       const res = await Models.education.delete(educationId);
-
       console.log("deleted education", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1129,9 +1172,21 @@ export default function NaukriProfilePage() {
   };
 
   const deleteProject = async (projectId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.projects.delete(projectId);
-
       console.log("deleted project", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1194,9 +1249,21 @@ export default function NaukriProfilePage() {
   };
 
   const deletePublication = async (publicationId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.publications.delete(publicationId);
-
       console.log("deleted publication", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1270,10 +1337,22 @@ export default function NaukriProfilePage() {
   };
 
   const deleteAchievement = async (achievementId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const body = { achievement_id: achievementId };
       const res = await Models.achievements.delete(achievementId);
-
       console.log("deleted achievement", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1513,6 +1592,13 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
     });
   };
 
+  const onlyNumbers = (e: React.KeyboardEvent) => {
+    if (!/[0-9]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key))
+      e.preventDefault();
+  };
+
+  const numericString = (val: string) => val.replace(/[^0-9]/g, "");
+
   const handleAddTechnology = () => {
     if (
       state.technology?.trim() &&
@@ -1545,6 +1631,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
       cancelButtonColor: "#6b7280",
       confirmButtonText: type === "accept" ? "Yes, Accept" : "Yes, Reject",
       background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
     });
     if (!confirmed.isConfirmed) return;
 
@@ -3365,10 +3453,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <Input
                                                   placeholder="e.g., 2016"
                                                   value={state.start_year || ""}
+                                                  onKeyDown={onlyNumbers}
                                                   onChange={(e) =>
                                                     handleFormChange(
                                                       "start_year",
-                                                      e.target.value,
+                                                      numericString(e.target.value),
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3381,10 +3470,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <Input
                                                   placeholder="e.g., 2020"
                                                   value={state.end_year || ""}
+                                                  onKeyDown={onlyNumbers}
                                                   onChange={(e) =>
                                                     handleFormChange(
                                                       "end_year",
-                                                      e.target.value,
+                                                      numericString(e.target.value),
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -5639,6 +5729,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                         cancelButtonColor: "#6b7280",
                                         confirmButtonText: "Yes, confirm",
                                         background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
                                       });
                                       if (!result.isConfirmed) return;
                                     }
@@ -6195,11 +6287,18 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               <TextArea
                                 title="Short Description"
                                 value={state.short_desc}
-                                onChange={(e) =>
-                                  handleFormChange("short_desc", e.target.value)
-                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val.length <= 180) {
+                                    handleFormChange("short_desc", val);
+                                  }
+                                }}
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.short_desc}
                               />
+                              <p className={`text-xs text-right ${ (state.short_desc?.length || 0) >= 180 ? "text-red-500" : "text-gray-400" }`}>
+                                {state.short_desc?.length || 0}/180
+                              </p>
                             </div>
 
                             <div className="space-y-2">
@@ -6499,8 +6598,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               <Input
                                 placeholder="e.g., 2016"
                                 value={state.start_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
-                                  handleFormChange("start_year", e.target.value)
+                                  handleFormChange("start_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
@@ -6512,8 +6612,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               <Input
                                 placeholder="e.g., 2020"
                                 value={state.end_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
-                                  handleFormChange("end_year", e.target.value)
+                                  handleFormChange("end_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
@@ -6848,10 +6949,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               <Input
                                 placeholder="e.g., 2023"
                                 value={state.publication_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
                                   handleFormChange(
                                     "publication_year",
-                                    e.target.value,
+                                    numericString(e.target.value),
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"

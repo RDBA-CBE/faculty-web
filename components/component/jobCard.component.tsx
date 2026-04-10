@@ -201,14 +201,15 @@ export const JobCard: React.FC<JobCardProps> = ({
           </span>
         </div>
         <span className="text-gray-400">|</span>
-        <div className="flex items-center gap-3">
-          <MapPin className="w-4 h-4 text-[#ffb400]" />
-          <span className="text-sm text-[#6D6C6C]">
-            {" "}
-            {job?.locations?.map((item) => item.city).join(", ")}
-            {/* {job?.college?.address} */}
+        {job?.locations?.length > 0 && (
+          <div className="flex items-center gap-3">
+            <MapPin className="w-4 h-4 text-[#ffb400]" />
+            <span className="text-sm text-[#6D6C6C]">
+              {" "}
+              {job?.locations?.map((item) => item.city).join(", ")}
+              {/* {job?.college?.address} */}
           </span>
-        </div>
+        </div>)}
       </div>
 
       <div className="flex items-center gap-3 mb-3 mt-2">
