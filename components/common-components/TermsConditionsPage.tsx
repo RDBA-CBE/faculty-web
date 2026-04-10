@@ -241,6 +241,17 @@ export default function TermsConditionsPage() {
                 in accordance with the applicable laws of India.
               </p>
             </div>
+
+            <div className="mt-5">
+              
+              <p className="mb-3">
+                Sree Vidhya E-Learning Services is a professional learning solutions provider dedicated to delivering high-quality training and advanced digital learning technologies. We specialize in professional enhancement programs, supported by robust e-learning software and comprehensive implementation services, enabling organizations and individuals to build capabilities, enhance performance, and adapt to evolving industry demands.
+              </p>
+
+              <p>
+                FacultyPro, an initiative of Sree Vidhya E-Learning Services, is a structured platform designed to connect educational institutions with qualified teaching resources. It facilitates the efficient alignment of institutional requirements with skilled educators, ensuring seamless access to quality talent and effective learning delivery.
+              </p>
+            </div>
           </div>
         </section>
     </main>
