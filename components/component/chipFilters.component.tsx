@@ -27,6 +27,7 @@ const ChipFilters = ({
   locationList = [],
   deptList = [],
   jobRoleList = [],
+  academicResponsibilityList = [],
 }) => {
   const activeFilters = [];
 
@@ -120,6 +121,13 @@ const ChipFilters = ({
   filters.department?.forEach((value) => {
     push(findLabel(deptList, value), () =>
       onFilterChange({ ...filters, department: filters.department.filter((v) => v !== value) })
+    );
+  });
+
+  // Academic Responsibilities
+  filters.academic_responsibilities?.forEach((value) => {
+    push(findLabel(academicResponsibilityList, value), () =>
+      onFilterChange({ ...filters, academic_responsibilities: filters.academic_responsibilities.filter((v) => v !== value) })
     );
   });
 

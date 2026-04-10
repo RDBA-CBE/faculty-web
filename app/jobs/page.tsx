@@ -185,6 +185,7 @@ export default function JobsPage() {
     jobRoleList: [],
     minExperience: "",
     maxExperience: "",
+    academic_responsibilities: [],
   });
   console.log("✌️filters --->", filters);
 
@@ -644,6 +645,7 @@ ${userName}`;
     filters?.colleges,
     filters?.department,
     filters?.jobRole,
+    filters?.academic_responsibilities,
   ]);
 
   const categoryList = async () => {
@@ -739,6 +741,12 @@ ${userName}`;
         label: item.name,
       }));
 
+      const academicResponsibilityList = res?.data?.additional_academic_responsibilities?.map((item) => ({
+        value: item.id,
+        label: item.responsibility_title,
+        job_count: item.job_count,
+      }));
+
       setState({
         filterList: res?.data,
         filterExperienceRaw: res?.data?.experiences ?? [],
@@ -748,6 +756,7 @@ ${userName}`;
         categoryList,
         jobRoleList,
         experienceList,
+        academicResponsibilityList,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -1395,6 +1404,10 @@ ${userName}`;
       body.salary_range = f.salaryRange;
     }
 
+    if (f?.academic_responsibilities?.length > 0) {
+      body.additional_academic_responsibilities_ids = f.academic_responsibilities;
+    }
+
     if (f?.colleges?.length > 0) {
       body.colleges = f.colleges;
     }
@@ -1492,11 +1505,11 @@ ${userName}`;
       jobID: null,
       colleges: [],
       department: [],
+      academic_responsibilities: [],
       jobRole: [],
       jobRoleList: [],
     });
     setIsMobileFilterOpen(false);
-
     setState({ search: "" });
   };
 
@@ -2928,6 +2941,7 @@ ${userName}`;
                     loading={state.loading}
                     masterExperienceRaw={state?.masterExperienceRaw ?? []}
                     filterExperienceRaw={state?.filterExperienceRaw ?? []}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                     closeModal={() => {
                       window.scrollTo({
                         top: 0,
@@ -2983,6 +2997,7 @@ ${userName}`;
                       loading={state.loading}
                       masterExperienceRaw={state?.masterExperienceRaw ?? []}
                       filterExperienceRaw={state?.filterExperienceRaw ?? []}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                       closeModal={() => {
                         window.scrollTo({
                           top: 0,
@@ -3224,6 +3239,7 @@ ${userName}`;
                     deptList={state?.masterDeptList}
                     locationList={state?.locationList}
                     jobRoleList={state?.masterJobRoleList}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                   />
 
                   {state.loading || state.jobListLoading ? (
