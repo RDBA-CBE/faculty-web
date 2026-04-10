@@ -662,7 +662,7 @@ ${userName}`;
     try {
       const body = bodyData();
       const res: any = await Models.job.filterList(body);
-      let locationList =
+      const locationList =
         res?.data?.locations?.map((item) => ({
           value: item.id,
           label: item.city,
