@@ -173,17 +173,24 @@ export default function NaukriProfilePage() {
       return;
     }
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "token" && !e.newValue) {
+    try {
+      const profile = JSON.parse(localStorage.getItem("user") || "null");
+      if (profile?.id) {
+        setState({ userId: profile.id });
+      } else {
+        setState({ loading: false });
+        alert("User not found. Please log in again.");
+        triggerLogout();
         router.replace("/");
+        return;
       }
-    };
+    } catch {
+      setState({ loading: false });
+      triggerLogout();
+      router.replace("/");
+      return;
+    }
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  useEffect(() => {
     experienceList();
     locationList();
     collegeList();
@@ -191,26 +198,16 @@ export default function NaukriProfilePage() {
     getSavedJobs();
     masterDepartmentList();
     fetchApplicationStatuses();
-    applicationStatus()
-    acadamicResponsibility()
-  }, []);
+    applicationStatus();
+    acadamicResponsibility();
 
-  useEffect(() => {
-    try {
-      const profile = JSON.parse(localStorage.getItem("user") || "null");
-      if (profile?.id) {
-        setState({ userId: profile.id });
-      } else {
-        setState({ loading: false });
-        Failure("User not found. Please log in again.");
-        triggerLogout();
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token" && !e.newValue) {
         router.replace("/");
       }
-    } catch {
-      setState({ loading: false });
-      triggerLogout();
-      router.replace("/");
-    }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   useEffect(() => {

@@ -1655,6 +1655,7 @@ ${userName}`;
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    {state.jobDetail?.user_is_applied === false ? (
                     <button
                       onClick={() => {
                         setState({ jobID: state?.jobDetail?.id });
@@ -1666,6 +1667,9 @@ ${userName}`;
                         ? " Apply on company's site"
                         : " Apply Now"}
                     </button>
+                    ) : (
+                      <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <button
@@ -2555,6 +2559,7 @@ ${userName}`;
                                   </RWebShare>
                                 </div>
 
+                                {state.jobDetail?.user_is_applied === false ? (
                                 <button
                                   onClick={() => {
                                     setState({ jobID: state?.jobDetail?.id });
@@ -2566,6 +2571,9 @@ ${userName}`;
                                     ? " Apply on company's site"
                                     : " Apply Now"}
                                 </button>
+                                ) : (
+                                  <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -2709,6 +2717,7 @@ ${userName}`;
                         )} */}
                           </div>
 
+                          {state.jobDetail?.user_is_applied === false ? (
                           <button
                             onClick={() => {
                               setState({ jobID: state?.jobDetail?.id });
@@ -2720,6 +2729,9 @@ ${userName}`;
                               ? " Apply on company's site"
                               : " Apply Now"}
                           </button>
+                          ) : (
+                            <div className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 " style={{marginTop:"20px"}} >✓ Applied</div>
+                          )}
                         </div>
 
                         {/* Right Sidebar */}
@@ -3852,19 +3864,21 @@ ${userName}`;
                       </div>
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
+                        {state.jobDetail?.user_is_applied === false ? (
                         <button
                           onClick={() => {
                             setState({ jobID: state.jobDetail?.id });
                             handleApply();
                           }}
                           className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-
-                          // className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                         >
                           {state.jobDetail?.apply_link
                             ? " Apply on company's site"
                             : " Apply Now"}
                         </button>
+                        ) : (
+                          <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">✓ Applied</span>
+                        )}
                       </div>
                     </>
                   )}
