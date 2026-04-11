@@ -682,41 +682,21 @@ ${userName}`;
         }
       }
 
-      let deptList =
+      const deptList =
         res?.data?.departments?.map((item) => ({
           value: item.id,
           label: item.department_name,
           job_count: item.job_count,
         })) || [];
 
-      // Fetch and merge missing departments from URL parameters
+      // Remove selected departments that no longer exist in the filtered results
       if (filters.department && filters.department.length > 0) {
-        const existingDeptIds = deptList.map((dept) => dept.value);
-        const missingDeptIds = filters.department.filter(
-          (id) => !existingDeptIds.includes(id),
+        const validDeptIds = deptList.map((dept) => dept.value);
+        const validSelected = filters.department.filter((id) =>
+          validDeptIds.includes(id)
         );
-
-        if (missingDeptIds.length > 0) {
-          try {
-            // Fetch all departments using the master list
-            const allDeptsRes: any = await Models.department.masterDep({
-              page: 1,
-              has_jobs: true,
-            });
-            const allDepts = allDeptsRes?.results || [];
-
-            const missingDepts = allDepts
-              .filter((dept: any) => missingDeptIds.includes(dept.id))
-              .map((item: any) => ({
-                value: item.id,
-                label: item.name,
-                job_count: 0,
-              }));
-
-            deptList = [...deptList, ...missingDepts];
-          } catch (error) {
-            console.log("✌️error fetching missing departments --->", error);
-          }
+        if (validSelected.length !== filters.department.length) {
+          setFilters((prev) => ({ ...prev, department: validSelected }));
         }
       }
 
