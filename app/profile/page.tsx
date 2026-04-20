@@ -37,6 +37,9 @@ import {
   MailIcon,
   PhoneCall,
   Building,
+  TargetIcon,
+  LucideTarget,
+  LocateFixed,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -126,6 +129,7 @@ export default function NaukriProfilePage() {
     expandedSections: {
       resume: true,
       headline: true,
+      academic: true,
       skills: true,
       employment: true,
       education: true,
@@ -169,17 +173,24 @@ export default function NaukriProfilePage() {
       return;
     }
 
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "token" && !e.newValue) {
+    try {
+      const profile = JSON.parse(localStorage.getItem("user") || "null");
+      if (profile?.id) {
+        setState({ userId: profile.id });
+      } else {
+        setState({ loading: false });
+        alert("User not found. Please log in again.");
+        triggerLogout();
         router.replace("/");
+        return;
       }
-    };
+    } catch {
+      setState({ loading: false });
+      triggerLogout();
+      router.replace("/");
+      return;
+    }
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  useEffect(() => {
     experienceList();
     locationList();
     collegeList();
@@ -187,16 +198,16 @@ export default function NaukriProfilePage() {
     getSavedJobs();
     masterDepartmentList();
     fetchApplicationStatuses();
-    applicationStatus()
-  }, []);
+    applicationStatus();
+    acadamicResponsibility();
 
-  useEffect(() => {
-    const profile = JSON.parse(localStorage.getItem("user") || "null");
-    if (profile?.id) {
-      setState({ userId: profile.id });
-    } else {
-      setState({ loading: false });
-    }
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "token" && !e.newValue) {
+        router.replace("/");
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   useEffect(() => {
@@ -219,6 +230,7 @@ export default function NaukriProfilePage() {
   const links = [
     { id: "resume", label: "Resume/login", section: "resume-section" },
     { id: "headline", label: "Profile Summary", section: "headline-section" },
+    { id: "academic", label: "Academic Responsibility", section: "academic-section" },
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
@@ -238,6 +250,7 @@ export default function NaukriProfilePage() {
   const SECTION_IDS = [
     "resume-section",
     "headline-section",
+    "academic-section",
     "employment-section",
     "education-section",
     "projects-section",
@@ -318,7 +331,9 @@ export default function NaukriProfilePage() {
   }, []);
 
   const userDetail = async (userId) => {
+    console.log("fetching user details for userId:", userId); 
     try {
+      console.log("fetching user details for userId in try:", userId);
       const res: any = await Models.profile.details(userId);
       setState({
         loading: false,
@@ -334,6 +349,8 @@ export default function NaukriProfilePage() {
           res?.location_ids?.map((item: any) => item) || [],
         preferred_colleges:
           res?.preferred_college_ids?.map((item: any) => item) || [],
+        additional_academic_ids:
+          res?.additional_academic_responsibility_ids?.map((item: any) => item) || [],
       });
     } catch (error: any) {
       setState({ loading: false });
@@ -341,6 +358,7 @@ export default function NaukriProfilePage() {
         error?.error === "User Not Found" ||
         error?.message === "User Not Found"
       ) {
+        Failure("User not found. Please log in again.");
         triggerLogout();
         router.replace("/");
       }
@@ -603,6 +621,25 @@ export default function NaukriProfilePage() {
     }
   };
 
+  const saveAcademicResponsibilities = async (ids?: any[]) => {
+    try {
+      setState({ btnLoading: true });
+      const finalIds = ids ?? state.additional_academic_ids ?? [];
+      const formData = new FormData();
+      formData.append(
+        "additional_academic_responsibility_ids",
+        JSON.stringify(
+          finalIds.map((item: any) => Number(item?.value || item))
+        )
+      );
+      await Models.profile.update(formData, state.userId);
+      userDetail(state.userId);
+      setState({ btnLoading: false });
+    } catch (error) {
+      setState({ btnLoading: false });
+    }
+  };
+
   const resumeUpdate = async () => {
     try {
       const body = {
@@ -712,6 +749,8 @@ export default function NaukriProfilePage() {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
       background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
       customClass: {
         title: "text-gray-800",
         htmlContainer: "text-gray-600",
@@ -834,10 +873,21 @@ export default function NaukriProfilePage() {
   // };
 
   const deleteSkill = async (skillId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
-      // const body = { skill_id: skillId };
       const res = await Models.skill.delete(skillId);
-
       console.log("deleted skill", res);
       userDetail(state.userId);
     } catch (error) {
@@ -958,9 +1008,21 @@ export default function NaukriProfilePage() {
   };
 
   const deleteEmployment = async (experienceId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.experience.delete(experienceId);
-
       console.log("deleted experience", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1025,10 +1087,22 @@ export default function NaukriProfilePage() {
   };
 
   const deleteEducation = async (educationId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const body = { education_id: educationId };
       const res = await Models.education.delete(educationId);
-
       console.log("deleted education", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1095,9 +1169,21 @@ export default function NaukriProfilePage() {
   };
 
   const deleteProject = async (projectId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.projects.delete(projectId);
-
       console.log("deleted project", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1160,9 +1246,21 @@ export default function NaukriProfilePage() {
   };
 
   const deletePublication = async (publicationId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const res = await Models.publications.delete(publicationId);
-
       console.log("deleted publication", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1236,10 +1334,22 @@ export default function NaukriProfilePage() {
   };
 
   const deleteAchievement = async (achievementId) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1E3786",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+      background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+    });
+    if (!result.isConfirmed) return;
     try {
       const body = { achievement_id: achievementId };
       const res = await Models.achievements.delete(achievementId);
-
       console.log("deleted achievement", res);
       userDetail(state.userId);
     } catch (error) {
@@ -1268,26 +1378,70 @@ export default function NaukriProfilePage() {
   };
 
   const masterDepartmentList = async () => {
-    try {
-      let page = 1;
-      let allResults: any[] = [];
-      let hasNext = true;
-      while (hasNext) {
-        const res: any = await Models.department.masterDep({ page });
-        if (res?.results?.length) allResults = [...allResults, ...res.results];
-        hasNext = !!res?.next;
-        page++;
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
+
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({ page });
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
       }
-      setState({
-        masterDeptList: allResults.map((item: any) => ({
-          value: item.id,
-          label: item.name,
-        })),
-      });
-    } catch (error) {
-      console.log("department error", error);
+
+      hasNext = !!res?.next; // 👈 check if more pages exist
+      page++; // 👈 move to next page
     }
-  };
+
+    setState({
+      masterDeptList: allResults.map((item: any) => ({
+        value: item.id,
+        label: item.name,
+      })),
+    });
+  } catch (error) {
+    console.log("department error", error);
+  }
+};
+
+const acadamicResponsibility = async () => {
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
+
+    while (hasNext) {
+      const res: any = await Models.department.acadamicRes({ page });
+
+      // const dropdown = res?.results?.map((item: any) => ({
+      //   value: item.name,
+      //   label: item.responsibility_title,
+      // }));
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next; // 👈 check if more pages exist
+      page++; // 👈 move to next page
+    }
+
+    setState({
+      acadamicResponsibilityList: allResults.map((item: any) => ({
+        value: item.id,
+        label: item.responsibility_title,
+      })),
+    });
+  } catch (error) {
+    console.log("acadamic Responsibility error", error);
+  }
+};
+
+console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
+
+
+  
 
   useEffect(() => {
     const handleInfiniteScroll = () => {
@@ -1310,14 +1464,22 @@ export default function NaukriProfilePage() {
   const fetchApplicationStatuses = async () => {
     try {
       const res: any = await Models.applications.application_status();
-      const filtered = (res || []).filter(
-        (s: any) => s.name !== "Completed" && s.name !== "Joined"
-      );
+      const order = ["Applied", "Interview Scheduled", "Selected", "Waitlisted", "Rejected"];
+      const filtered = (res || [])
+        .filter((s: any) => s.name !== "Completed" && s.name !== "Joined")
+        .sort((a: any, b: any) => {
+          const ai = order.indexOf(a.name);
+          const bi = order.indexOf(b.name);
+          return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+        });
       setState({ applicationStatuses: filtered });
     } catch (error) {
       console.log("error fetching statuses", error);
     }
   };
+
+  console.log("applicationStatuses", state.applicationStatuses);
+  
 
   const experienceList = async () => {
     try {
@@ -1427,6 +1589,13 @@ export default function NaukriProfilePage() {
     });
   };
 
+  const onlyNumbers = (e: React.KeyboardEvent) => {
+    if (!/[0-9]/.test(e.key) && !['Backspace','Delete','ArrowLeft','ArrowRight','Tab'].includes(e.key))
+      e.preventDefault();
+  };
+
+  const numericString = (val: string) => val.replace(/[^0-9]/g, "");
+
   const handleAddTechnology = () => {
     if (
       state.technology?.trim() &&
@@ -1459,6 +1628,8 @@ export default function NaukriProfilePage() {
       cancelButtonColor: "#6b7280",
       confirmButtonText: type === "accept" ? "Yes, Accept" : "Yes, Reject",
       background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
     });
     if (!confirmed.isConfirmed) return;
 
@@ -1598,8 +1769,34 @@ export default function NaukriProfilePage() {
                   <CardContent className="relative py-4 px-0 mx-0">
                     <div className="flex flex-row items-start gap-4 sm:gap-5">
                       {/* Profile Image - Enhanced */}
-                      <div className="relative flex-shrink-0">
-                        <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
+                      <div className="relative flex-shrink-0 w-24 h-24">
+                        {/* Circular progress ring */}
+                        <svg
+                          className="absolute inset-0 w-full h-full -rotate-90"
+                          viewBox="0 0 96 96"
+                        >
+                          <circle
+                            cx="48" cy="48" r="44"
+                            fill="none"
+                            stroke="#e5e7eb"
+                            strokeWidth="5"
+                          />
+                          <circle
+                            cx="48" cy="48" r="44"
+                            fill="none"
+                            stroke={
+                              (state.userDetail?.profile_completion_percentage || 0) >= 80 ? "#16a34a" :
+                              (state.userDetail?.profile_completion_percentage || 0) >= 50 ? "#f59e0b" : "#ef4444"
+                            }
+                            strokeWidth="5"
+                            strokeLinecap="round"
+                            strokeDasharray={`${2 * Math.PI * 44}`}
+                            strokeDashoffset={`${2 * Math.PI * 44 * (1 - (state.userDetail?.profile_completion_percentage || 0) / 100)}`}
+                            style={{ transition: "stroke-dashoffset 0.7s ease" }}
+                          />
+                        </svg>
+                        {/* Profile image centered inside ring */}
+                        <div className="absolute inset-[6px] rounded-full border-2 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
                           <img
                             src={
                               state.userDetail?.profile_logo_url ||
@@ -1611,9 +1808,19 @@ export default function NaukriProfilePage() {
                             className="w-full h-full object-cover"
                           />
                         </div>
-                        {/* <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white text-xs px-3 py-1 rounded-full shadow-lg font-semibold whitespace-nowrap">
-                  {state.profileCompletion}%
-                </div> */}
+                        {/* Percentage badge */}
+                        {state.userDetail?.profile_completion_percentage !== undefined && (
+                          <div
+                            className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full shadow-md whitespace-nowrap z-10"
+                            style={{
+                              background:
+                                (state.userDetail.profile_completion_percentage) >= 80 ? "#16a34a" :
+                                (state.userDetail.profile_completion_percentage) >= 50 ? "#f59e0b" : "#ef4444",
+                            }}
+                          >
+                            {state.userDetail.profile_completion_percentage}%
+                          </div>
+                        )}
                       </div>
 
                       {/* Profile Info - Enhanced */}
@@ -1831,23 +2038,21 @@ export default function NaukriProfilePage() {
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all ${
-                                        state.activeProfileSubSection ===
-                                        item.id
-                                          ? "bg-[#1E3786] !text-[#fff]"
-                                          : " hover:bg-white/80"
-                                      }`}
+                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all hover:bg-white/80`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          state.activeProfileSubSection ===
-                                          item.id
-                                            ? "!text-[#fff]" // This should still be activeTab for the main tab
+                                          state.activeProfileSubSection === item.id
+                                            ? "text-[#1E3786]"
                                             : "text-[#000]"
                                         }`}
                                       >
                                         {item.label}
                                       </span>
+                                      {state.activeProfileSubSection === item.id && (
+                                        // <div className="w-2 h-2 rounded-full bg-[#F2B31D] flex-shrink-0" />
+                                        <LocateFixed className="w-5 h-5 text-[#F2B31D] flex-shrink-0 " />
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -2157,7 +2362,9 @@ export default function NaukriProfilePage() {
                                       setState({
                                         isEditingHeadline: true,
                                         about: state.userDetail?.about || "",
+                                        expandedSections: { ...state.expandedSections, headline: true },
                                       });
+                                      scrollToSection("headline-section");
                                     }}
                                   >
                                     <Edit3 className="w-4 h-4" />
@@ -2285,6 +2492,216 @@ export default function NaukriProfilePage() {
                                         </div>
                                       </div>
                                     </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </CardContent>
+                          </Card>
+
+                          {/* Additional Academic Responsibility Section */}
+                          <Card
+                            id="academic-section"
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                          >
+                            <CardContent className="relative py-4 px-2">
+                              <div
+                                className="flex items-center justify-between cursor-pointer"
+                                onClick={() => toggleSection("academic")}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform">
+                                    <GraduationCap className="w-4 h-4 text-white transform" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                       Academic Responsibility
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                      Your academic roles and responsibilities
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setState({
+                                        isEditingAcademic: true,
+                                        expandedSections: {
+                                          ...state.expandedSections,
+                                          academic: true,
+                                        },
+                                      });
+                                    }}
+                                    className="w-8 h-8 bg-[#1E3786] text-white rounded-full flex items-center justify-center transition-colors shadow-lg hover:shadow-xl"
+                                  >
+                                    <Plus className="w-4 h-4" />
+                                  </button>
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleSection("academic");
+                                    }}
+                                    className="cursor-pointer"
+                                  >
+                                    {state.expandedSections.academic ? (
+                                      <ChevronUp className="w-5 h-5 text-gray-500" />
+                                    ) : (
+                                      <ChevronDown className="w-5 h-5 text-gray-500" />
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {state.expandedSections.academic && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    {/* Add Form */}
+                                    <AnimatePresence>
+                                      {state.isEditingAcademic && (
+                                        <motion.div
+                                          initial={{ opacity: 0, height: 0, y: -20 }}
+                                          animate={{ opacity: 1, height: "auto", y: 0 }}
+                                          exit={{ opacity: 0, height: 0, y: -20 }}
+                                          transition={{ duration: 0.3, ease: "easeOut" }}
+                                          className="mb-8 relative"
+                                        >
+                                          <div className="absolute inset-0 bg-gradient-to-r from-[#3b82f6]/10 to-blue-500/10 rounded-3xl blur-sm"></div>
+                                          <div className="relative bg-white/80 rounded-lg mt-5 p-8 border border-white/50 shadow-lg">
+                                            <div className="flex items-center gap-3 mb-6">
+                                              <div className="w-8 h-8 bg-[#1E3786] rounded-md flex items-center justify-center">
+                                                <Plus className="w-4 h-4 text-white" />
+                                              </div>
+                                              <h4 className="text-xl font-bold text-gray-900">
+                                                Add Responsibility
+                                              </h4>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                              <div className="space-y-2">
+                                                <label className="text-sm font-semibold text-gray-700">
+                                                  Responsibility
+                                                </label>
+                                                <CustomSelect
+                                                  options={(state.acadamicResponsibilityList || []).filter(
+                                                    (opt: any) => !(state.additional_academic_ids || []).some(
+                                                      (i: any) => (i?.value || i) === opt.value
+                                                    )
+                                                  )}
+                                                  value={state.selected_academic_id || ""}
+                                                  
+                                                  onChange={(selected) =>
+                                                    setState({
+                                                      selected_academic_id: selected ? selected.value : "",
+                                                    })
+                                                  }
+                                                  placeholder="Select responsibility..."
+                                                  className="border-gray-200"
+                                                />
+                                              </div>
+                                            </div>
+                                            <div className="flex gap-3">
+                                              <Button
+                                                onClick={() => {
+                                                  if (!state.selected_academic_id) return;
+                                                  const already = (state.additional_academic_ids || []).some(
+                                                    (i: any) => (i?.value || i) === state.selected_academic_id
+                                                  );
+                                                  if (!already) {
+                                                    const updated = [
+                                                      ...(state.additional_academic_ids || []),
+                                                      state.selected_academic_id,
+                                                    ];
+                                                    setState({
+                                                      additional_academic_ids: updated,
+                                                      selected_academic_id: "",
+                                                    });
+                                                    saveAcademicResponsibilities(updated);
+                                                  }
+                                                }}
+                                                className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                              >
+                                                <CheckCircle className="w-4 h-4 mr-2" />
+                                                Save
+                                              </Button>
+                                              <Button
+                                                variant="outline"
+                                                onClick={() => setState({ isEditingAcademic: false })}
+                                                className="border-gray-300 hover:bg-gray-50"
+                                              >
+                                                Cancel
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </AnimatePresence>
+
+                                    {/* Chips List */}
+                                    <div className="flex flex-wrap gap-3 pt-5">
+                                      {(state.additional_academic_ids || []).map((item: any, index: number) => {
+                                        const label = typeof item === "object"
+                                          ? item.label
+                                          : state.acadamicResponsibilityList?.find((r: any) => r.value === item)?.label || item;
+                                        return (
+                                          <motion.div
+                                            key={index}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            transition={{ delay: index * 0.05 }}
+                                            className="group relative"
+                                          >
+                                            <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 hover:from-[#3b82f6]/20 hover:to-blue-200 border border-[#3b82f6]/30 rounded-full px-4 py-1 flex items-center gap-2 transition-all duration-300 hover:shadow-lg group-hover:scale-105">
+                                              <span className="text-[#1E3786] font-medium text-sm">
+                                                {label}
+                                              </span>
+                                              <button
+                                                onClick={() => {
+                                                  const updated = (state.additional_academic_ids || []).filter(
+                                                    (_: any, i: number) => i !== index
+                                                  );
+                                                  setState({ additional_academic_ids: updated });
+                                                  saveAcademicResponsibilities(updated);
+                                                }}
+                                                className="text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-white/100"
+                                              >
+                                                <X className="w-3 h-3 font-semibold" />
+                                              </button>
+                                            </div>
+                                          </motion.div>
+                                        );
+                                      })}
+                                    </div>
+
+                                    {/* Empty State */}
+                                    {(!state.additional_academic_ids?.length) && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <GraduationCap className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Responsibilities Added
+                                        </h4>
+                                        <p className="text-gray-500 mb-4">
+                                          Add your academic responsibilities
+                                        </p>
+                                        <Button
+                                          onClick={() => setState({ isEditingAcademic: true, expandedSections: { ...state.expandedSections, academic: true } })}
+                                          className="bg-[#1E3786] hover:bg-[#1E3786]"
+                                        >
+                                          <Plus className="w-4 h-4 mr-2" />
+                                          Add Responsibility
+                                        </Button>
+                                      </motion.div>
+                                    )}
                                   </motion.div>
                                 )}
                               </AnimatePresence>
@@ -3034,10 +3451,11 @@ export default function NaukriProfilePage() {
                                                 <Input
                                                   placeholder="e.g., 2016"
                                                   value={state.start_year || ""}
+                                                  onKeyDown={onlyNumbers}
                                                   onChange={(e) =>
                                                     handleFormChange(
                                                       "start_year",
-                                                      e.target.value,
+                                                      numericString(e.target.value),
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -3050,10 +3468,11 @@ export default function NaukriProfilePage() {
                                                 <Input
                                                   placeholder="e.g., 2020"
                                                   value={state.end_year || ""}
+                                                  onKeyDown={onlyNumbers}
                                                   onChange={(e) =>
                                                     handleFormChange(
                                                       "end_year",
-                                                      e.target.value,
+                                                      numericString(e.target.value),
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -5308,6 +5727,8 @@ export default function NaukriProfilePage() {
                                         cancelButtonColor: "#6b7280",
                                         confirmButtonText: "Yes, confirm",
                                         background: "#fff",
+      width: "360px",
+      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
                                       });
                                       if (!result.isConfirmed) return;
                                     }
@@ -5864,11 +6285,18 @@ export default function NaukriProfilePage() {
                               <TextArea
                                 title="Short Description"
                                 value={state.short_desc}
-                                onChange={(e) =>
-                                  handleFormChange("short_desc", e.target.value)
-                                }
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  if (val.length <= 180) {
+                                    handleFormChange("short_desc", val);
+                                  }
+                                }}
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state?.errors?.short_desc}
                               />
+                              <p className={`text-xs text-right ${ (state.short_desc?.length || 0) >= 180 ? "text-red-500" : "text-gray-400" }`}>
+                                {state.short_desc?.length || 0}/180
+                              </p>
                             </div>
 
                             <div className="space-y-2">
@@ -6168,8 +6596,9 @@ export default function NaukriProfilePage() {
                               <Input
                                 placeholder="e.g., 2016"
                                 value={state.start_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
-                                  handleFormChange("start_year", e.target.value)
+                                  handleFormChange("start_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
@@ -6181,8 +6610,9 @@ export default function NaukriProfilePage() {
                               <Input
                                 placeholder="e.g., 2020"
                                 value={state.end_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
-                                  handleFormChange("end_year", e.target.value)
+                                  handleFormChange("end_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
@@ -6517,10 +6947,11 @@ export default function NaukriProfilePage() {
                               <Input
                                 placeholder="e.g., 2023"
                                 value={state.publication_year || ""}
+                                onKeyDown={onlyNumbers}
                                 onChange={(e) =>
                                   handleFormChange(
                                     "publication_year",
-                                    e.target.value,
+                                    numericString(e.target.value),
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
@@ -6770,7 +7201,7 @@ export default function NaukriProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {state.collegeDetail?.intake_per_year && (
                     <div className="bg-[#1E3786] text-white rounded-xl p-4 text-center">
-                      <p className="text-sm font-semibold">Intake Per Year</p>
+                      <p className="text-sm font-semibold text-white">Intake Per Year</p>
                       <h3 className="text-2xl font-bold mt-1">{state.collegeDetail?.intake_per_year}</h3>
                     </div>
                   )}

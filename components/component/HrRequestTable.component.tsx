@@ -45,7 +45,7 @@ const HrRequestTable = ({ invites, onSubmit, btnLoading }) => {
       Cell: ({ row }: any) =>
         row.raw?.job?.id ? (
           <a
-            href={`${FRONTEND_URL}jobs`}
+            href={`${FRONTEND_URL}jobs?slug=${row.raw?.job?.slug}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-[#1E3786] underline whitespace-nowrap"

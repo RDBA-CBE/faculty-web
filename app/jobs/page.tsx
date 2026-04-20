@@ -185,6 +185,7 @@ export default function JobsPage() {
     jobRoleList: [],
     minExperience: "",
     maxExperience: "",
+    academic_responsibilities: [],
   });
   console.log("✌️filters --->", filters);
 
@@ -644,6 +645,7 @@ ${userName}`;
     filters?.colleges,
     filters?.department,
     filters?.jobRole,
+    filters?.academic_responsibilities,
   ]);
 
   const categoryList = async () => {
@@ -662,75 +664,39 @@ ${userName}`;
     try {
       const body = bodyData();
       const res: any = await Models.job.filterList(body);
-      let locationList =
+      const locationList =
         res?.data?.locations?.map((item) => ({
           value: item.id,
           label: item.city,
           job_count: item.job_count,
         })) || [];
 
-      // Fetch and merge missing locations from URL parameters
+      // Remove selected locations that no longer exist in the filtered results
       if (filters.locations && filters.locations.length > 0) {
-        const existingLocationIds = locationList.map((loc) => loc.value);
-        const missingLocationIds = filters.locations.filter(
-          (id) => !existingLocationIds.includes(id),
+        const validLocationIds = locationList.map((loc) => loc.value);
+        const validSelected = filters.locations.filter((id) =>
+          validLocationIds.includes(id)
         );
-
-        if (missingLocationIds.length > 0) {
-          try {
-            const allLocationsRes: any = await Models.location.list(1);
-            const allLocations = allLocationsRes?.results || [];
-
-            const missingLocations = allLocations
-              .filter((loc: any) => missingLocationIds.includes(loc.id))
-              .map((item: any) => ({
-                value: item.id,
-                label: item.city || item.name,
-                job_count: 0,
-              }));
-
-            locationList = [...locationList, ...missingLocations];
-          } catch (error) {
-            console.log("✌️error fetching missing locations --->", error);
-          }
+        if (validSelected.length !== filters.locations.length) {
+          setFilters((prev) => ({ ...prev, locations: validSelected }));
         }
       }
 
-      let deptList =
+      const deptList =
         res?.data?.departments?.map((item) => ({
           value: item.id,
           label: item.department_name,
           job_count: item.job_count,
         })) || [];
 
-      // Fetch and merge missing departments from URL parameters
+      // Remove selected departments that no longer exist in the filtered results
       if (filters.department && filters.department.length > 0) {
-        const existingDeptIds = deptList.map((dept) => dept.value);
-        const missingDeptIds = filters.department.filter(
-          (id) => !existingDeptIds.includes(id),
+        const validDeptIds = deptList.map((dept) => dept.value);
+        const validSelected = filters.department.filter((id) =>
+          validDeptIds.includes(id)
         );
-
-        if (missingDeptIds.length > 0) {
-          try {
-            // Fetch all departments using the master list
-            const allDeptsRes: any = await Models.department.masterDep({
-              page: 1,
-              has_jobs: true,
-            });
-            const allDepts = allDeptsRes?.results || [];
-
-            const missingDepts = allDepts
-              .filter((dept: any) => missingDeptIds.includes(dept.id))
-              .map((item: any) => ({
-                value: item.id,
-                label: item.name,
-                job_count: 0,
-              }));
-
-            deptList = [...deptList, ...missingDepts];
-          } catch (error) {
-            console.log("✌️error fetching missing departments --->", error);
-          }
+        if (validSelected.length !== filters.department.length) {
+          setFilters((prev) => ({ ...prev, department: validSelected }));
         }
       }
 
@@ -755,6 +721,12 @@ ${userName}`;
         label: item.name,
       }));
 
+      const academicResponsibilityList = res?.data?.additional_academic_responsibilities?.map((item) => ({
+        value: item.id,
+        label: item.responsibility_title,
+        job_count: item.job_count,
+      }));
+
       setState({
         filterList: res?.data,
         filterExperienceRaw: res?.data?.experiences ?? [],
@@ -764,6 +736,7 @@ ${userName}`;
         categoryList,
         jobRoleList,
         experienceList,
+        academicResponsibilityList,
       });
     } catch (error) {
       console.log("✌️error --->", error);
@@ -905,29 +878,34 @@ ${userName}`;
   };
 
   const masterDeptList = async () => {
-    try {
-      let page = 1;
-      let allResults: any[] = [];
-      let hasNext = true;
-      while (hasNext) {
-        const res: any = await Models.department.masterDep({
-          page,
-          has_jobs: true,
-        });
-        if (res?.results?.length) {
-          allResults = [...allResults, ...res.results];
-        }
-        hasNext = !!res?.next;
-        page++;
-      }
-      const dropdown = Dropdown(allResults, "name");
-      setState({
-        masterDeptList: dropdown,
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
+
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({
+        page,
+        has_jobs: true,
       });
-    } catch (error) {
-      console.error("Error fetching master departments:", error);
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
+      }
+
+      hasNext = !!res?.next; // 👈 check next page
+      page++; // 👈 increment page
     }
-  };
+
+    const dropdown = Dropdown(allResults, "name");
+
+    setState({
+      masterDeptList: dropdown,
+    });
+  } catch (error) {
+    console.error("Error fetching master departments:", error);
+  }
+};
 
   const masterJobRoleList = async () => {
     try {
@@ -1406,6 +1384,10 @@ ${userName}`;
       body.salary_range = f.salaryRange;
     }
 
+    if (f?.academic_responsibilities?.length > 0) {
+      body.additional_academic_responsibilities_ids = f.academic_responsibilities;
+    }
+
     if (f?.colleges?.length > 0) {
       body.colleges = f.colleges;
     }
@@ -1503,11 +1485,11 @@ ${userName}`;
       jobID: null,
       colleges: [],
       department: [],
+      academic_responsibilities: [],
       jobRole: [],
       jobRoleList: [],
     });
     setIsMobileFilterOpen(false);
-
     setState({ search: "" });
   };
 
@@ -1572,12 +1554,18 @@ ${userName}`;
                 <div className="bg-clr2 rounded-lg   p-6 ">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <div className="w-fit bg-[#1E37861A] mb-5 rounded-3xl px-5 py-1 text-[10px] text-[#000]">
-                        {/* • Posted{" "} */}
-                        {moment(state?.jobDetail?.created_at).isValid() &&
-                        moment(state?.jobDetail?.created_at).year() > 1900
-                          ? moment(state?.jobDetail?.created_at).fromNow()
-                          : "Just now"}
+                      <div className="flex items-center gap-2 mb-5">
+                        <div className="w-fit bg-[#1E37861A] rounded-3xl px-5 py-1 text-[10px] text-[#000]">
+                          {moment(state?.jobDetail?.created_at).isValid() &&
+                          moment(state?.jobDetail?.created_at).year() > 1900
+                            ? moment(state?.jobDetail?.created_at).fromNow()
+                            : "Just now"}
+                        </div>
+                        {state?.jobDetail?.immediate_join && (
+                          <div className="w-fit bg-green-100 rounded-3xl px-3 py-1 text-[10px] text-green-700 font-semibold">
+                            ⚡ Immediate Hiring
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-start gap-4">
                         {state?.jobDetail?.college?.college_logo ? (
@@ -1652,7 +1640,7 @@ ${userName}`;
                         {state?.jobDetail?.salary_range_obj?.name}
                       </span>
 
-                      {state?.jobDetail?.college?.address && (
+                      {state?.jobDetail?.locations?.length > 0 && (
                         <span className="flex items-center gap-3">
                           <MapPin className="w-4 h-4 text-[#E6AB1D]" />
                           {capitalizeFLetter(
@@ -1667,6 +1655,7 @@ ${userName}`;
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    {state.jobDetail?.user_is_applied === false ? (
                     <button
                       onClick={() => {
                         setState({ jobID: state?.jobDetail?.id });
@@ -1678,6 +1667,9 @@ ${userName}`;
                         ? " Apply on company's site"
                         : " Apply Now"}
                     </button>
+                    ) : (
+                      <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <button
@@ -1893,7 +1885,7 @@ ${userName}`;
                         ))}
                       </div>
                     </div>
-                    {state?.jobDetail?.college?.address && (
+                    {state?.jobDetail?.locations?.length > 0 && (
                       <div>
                         <span className="flex gap-2 text-md font-medium  pb-1">
                           <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -2146,7 +2138,7 @@ ${userName}`;
                                           </span>
                                         </div>
 
-                                        {job?.college?.address && (
+                                        {job.locations?.length > 0 && (
                                           <div className="flex  gap-1">
                                             <MapPin
                                               className={`${
@@ -2407,17 +2399,23 @@ ${userName}`;
                         <div className=" border-b    pb-2">
                           <div className="flex items-start justify-between mb-2">
                             <div>
-                              <div className="w-fit bg-[#1E37861A] mb-3 rounded-3xl px-3 py-1 text-[12px] text-[#000]">
-                                {/* • Posted{" "} */}
-                                {moment(
-                                  state?.jobDetail?.created_at,
-                                ).isValid() &&
-                                moment(state?.jobDetail?.created_at).year() >
-                                  1900
-                                  ? moment(
-                                      state?.jobDetail?.created_at,
-                                    ).fromNow()
-                                  : "Just now"}
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="w-fit bg-[#1E37861A] rounded-3xl px-3 py-1 text-[12px] text-[#000]">
+                                  {moment(
+                                    state?.jobDetail?.created_at,
+                                  ).isValid() &&
+                                  moment(state?.jobDetail?.created_at).year() >
+                                    1900
+                                    ? moment(
+                                        state?.jobDetail?.created_at,
+                                      ).fromNow()
+                                    : "Just now"}
+                                </div>
+                                {state?.jobDetail?.immediate_join && (
+                                  <div className="w-fit bg-green-100 rounded-3xl px-3 py-1 text-[12px] text-green-700 font-semibold">
+                                    ⚡ Immediate Hiring
+                                  </div>
+                                )}
                               </div>
                               <div className="flex items-start gap-4 h-full mb-1">
                                 {state?.jobDetail?.college?.college_logo ? (
@@ -2489,7 +2487,7 @@ ${userName}`;
                                     )}
                                     {state?.jobDetail?.salary_range_obj?.name}
                                   </span>
-                                  {state?.jobDetail?.college?.address && (
+                                  {state?.jobDetail?.locations?.length > 0 && (
                                     <span className="flex items-center gap-3">
                                       <MapPin className="w-4 h-4 text-[#E6AB1D]" />
                                       {capitalizeFLetter(
@@ -2561,6 +2559,7 @@ ${userName}`;
                                   </RWebShare>
                                 </div>
 
+                                {state.jobDetail?.user_is_applied === false ? (
                                 <button
                                   onClick={() => {
                                     setState({ jobID: state?.jobDetail?.id });
@@ -2572,6 +2571,9 @@ ${userName}`;
                                     ? " Apply on company's site"
                                     : " Apply Now"}
                                 </button>
+                                ) : (
+                                  <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -2715,6 +2717,7 @@ ${userName}`;
                         )} */}
                           </div>
 
+                          {state.jobDetail?.user_is_applied === false ? (
                           <button
                             onClick={() => {
                               setState({ jobID: state?.jobDetail?.id });
@@ -2726,6 +2729,9 @@ ${userName}`;
                               ? " Apply on company's site"
                               : " Apply Now"}
                           </button>
+                          ) : (
+                            <div className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 " style={{marginTop:"20px"}} >✓ Applied</div>
+                          )}
                         </div>
 
                         {/* Right Sidebar */}
@@ -2798,7 +2804,7 @@ ${userName}`;
                                   </div>
                                 </div>
 
-                                {state?.jobDetail?.college?.address && (
+                                {state?.jobDetail?.locations?.length > 0 &&  (
                                   <div>
                                     <span className="flex gap-2 text-md font-medium  pb-1">
                                       <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -2927,6 +2933,7 @@ ${userName}`;
                     loading={state.loading}
                     masterExperienceRaw={state?.masterExperienceRaw ?? []}
                     filterExperienceRaw={state?.filterExperienceRaw ?? []}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                     closeModal={() => {
                       window.scrollTo({
                         top: 0,
@@ -2982,6 +2989,7 @@ ${userName}`;
                       loading={state.loading}
                       masterExperienceRaw={state?.masterExperienceRaw ?? []}
                       filterExperienceRaw={state?.filterExperienceRaw ?? []}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                       closeModal={() => {
                         window.scrollTo({
                           top: 0,
@@ -3223,6 +3231,7 @@ ${userName}`;
                     deptList={state?.masterDeptList}
                     locationList={state?.locationList}
                     jobRoleList={state?.masterJobRoleList}
+                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
                   />
 
                   {state.loading || state.jobListLoading ? (
@@ -3339,7 +3348,7 @@ ${userName}`;
                                     });
                                   }
                                 }}
-                                className="cursor-pointer transition-transform hover:scale-10 job-card-item"
+                                className="cursor-pointer transition-transform hover:scale-10 job-card-item h-full"
                               >
                                 {isGridView ? (
                                   <JobCard
@@ -3543,7 +3552,6 @@ ${userName}`;
                                 {state.jobDetail?.college?.name}
                               </p>
                               <div className="flex items-center gap-2 mt-2">
-                                {/* <Star className="w-4 h-4 text-amber-400 fill-current" /> */}
                                 <span className="text-sm text-gray-600">
                                   {moment(state.jobDetail?.created_at).isValid()
                                     ? moment(
@@ -3551,6 +3559,11 @@ ${userName}`;
                                       ).fromNow()
                                     : "Just now"}
                                 </span>
+                                {state?.jobDetail?.immediate_join && (
+                                  <span className="bg-green-100 rounded-full px-2 py-0.5 text-[10px] text-green-700 font-semibold">
+                                    ⚡ Immediate Hiring
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -3757,7 +3770,7 @@ ${userName}`;
                                 )}
                               </div>
                             </div>
-                            {state?.jobDetail?.college?.address && (
+                            {state?.jobDetail?.locations?.length > 0  && (
                               <div>
                                 <span className="flex gap-2 text-sm font-medium  pb-1">
                                   <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -3851,19 +3864,21 @@ ${userName}`;
                       </div>
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
+                        {state.jobDetail?.user_is_applied === false ? (
                         <button
                           onClick={() => {
                             setState({ jobID: state.jobDetail?.id });
                             handleApply();
                           }}
                           className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-
-                          // className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
                         >
                           {state.jobDetail?.apply_link
                             ? " Apply on company's site"
                             : " Apply Now"}
                         </button>
+                        ) : (
+                          <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">✓ Applied</span>
+                        )}
                       </div>
                     </>
                   )}

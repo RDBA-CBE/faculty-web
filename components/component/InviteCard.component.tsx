@@ -47,9 +47,9 @@ const InviteCard = (props) => {
       {invite?.job?.id && (
         <a
           target="_blank"
-          href={`${FRONTEND_URL}${"jobs"}`}
+          href={`${FRONTEND_URL}${invite?.job?.slug ? `jobs?slug=${invite?.job?.slug}` : `jobs/${invite?.job?.id}`}`}
           className="text-sm text-gray-700  underline"
-        >{`${FRONTEND_URL}${invite?.job?.id}`}</a>
+        > View Job</a>
       )}
       {!invite?.is_response && (
         <div className="flex justify-end gap-2">

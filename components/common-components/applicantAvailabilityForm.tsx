@@ -44,6 +44,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
     btnLoading: false,
     errors: {},
     response_from_applicant: false,
+    availabilityNote: "",
   });
   console.log("✌️response_from_applicant --->", state.response_from_applicant);
 
@@ -59,7 +60,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       const res: any = await Models.applications.get_applicant_feedback(token);
       console.log("✌️res --->", res);
       setState({
-        job: res?.applications?.length > 0 ? res?.applications?.[1] : null,
+        job: res?.applications?.length > 0 ? res?.applications?.[0] : null,
         loading: false,
         detail: res,
       });
@@ -69,6 +70,7 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
             response_from_applicant:
               res?.applications?.[0]?.interview_slots?.[0]
                 ?.response_from_applicant,
+            availabilityNote: "",
           });
         }
       }
@@ -78,14 +80,16 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
     }
   };
 
+  console.log("job", state?.job);
+  
+
   const handleSubmit = async () => {
     try {
       setState({ btnLoading: true, errors: {} });
 
       const validation = {
         isAvailable: state.isAvailable,
-        availableTime: state.availableTime,
-        response_from_applicant: state.response_from_applicant,
+        availabilityNote: state.availabilityNote,
       };
       await Validation.applicant_feedback.validate(validation, {
         abortEarly: false,
@@ -94,9 +98,9 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
       const body = {
         is_available: state.isAvailable,
         feedback_text:
-          state.isAvailable && state.response_from_applicant
+          state.isAvailable === "Yes"
             ? ""
-            : state.availableTime,
+            : state.availabilityNote,
         panel_id: state.detail?.panel_ids?.[0],
       };
 
@@ -232,14 +236,14 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
             <select
               value={state.isAvailable}
               onChange={(e) => setState({ isAvailable: e.target.value })}
-              className="w-full border rounded-lg p-3"
+              className="w-full border rounded-lg p-3 bg-white"
             >
               <option value="">Are you available for this interview?</option>
               <option>Yes</option>
               <option>No</option>
             </select>
           </div>
-          {state.isAvailable == "No" && state.response_from_applicant && (
+          {state.isAvailable == "No" && (
             <div className=" p-4 space-y-2">
               <h3 className="font-semibold">
                 When are you available? <span className="text-red-500">*</span>
@@ -247,16 +251,16 @@ const ApplicantAvailabilityForm = ({ token: propToken }) => {
 
               <textarea
                 rows={3}
-                placeholder="Academic record remark"
+                placeholder="Please provide your availability with reason for unavailability"
                 className="w-full border rounded-lg p-3"
-                value={state.response_from_applicant}
+                value={state.availabilityNote}
                 onChange={(e) =>
-                  setState({ response_from_applicant: e.target.value })
+                  setState({ availabilityNote: e.target.value })
                 }
               />
-              {state.errors?.availableTime && (
+              {state.errors?.availabilityNote && (
                 <p className=" pl-1 text-sm text-red-600">
-                  {state.errors?.availableTime}{" "}
+                  {state.errors?.availabilityNote}{" "}
                   {/* Display the error message if it exists */}
                 </p>
               )}

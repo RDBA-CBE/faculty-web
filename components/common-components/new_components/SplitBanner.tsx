@@ -147,26 +147,32 @@ const dataCount = async () => {
 //   }
 // };
 
-const departmentList = async (search = "", page = 1) => {
+const departmentList = async (search = "") => {
   try {
     setState({ departmentListLoading: true });
 
-    const res: any = await Models.department.masterDep({
-      page,
-      search,
-      has_jobs: true,
-    });
+    let page = 1;
+    let hasNext = true;
+    let allDepartments: any[] = [];
 
-    const dropdown = Dropdown(res?.results || [], "name");
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({
+        page,
+        search,
+        has_jobs: true,
+      });
+
+      const dropdown = Dropdown(res?.results || [], "name");
+      allDepartments = [...allDepartments, ...dropdown];
+
+      hasNext = !!res?.next;
+      page++;
+    }
 
     setState({
-      departmentList: page === 1
-        ? dropdown
-        : [...state.departmentList, ...dropdown],
+      departmentList: allDepartments,
       departmentListLoading: false,
     });
-
-    return res?.next; // for pagination
   } catch (error) {
     console.error(error);
     setState({ departmentListLoading: false });
@@ -268,7 +274,7 @@ const departmentList = async (search = "", page = 1) => {
             {/* Heading */}
             <div className="space-y-5">
               <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
-                Are You A Faculty? <br /> Find Your Right Oppurtunity
+                Are You A Faculty? <br /> Find Your Right Opportunity
               </h1>
               {/* <p className="text-[#F0F0F0CC] max-w-xl text-base lg:text-lg leading-relaxed">
                 FacultyPro connects qualified academic professionals with

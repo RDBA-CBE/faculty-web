@@ -31,6 +31,7 @@ import {
   PlusIcon,
   File,
   Book,
+  LocateFixed,
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -64,8 +65,7 @@ import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
 import InviteCard from "@/components/component/InviteCard.component";
 import { useParams } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function NaukriProfilePage() {
   const params = useParams();
@@ -83,6 +83,7 @@ export default function NaukriProfilePage() {
   const sidebarWrapperRef = useRef(null);
   const footerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const router = useRouter();
 
   const [state, setState] = useSetState({
     // Profile Data
@@ -111,6 +112,7 @@ export default function NaukriProfilePage() {
     expandedSections: {
       resume: true,
       headline: true,
+      academic: true,
       skills: true,
       employment: true,
       education: true,
@@ -140,6 +142,7 @@ export default function NaukriProfilePage() {
     collegeList(1);
     appliedJobList();
     getSavedJobs();
+    acadamicResponsibility();
   }, []);
 
   useEffect(() => {
@@ -151,15 +154,15 @@ export default function NaukriProfilePage() {
     }
   }, [params?.id]);
 
-//   useEffect(() => {
-//   const urlUserId = searchParams.get("id");
+  //   useEffect(() => {
+  //   const urlUserId = searchParams.get("id");
 
-//   if (urlUserId) {
-//     setState({ userId: urlUserId });
-//   } else {
-//     setState({ loading: false });
-//   }
-// }, [searchParams]);
+  //   if (urlUserId) {
+  //     setState({ userId: urlUserId });
+  //   } else {
+  //     setState({ loading: false });
+  //   }
+  // }, [searchParams]);
 
   useEffect(() => {
     if (state.activeTab == "Applications") {
@@ -260,9 +263,11 @@ export default function NaukriProfilePage() {
   const userDetail = async (userId) => {
     try {
       const res: any = await Models.profile.details(userId);
+
       setState({
         loading: false,
         userDetail: res,
+        additional_academic_ids: res?.additional_academic_responsibility_ids || [],
         phd_completed: res?.phd_completed,
         net_cleared: res?.net_cleared,
         set_cleared: res?.set_cleared,
@@ -271,13 +276,41 @@ export default function NaukriProfilePage() {
         reveal_name: res?.reveal_name,
         newsletter: res?.newsletter,
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.log("error", error);
       setState({ loading: false });
-      // Failure("Failed to fetch jobs");
+
+      if (
+        error?.error === "User Not Found" ||
+        error?.message === "User Not Found"
+      ) {
+        alert("User Not Found"); // 👈 native browser alert
+        router.back(); // 👈 runs AFTER alert is closed
+      }
     }
   };
 
   console.log("userDetail", state.userDetail);
+
+  const acadamicResponsibility = async () => {
+    try {
+      let page = 1, hasNext = true, allResults: any[] = [];
+      while (hasNext) {
+        const res: any = await Models.department.acadamicRes({ page });
+        if (res?.results?.length) allResults = [...allResults, ...res.results];
+        hasNext = !!res?.next;
+        page++;
+      }
+      setState({
+        acadamicResponsibilityList: allResults.map((item: any) => ({
+          value: item.id,
+          label: item.responsibility_title,
+        })),
+      });
+    } catch (error) {
+      console.log("acadamic Responsibility error", error);
+    }
+  };
 
   const locationList = async (page, search = "") => {
     console.log("✌️page --->", page);
@@ -1172,7 +1205,7 @@ export default function NaukriProfilePage() {
   const links = [
     { id: "resume", label: "Resume/login", section: "resume-section" },
     { id: "headline", label: "Profile Summary", section: "headline-section" },
-
+    { id: "academic", label: "Academic Responsibility", section: "academic-section" },
     { id: "employment", label: "Experience", section: "employment-section" },
     { id: "education", label: "Education", section: "education-section" },
     { id: "projects", label: "Projects", section: "projects-section" },
@@ -1371,27 +1404,27 @@ export default function NaukriProfilePage() {
                     <CardContent className="relative py-4 px-0 mx-0">
                       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
                         <div className="w-20 h-20 rounded-full border-4 border-white overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200">
-                            {state.userDetail?.reveal_name === false ? (
-                              <div className="w-full h-full bg-gray-300 animate-pulse" />
-                            ) : (
-                              <img
-                                src={
-                                  state.userDetail?.profile_logo_url ||
-                                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
-                                }
-                                alt="Profile"
-                                width={128}
-                                height={128}
-                                className="w-full h-full object-cover"
-                              />
-                            )}
-                          </div>
+                          { state.userDetail?.reveal_name == false ? (
+                            <div className="w-full h-full bg-gray-300 animate-pulse" />
+                          ) : (
+                            <img
+                              src={
+                                state.userDetail?.profile_logo_url ||
+                                "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80"
+                              }
+                              alt="Profile"
+                              width={128}
+                              height={128}
+                              className="w-full h-full object-cover"
+                            />
+                          )}
+                        </div>
                         {/* Profile Info - Enhanced */}
                         <div className="flex-1 w-full">
                           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                             <div className="text-center sm:text-left">
                               <div className="flex items-center gap-2 justify-center sm:justify-start">
-                                {state.userDetail?.reveal_name === false ? (
+                                {state.userDetail?.reveal_name == false ? (
                                   <div className="h-6 w-48 bg-gray-300 rounded animate-pulse" />
                                 ) : (
                                   <h1 className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
@@ -1403,39 +1436,37 @@ export default function NaukriProfilePage() {
                                 )}
                               </div>
 
-                               {(state?.userDetail?.short_desc ||
-                              state?.userDetail?.current_company ||
-                              state?.userDetail?.current_location ||
-                              state?.userDetail?.current_position) && (
-                              <div className="text-center sm:text-left">
-                                {state?.userDetail?.short_desc && (
-                                  <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
-                                    {state?.userDetail?.short_desc}
-                                  </p>
-                                )}
-                                {(state?.userDetail?.current_company ||
-                              state?.userDetail?.current_position ||
-                              state?.userDetail?.current_location) && (
-                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
-                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                              {(state?.userDetail?.short_desc ||
+                                state?.userDetail?.current_company ||
+                                state?.userDetail?.current_location ||
+                                state?.userDetail?.current_position) && (
+                                <div className="text-center sm:text-left">
+                                  {state?.userDetail?.short_desc && (
+                                    <p className="text-sm sm:text-base md:text-lg text-gray-700 font-medium mt-1">
+                                      {state?.userDetail?.short_desc}
+                                    </p>
+                                  )}
+                                  {(state?.userDetail?.current_company ||
+                                    state?.userDetail?.current_position ||
+                                    state?.userDetail?.current_location) && (
+                                    <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                      <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                <span className="text-sm">
-                                  {[
-                                    state?.userDetail?.current_company,
-                                    state?.userDetail?.current_position,
-                                    state?.userDetail?.current_location,
-                                  ]
-                                    .filter(Boolean) // removes null/undefined/empty
-                                    .join(" - ")}
-                                </span>
-                              </div>
-                            )}
-                              </div>
-                            )}
-                            
+                                      <span className="text-sm">
+                                        {[
+                                          state?.userDetail?.current_company,
+                                          state?.userDetail?.current_position,
+                                          state?.userDetail?.current_location,
+                                        ]
+                                          .filter(Boolean) // removes null/undefined/empty
+                                          .join(" - ")}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                             </div>
-                           
-                           
+
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
                                 <p className="text-xs text-gray-500 whitespace-nowrap">
@@ -1480,7 +1511,6 @@ export default function NaukriProfilePage() {
                             alwaysShow: false,
                           },
 
-                          
                           {
                             icon: Mail,
                             label: state?.userDetail?.email || "Not specified",
@@ -1495,20 +1525,21 @@ export default function NaukriProfilePage() {
                             alwaysShow: false,
                           },
                           ...(state?.userDetail?.department_id
-                                                    ? [
-                                                        {
-                                                          icon: Briefcase,
-                                                          label: (() => {
-                                                            const found = state?.masterDeptList?.find(
-                                                              (d: any) =>
-                                                                d.value == state.userDetail.department_id,
-                                                            );
-                                                            return found ? found.label : "";
-                                                          })(),
-                                                          color: "text-[#f2b31d]",
-                                                        },
-                                                      ]
-                                                    : []),
+                            ? [
+                                {
+                                  icon: Briefcase,
+                                  label: (() => {
+                                    const found = state?.masterDeptList?.find(
+                                      (d: any) =>
+                                        d.value ==
+                                        state.userDetail.department_id,
+                                    );
+                                    return found ? found.label : "";
+                                  })(),
+                                  color: "text-[#f2b31d]",
+                                },
+                              ]
+                            : []),
                         ].map((item, index) => (
                           <div
                             key={index}
@@ -1517,7 +1548,8 @@ export default function NaukriProfilePage() {
                             <item.icon
                               className={`w-4 h-4 ${item.color} flex-shrink-0`}
                             />
-                            {state.userDetail?.reveal_name === false && !item.alwaysShow ? (
+                            {state.userDetail?.reveal_name == false &&
+                            !item.alwaysShow ? (
                               <div className="h-3 w-20 bg-gray-300 rounded animate-pulse" />
                             ) : (
                               <span className="text-xs sm:text-sm text-gray-700 font-medium truncate flex-1">
@@ -1571,22 +1603,22 @@ export default function NaukriProfilePage() {
                                 </p>
                               )}
                               {(state?.userDetail?.current_company ||
-                              state?.userDetail?.current_position ||
-                              state?.userDetail?.current_location) && (
-                              <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
-                                <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
+                                state?.userDetail?.current_position ||
+                                state?.userDetail?.current_location) && (
+                                <div className="text-gray-600 flex items-center gap-2 justify-start mt-2">
+                                  <div className="w-2 h-2 bg-[#f2b31d] rounded-full"></div>
 
-                                <span className="text-sm">
-                                  {[
-                                    state?.userDetail?.current_company,
-                                    state?.userDetail?.current_position,
-                                    state?.userDetail?.current_location,
-                                  ]
-                                    .filter(Boolean) // removes null/undefined/empty
-                                    .join(" - ")}
-                                </span>
-                              </div>
-                            )}
+                                  <span className="text-sm">
+                                    {[
+                                      state?.userDetail?.current_company,
+                                      state?.userDetail?.current_position,
+                                      state?.userDetail?.current_location,
+                                    ]
+                                      .filter(Boolean) // removes null/undefined/empty
+                                      .join(" - ")}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                             <div className="flex-shrink-0">
                               <div className="bg-white/100 rounded-lg px-3 py-1 shadow-sm border">
@@ -1676,31 +1708,28 @@ export default function NaukriProfilePage() {
                                   Quick Links
                                 </h3>
 
-                                <div className="space-y-2">
+                                 <div className="space-y-2">
                                   {links.map((item) => (
                                     <div
                                       key={item.id}
                                       onClick={() =>
                                         scrollToSection(item.section)
                                       }
-                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all
-                                        ${
-                                          state.activeProfileSubSection ===
-                                          item.id
-                                            ? "bg-[#1E3786] !text-[#fff]"
-                                            : " hover:bg-white/80"
-                                        }`}
+                                      className={`flex items-center justify-between px-2 py-1 rounded-[5px] cursor-pointer transition-all hover:bg-white/80`}
                                     >
                                       <span
                                         className={`font-medium ${
-                                          state.activeProfileSubSection ===
-                                          item.id
-                                            ? "!text-[#fff]"
+                                          state.activeProfileSubSection === item.id
+                                            ? "text-[#1E3786]"
                                             : "text-[#000]"
                                         }`}
                                       >
                                         {item.label}
                                       </span>
+                                      {state.activeProfileSubSection === item.id && (
+                                        // <div className="w-2 h-2 rounded-full bg-[#F2B31D] flex-shrink-0" />
+                                        <LocateFixed className="w-5 h-5 text-[#F2B31D] flex-shrink-0 " />
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -2087,6 +2116,89 @@ export default function NaukriProfilePage() {
                             </CardContent>
                           </Card>
 
+                          {/* Additional Academic Responsibility Section */}
+                          <Card
+                            className="!rounded-none bg-clr2 border shadow-none overflow-hidden relative"
+                          >
+                            <CardContent className="relative py-4 px-2">
+                              <div
+                                className="flex items-center justify-between cursor-pointer"
+                                onClick={() => toggleSection("academic")}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-10 h-10 bg-[#1E3786] rounded-md flex items-center justify-center shadow-lg transform">
+                                    <GraduationCap className="w-4 h-4 text-white transform" />
+                                  </div>
+                                  <div>
+                                    <h3 className="text-xl font-bold bg-[#1E3786] bg-clip-text text-transparent">
+                                       Academic Responsibility
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                      Academic roles and responsibilities
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  {state.expandedSections.academic ? (
+                                    <ChevronUp className="w-5 h-5 text-gray-500" />
+                                  ) : (
+                                    <ChevronDown className="w-5 h-5 text-gray-500" />
+                                  )}
+                                </div>
+                              </div>
+
+                              <AnimatePresence>
+                                {state.expandedSections.academic && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3 }}
+                                  >
+                                    <div className="flex flex-wrap gap-3 pt-5">
+                                      {(state.additional_academic_ids || []).map(
+                                        (item: any, index: number) => {
+                                          const label = typeof item === "object"
+                                            ? item.label
+                                            : state.acadamicResponsibilityList?.find((r: any) => r.value === item)?.label || item;
+                                          return (
+                                            <motion.div
+                                              key={index}
+                                              initial={{ opacity: 0, scale: 0.8 }}
+                                              animate={{ opacity: 1, scale: 1 }}
+                                              transition={{ delay: index * 0.05 }}
+                                            >
+                                              <div className="bg-gradient-to-r from-[#3b82f6]/10 to-blue-100 border border-[#3b82f6]/30 rounded-full px-4 py-1 flex items-center gap-2 transition-all duration-300 hover:shadow-lg">
+                                                <span className="text-[#1E3786] font-medium text-sm">
+                                                  {label}
+                                                </span>
+                                              </div>
+                                            </motion.div>
+                                          );
+                                        },
+                                      )}
+                                    </div>
+
+                                    {(!state.additional_academic_ids?.length) && (
+                                      <motion.div
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="text-center py-8"
+                                      >
+                                        <div className="w-16 h-16 bg-gradient-to-br from-[#3b82f6]/20 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                          <GraduationCap className="w-8 h-8 text-[#1E3786]/60" />
+                                        </div>
+                                        <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                                          No Responsibilities Added
+                                        </h4>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </CardContent>
+                          </Card>
+
                           {/* Employment Section */}
                           <Card
                             id="employment-section"
@@ -2458,8 +2570,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Employment History
                                         </h4>
-                                      
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -2766,8 +2876,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Education History
                                         </h4>
-                                       
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3259,7 +3367,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Projects Added
                                         </h4>
-                                      
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3633,8 +3740,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Publications Added
                                         </h4>
-                                       
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3831,8 +3936,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-lg font-semibold text-gray-900 mb-2">
                                           No Skills Added
                                         </h4>
-                                      
-                                        
                                       </motion.div>
                                     )}
                                   </motion.div>
@@ -3840,6 +3943,8 @@ export default function NaukriProfilePage() {
                               </AnimatePresence>
                             </CardContent>
                           </Card>
+
+                          
 
                           {/* Achievements Section */}
                           <Card
@@ -4161,8 +4266,6 @@ export default function NaukriProfilePage() {
                                         <h4 className="text-xl font-semibold text-gray-900 mb-2">
                                           No Achievements Added
                                         </h4>
-                                       
-                                       
                                       </motion.div>
                                     )}
                                   </motion.div>

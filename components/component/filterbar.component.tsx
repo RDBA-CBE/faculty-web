@@ -41,7 +41,8 @@ interface SidebarProps {
     jobRole?: any[];
     locations?: any[];
     jobRoleList: any[];
-    closeModal?:any
+    closeModal?:any;
+    academic_responsibilities?: any[];
   };
   onFilterChange: (newFilters: any) => void;
   categoryList?: CategoryItem[];
@@ -58,6 +59,7 @@ interface SidebarProps {
   closeModal?:any;
   masterExperienceRaw?: { id: number; name: string; value: string }[];
   filterExperienceRaw?: { id: number; name: string }[];
+  academicResponsibilityList?: any[];
 }
 
 const FilterSection: React.FC<{
@@ -85,7 +87,7 @@ const FilterSection: React.FC<{
               className="w-4 h-4 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
             />
             <span className="text-[15px] text-[#000] group-hover:text-slate-900 transition-colors ">
-              {CharSlice(item.label, 32)}
+              {CharSlice(item.label, 28)}
             </span>
           </div>
           {item.job_count !== undefined && (
@@ -207,6 +209,7 @@ const Filterbar: React.FC<SidebarProps> = ({
   closeModal,
   masterExperienceRaw = [],
   filterExperienceRaw = [],
+  academicResponsibilityList = [],
 }) => {
   const isMobile = useIsMobile();
   const [showAllColleges, setShowAllColleges] = useState(false);
@@ -214,12 +217,14 @@ const Filterbar: React.FC<SidebarProps> = ({
   const [showAllJobRoles, setShowAllJobRoles] = useState(false);
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllLocations, setShowAllLocations] = useState(false);
+  const [showAllAcademicResp, setShowAllAcademicResp] = useState(false);
 
   const [collegeSearchQuery, setCollegeSearchQuery] = useState("");
   const [deptSearchQuery, setDeptSearchQuery] = useState("");
   const [jobRoleSearchQuery, setJobRoleSearchQuery] = useState("");
   const [categorySearchQuery, setCategorySearchQuery] = useState("");
   const [locationSearchQuery, setLocationSearchQuery] = useState("");
+  const [academicRespSearchQuery, setAcademicRespSearchQuery] = useState("");
   const [selectedAlphabet, setSelectedAlphabet] = useState("");
 
   const [collegePopupPos, setCollegePopupPos] = useState({
@@ -239,13 +244,19 @@ const Filterbar: React.FC<SidebarProps> = ({
     left: 0,
     top: -200,
   });
+  const [academicRespPopupPos, setAcademicRespPopupPos] = useState({
+    left: 0,
+    top: -200,
+  });
 
   const collegePopupRef = useRef<HTMLDivElement>(null);
   const deptPopupRef = useRef<HTMLDivElement>(null);
   const jobRolePopupRef = useRef<HTMLDivElement>(null);
   const categoryPopupRef = useRef<HTMLDivElement>(null);
   const locationPopupRef = useRef<HTMLDivElement>(null);
+  const academicRespPopupRef = useRef<HTMLDivElement>(null);
   const collegeButtonRef = useRef<HTMLButtonElement>(null);
+  const academicRespButtonRef = useRef<HTMLButtonElement>(null);
   const deptButtonRef = useRef<HTMLButtonElement>(null);
   const jobRoleButtonRef = useRef<HTMLButtonElement>(null);
   const categoryButtonRef = useRef<HTMLButtonElement>(null);
@@ -255,8 +266,9 @@ const Filterbar: React.FC<SidebarProps> = ({
   const jobRoleSectionRef = useRef<HTMLDivElement>(null);
   const categorySectionRef = useRef<HTMLDivElement>(null);
   const locationSectionRef = useRef<HTMLDivElement>(null);
+  const academicRespSectionRef = useRef<HTMLDivElement>(null);
 
-  const anyPopupOpen = showAllColleges || showAllDept || showAllJobRoles || showAllCategories || showAllLocations;
+  const anyPopupOpen = showAllColleges || showAllDept || showAllJobRoles || showAllCategories || showAllLocations || showAllAcademicResp;
 
   useEffect(() => {
     if (anyPopupOpen) {
@@ -465,6 +477,23 @@ const Filterbar: React.FC<SidebarProps> = ({
   useEffect(() => {
     const handleClickOutside = (event: PointerEvent) => {
       if (
+        academicRespPopupRef.current &&
+        !academicRespPopupRef.current.contains(event.target as Node) &&
+        academicRespSectionRef.current &&
+        !academicRespSectionRef.current.contains(event.target as Node)
+      ) {
+        setShowAllAcademicResp(false);
+      }
+    };
+    if (showAllAcademicResp) {
+      document.addEventListener("pointerdown", handleClickOutside);
+    }
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
+  }, [showAllAcademicResp]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: PointerEvent) => {
+      if (
         categoryPopupRef.current &&
         !categoryPopupRef.current.contains(event.target as Node) &&
         categorySectionRef.current &&
@@ -541,6 +570,16 @@ const Filterbar: React.FC<SidebarProps> = ({
     }
   };
 
+  const calculateAcademicRespPopupPos = () => {
+    if (academicRespSectionRef.current) {
+      const rect = academicRespSectionRef.current.getBoundingClientRect();
+      setAcademicRespPopupPos({
+        left: rect.left,
+        top: rect.top + 8,
+      });
+    }
+  };
+
   useEffect(() => {
     if (showAllColleges) {
       calculateCollegePopupPos();
@@ -601,6 +640,18 @@ const Filterbar: React.FC<SidebarProps> = ({
     };
   }, [showAllLocations]);
 
+  useEffect(() => {
+    if (showAllAcademicResp) {
+      calculateAcademicRespPopupPos();
+      window.addEventListener("scroll", calculateAcademicRespPopupPos);
+      window.addEventListener("resize", calculateAcademicRespPopupPos);
+    }
+    return () => {
+      window.removeEventListener("scroll", calculateAcademicRespPopupPos);
+      window.removeEventListener("resize", calculateAcademicRespPopupPos);
+    };
+  }, [showAllAcademicResp]);
+
   const toggleItem = <T,>(list: T[], item: T) => {
     const safeList = list ?? [];
     return safeList.includes(item)
@@ -624,6 +675,7 @@ const Filterbar: React.FC<SidebarProps> = ({
       locations: [],
       jobRoleList: [],
       department: [],
+      academic_responsibilities: [],
     });
     setCollegeSearchQuery("");
     setDeptSearchQuery("");
@@ -639,6 +691,8 @@ const Filterbar: React.FC<SidebarProps> = ({
     setShowAllJobRoles(false);
     setShowAllCategories(false);
     setShowAllLocations(false);
+    setShowAllAcademicResp(false);
+    setAcademicRespSearchQuery("");
     closeModal();
   };
 
@@ -732,6 +786,14 @@ const Filterbar: React.FC<SidebarProps> = ({
 
   const locationAvailableAlphabets = new Set(
     locationFilteredList?.map((item) => item.label[0].toUpperCase())
+  );
+
+  const academicRespFilteredList = academicResponsibilityList
+    ?.filter((c) => c.label?.toLowerCase().includes(academicRespSearchQuery.toLowerCase()))
+    ?.sort((a, b) => a.label.localeCompare(b.label)) ?? [];
+
+  const academicRespAvailableAlphabets = new Set(
+    academicRespFilteredList?.map((item) => item.label[0].toUpperCase())
   );
 
   return (
@@ -1710,6 +1772,153 @@ const Filterbar: React.FC<SidebarProps> = ({
                 </button>
               </div>
             </div>
+            </>
+          )}
+        </PopupPortal>
+
+        {academicResponsibilityList?.length > 0 && (
+          <div ref={academicRespSectionRef}>
+            <FilterSection
+              title="Academic Responsibility"
+              items={academicResponsibilityList.slice(0, 5)}
+              selected={filters.academic_responsibilities}
+              onToggle={(value) =>
+                onFilterChange({
+                  ...filtersRef.current,
+                  academic_responsibilities: toggleItem(filtersRef.current.academic_responsibilities ?? [], value),
+                })
+              }
+            />
+          </div>
+        )}
+        {academicResponsibilityList && academicResponsibilityList.length > 5 && (
+          <div className="relative mt-2">
+            <button
+              ref={academicRespButtonRef}
+              onClick={() => {
+                setShowAllAcademicResp(true);
+                setTimeout(calculateAcademicRespPopupPos, 0);
+              }}
+              className="text-xs font-medium flex items-center gap-1 text-[#1E3786] w-full rounded-full px-3 ps-7"
+            >
+              View more
+            </button>
+          </div>
+        )}
+
+        <PopupPortal>
+          {showAllAcademicResp && (
+            <>
+              <div className="fixed inset-0 bg-black/40 z-[9998] filterbar-popup" onPointerDown={() => setShowAllAcademicResp(false)} />
+              <div
+                ref={academicRespPopupRef}
+                onPointerDown={(e) => e.stopPropagation()}
+                className="fixed bg-white border border-slate-200 shadow-2xl z-[9999] p-4 flex flex-col filterbar-popup"
+                style={isMobile ? {
+                  top: "50%", left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "92vw", height: "80vh",
+                } : {
+                  width: "clamp(300px, 90vw, 900px)",
+                  height: "clamp(420px, 60vh, 420px)",
+                  left: `${academicRespPopupPos.left}px`,
+                  top: `${academicRespPopupPos.top}px`,
+                  maxHeight: "80vh",
+                }}
+              >
+                <div className="flex justify-between items-start mb-3 border-b">
+                  <div className="flex flex-row flex-wrap md:flex-nowrap items-center gap-4">
+                    <div className="relative mb-3 w-full md:w-auto">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <input
+                        type="text"
+                        placeholder="Search academic responsibilities..."
+                        value={academicRespSearchQuery}
+                        onChange={(e) => setAcademicRespSearchQuery(e.target.value)}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-400/50"
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-2 pb-2 w-full md:w-auto">
+                      {alphabets.map((char) => {
+                        const isAvailable = academicRespAvailableAlphabets.has(char);
+                        return (
+                          <span
+                            key={char}
+                            onClick={() => {
+                              if (!isAvailable) return;
+                              setSelectedAlphabet(char);
+                              alphabetRefs.current[char]?.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+                            }}
+                            className={`text-sm ${
+                              isAvailable ? "cursor-pointer hover:text-black" : "cursor-not-allowed text-slate-300"
+                            } ${
+                              selectedAlphabet === char && isAvailable ? "text-black border bg-gray-300 px-1 py-0 font-semibold" : ""
+                            }`}
+                          >
+                            {char}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  <button onClick={() => { setShowAllAcademicResp(false); setSelectedAlphabet(null); }} className="text-slate-400 hover:text-slate-600">
+                    <X size={18} />
+                  </button>
+                </div>
+
+                <div ref={listRef} className="overflow-y-auto overflow-x-auto flex-1 pr-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100" style={{ WebkitOverflowScrolling: "touch", touchAction: "auto" }}>
+                  <div className="columns-[220px] gap-6 min-w-max h-full transition-opacity duration-300">
+                    {academicRespFilteredList.map((item, index) => {
+                      const currentLetter = item.label[0].toUpperCase();
+                      const prevLetter = index > 0 ? academicRespFilteredList[index - 1]?.label[0].toUpperCase() : null;
+                      const showHeader = currentLetter !== prevLetter;
+                      return (
+                        <div key={item.value} className="break-inside-avoid mb-2">
+                          {showHeader && (
+                            <div
+                              ref={(el) => { if (el) alphabetRefs.current[currentLetter] = el; }}
+                              className="font-semibold text-sm text-slate-700 mb-1"
+                            >
+                              {currentLetter}
+                            </div>
+                          )}
+                          <label className="flex items-center justify-between gap-2 cursor-pointer hover:bg-slate-50 rounded">
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="checkbox"
+                                checked={(filters.academic_responsibilities ?? []).includes(item.value)}
+                                onChange={() =>
+                                  onFilterChange({
+                                    ...filtersRef.current,
+                                    academic_responsibilities: toggleItem(filtersRef.current.academic_responsibilities ?? [], item.value),
+                                  })
+                                }
+                                className="w-3 h-3 text-amber-500 border-slate-200 rounded focus:ring-amber-400"
+                              />
+                              <span className="text-sm text-slate-600">{item.label}</span>
+                            </div>
+                            {item.job_count !== undefined && (
+                              <span className="text-xs bg-[#1E37861A] text-[#000] rounded-full px-[7px] py-[2px]">{item.job_count}</span>
+                            )}
+                          </label>
+                        </div>
+                      );
+                    })}
+                    {academicRespFilteredList.length === 0 && (
+                      <p className="text-sm text-slate-400 text-center py-4">No responsibilities found</p>
+                    )}
+                  </div>
+                </div>
+                <div className="pt-3">
+                  <button
+                    onClick={() => { setShowAllAcademicResp(false); closeModal(); }}
+                    className="w-full md:w-fit bg-[#1E3786] text-white text-sm font-medium px-4 py-2 rounded-full hover:bg-[#1E3786]/90 transition-colors"
+                  >
+                    Show Results
+                  </button>
+                </div>
+              </div>
             </>
           )}
         </PopupPortal>

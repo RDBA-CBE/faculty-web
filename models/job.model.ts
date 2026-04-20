@@ -73,6 +73,10 @@ const job = {
         url += `&matches_user_location=true`;
       }
 
+      if (body.additional_academic_responsibilities_ids?.length > 0) {
+        url += `&additional_academic_responsibility_ids=${encodeURIComponent(body.additional_academic_responsibilities_ids)}`;
+      }
+
       instance()
         .get(url)
         .then((res) => {
@@ -194,6 +198,10 @@ const job = {
 
       if (body?.experience_id?.length > 0) {
         params.push(`experience_id=${encodeURIComponent(body.experience_id)}`);
+      }
+
+      if (body?.additional_academic_responsibilities_ids?.length > 0) {
+        params.push(`additional_academic_responsibility_ids=${encodeURIComponent(body.additional_academic_responsibilities_ids)}`);
       }
 
 

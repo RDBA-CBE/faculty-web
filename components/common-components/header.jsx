@@ -129,22 +129,31 @@ const Header = () => {
     };
   }, [setState]);
 
-  const loadDepartmentList = async () => {
-    try {
-      let page = 1;
-      let allResults = [];
-      let hasNext = true;
-      while (hasNext) {
-        const res = await Models.department.masterDep({ page });
-        if (res?.results?.length) allResults = [...allResults, ...res.results];
-        hasNext = !!res?.next;
-        page++;
+ const loadDepartmentList = async () => {
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults = [];
+    let maxPages = 50;
+
+    while (hasNext && page <= maxPages) {
+      const res = await Models.department.masterDep({ page });
+
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
       }
-      setState({ departmentList: Dropdown(allResults, "name") });
-    } catch (error) {
-      console.log("department error", error);
+
+      hasNext = !!res?.next;
+      page++;
     }
-  };
+
+    setState({
+      departmentList: Dropdown(allResults, "name"),
+    });
+  } catch (error) {
+    console.log("department error", error);
+  }
+};
 
   const handleLogout = async () => {
     try {
@@ -1236,7 +1245,7 @@ const Header = () => {
               Login Failed
             </h2>
 
-            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+            <p className="text-black font-semibold max-w-lg text-md leading-relaxed z-10">
               {state.loginErrorMessage}
             </p>
 
@@ -1264,7 +1273,7 @@ const Header = () => {
               Registration Failed
             </h2>
 
-            <p className="text-gray-600 max-w-lg text-sm leading-relaxed z-10">
+            <p className="text-black font-seminibold max-w-lg text-md leading-relaxed z-10">
               {state.registrationErrorMessage}
             </p>
 

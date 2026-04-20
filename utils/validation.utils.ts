@@ -103,12 +103,9 @@ export const interview_feedback = Yup.object().shape({
 });
 
 export const applicant_feedback = Yup.object().shape({
-  availableTime: Yup.string().when(["isAvailable", "response_from_applicant"], {
-    is: (isAvailable, response_from_applicant) =>
-      isAvailable === "No" && response_from_applicant === true,
-
+  availabilityNote: Yup.string().when("isAvailable", {
+    is: "No",
     then: (schema) => schema.required("Available time is required"),
-
     otherwise: (schema) => schema.notRequired(),
   }),
 });
