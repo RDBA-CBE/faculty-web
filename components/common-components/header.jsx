@@ -86,6 +86,14 @@ const Header = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     setState({ token });
+
+    const handleStorageChange = (e) => {
+      if (e.key === "token" || e.key === "logout") {
+        setState({ token: localStorage.getItem("token") });
+      }
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   useEffect(() => {

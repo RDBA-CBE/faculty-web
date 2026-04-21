@@ -168,8 +168,16 @@ export default function NaukriProfilePage() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login to access your profile.");
-      router.replace("/");
+      if (!sessionStorage.getItem("auth_alert_shown")) {
+        sessionStorage.setItem("auth_alert_shown", "1");
+        triggerLogout();
+        router.replace("/");
+        alert("Please login to access your profile.");
+        sessionStorage.removeItem("auth_alert_shown");
+      } else {
+        triggerLogout();
+        router.replace("/");
+      }
       return;
     }
 
@@ -179,9 +187,9 @@ export default function NaukriProfilePage() {
         setState({ userId: profile.id });
       } else {
         setState({ loading: false });
-        alert("User not found. Please log in again.");
         triggerLogout();
         router.replace("/");
+        alert("User not found. Please log in again.");
         return;
       }
     } catch {
