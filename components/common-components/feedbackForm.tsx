@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader,
@@ -93,6 +93,131 @@ const RatingField = ({
   </div>
 );
 
+const feedbackFields: [string, (fb: any) => string][] = [
+  ["Same As Applicant", (fb) => (fb.is_same_as_applicant ? "Yes" : "No")],
+  ["Academic Record", (fb) => fb.academic_record_remark],
+  ["Experience", (fb) => fb.experience_remark],
+  ["Knowledge Rating", (fb) => fb.knowledge_rating],
+  ["Knowledge Detail", (fb) => fb.knowledge_detail],
+  ["Communication Rating", (fb) => fb.communication_skills_rating],
+  ["Communication Comment", (fb) => fb.communication_skills_comment],
+  ["Attitude Rating", (fb) => fb.attitude_rating],
+  ["Attitude Comment", (fb) => fb.attitude_comment],
+  ["Overall Assessment", (fb) => fb.overall_assessment_rating],
+  ["Overall Remark", (fb) => fb.overall_assessment_remark],
+  ["Position Recommendation", (fb) => fb.position_recommendation],
+  ["Recommendation Comment", (fb) => fb.recommendation_comments],
+];
+
+const FeedbackAccordion = ({ feedbacks, panels }: { feedbacks: any[]; panels: any[] }) => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  if (!feedbacks?.length)
+    return (
+      <div className="text-center py-8 text-gray-500 text-sm">
+        No feedback available from other panel members yet.
+      </div>
+    );
+
+  return (
+    <div className="space-y-2 min-h-[50vh] max-h-[80vh] overflow-y-auto p-1 py-10">
+      {feedbacks.map((fb: any, i: number) => {
+        const isOpen = openIndex === i;
+        const name = fb.panel_name || fb.panel?.name || `Panel Member ${i + 1}`;
+        const designation = fb.panel?.designation;
+        const rec = fb.recommendation;
+        const panelInfo = panels?.find((p: any) => p.id === (fb.panel_id || fb.panel?.id));
+        const isDecisionMaker = panelInfo?.decision_maker === true;
+        const recColor =
+          rec === "hire" || rec === "strong_hire"
+            ? "bg-green-100 text-green-700"
+            : rec === "reject"
+            ? "bg-red-100 text-red-700"
+            : "bg-yellow-100 text-yellow-700";
+
+        return (
+          <div
+            key={i}
+            className={`rounded-lg overflow-hidden border ${
+              // isDecisionMaker
+              //   ? "border-[#1E3786] ring-1 ring-[#1E3786]/30"
+                 "border-gray-200"
+            }`}
+          >
+            <button
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+              className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${
+                isDecisionMaker
+                  ? "bg-indigo-50 hover:bg-indigo-100"
+                  : "bg-gray-50 hover:bg-gray-100"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <div
+                  className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                    isDecisionMaker
+                      ? "bg-[#1E3786] text-white"
+                      : "bg-indigo-100 text-indigo-700"
+                  }`}
+                >
+                  {name.charAt(0)}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className={`font-semibold text-sm ${
+                      isDecisionMaker ? "text-[#1E3786]" : "text-gray-900"
+                    }`}>{name}</p>
+                    {isDecisionMaker && (
+                      <span className="px-2 pt-1 pb-0.5 rounded text-[10px]  bg-[#1E3786] text-white  tracking-wide">
+                        Decision Maker
+                      </span>
+                    )}
+                  </div>
+                  {designation && (
+                    <p className="text-xs text-gray-500">{designation}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+               {/* {rec && (
+                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${recColor}`}>
+                    {rec.replace("_", " ")}
+                  </span>
+                )}*/}
+                <ArrowRight
+                  className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""} ${
+                    isDecisionMaker ? "text-[#1E3786]" : "text-gray-400"
+                  }`}
+                />
+              </div>
+            </button>
+
+            {isOpen && (
+              <div className="p-4 bg-white">
+                <div className="grid grid-cols-2 !gap-2">
+                  {feedbackFields.map(([label, getValue]) => (
+                    <div key={label} className="bg-gray-50 border rounded p-2">
+                      <p className="text-xs text-gray-500 font-medium">{label}</p>
+                      <p className="text-gray-800 font-semibold text-xs mt-0.5">
+                        {getValue(fb) || "—"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                {fb.submitted_at && (
+                  <p className="text-[10px] text-gray-400 mt-3 text-right">
+                    Submitted: {new Date(fb.submitted_at).toLocaleString()}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const FeedbackForm = ({ token }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -162,7 +287,8 @@ const FeedbackForm = ({ token }) => {
         interview_slot: res?.applications?.[0]?.interview_slots?.[0],
         position: res?.panel?.designation,
         loading: false,
-        panels: res?.panels?.length > 0 ? res?.panels[0] : null,
+        panels: res?.panels?.find((p: any) => p.id === Number(panelId)) || null,
+        panels_all: res?.panels || [],
         feedbacks,
       });
     } catch (error) {
@@ -588,64 +714,7 @@ const FeedbackForm = ({ token }) => {
         setIsOpen={(v) => setState({ showFeedbackModal: v })}
         title="Fellow Panel Members Feedback"
         width="700px"
-        renderComponent={() => (
-          <div className="space-y-4 max-h-[70vh] overflow-y-auto p-1">
-            {state.feedbacks?.length > 0 ? (
-              state.feedbacks.map((fb: any, i: number) => (
-                <div
-                  key={i}
-                  className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h4 className="font-bold text-gray-900">
-                        {fb.panel_name || fb.panel?.name}
-                      </h4>
-                      <p className="text-xs text-gray-500">
-                        {fb.panel?.designation}
-                      </p>
-                    </div>
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium capitalize ${
-                        fb.recommendation === "hire" ||
-                        fb.recommendation === "strong_hire"
-                          ? "bg-green-100 text-green-700"
-                          : fb.recommendation === "reject"
-                          ? "bg-red-100 text-red-700"
-                          : "bg-yellow-100 text-yellow-700"
-                      }`}
-                    >
-                      {fb.recommendation?.replace("_", " ") || "Pending"}
-                    </span>
-                  </div>
-                  {fb.feedback_text && (
-                    <div className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
-                      {fb.feedback_text}
-                    </div>
-                  )}
-                  {!fb.feedback_text && (
-                    <p className="text-xs text-gray-400 italic">
-                      No detailed remarks provided.
-                    </p>
-                  )}
-
-                  <div className="mt-2 flex justify-end">
-                    <p className="text-[10px] text-gray-400">
-                      Submitted:{" "}
-                      {fb.submitted_at
-                        ? new Date(fb.submitted_at).toLocaleString()
-                        : "N/A"}
-                    </p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <p>No feedback available from other panel members yet.</p>
-              </div>
-            )}
-          </div>
-        )}
+        renderComponent={() => <FeedbackAccordion feedbacks={state.feedbacks} panels={state.panels_all} />}
       />
     </div>
   );
