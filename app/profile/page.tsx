@@ -1645,7 +1645,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
     try {
       const body = {
         is_interested: type == "accept" ? true : false,
-        is_response: true,
+        is_response:  true,
+        is_status: type == "accept" ? "Accepted" : "Rejected",
       };
 
       const formData = new FormData();
