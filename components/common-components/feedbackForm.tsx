@@ -109,87 +109,62 @@ const feedbackFields: [string, (fb: any) => string][] = [
   ["Recommendation Comment", (fb) => fb.recommendation_comments],
 ];
 
-const FeedbackAccordion = ({ feedbacks, panels }: { feedbacks: any[]; panels: any[] }) => {
+const PanelAccordionList = ({ feedbacks, panels }: { feedbacks: any[]; panels: any[] }) => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   if (!feedbacks?.length)
     return (
       <div className="text-center py-8 text-gray-500 text-sm">
-        No feedback available from other panel members yet.
+        No feedback submitted for this round yet.
       </div>
     );
 
   return (
-    <div className="space-y-2 min-h-[50vh] max-h-[80vh] overflow-y-auto p-1 py-10">
+    <div className="space-y-2 min-h-[50vh] max-h-[80vh] overflow-y-auto p-1 py-3">
       {feedbacks.map((fb: any, i: number) => {
         const isOpen = openIndex === i;
         const name = fb.panel_name || fb.panel?.name || `Panel Member ${i + 1}`;
         const designation = fb.panel?.designation;
-        const rec = fb.recommendation;
         const panelInfo = panels?.find((p: any) => p.id === (fb.panel_id || fb.panel?.id));
         const isDecisionMaker = panelInfo?.decision_maker === true;
-        const recColor =
-          rec === "hire" || rec === "strong_hire"
-            ? "bg-green-100 text-green-700"
-            : rec === "reject"
-            ? "bg-red-100 text-red-700"
-            : "bg-yellow-100 text-yellow-700";
 
         return (
           <div
             key={i}
             className={`rounded-lg overflow-hidden border ${
-              // isDecisionMaker
-              //   ? "border-[#1E3786] ring-1 ring-[#1E3786]/30"
-                 "border-gray-200"
+              // isDecisionMaker ? "border-[#1E3786] ring-1 ring-[#1E3786]/20" : 
+              "border-gray-200"
             }`}
           >
             <button
               onClick={() => setOpenIndex(isOpen ? null : i)}
               className={`w-full flex items-center justify-between px-4 py-3 transition-colors text-left ${
-                isDecisionMaker
-                  ? "bg-indigo-50 hover:bg-indigo-100"
-                  : "bg-gray-50 hover:bg-gray-100"
+                isDecisionMaker ? "bg-indigo-50 hover:bg-indigo-100" : "bg-gray-50 hover:bg-gray-100"
               }`}
             >
               <div className="flex items-center gap-3">
-                <div
-                  className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                    isDecisionMaker
-                      ? "bg-[#1E3786] text-white"
-                      : "bg-indigo-100 text-indigo-700"
-                  }`}
-                >
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                  isDecisionMaker ? "bg-[#1E3786] text-white" : "bg-indigo-100 text-indigo-700"
+                }`}>
                   {name.charAt(0)}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <p className={`font-semibold text-sm ${
-                      isDecisionMaker ? "text-[#1E3786]" : "text-gray-900"
-                    }`}>{name}</p>
+                    <p className={`font-semibold text-sm ${isDecisionMaker ? "text-[#1E3786]" : "text-gray-900"}`}>
+                      {name}
+                    </p>
                     {isDecisionMaker && (
-                      <span className="px-2 pt-1 pb-0.5 rounded text-[10px]  bg-[#1E3786] text-white  tracking-wide">
+                      <span className="px-2 pt-1 pb-0.5 rounded text-[10px] bg-[#1E3786] text-white  tracking-wide">
                         Decision Maker
                       </span>
                     )}
                   </div>
-                  {designation && (
-                    <p className="text-xs text-gray-500">{designation}</p>
-                  )}
+                  {designation && <p className="text-xs text-gray-500">{designation}</p>}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-               {/* {rec && (
-                  <span className={`px-2 py-0.5 rounded-full text-xs font-medium capitalize ${recColor}`}>
-                    {rec.replace("_", " ")}
-                  </span>
-                )}*/}
-                <ArrowRight
-                  className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""} ${
-                    isDecisionMaker ? "text-[#1E3786]" : "text-gray-400"
-                  }`}
-                />
-              </div>
+              <ArrowRight className={`h-4 w-4 transition-transform ${isOpen ? "rotate-90" : ""} ${
+                isDecisionMaker ? "text-[#1E3786]" : "text-gray-400"
+              }`} />
             </button>
 
             {isOpen && (
@@ -198,9 +173,7 @@ const FeedbackAccordion = ({ feedbacks, panels }: { feedbacks: any[]; panels: an
                   {feedbackFields.map(([label, getValue]) => (
                     <div key={label} className="bg-gray-50 border rounded p-2">
                       <p className="text-xs text-gray-500 font-medium">{label}</p>
-                      <p className="text-gray-800 font-semibold text-xs mt-0.5">
-                        {getValue(fb) || "—"}
-                      </p>
+                      <p className="text-gray-800 font-semibold text-xs mt-0.5">{getValue(fb) || "—"}</p>
                     </div>
                   ))}
                 </div>
@@ -214,6 +187,51 @@ const FeedbackAccordion = ({ feedbacks, panels }: { feedbacks: any[]; panels: an
           </div>
         );
       })}
+    </div>
+  );
+};
+
+const FeedbackAccordion = ({ allSlots, panels }: { allSlots: any[]; panels: any[] }) => {
+  const [activeRound, setActiveRound] = useState(0);
+
+  if (!allSlots?.length)
+    return (
+      <div className="text-center py-8 text-gray-500 text-sm">
+        No feedback available from other panel members yet.
+      </div>
+    );
+
+  const currentSlot = allSlots[activeRound];
+
+  return (
+    <div className="max-h-[75vh] overflow-y-auto">
+      {/* Round Tabs */}
+      <div className="flex gap-2 mb-4 border-b py-3">
+        {allSlots.map((slot: any, i: number) => (
+          <button
+            key={slot.id}
+            onClick={() => setActiveRound(i)}
+            className={`px-3 py-1.5 rounded-md text-sm font-semibold transition-colors ${
+              activeRound === i
+                ? "bg-[#1E3786] text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            }`}
+          >
+            {slot.round_name}
+            <span className={`ml-1.5 text-xs px-1.5 py-0.5 rounded-full ${
+              activeRound === i ? "bg-white/20 text-white" : "bg-gray-200 text-gray-500"
+            }`}>
+              {slot.decision_maker_feedbacks?.length || 0}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Feedbacks for active round */}
+      <PanelAccordionList
+        feedbacks={currentSlot?.decision_maker_feedbacks || []}
+        panels={panels}
+      />
     </div>
   );
 };
@@ -277,19 +295,20 @@ const FeedbackForm = ({ token }) => {
       const res: any = await Models.applications.interview_feedback(token);
 
       const app = res?.applications?.[0];
-      const slotData = app?.all_slots?.[0] || app?.interview_slots?.[0];
-      const feedbacks = slotData?.decision_maker_feedbacks || [];
+      const allSlots = app?.all_slots || [];
+      const slotData = app?.interview_slots?.[0];
 
       setState({
         job: res?.applications?.[0],
         round: res?.round,
         candidate: res?.candidate,
-        interview_slot: res?.applications?.[0]?.interview_slots?.[0],
+        interview_slot: slotData,
         position: res?.panel?.designation,
         loading: false,
         panels: res?.panels?.find((p: any) => p.id === Number(panelId)) || null,
         panels_all: res?.panels || [],
-        feedbacks,
+        all_slots: allSlots,
+        feedbacks: allSlots.flatMap((s: any) => s.decision_maker_feedbacks || []),
       });
     } catch (error) {
       setState({ loading: false });
@@ -714,7 +733,7 @@ const FeedbackForm = ({ token }) => {
         setIsOpen={(v) => setState({ showFeedbackModal: v })}
         title="Fellow Panel Members Feedback"
         width="700px"
-        renderComponent={() => <FeedbackAccordion feedbacks={state.feedbacks} panels={state.panels_all} />}
+        renderComponent={() => <FeedbackAccordion allSlots={state.all_slots} panels={state.panels_all} />}
       />
     </div>
   );
