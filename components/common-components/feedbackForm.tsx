@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Loader,
   Building,
@@ -95,6 +95,11 @@ const RatingField = ({
 
 const FeedbackForm = ({ token }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const panelId = searchParams.get("panel_id");
+  console.log("panelId", panelId);
+  
 
   const [state, setState] = useSetState({
     loading: false,
@@ -177,7 +182,7 @@ const FeedbackForm = ({ token }) => {
 
       const body = {
         interview_slot_id: state.interview_slot?.id,
-        panel_id: state.interview_slot?.panel_ids?.[0],
+        panel_id: Number(panelId),
         application_id: state.interview_slot?.application_ids?.[0],
 
         is_same_as_applicant:
