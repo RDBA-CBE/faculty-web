@@ -193,45 +193,45 @@ export default function JobsPage() {
 
   // Add this useEffect after your other useEffect hooks (around line 350-400)
 
-  useEffect(() => {
-    const slugParam = searchParams.get("slug");
-    const hasVisited = sessionStorage.getItem("jobs_page_visited");
-
-    // If it's the first visit to this page, mark it
-    if (!hasVisited) {
-      sessionStorage.setItem("jobs_page_visited", "true");
-      return;
-    }
-
-    // On subsequent visits (like refresh), check conditions
-    const allParams = Array.from(searchParams.keys());
+useEffect(() => {
+  const slugParam = searchParams.get("slug");
+  const hasVisited = sessionStorage.getItem("jobs_page_visited");
+  
+  // If it's the first visit to this page, mark it
+  if (!hasVisited) {
+    sessionStorage.setItem("jobs_page_visited", "true");
+    return;
+  }
+  
+  // On subsequent visits (like refresh), check conditions
+  const allParams = Array.from(searchParams.keys());
     const hasOtherParams = allParams.some(
       (key) => key !== "slug" && key !== "id" && key !== "job-category",
     );
-
-    // If there are params other than slug, clear them on refresh
-    if (hasOtherParams) {
-      if (slugParam) {
-        // Keep slug and id if present
-        const idParam = searchParams.get("id");
-        const newUrl = idParam
-          ? `/jobs?slug=${slugParam}&id=${idParam}`
-          : `/jobs?slug=${slugParam}`;
-        router.replace(newUrl);
-      } else {
-        // No slug, replace with /jobs
-        router.replace("/jobs");
-      }
-      sessionStorage.removeItem("jobs_page_visited");
+  
+  // If there are params other than slug, clear them on refresh
+  if (hasOtherParams) {
+    if (slugParam) {
+      // Keep slug and id if present
+      const idParam = searchParams.get("id");
+      const newUrl = idParam 
+        ? `/jobs?slug=${slugParam}&id=${idParam}` 
+        : `/jobs?slug=${slugParam}`;
+      router.replace(newUrl);
+    } else {
+      // No slug, replace with /jobs
+      router.replace("/jobs");
     }
-  }, [searchParams, router]);
+    sessionStorage.removeItem("jobs_page_visited");
+  }
+}, [searchParams, router]);
 
-  // Clean up on component unmount
-  useEffect(() => {
-    return () => {
-      sessionStorage.removeItem("jobs_page_visited");
-    };
-  }, []);
+// Clean up on component unmount
+useEffect(() => {
+  return () => {
+    sessionStorage.removeItem("jobs_page_visited");
+  };
+}, []);
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
@@ -725,10 +725,10 @@ ${userName}`;
 
       const academicResponsibilityList =
         res?.data?.additional_academic_responsibilities?.map((item) => ({
-          value: item.id,
-          label: item.responsibility_title,
-          job_count: item.job_count,
-        }));
+        value: item.id,
+        label: item.responsibility_title,
+        job_count: item.job_count,
+      }));
 
       setState({
         filterList: res?.data,
@@ -881,34 +881,34 @@ ${userName}`;
   };
 
   const masterDeptList = async () => {
-    try {
-      let page = 1;
-      let hasNext = true;
-      let allResults: any[] = [];
+  try {
+    let page = 1;
+    let hasNext = true;
+    let allResults: any[] = [];
 
-      while (hasNext) {
-        const res: any = await Models.department.masterDep({
-          page,
-          has_jobs: true,
-        });
+    while (hasNext) {
+      const res: any = await Models.department.masterDep({
+        page,
+        has_jobs: true,
+      });
 
-        if (res?.results?.length) {
-          allResults = [...allResults, ...res.results];
-        }
-
-        hasNext = !!res?.next; // 👈 check next page
-        page++; // 👈 increment page
+      if (res?.results?.length) {
+        allResults = [...allResults, ...res.results];
       }
 
-      const dropdown = Dropdown(allResults, "name");
-
-      setState({
-        masterDeptList: dropdown,
-      });
-    } catch (error) {
-      console.error("Error fetching master departments:", error);
+      hasNext = !!res?.next; // 👈 check next page
+      page++; // 👈 increment page
     }
-  };
+
+    const dropdown = Dropdown(allResults, "name");
+
+    setState({
+      masterDeptList: dropdown,
+    });
+  } catch (error) {
+    console.error("Error fetching master departments:", error);
+  }
+};
 
   const masterJobRoleList = async () => {
     try {
@@ -1017,7 +1017,7 @@ ${userName}`;
   useEffect(() => {
     if (jobIdFromQuery) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-
+      
       // Fetch job detail directly using the ID
       setState({ jobID: jobIdFromQuery });
       jobDetail(jobIdFromQuery).then((res) => {
@@ -1177,8 +1177,8 @@ ${userName}`;
         ),
         jobDetail:
           state.jobDetail?.id === job.id
-            ? { ...state.jobDetail, is_saved: !job.is_saved }
-            : state.jobDetail,
+          ? { ...state.jobDetail, is_saved: !job.is_saved }
+          : state.jobDetail,
       });
       // }
 
@@ -1698,17 +1698,17 @@ ${userName}`;
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     {state.jobDetail?.user_is_applied === false ? (
-                      <button
-                        onClick={() => {
-                          setState({ jobID: state?.jobDetail?.id });
-                          handleApply();
-                        }}
-                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                      >
-                        {state.jobDetail?.apply_link
-                          ? " Apply on company's site"
-                          : " Apply Now"}
-                      </button>
+                    <button
+                      onClick={() => {
+                        setState({ jobID: state?.jobDetail?.id });
+                        handleApply();
+                      }}
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                    >
+                      {state.jobDetail?.apply_link
+                        ? " Apply on company's site"
+                        : " Apply Now"}
+                    </button>
                     ) : (
                       <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
                         ✓ Applied
@@ -1837,7 +1837,7 @@ ${userName}`;
                           <li key={index} className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                            <span className="">{item}</span>
+                            <span dangerouslySetInnerHTML={{ __html: item }} />
                           </li>
                         ))}
                       </ul>
@@ -1854,7 +1854,7 @@ ${userName}`;
                         {state?.jobDetail?.requirements?.map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
                             <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                            <span className="">{item}</span>
+                            <span dangerouslySetInnerHTML={{ __html: item }} />
                           </li>
                         ))}
                       </ul>
@@ -2507,10 +2507,10 @@ ${userName}`;
                                 <div className="flex-1 flex-col">
                                   <div className="flex items-start gap-2 flex-wrap mb-1">
                                     <h1 className="text-2xl font-semibold text-gray-900">
-                                      {capitalizeFLetter(
-                                        job_title(state?.jobDetail),
-                                      )}
-                                    </h1>
+                                    {capitalizeFLetter(
+                                      job_title(state?.jobDetail),
+                                    )}
+                                  </h1>
                                     {state?.jobDetail?.department.length ==
                                       1 && (
                                       <>
@@ -2653,17 +2653,17 @@ ${userName}`;
                                 </div>
 
                                 {state.jobDetail?.user_is_applied === false ? (
-                                  <button
-                                    onClick={() => {
-                                      setState({ jobID: state?.jobDetail?.id });
-                                      handleApply();
-                                    }}
-                                    className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                                  >
-                                    {state.jobDetail?.apply_link
-                                      ? " Apply on company's site"
-                                      : " Apply Now"}
-                                  </button>
+                                <button
+                                  onClick={() => {
+                                    setState({ jobID: state?.jobDetail?.id });
+                                    handleApply();
+                                  }}
+                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                                >
+                                  {state.jobDetail?.apply_link
+                                    ? " Apply on company's site"
+                                    : " Apply Now"}
+                                </button>
                                 ) : (
                                   <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
                                     ✓ Applied
@@ -2745,7 +2745,7 @@ ${userName}`;
                                   </div>
                                 )}
 
-                                {state?.jobDetail?.qualification && (
+                                 {state?.jobDetail?.qualification && (
                                   <div>
                                     <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
                                       Job Qualification
@@ -2774,7 +2774,7 @@ ${userName}`;
                                       >
                                         <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
 
-                                        <span className="">{item}</span>
+                                        <span dangerouslySetInnerHTML={{ __html: item }} />
                                       </li>
                                     ),
                                   )}
@@ -2796,7 +2796,7 @@ ${userName}`;
                                     className="flex items-start gap-3"
                                   >
                                     <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                                    <span className="">{item}</span>
+                                    <span dangerouslySetInnerHTML={{ __html: item }} />
                                   </li>
                                 ),
                               )}
@@ -2825,17 +2825,17 @@ ${userName}`;
                           </div>
 
                           {state.jobDetail?.user_is_applied === false ? (
-                            <button
-                              onClick={() => {
-                                setState({ jobID: state?.jobDetail?.id });
-                                handleApply();
-                              }}
-                              className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
-                            >
-                              {state.jobDetail?.apply_link
-                                ? " Apply on company's site"
-                                : " Apply Now"}
-                            </button>
+                          <button
+                            onClick={() => {
+                              setState({ jobID: state?.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
+                          >
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
+                          </button>
                           ) : (
                             <div
                               className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 "
@@ -3075,7 +3075,7 @@ ${userName}`;
                 >
                   {/* make the filter wrapper scrollable if it grows taller than viewport */}
                   <div
-                    className="bg-clr2 border border-[#c7c7c787] overflow-y-scroll max-h-[85vh] scrollbar-thin  scrollbar-hide hover:scrollbar-default pb-14"
+                    className="bg-clr2 border border-[#c7c7c787] overflow-y-scroll max-h-[85vh] scrollbar-thin  scrollbar-hide hover:scrollbar-default pb-14 jobs-filter-sidebar"
                     ref={sidebarRef}
                   >
                     <Filterbar
@@ -3122,7 +3122,7 @@ ${userName}`;
                   <div ref={searchBarWrapperRef}>
                     <div
                       ref={searchBarRef}
-                      className="z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
+                      className="jobs-search-bar z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
                     >
                       <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
                         <div className="flex-grow flex items-center ps-3 md:px-6 py-2  lg:py-0 w-full lg:w-auto ">
@@ -3169,7 +3169,7 @@ ${userName}`;
                           {isLoggedIn && (
                             <button
                               onClick={handlePreferredToggle}
-                              className={`hidden lg:flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                              className={`jobs-preferred-btn hidden lg:flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
                                 preferredOnly
                                   ? "bg-[#1E3786] text-white border-none"
                                   : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
@@ -3316,20 +3316,20 @@ ${userName}`;
                         Preferred Jobs
                       </button> */}
                       {isLoggedIn && (
-                        <button
-                          onClick={handlePreferredToggle}
-                          className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
-                            preferredOnly
-                              ? "bg-[#1E3786] text-white border-none"
-                              : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
-                          }`}
-                        >
-                          <CrownIcon
-                            size={13}
-                            className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
-                          />
-                          Preferred Jobs
-                        </button>
+                      <button
+                        onClick={handlePreferredToggle}
+                        className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                          preferredOnly
+                            ? "bg-[#1E3786] text-white border-none"
+                            : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                        }`}
+                      >
+                        <CrownIcon
+                          size={13}
+                          className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                        />
+                        Preferred Jobs
+                      </button>
                       )}
                     </div>
                   </div>
@@ -3466,7 +3466,7 @@ ${userName}`;
                                     });
                                   }
                                 }}
-                                className="cursor-pointer transition-transform hover:scale-10 job-card-item h-full"
+                                className="cursor-pointer transition-transform hover:scale-10 job-card-item jobs-card-first h-full"
                               >
                                 {isGridView ? (
                                   <JobCard
@@ -4007,17 +4007,17 @@ ${userName}`;
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
                         {state.jobDetail?.user_is_applied === false ? (
-                          <button
-                            onClick={() => {
-                              setState({ jobID: state.jobDetail?.id });
-                              handleApply();
-                            }}
-                            className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                          >
-                            {state.jobDetail?.apply_link
-                              ? " Apply on company's site"
-                              : " Apply Now"}
-                          </button>
+                        <button
+                          onClick={() => {
+                            setState({ jobID: state.jobDetail?.id });
+                            handleApply();
+                          }}
+                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                        >
+                          {state.jobDetail?.apply_link
+                            ? " Apply on company's site"
+                            : " Apply Now"}
+                        </button>
                         ) : (
                           <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">
                             ✓ Applied
@@ -4507,29 +4507,29 @@ ${userName}`;
                       {/* ================= Stats ================= */}
                       {(state?.collegeDetail?.intake_per_year ||
                         state?.collegeDetail?.total_strength) && (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-                          {state.collegeDetail?.intake_per_year && (
-                            <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
-                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                                Intake Per Year
-                              </p>
-                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                                {state.collegeDetail?.intake_per_year}
-                              </h3>
-                            </div>
-                          )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                        {state.collegeDetail?.intake_per_year && (
+                          <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
+                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                              Intake Per Year
+                            </p>
+                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                              {state.collegeDetail?.intake_per_year}
+                            </h3>
+                          </div>
+                        )}
 
-                          {state.collegeDetail?.total_strength && (
-                            <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
-                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                                Total Strength
-                              </p>
-                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                                {state.collegeDetail?.total_strength}
-                              </h3>
-                            </div>
-                          )}
-                        </div>
+                        {state.collegeDetail?.total_strength && (
+                          <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
+                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                              Total Strength
+                            </p>
+                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                              {state.collegeDetail?.total_strength}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
                       )}
 
                       {/* ================= Achievements ================= */}
