@@ -193,43 +193,45 @@ export default function JobsPage() {
 
   // Add this useEffect after your other useEffect hooks (around line 350-400)
 
-useEffect(() => {
-  const slugParam = searchParams.get("slug");
-  const hasVisited = sessionStorage.getItem("jobs_page_visited");
-  
-  // If it's the first visit to this page, mark it
-  if (!hasVisited) {
-    sessionStorage.setItem("jobs_page_visited", "true");
-    return;
-  }
-  
-  // On subsequent visits (like refresh), check conditions
-  const allParams = Array.from(searchParams.keys());
-  const hasOtherParams = allParams.some((key) => key !== "slug" && key !== "id" && key !== "job-category");
-  
-  // If there are params other than slug, clear them on refresh
-  if (hasOtherParams) {
-    if (slugParam) {
-      // Keep slug and id if present
-      const idParam = searchParams.get("id");
-      const newUrl = idParam 
-        ? `/jobs?slug=${slugParam}&id=${idParam}` 
-        : `/jobs?slug=${slugParam}`;
-      router.replace(newUrl);
-    } else {
-      // No slug, replace with /jobs
-      router.replace("/jobs");
-    }
-    sessionStorage.removeItem("jobs_page_visited");
-  }
-}, [searchParams, router]);
+  useEffect(() => {
+    const slugParam = searchParams.get("slug");
+    const hasVisited = sessionStorage.getItem("jobs_page_visited");
 
-// Clean up on component unmount
-useEffect(() => {
-  return () => {
-    sessionStorage.removeItem("jobs_page_visited");
-  };
-}, []);
+    // If it's the first visit to this page, mark it
+    if (!hasVisited) {
+      sessionStorage.setItem("jobs_page_visited", "true");
+      return;
+    }
+
+    // On subsequent visits (like refresh), check conditions
+    const allParams = Array.from(searchParams.keys());
+    const hasOtherParams = allParams.some(
+      (key) => key !== "slug" && key !== "id" && key !== "job-category",
+    );
+
+    // If there are params other than slug, clear them on refresh
+    if (hasOtherParams) {
+      if (slugParam) {
+        // Keep slug and id if present
+        const idParam = searchParams.get("id");
+        const newUrl = idParam
+          ? `/jobs?slug=${slugParam}&id=${idParam}`
+          : `/jobs?slug=${slugParam}`;
+        router.replace(newUrl);
+      } else {
+        // No slug, replace with /jobs
+        router.replace("/jobs");
+      }
+      sessionStorage.removeItem("jobs_page_visited");
+    }
+  }, [searchParams, router]);
+
+  // Clean up on component unmount
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem("jobs_page_visited");
+    };
+  }, []);
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
@@ -675,7 +677,7 @@ ${userName}`;
       if (filters.locations && filters.locations.length > 0) {
         const validLocationIds = locationList.map((loc) => loc.value);
         const validSelected = filters.locations.filter((id) =>
-          validLocationIds.includes(id)
+          validLocationIds.includes(id),
         );
         if (validSelected.length !== filters.locations.length) {
           setFilters((prev) => ({ ...prev, locations: validSelected }));
@@ -693,7 +695,7 @@ ${userName}`;
       if (filters.department && filters.department.length > 0) {
         const validDeptIds = deptList.map((dept) => dept.value);
         const validSelected = filters.department.filter((id) =>
-          validDeptIds.includes(id)
+          validDeptIds.includes(id),
         );
         if (validSelected.length !== filters.department.length) {
           setFilters((prev) => ({ ...prev, department: validSelected }));
@@ -721,11 +723,12 @@ ${userName}`;
         label: item.name,
       }));
 
-      const academicResponsibilityList = res?.data?.additional_academic_responsibilities?.map((item) => ({
-        value: item.id,
-        label: item.responsibility_title,
-        job_count: item.job_count,
-      }));
+      const academicResponsibilityList =
+        res?.data?.additional_academic_responsibilities?.map((item) => ({
+          value: item.id,
+          label: item.responsibility_title,
+          job_count: item.job_count,
+        }));
 
       setState({
         filterList: res?.data,
@@ -878,34 +881,34 @@ ${userName}`;
   };
 
   const masterDeptList = async () => {
-  try {
-    let page = 1;
-    let hasNext = true;
-    let allResults: any[] = [];
+    try {
+      let page = 1;
+      let hasNext = true;
+      let allResults: any[] = [];
 
-    while (hasNext) {
-      const res: any = await Models.department.masterDep({
-        page,
-        has_jobs: true,
-      });
+      while (hasNext) {
+        const res: any = await Models.department.masterDep({
+          page,
+          has_jobs: true,
+        });
 
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+
+        hasNext = !!res?.next; // 👈 check next page
+        page++; // 👈 increment page
       }
 
-      hasNext = !!res?.next; // 👈 check next page
-      page++; // 👈 increment page
+      const dropdown = Dropdown(allResults, "name");
+
+      setState({
+        masterDeptList: dropdown,
+      });
+    } catch (error) {
+      console.error("Error fetching master departments:", error);
     }
-
-    const dropdown = Dropdown(allResults, "name");
-
-    setState({
-      masterDeptList: dropdown,
-    });
-  } catch (error) {
-    console.error("Error fetching master departments:", error);
-  }
-};
+  };
 
   const masterJobRoleList = async () => {
     try {
@@ -1012,9 +1015,9 @@ ${userName}`;
   };
 
   useEffect(() => {
-    if (jobIdFromQuery ) {
+    if (jobIdFromQuery) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      
+
       // Fetch job detail directly using the ID
       setState({ jobID: jobIdFromQuery });
       jobDetail(jobIdFromQuery).then((res) => {
@@ -1170,11 +1173,12 @@ ${userName}`;
       // Update is_saved in place without refetching
       setState({
         jobList: state.jobList.map((j: any) =>
-          j.id === job.id ? { ...j, is_saved: !job.is_saved } : j
+          j.id === job.id ? { ...j, is_saved: !job.is_saved } : j,
         ),
-        jobDetail: state.jobDetail?.id === job.id
-          ? { ...state.jobDetail, is_saved: !job.is_saved }
-          : state.jobDetail,
+        jobDetail:
+          state.jobDetail?.id === job.id
+            ? { ...state.jobDetail, is_saved: !job.is_saved }
+            : state.jobDetail,
       });
       // }
 
@@ -1385,7 +1389,8 @@ ${userName}`;
     }
 
     if (f?.academic_responsibilities?.length > 0) {
-      body.additional_academic_responsibilities_ids = f.academic_responsibilities;
+      body.additional_academic_responsibilities_ids =
+        f.academic_responsibilities;
     }
 
     if (f?.colleges?.length > 0) {
@@ -1656,19 +1661,21 @@ ${userName}`;
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     {state.jobDetail?.user_is_applied === false ? (
-                    <button
-                      onClick={() => {
-                        setState({ jobID: state?.jobDetail?.id });
-                        handleApply();
-                      }}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                    >
-                      {state.jobDetail?.apply_link
-                        ? " Apply on company's site"
-                        : " Apply Now"}
-                    </button>
+                      <button
+                        onClick={() => {
+                          setState({ jobID: state?.jobDetail?.id });
+                          handleApply();
+                        }}
+                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                      >
+                        {state.jobDetail?.apply_link
+                          ? " Apply on company's site"
+                          : " Apply Now"}
+                      </button>
                     ) : (
-                      <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                      <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
+                        ✓ Applied
+                      </span>
                     )}
 
                     <div className="flex items-center gap-2">
@@ -1860,24 +1867,6 @@ ${userName}`;
                       </p>
                     </div>
                     <div>
-                      <span className=" flex gap-2 text-md font-medium  pb-1">
-                        <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                        Experience level
-                      </span>
-                      <p className="text-md text-gray-500  ps-6">
-                        {state?.jobDetail?.experiences?.name}
-                      </p>
-                    </div>
-                    <div>
-                      <span className="flex gap-2 text-md font-medium  pb-1">
-                        <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                        Salary
-                      </span>
-                      <p className="text-md text-gray-500 ps-6">
-                        {state?.jobDetail?.salary_range_obj?.name}
-                      </p>
-                    </div>
-                    <div>
                       <span className="flex gap-2 text-md font-medium  pb-1">
                         <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                         Department
@@ -1897,6 +1886,25 @@ ${userName}`;
                         ))}
                       </div>
                     </div>
+                    <div>
+                      <span className=" flex gap-2 text-md font-medium  pb-1">
+                        <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Experience level
+                      </span>
+                      <p className="text-md text-gray-500  ps-6">
+                        {state?.jobDetail?.experiences?.name}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="flex gap-2 text-md font-medium  pb-1">
+                        <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                        Salary
+                      </span>
+                      <p className="text-md text-gray-500 ps-6">
+                        {state?.jobDetail?.salary_range_obj?.name}
+                      </p>
+                    </div>
+
                     {state?.jobDetail?.locations?.length > 0 && (
                       <div>
                         <span className="flex gap-2 text-md font-medium  pb-1">
@@ -2460,11 +2468,47 @@ ${userName}`;
                                   </div>
                                 )}
                                 <div className="flex-1 flex-col">
-                                  <h1 className="text-2xl font-semibold text-gray-900 mb-1">
-                                    {capitalizeFLetter(
-                                      job_title(state?.jobDetail),
+                                  <div className="flex items-start gap-2 flex-wrap mb-1">
+                                    <h1 className="text-2xl font-semibold text-gray-900">
+                                      {capitalizeFLetter(
+                                        job_title(state?.jobDetail),
+                                      )}
+                                    </h1>
+                                    {state?.jobDetail?.department.length ==
+                                      1 && (
+                                      <>
+                                        {state?.jobDetail?.department?.map(
+                                          (item, index) => (
+                                            <button
+                                              key={index}
+                                              onClick={(e) =>
+                                                getDepartment(e, item.id)
+                                              }
+                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                       border border-[#1E3786]
+                       hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap"
+                                            >
+                                              {item.name}
+                                            </button>
+                                          ),
+                                        )}
+                                        { state?.jobDetail?.categories.length == 1 &&
+                                        state?.jobDetail?.categories?.map(
+                                          (item, index) => (
+                                            <button
+                                              key={index}
+                                             
+                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                       border border-[#1E3786]
+                       hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap cursor-default"
+                                            >
+                                              {item.name}
+                                            </button>
+                                          ),
+                                        )}
+                                      </>
                                     )}
-                                  </h1>
+                                  </div>
                                   <p
                                     className="text-md text-gray-700 mb-2 cursor-pointer hover:underline"
                                     onClick={(e) =>
@@ -2572,19 +2616,21 @@ ${userName}`;
                                 </div>
 
                                 {state.jobDetail?.user_is_applied === false ? (
-                                <button
-                                  onClick={() => {
-                                    setState({ jobID: state?.jobDetail?.id });
-                                    handleApply();
-                                  }}
-                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                                >
-                                  {state.jobDetail?.apply_link
-                                    ? " Apply on company's site"
-                                    : " Apply Now"}
-                                </button>
+                                  <button
+                                    onClick={() => {
+                                      setState({ jobID: state?.jobDetail?.id });
+                                      handleApply();
+                                    }}
+                                    className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                                  >
+                                    {state.jobDetail?.apply_link
+                                      ? " Apply on company's site"
+                                      : " Apply Now"}
+                                  </button>
                                 ) : (
-                                  <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">✓ Applied</span>
+                                  <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
+                                    ✓ Applied
+                                  </span>
                                 )}
                               </div>
                             </div>
@@ -2662,7 +2708,7 @@ ${userName}`;
                                   </div>
                                 )}
 
-                                 {state?.jobDetail?.qualification && (
+                                {state?.jobDetail?.qualification && (
                                   <div>
                                     <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
                                       Job Qualification
@@ -2742,19 +2788,24 @@ ${userName}`;
                           </div>
 
                           {state.jobDetail?.user_is_applied === false ? (
-                          <button
-                            onClick={() => {
-                              setState({ jobID: state?.jobDetail?.id });
-                              handleApply();
-                            }}
-                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
-                          >
-                            {state.jobDetail?.apply_link
-                              ? " Apply on company's site"
-                              : " Apply Now"}
-                          </button>
+                            <button
+                              onClick={() => {
+                                setState({ jobID: state?.jobDetail?.id });
+                                handleApply();
+                              }}
+                              className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
+                            >
+                              {state.jobDetail?.apply_link
+                                ? " Apply on company's site"
+                                : " Apply Now"}
+                            </button>
                           ) : (
-                            <div className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 " style={{marginTop:"20px"}} >✓ Applied</div>
+                            <div
+                              className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 "
+                              style={{ marginTop: "20px" }}
+                            >
+                              ✓ Applied
+                            </div>
                           )}
                         </div>
 
@@ -2784,25 +2835,6 @@ ${userName}`;
                                 </div>
 
                                 <div>
-                                  <span className=" flex gap-2 text-md font-medium  pb-1">
-                                    <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                    Experience level
-                                  </span>
-                                  <p className="text-md text-gray-500  ps-6">
-                                    {state?.jobDetail?.experiences?.name}
-                                  </p>
-                                </div>
-                                <div>
-                                  <span className="flex gap-2 text-md font-medium  pb-1">
-                                    <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                    Salary
-                                  </span>
-                                  <p className="text-md text-gray-500 ps-6">
-                                    {state?.jobDetail?.salary_range_obj?.name}
-                                  </p>
-                                </div>
-
-                                <div>
                                   <span className="flex gap-2 text-md font-medium  pb-1">
                                     <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
                                     Department
@@ -2828,7 +2860,26 @@ ${userName}`;
                                   </div>
                                 </div>
 
-                                {state?.jobDetail?.locations?.length > 0 &&  (
+                                <div>
+                                  <span className=" flex gap-2 text-md font-medium  pb-1">
+                                    <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Experience level
+                                  </span>
+                                  <p className="text-md text-gray-500  ps-6">
+                                    {state?.jobDetail?.experiences?.name}
+                                  </p>
+                                </div>
+                                <div>
+                                  <span className="flex gap-2 text-md font-medium  pb-1">
+                                    <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                    Salary
+                                  </span>
+                                  <p className="text-md text-gray-500 ps-6">
+                                    {state?.jobDetail?.salary_range_obj?.name}
+                                  </p>
+                                </div>
+
+                                {state?.jobDetail?.locations?.length > 0 && (
                                   <div>
                                     <span className="flex gap-2 text-md font-medium  pb-1">
                                       <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -2957,7 +3008,9 @@ ${userName}`;
                     loading={state.loading}
                     masterExperienceRaw={state?.masterExperienceRaw ?? []}
                     filterExperienceRaw={state?.filterExperienceRaw ?? []}
-                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
+                    academicResponsibilityList={
+                      state?.academicResponsibilityList ?? []
+                    }
                     closeModal={() => {
                       window.scrollTo({
                         top: 0,
@@ -3013,7 +3066,9 @@ ${userName}`;
                       loading={state.loading}
                       masterExperienceRaw={state?.masterExperienceRaw ?? []}
                       filterExperienceRaw={state?.filterExperienceRaw ?? []}
-                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
+                      academicResponsibilityList={
+                        state?.academicResponsibilityList ?? []
+                      }
                       closeModal={() => {
                         window.scrollTo({
                           top: 0,
@@ -3224,20 +3279,20 @@ ${userName}`;
                         Preferred Jobs
                       </button> */}
                       {isLoggedIn && (
-                      <button
-                        onClick={handlePreferredToggle}
-                        className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
-                          preferredOnly
-                            ? "bg-[#1E3786] text-white border-none"
-                            : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
-                        }`}
-                      >
-                        <CrownIcon
-                          size={13}
-                          className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
-                        />
-                        Preferred Jobs
-                      </button>
+                        <button
+                          onClick={handlePreferredToggle}
+                          className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                            preferredOnly
+                              ? "bg-[#1E3786] text-white border-none"
+                              : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                          }`}
+                        >
+                          <CrownIcon
+                            size={13}
+                            className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                          />
+                          Preferred Jobs
+                        </button>
                       )}
                     </div>
                   </div>
@@ -3255,7 +3310,9 @@ ${userName}`;
                     deptList={state?.masterDeptList}
                     locationList={state?.locationList}
                     jobRoleList={state?.masterJobRoleList}
-                    academicResponsibilityList={state?.academicResponsibilityList ?? []}
+                    academicResponsibilityList={
+                      state?.academicResponsibilityList ?? []
+                    }
                   />
 
                   {state.loading || state.jobListLoading ? (
@@ -3377,7 +3434,15 @@ ${userName}`;
                                 {isGridView ? (
                                   <JobCard
                                     job={job}
-                                    updateList={(jobId, isSaved) => setState({ jobList: state.jobList.map((j: any) => j.id === jobId ? { ...j, is_saved: isSaved } : j) })}
+                                    updateList={(jobId, isSaved) =>
+                                      setState({
+                                        jobList: state.jobList.map((j: any) =>
+                                          j.id === jobId
+                                            ? { ...j, is_saved: isSaved }
+                                            : j,
+                                        ),
+                                      })
+                                    }
                                     onCollegeClick={(e, id) =>
                                       getCollege(e, id)
                                     }
@@ -3391,7 +3456,15 @@ ${userName}`;
                                 ) : (
                                   <NewJobCard
                                     job={job}
-                                    updateList={(jobId, isSaved) => setState({ jobList: state.jobList.map((j: any) => j.id === jobId ? { ...j, is_saved: isSaved } : j) })}
+                                    updateList={(jobId, isSaved) =>
+                                      setState({
+                                        jobList: state.jobList.map((j: any) =>
+                                          j.id === jobId
+                                            ? { ...j, is_saved: isSaved }
+                                            : j,
+                                        ),
+                                      })
+                                    }
                                     onCollegeClick={(e, id) =>
                                       getCollege(e, id)
                                     }
@@ -3754,24 +3827,6 @@ ${userName}`;
                                 {capitalizeFLetter(job_title(state.jobDetail))}
                               </p>
                             </div>
-                            <div>
-                              <span className=" flex gap-2 text-sm font-medium  pb-1">
-                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Experience level
-                              </span>
-                              <p className="text-sm text-gray-500  ps-6">
-                                {state?.jobDetail?.experiences?.name}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="flex gap-2 text-sm font-medium  pb-1">
-                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Salary
-                              </span>
-                              <p className="text-sm text-gray-500 ps-6">
-                                {state?.jobDetail?.salary_range_obj?.name}
-                              </p>
-                            </div>
 
                             <div>
                               <span className="flex gap-2 text-md font-medium  pb-1">
@@ -3801,7 +3856,26 @@ ${userName}`;
                                 )}
                               </div>
                             </div>
-                            {state?.jobDetail?.locations?.length > 0  && (
+                            <div>
+                              <span className=" flex gap-2 text-sm font-medium  pb-1">
+                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Experience level
+                              </span>
+                              <p className="text-sm text-gray-500  ps-6">
+                                {state?.jobDetail?.experiences?.name}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="flex gap-2 text-sm font-medium  pb-1">
+                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                                Salary
+                              </span>
+                              <p className="text-sm text-gray-500 ps-6">
+                                {state?.jobDetail?.salary_range_obj?.name}
+                              </p>
+                            </div>
+
+                            {state?.jobDetail?.locations?.length > 0 && (
                               <div>
                                 <span className="flex gap-2 text-sm font-medium  pb-1">
                                   <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
@@ -3896,19 +3970,21 @@ ${userName}`;
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
                         {state.jobDetail?.user_is_applied === false ? (
-                        <button
-                          onClick={() => {
-                            setState({ jobID: state.jobDetail?.id });
-                            handleApply();
-                          }}
-                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
-                        >
-                          {state.jobDetail?.apply_link
-                            ? " Apply on company's site"
-                            : " Apply Now"}
-                        </button>
+                          <button
+                            onClick={() => {
+                              setState({ jobID: state.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                          >
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
+                          </button>
                         ) : (
-                          <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">✓ Applied</span>
+                          <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">
+                            ✓ Applied
+                          </span>
                         )}
                       </div>
                     </>
@@ -4392,29 +4468,32 @@ ${userName}`;
                       )}
 
                       {/* ================= Stats ================= */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-                        {state.collegeDetail?.intake_per_year && (
-                          <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
-                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                              Intake Per Year
-                            </p>
-                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                              {state.collegeDetail?.intake_per_year}
-                            </h3>
-                          </div>
-                        )}
+                      {(state?.collegeDetail?.intake_per_year ||
+                        state?.collegeDetail?.total_strength) && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                          {state.collegeDetail?.intake_per_year && (
+                            <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
+                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                Intake Per Year
+                              </p>
+                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                                {state.collegeDetail?.intake_per_year}
+                              </h3>
+                            </div>
+                          )}
 
-                        {state.collegeDetail?.total_strength && (
-                          <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
-                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                              Total Strength
-                            </p>
-                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                              {state.collegeDetail?.total_strength}
-                            </h3>
-                          </div>
-                        )}
-                      </div>
+                          {state.collegeDetail?.total_strength && (
+                            <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
+                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                Total Strength
+                              </p>
+                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                                {state.collegeDetail?.total_strength}
+                              </h3>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* ================= Achievements ================= */}
                       {state.collegeDetail?.recent_achievements?.length > 0 && (
