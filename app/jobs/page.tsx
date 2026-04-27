@@ -1594,7 +1594,8 @@ ${userName}`;
                               .toUpperCase()}
                           </div>
                         )}
-                        <div className="flex-1">
+                        <div className="flex-1 flex-col">
+                          <div className="flex items-start gap-2 flex-wrap mb-1">
                           <h1
                             className="text-xl font-semibold text-[#313131] mb-1"
                             onClick={(e) =>
@@ -1603,6 +1604,42 @@ ${userName}`;
                           >
                             {capitalizeFLetter(job_title(state?.jobDetail))}
                           </h1>
+                          {state?.jobDetail?.department.length ==
+                                      1 && (
+                                      <>
+                                        {state?.jobDetail?.department?.map(
+                                          (item, index) => (
+                                            <button
+                                              key={index}
+                                              onClick={(e) =>
+                                                getDepartment(e, item.id)
+                                              }
+                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                       border border-[#1E3786]
+                       hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap"
+                                            >
+                                              {item.name}
+                                            </button>
+                                          ),
+                                        )}
+                                        { state?.jobDetail?.categories.length == 1 &&
+                                        state?.jobDetail?.categories?.map(
+                                          (item, index) => (
+                                            <button
+                                              key={index}
+                                             
+                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                       border border-[#1E3786]
+                       hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap cursor-default"
+                                            >
+                                              {item.name}
+                                            </button>
+                                          ),
+                                        )}
+                                      </>
+                                    )}
+
+                                    </div>
                           <p className="text-md text-gray-700 mb-2">
                             {state?.jobDetail?.college?.name}
                           </p>
