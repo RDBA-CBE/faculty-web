@@ -1751,6 +1751,18 @@ ${userName}`;
                             </p>
                           </div>
                         )}
+
+                        {state?.jobDetail?.qualification && (
+                          <div>
+                            <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                              Job Qualification
+                            </h3>
+
+                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                              {state?.jobDetail?.qualification}
+                            </p>
+                          </div>
+                        )}
                       </div>
                       <p>
                         {state?.jobDetail?.job_description ||
@@ -2646,6 +2658,18 @@ ${userName}`;
 
                                     <p className="text-gray-700 leading-relaxed text-sm md:text-base">
                                       {state?.jobDetail?.job_description}
+                                    </p>
+                                  </div>
+                                )}
+
+                                 {state?.jobDetail?.qualification && (
+                                  <div>
+                                    <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                      Job Qualification
+                                    </h3>
+
+                                    <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                      {state?.jobDetail?.qualification}
                                     </p>
                                   </div>
                                 )}
@@ -3632,6 +3656,13 @@ ${userName}`;
                           </h3>
                           <p className="text-gray-600 text-sm leading-relaxed">
                             {state.jobDetail?.job_description}
+                          </p>
+
+                          <h3 className="text-lg font-bold text-gray-900 mb-3 mt-2">
+                            Job Qualification
+                          </h3>
+                          <p className="text-gray-600 text-sm leading-relaxed">
+                            {state.jobDetail?.qualification}
                           </p>
                         </div>
 
