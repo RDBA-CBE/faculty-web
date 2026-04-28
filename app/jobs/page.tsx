@@ -198,13 +198,16 @@ useEffect(() => {
   const slugParam = searchParams.get("slug");
   const hasVisited = sessionStorage.getItem("jobs_page_visited");
   
-  // If it's the first visit to this page, mark it
   if (!hasVisited) {
     sessionStorage.setItem("jobs_page_visited", "true");
     return;
   }
+
+  if (isIntentionalNav.current) {
+    isIntentionalNav.current = false;
+    return;
+  }
   
-  // On subsequent visits (like refresh), check conditions
   const allParams = Array.from(searchParams.keys());
     const hasOtherParams = allParams.some(
       (key) => key !== "slug" && key !== "id" && key !== "job-category",
@@ -304,6 +307,7 @@ ${userName}`;
   const jobDetailContainerRef = useRef<HTMLDivElement>(null);
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
   const isInitialized = useRef(false);
+  const isIntentionalNav = useRef(false);
   const prevFilterBodyRef = useRef<string>("");
   const filtersRef = useRef(filters);
   filtersRef.current = filters; // always sync, no useEffect needed
@@ -2018,7 +2022,11 @@ ${userName}`;
                       </p> */}
                     </div>
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        isIntentionalNav.current = true;
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
@@ -2992,7 +3000,11 @@ ${userName}`;
                                 </div>
                               </div>
                               <button
-                                onClick={() => {
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  isIntentionalNav.current = true;
                                   setSelectedJob(null);
                                   window.scrollTo({
                                     top: 0,
@@ -3992,7 +4004,11 @@ ${userName}`;
                             </div>
                           </div>
                           <button
-                            onClick={() => {
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              isIntentionalNav.current = true;
                               setSelectedJob(null);
                               window.scrollTo({ top: 0, behavior: "smooth" });
 

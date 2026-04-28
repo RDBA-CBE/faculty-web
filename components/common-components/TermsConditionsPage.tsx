@@ -5,8 +5,8 @@ export default function TermsConditionsPage() {
     <main className="bg-white">
       {/* HEADER */}
       <section className="section-wid border-b">
-        <div className="  mx-auto px-6 py-10 text-center">
-          <h1 className="text-4xl font-bold text-gray-900">
+        <div className="  mx-auto px-6 py-4 md:py-10 text-center">
+          <h1 className="text-xl md:text-4xl font-bold text-gray-900">
             Terms & Conditions
           </h1>
           <p className="mt-2 text-gray-500">
@@ -16,7 +16,7 @@ export default function TermsConditionsPage() {
       </section>
 
       {/* CONTENT */}
-      <section className="section-wid mx-auto px-6 py-16 text-gray-700 leading-relaxed">
+      <section className="section-wid mx-auto px-0  py-5 md:py-16 text-gray-700 leading-relaxed">
           <div className="space-y-8">
             <div>
               <h2 className="sub-ti font-semibold text-black mb-3">
