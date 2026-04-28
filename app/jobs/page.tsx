@@ -991,11 +991,14 @@ ${userName}`;
       const responsibilities =
         res?.responsibility?.blocks?.flatMap((block) => {
           if (block.type === "list") {
-            return block.data.items; // array
+            return block.data.items.map((item) => ({
+              type: "list",
+              text: item,
+            }));
           }
 
           if (block.type === "paragraph") {
-            return [block.data.text]; // convert to array
+            return [{ type: "paragraph", text: block.data.text }];
           }
 
           return [];
@@ -1835,9 +1838,9 @@ ${userName}`;
                       <ul className="space-y-3">
                         {state?.responsibilities?.map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                            {item?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
 
-                            <span dangerouslySetInnerHTML={{ __html: item }} />
+                            <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
                           </li>
                         ))}
                       </ul>
@@ -1853,8 +1856,8 @@ ${userName}`;
                       <ul className="space-y-3">
                         {state?.jobDetail?.requirements?.map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                            <span dangerouslySetInnerHTML={{ __html: item }} />
+                            {(item?.type === "list" || typeof item === "string") && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
+                            <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
                           </li>
                         ))}
                       </ul>
@@ -2772,9 +2775,9 @@ ${userName}`;
                                         key={index}
                                         className="flex items-start gap-3"
                                       >
-                                        <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                                        {item?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
 
-                                        <span dangerouslySetInnerHTML={{ __html: item }} />
+                                        <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
                                       </li>
                                     ),
                                   )}
@@ -2795,8 +2798,8 @@ ${userName}`;
                                     key={index}
                                     className="flex items-start gap-3"
                                   >
-                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
-                                    <span dangerouslySetInnerHTML={{ __html: item }} />
+                                    {(item?.type === "list" || typeof item === "string") && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
+                                    <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
                                   </li>
                                 ),
                               )}
@@ -3788,9 +3791,8 @@ ${userName}`;
                                     key={index}
                                     className="flex items-start gap-2"
                                   >
-                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
-                                    <p className="text-gray-600 text-sm">
-                                      {responsibility}
+                                    {responsibility?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />}
+                                    <p className="text-gray-600 text-sm" dangerouslySetInnerHTML={{__html:responsibility?.text ?? responsibility}}>
                                     </p>
                                   </div>
                                 ),
