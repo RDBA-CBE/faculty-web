@@ -102,7 +102,8 @@ export default function JobsPage() {
 
   const router = useRouter();
   const jobIdParam = searchParams.get("slug");
-  const jobIdFromQuery = searchParams.get("id");
+  // const jobIdFromQuery = searchParams.get("id");
+  const jobIdFromQuery = searchParams.get("id")?.split("-")[0] || "";
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
@@ -1031,6 +1032,9 @@ ${userName}`;
       });
     }
   }, [jobIdFromQuery]);
+
+  console.log("jobID", state?.jobID);
+  
 
   useEffect(() => {
     const checkPendingApply = () => {
