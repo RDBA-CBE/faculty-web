@@ -1714,7 +1714,7 @@ ${userName}`;
                         setState({ jobID: state?.jobDetail?.id });
                         handleApply();
                       }}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
                     >
                       {state.jobDetail?.apply_link
                         ? " Apply on company's site"
@@ -2673,7 +2673,7 @@ ${userName}`;
                                     setState({ jobID: state?.jobDetail?.id });
                                     handleApply();
                                   }}
-                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
                                 >
                                   {state.jobDetail?.apply_link
                                     ? " Apply on company's site"
@@ -2845,7 +2845,7 @@ ${userName}`;
                               setState({ jobID: state?.jobDetail?.id });
                               handleApply();
                             }}
-                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] "
+                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] whitespace-nowrap"
                           >
                             {state.jobDetail?.apply_link
                               ? " Apply on company's site"
@@ -4034,7 +4034,7 @@ ${userName}`;
                             setState({ jobID: state.jobDetail?.id });
                             handleApply();
                           }}
-                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
                         >
                           {state.jobDetail?.apply_link
                             ? " Apply on company's site"
