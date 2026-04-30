@@ -65,7 +65,7 @@ export default function InstitutionPartners() {
   const rightPartners = [PARTNERS[0], PARTNERS[1], PARTNERS[4], PARTNERS[5]];
 
   return (
-    <section className="bg-[#0000ff0a] pb-16 pt-20">
+    <section  className="institution-partners bg-[#0000ff0a] pb-16 pt-20">
       <div className="section-wid">
         <div className="flex items-center justify-center">
           <div className=" w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">

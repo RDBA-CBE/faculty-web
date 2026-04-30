@@ -35,7 +35,7 @@ const FaqResumeSection = () => {
   const [active, setActive] = useState("01");
 
   return (
-    <section className="section-wid pt-12 pb-16 ">
+    <section  className="section-wid pt-12 pb-16 ">
       <div className=" grid lg:grid-cols-3 " style={{columnGap:"40px"}}>
         {/* LEFT SIDE - FAQ (WIDER) */}
         <div className="lg:col-span-2">

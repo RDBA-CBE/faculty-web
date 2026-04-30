@@ -286,7 +286,7 @@ const departmentList = async (search = "") => {
             </div>
 
             {/* Search Form */}
-            <div className="bg-white rounded-[40px] shadow-lg p-4 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center justify-between max-w-full lg:max-w-3xl">
+            <div className="search-filters bg-white rounded-[40px] shadow-lg p-4 sm:p-2 flex flex-col sm:flex-row gap-4 sm:gap-0 items-stretch sm:items-center justify-between max-w-full lg:max-w-3xl">
               {/* <input
                 type="text"
                 placeholder="Job Title or College"

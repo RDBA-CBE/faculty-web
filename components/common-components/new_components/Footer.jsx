@@ -130,13 +130,13 @@ const Footer = () => {
               </p>
 
               {/* Input Group */}
-              <div className="flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
+              <div className="newsletter-input flex bg-white rounded-full p-1 shadow-md w-full max-w-md">
                 <input
                   type="email"
                   value={state?.email}
                   onChange={(e) => setState({ email: e.target.value })}
                   placeholder="Enter Your Email Address..."
-                  className="flex-grow px-4 py-2 rounded-full outline-none text-[#373535] text-sm bg-transparent placeholder:text-[#373535]"
+                  className=" flex-grow px-4 py-2 rounded-full outline-none text-[#373535] text-sm bg-transparent placeholder:text-[#373535]"
                 />
                 <button
                   onClick={() => handleSubscribe()}
