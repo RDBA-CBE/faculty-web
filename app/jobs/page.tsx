@@ -737,6 +737,7 @@ ${userName}`;
       if (searchBar && searchBarWrapper) {
         const searchBarHeight = searchBar.offsetHeight;
         const containerRect = jobListContainer.getBoundingClientRect();
+        const searchWrapperRect = searchBarWrapper.getBoundingClientRect();
 
         // Use the same offset or adjust as needed
         const startStickySearch = containerRect.top <= offset;
@@ -745,9 +746,14 @@ ${userName}`;
         if (startStickySearch) {
           searchBarWrapper.style.height = `${searchBarHeight}px`; // Prevent layout shift
           if (!reachFooterSearch) {
-            searchBar.style.position = "fixed";
-            searchBar.style.top = `${offset}px`;
-            searchBar.style.width = `${searchBarWrapper.offsetWidth}px`;
+            searchBarWrapper.style.position = "fixed";
+            searchBarWrapper.style.top = `${offset}px`;
+            searchBarWrapper.style.left = `${searchWrapperRect.left}px`;
+            searchBarWrapper.style.width = `${searchWrapperRect.width}px`;
+            searchBarWrapper.style.zIndex = "50";
+            searchBar.style.position = "relative";
+            searchBar.style.top = "0px";
+            searchBar.style.width = "100%";
             searchBar.style.backgroundColor = "white";
 
             // Fade out job cards scrolling behind the search bar
@@ -791,15 +797,28 @@ ${userName}`;
               }
             });
           } else {
-            searchBar.style.position = "absolute";
-            searchBar.style.top = `${
-              jobListContainer.offsetHeight - searchBarHeight
-            }px`;
-            searchBar.style.width = `${searchBarWrapper.offsetWidth}px`;
+            // Keep fixed near footer too; only adjust `top` so dropdown anchor stays stable.
+            const footerSafeTop = Math.max(
+              16,
+              footerRect.top - searchBarHeight - 8,
+            );
+            searchBarWrapper.style.position = "fixed";
+            searchBarWrapper.style.top = `${footerSafeTop}px`;
+            searchBarWrapper.style.left = `${searchWrapperRect.left}px`;
+            searchBarWrapper.style.width = `${searchWrapperRect.width}px`;
+            searchBarWrapper.style.zIndex = "50";
+            searchBar.style.position = "relative";
+            searchBar.style.top = "0px";
+            searchBar.style.width = "100%";
             searchBar.style.backgroundColor = "white";
           }
         } else {
           searchBarWrapper.style.height = "auto";
+          searchBarWrapper.style.position = "relative";
+          searchBarWrapper.style.top = "0px";
+          searchBarWrapper.style.left = "0px";
+          searchBarWrapper.style.width = "auto";
+          searchBarWrapper.style.zIndex = "";
           searchBar.style.position = "relative";
           searchBar.style.top = "0px";
           searchBar.style.width = "auto";
@@ -2763,6 +2782,17 @@ ${userName}`;
                                 void handlePromptInputKeyDown(e);
                               }}
                             />
+                            {state.search?.trim() && (
+                              <button
+                                type="button"
+                                onClick={handleClearFilters}
+                                className="border-none flex items-center justify-center w-8 h-8 rounded-full border border-red-400 text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                                aria-label="Clear search and filters"
+                                title="Clear search"
+                              >
+                                <X size={18} color="#ef4444" />
+                              </button>
+                            )}
                           </div>
                           <JobSearchPromptSuggestions
                             open={promptSuggestionsOpenSidebar}
@@ -3853,7 +3883,9 @@ ${userName}`;
                     className="relative z-30"
                   >
                     <div
-                      ref={searchBarRef}
+                      ref={(node) => {
+                        searchBarRef.current = node;
+                      }}
                       className="jobs-search-bar z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
                     >
                       <div className="flex flex-row items-center w-full bg-clr2  rounded-3xl  p-1">
@@ -3882,6 +3914,17 @@ ${userName}`;
                               void handlePromptInputKeyDown(e);
                             }}
                           />
+                          {state.search?.trim() && (
+                            <button
+                              type="button"
+                              onClick={handleClearFilters}
+                              className="border-none flex items-center justify-center w-8 h-8 rounded-full border border-red-400 text-red-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                              aria-label="Clear search and filters"
+                              title="Clear search"
+                            >
+                              <X size={18} color="#374151" />
+                            </button>
+                          )}
                         </div>
 
                         {/* {isWideScreen && (
