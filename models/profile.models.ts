@@ -76,6 +76,28 @@ const profile = {
     });
     return promise;
   },
+
+  delete_account: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `users/request_deletion/`;
+      instance()
+        .post(url, data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+
+
 };
 
 export default profile;

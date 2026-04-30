@@ -50,6 +50,12 @@ const Footer = () => {
         
         <div className="border-t border-gray-800 pt-8 text-center">
           <p className="text-gray-400">© Real Estate - All rights reserved</p>
+          <a
+            href="/remove-account"
+            className="mt-3 inline-block text-gray-400 hover:text-white"
+          >
+            Delete Account
+          </a>
         </div>
       </div>
     </footer>

@@ -307,6 +307,14 @@ const Footer = () => {
                       Terms & Conditions
                     </a>
                   </li>
+                  <li>
+                    <a
+                      href="/remove-account"
+                      className="text-white hover:text-gray-400 transition-colors"
+                    >
+                      Delete Account
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>

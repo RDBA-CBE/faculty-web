@@ -42,8 +42,13 @@ export const register = Yup.object().shape({
   first_name: Yup.string().required("First Name is required"),
   last_name: Yup.string().required("Last Name is required"),
   email: Yup.string().required("Email is required"),
-  password: Yup.string().required("Password is required"),
-  password_confirm: Yup.string().required("Password Confirm is required"),
+  password: Yup.string()
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters"),
+  password_confirm: Yup.string()
+    .required("Password Confirm is required")
+    .min(8, "Confirm Password must be at least 8 characters")
+    .oneOf([Yup.ref("password")], "Passwords must match"),
 });
 
 export const user = Yup.object().shape({
@@ -137,4 +142,13 @@ export const hrRegistrationSchema = Yup.object().shape({
   // confirm_password: Yup.string()
   //   .required("Confirm Password is required")
   //   .oneOf([Yup.ref("password")], "Passwords must match"),
+});
+
+export const deleteAccountSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email format").required("Email is required"),
+  phone: Yup.string()
+  .required("Phone number is required")
+  .min(10, "Phone number must be at least 10 digits")
+  .max(12, "Phone number must not exceed 10 digits"),
+  reason_text: Yup.string().required("Reason is required"),
 });

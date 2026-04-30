@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -19,7 +19,6 @@ import {
   ArrowRight,
   Bookmark,
   BookMarked,
-  GitCompareArrowsIcon,
   Heart,
   Loader,
   Lock,
@@ -27,6 +26,7 @@ import {
   LogOut,
   MenuIcon,
   MoveRight,
+  RefreshCcw,
   Settings,
   User,
   User2,
@@ -48,7 +48,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { buildFormData, Dropdown, Failure, useSetState } from "@/utils/function.utils";
+import {
+  buildFormData,
+  Dropdown,
+  Failure,
+  useSetState,
+} from "@/utils/function.utils";
 import CustomSelect from "./dropdown";
 import Models from "@/imports/models.import";
 import Modal from "./modal";
@@ -69,6 +74,8 @@ const Header = () => {
   const [clickedMenu, setClickedMenu] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [open, setOpen] = useState(false);
+  const captchaCanvasRef = useRef(null);
+  const loginCaptchaCanvasRef = useRef(null);
 
   const [state, setState] = useSetState({
     token: null,
@@ -81,7 +88,161 @@ const Header = () => {
     loginErrorMessage: "",
     registrationFailModal: false,
     registrationErrorMessage: "",
+    captchaValue: "",
+    captchaInput: "",
+    captchaRefreshing: false,
+    loginCaptchaValue: "",
+    loginCaptchaInput: "",
+    loginCaptchaRefreshing: false,
   });
+
+  const generateCaptcha = () => {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+    return Array.from(
+      { length: 6 },
+      () => chars[Math.floor(Math.random() * chars.length)],
+    ).join("");
+  };
+
+  const refreshCaptcha = () => {
+    setState({
+      captchaValue: generateCaptcha(),
+      captchaInput: "",
+      captchaRefreshing: true,
+      errors: {
+        ...state.errors,
+        captchaInput: "",
+      },
+    });
+    window.setTimeout(() => {
+      setState({ captchaRefreshing: false });
+    }, 500);
+  };
+
+  const refreshLoginCaptcha = (preserveError = false) => {
+    setState({
+      loginCaptchaValue: generateCaptcha(),
+      loginCaptchaInput: "",
+      loginCaptchaRefreshing: true,
+      errors: {
+        ...state.errors,
+        ...(preserveError
+          ? { loginCaptchaInput: state.errors?.loginCaptchaInput || "" }
+          : { loginCaptchaInput: "" }),
+      },
+    });
+    window.setTimeout(() => {
+      setState({ loginCaptchaRefreshing: false });
+    }, 500);
+  };
+
+  const drawCaptchaOnCanvas = (canvasRef, captchaText) => {
+    const canvas = canvasRef?.current;
+    if (!canvas) return false;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return false;
+
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // Base
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "#f7f7f7";
+    ctx.fillRect(0, 0, width, height);
+    ctx.strokeStyle = "#cfcfcf";
+    ctx.lineWidth = 1.2;
+    ctx.strokeRect(0.6, 0.6, width - 1.2, height - 1.2);
+
+    // Noise dots
+    for (let i = 0; i < 40; i += 1) {
+      ctx.beginPath();
+      ctx.fillStyle = "rgba(140,140,140,0.35)";
+      ctx.arc(
+        Math.random() * width,
+        Math.random() * height,
+        Math.random() * 2 + 1,
+        0,
+        Math.PI * 2,
+      );
+      ctx.fill();
+    }
+
+    // Interference lines
+    for (let i = 0; i < 3; i += 1) {
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(150,150,150,0.45)";
+      ctx.lineWidth = 1 + Math.random();
+      ctx.moveTo(Math.random() * 30, Math.random() * height);
+      ctx.lineTo(width - Math.random() * 30, Math.random() * height);
+      ctx.stroke();
+    }
+
+    const captcha = captchaText || "------";
+    const slot = width / (captcha.length + 1);
+    for (let i = 0; i < captcha.length; i += 1) {
+      const ch = captcha[i];
+      const x = slot * (i + 1);
+      const y = height / 2 + 9;
+      const angle = (Math.random() - 0.5) * 0.5;
+      const fontSize = 28 + Math.floor(Math.random() * 3);
+
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.font = `700 ${fontSize}px Georgia, "Times New Roman", serif`;
+      ctx.fillStyle = "rgba(150,150,150,0.82)";
+      ctx.fillText(ch, -8, 0);
+      ctx.restore();
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (!state.isOpenReg) return;
+    let cancelled = false;
+    const attemptDraw = (retries = 8) => {
+      if (cancelled) return;
+      const ok = drawCaptchaOnCanvas(captchaCanvasRef, state.captchaValue);
+      if (ok || retries <= 0) return;
+      window.setTimeout(() => attemptDraw(retries - 1), 60);
+    };
+    attemptDraw();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.captchaValue, state.isOpenReg]);
+
+  useEffect(() => {
+    if (!state.isOpenLogin) return;
+    let cancelled = false;
+    const attemptDraw = (retries = 8) => {
+      if (cancelled) return;
+      const ok = drawCaptchaOnCanvas(
+        loginCaptchaCanvasRef,
+        state.loginCaptchaValue,
+      );
+      if (ok || retries <= 0) return;
+      window.setTimeout(() => attemptDraw(retries - 1), 60);
+    };
+    attemptDraw();
+    return () => {
+      cancelled = true;
+    };
+  }, [state.loginCaptchaValue, state.isOpenLogin]);
+
+  useEffect(() => {
+    if (!state.isOpenReg) return;
+    if ((state.captchaValue || "").trim()) return;
+    setState({ captchaValue: generateCaptcha() });
+  }, [state.isOpenReg]);
+
+  useEffect(() => {
+    if (!state.isOpenLogin) return;
+    setState({
+      loginCaptchaValue: generateCaptcha(),
+      loginCaptchaInput: "",
+    });
+  }, [state.isOpenLogin]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,6 +270,8 @@ const Header = () => {
         terms: false,
         newsletter: false,
         errors: {},
+        captchaValue: generateCaptcha(),
+        captchaInput: "",
       });
       loadDepartmentList();
     };
@@ -127,6 +290,8 @@ const Header = () => {
         email: "",
         password: "",
         errors: {},
+        loginCaptchaValue: generateCaptcha(),
+        loginCaptchaInput: "",
       });
     };
 
@@ -137,31 +302,31 @@ const Header = () => {
     };
   }, [setState]);
 
- const loadDepartmentList = async () => {
-  try {
-    let page = 1;
-    let hasNext = true;
-    let allResults = [];
-    let maxPages = 50;
+  const loadDepartmentList = async () => {
+    try {
+      let page = 1;
+      let hasNext = true;
+      let allResults = [];
+      let maxPages = 50;
 
-    while (hasNext && page <= maxPages) {
-      const res = await Models.department.masterDep({ page });
+      while (hasNext && page <= maxPages) {
+        const res = await Models.department.masterDep({ page });
 
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+
+        hasNext = !!res?.next;
+        page++;
       }
 
-      hasNext = !!res?.next;
-      page++;
+      setState({
+        departmentList: Dropdown(allResults, "name"),
+      });
+    } catch (error) {
+      console.log("department error", error);
     }
-
-    setState({
-      departmentList: Dropdown(allResults, "name"),
-    });
-  } catch (error) {
-    console.log("department error", error);
-  }
-};
+  };
 
   const handleLogout = async () => {
     try {
@@ -196,6 +361,12 @@ const Header = () => {
 
       if (!state.terms) {
         throw { isTerms: true };
+      }
+
+      if (
+        (state.captchaInput || "").trim() !== (state.captchaValue || "").trim()
+      ) {
+        throw { isCaptcha: true };
       }
 
       const body = {
@@ -237,6 +408,12 @@ const Header = () => {
         if (!state.terms) {
           validationErrors.terms = "Please accept terms and conditions";
         }
+        if (
+          (state.captchaInput || "").trim() !==
+          (state.captchaValue || "").trim()
+        ) {
+          validationErrors.captchaInput = "Please enter valid captcha";
+        }
 
         console.log("✌️validationErrors --->", validationErrors);
 
@@ -244,6 +421,11 @@ const Header = () => {
       } else if (error.isTerms) {
         setState({
           errors: { terms: "Please accept terms and conditions" },
+          btnLoading: false,
+        });
+      } else if (error.isCaptcha) {
+        setState({
+          errors: { captchaInput: "Please enter valid captcha" },
           btnLoading: false,
         });
       } else {
@@ -265,6 +447,12 @@ const Header = () => {
         password: state.password,
       };
       await Validation.login.validate(body, { abortEarly: false });
+      if (
+        (state.loginCaptchaInput || "").trim() !==
+        (state.loginCaptchaValue || "").trim()
+      ) {
+        throw { isLoginCaptcha: true };
+      }
       const res = await Models.auth.login(body);
       console.log("✌️res --->", res);
       localStorage.setItem("token", res.access);
@@ -277,6 +465,8 @@ const Header = () => {
         isOpenLogin: false,
         email: "",
         password: "",
+        loginCaptchaInput: "",
+        loginCaptchaValue: "",
       });
       window.dispatchEvent(new CustomEvent("loginSuccess"));
       Success("Login Successfully!");
@@ -291,9 +481,20 @@ const Header = () => {
         error.inner.forEach((err) => {
           validationErrors[err.path] = err?.message;
         });
+        if (
+          (state.loginCaptchaInput || "").trim() !==
+          (state.loginCaptchaValue || "").trim()
+        ) {
+          validationErrors.loginCaptchaInput = "Please enter valid captcha";
+        }
         console.log("✌️validationErrors --->", validationErrors);
 
         setState({ errors: validationErrors, btnLoading: false });
+      } else if (error.isLoginCaptcha) {
+        setState({
+          errors: { loginCaptchaInput: "Please enter valid captcha" },
+          btnLoading: false,
+        });
       } else {
         setState({
           loginErrorMessage:
@@ -349,54 +550,51 @@ const Header = () => {
         <div className="section-wid">
           <div className="flex items-center justify-between h-16">
             <div className="flex gap-10">
-            {/* Logo */}
-            <div className="flex items-center flex-shrink-0">
-              <Link href="/" className="flex items-center space-x-3">
-                <img
-                  src="/assets/images/faculty-logo.png"
-                  alt="Logo"
-                  className="!w-[200px] h-10"
-                />
-                {/* <span className="font-medium text-2xl tracking-tight text-white">
+              {/* Logo */}
+              <div className="flex items-center flex-shrink-0">
+                <Link href="/" className="flex items-center space-x-3">
+                  <img
+                    src="/assets/images/faculty-logo.png"
+                    alt="Logo"
+                    className="!w-[200px] h-10"
+                  />
+                  {/* <span className="font-medium text-2xl tracking-tight text-white">
                   Faculty Pro
                 </span> */}
-              </Link>
-
-              
-            </div>
-
-            {/* Navigation Menu (Desktop) */}
-            <nav className="hidden lg:flex items-center ">
-              <div className="flex items-center space-x-8">
-                {navigationMenu.map((menu) => {
-                  const isActive =
-                    pathname === menu.url ||
-                    (menu.url === "/" && pathname === "/");
-                  return (
-                    <Link
-                      key={menu.title}
-                      href={menu.url}
-                      onClick={(e) => {
-                        if (menu.url === "/jobs" && pathname === "/jobs") {
-                          e.preventDefault();
-                          window.location.href = "/jobs";
-                        }
-                      }}
-                      className={`font-medium transition-colors duration-200 ${
-                        isActive
-                          ? "text-[#F2B31D]"
-                          : isHomePage
-                            ? "text-black hover:text-[#F2B31D]"
-                            : "text-black hover:text-[#F2B31D]"
-                      }`}
-                    >
-                      {menu.title}
-                    </Link>
-                  );
-                })}
+                </Link>
               </div>
-            </nav>
 
+              {/* Navigation Menu (Desktop) */}
+              <nav className="hidden lg:flex items-center ">
+                <div className="flex items-center space-x-8">
+                  {navigationMenu.map((menu) => {
+                    const isActive =
+                      pathname === menu.url ||
+                      (menu.url === "/" && pathname === "/");
+                    return (
+                      <Link
+                        key={menu.title}
+                        href={menu.url}
+                        onClick={(e) => {
+                          if (menu.url === "/jobs" && pathname === "/jobs") {
+                            e.preventDefault();
+                            window.location.href = "/jobs";
+                          }
+                        }}
+                        className={`font-medium transition-colors duration-200 ${
+                          isActive
+                            ? "text-[#F2B31D]"
+                            : isHomePage
+                              ? "text-black hover:text-[#F2B31D]"
+                              : "text-black hover:text-[#F2B31D]"
+                        }`}
+                      >
+                        {menu.title}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </nav>
             </div>
 
             {/* Right Side - Auth & Mobile Menu */}
@@ -475,6 +673,8 @@ const Header = () => {
                         terms: false,
                         newsletter: false,
                         errors: {},
+                        captchaValue: generateCaptcha(),
+                        captchaInput: "",
                       });
                       loadDepartmentList();
                     }}
@@ -557,6 +757,8 @@ const Header = () => {
                               terms: false,
                               newsletter: false,
                               errors: {},
+                              captchaValue: generateCaptcha(),
+                              captchaInput: "",
                             });
                             loadDepartmentList();
                             setOpen(false);
@@ -578,14 +780,26 @@ const Header = () => {
       <Modal
         isOpen={state.isOpenLogin}
         setIsOpen={() => {
-          setState({ errors: {}, isOpenLogin: false, email: "", password: "" });
+          setState({
+            errors: {},
+            isOpenLogin: false,
+            email: "",
+            password: "",
+            loginCaptchaInput: "",
+            loginCaptchaValue: "",
+          });
         }}
         // closeIcon={false}
         hideHeader={true}
         title="Sign In"
         width="500px"
         renderComponent={() => (
-          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[85vh] overflow-y-auto scrollbar-hide rounded rounded-lg" onKeyDown={(e) => { if (e.key === "Enter") handleLogin(); }}>
+          <div
+            className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[85vh] overflow-y-auto scrollbar-hide rounded rounded-lg"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleLogin();
+            }}
+          >
             <div className="flex items-center justify-center w-full mb-6">
               <img
                 src="/assets/images/faculty-logo.png"
@@ -658,6 +872,36 @@ const Header = () => {
               </button>
             </div>
 
+            <div className="flex items-center justify-center gap-3 py-0">
+              <canvas
+                ref={loginCaptchaCanvasRef}
+                width={260}
+                height={60}
+                className="h-[60px] w-[260px] rounded-md border border-gray-300 bg-gray-50"
+                aria-label="Login captcha"
+              />
+              <button
+                type="button"
+                onClick={refreshLoginCaptcha}
+                className="h-10 w-10 rounded-md border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 flex items-center justify-center"
+                aria-label="Refresh login captcha"
+              >
+                <RefreshCcw
+                  className={`h-5 w-5 ${
+                    state.loginCaptchaRefreshing ? "animate-spin" : ""
+                  }`}
+                />
+              </button>
+            </div>
+
+            <Input
+              placeholder="Enter captcha"
+              value={state.loginCaptchaInput || ""}
+              onChange={(e) => handleFormChange("loginCaptchaInput", e.target.value)}
+              bg="ffffff"
+              error={state.errors?.loginCaptchaInput}
+            />
+
             <Button
               type="button"
               className=" bg-[#1E3786] w-full py-3 text-white hover:bg-amber-500  font-bold rounded-3xl py-2 flex items-center justify-center gap-2"
@@ -705,7 +949,12 @@ const Header = () => {
         title="Create Account"
         width="500px"
         renderComponent={() => (
-          <div className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg" onKeyDown={(e) => { if (e.key === "Enter") handleRegister(); }}>
+          <div
+            className="space-y-6 bg-[#FFFCF3] py-6 px-10 max-h-[98vh] overflow-y-auto scrollbar-hide rounded rounded-lg"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleRegister();
+            }}
+          >
             <div className="flex items-center justify-center w-full mb-6 ">
               <img
                 src="/assets/images/faculty-logo.png"
@@ -804,7 +1053,6 @@ const Header = () => {
                 }
                 className="border border-gray-200 bg-white"
               />
-
             </div>
             <div className="gap-4 flex flex-col">
               <div className="flex flex-col">
@@ -851,6 +1099,35 @@ const Header = () => {
                 </div>
               </div>
             </div>
+
+            <div className="flex items-center justify-center gap-3 py-0">
+              <canvas
+                ref={captchaCanvasRef}
+                width={260}
+                height={60}
+                className="h-[60px] w-[260px] rounded-md border border-gray-300 bg-gray-50"
+                aria-label="Captcha"
+              />
+              <button
+                type="button"
+                onClick={refreshCaptcha}
+                className="h-10 w-10 rounded-md border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 flex items-center justify-center"
+                aria-label="Refresh captcha"
+              >
+                <RefreshCcw
+                  className={`h-5 w-5 ${
+                    state.captchaRefreshing ? "animate-spin" : ""
+                  }`}
+                />
+              </button>
+            </div>
+            <Input
+              placeholder="Enter captcha"
+              value={state.captchaInput || ""}
+              onChange={(e) => handleFormChange("captchaInput", e.target.value)}
+              bg="ffffff"
+              error={state.errors?.captchaInput}
+            />
             <Button
               onClick={() => {
                 handleRegister();
@@ -1045,7 +1322,13 @@ const Header = () => {
                   Don't have account{" "}
                   <button
                     onClick={() =>
-                      setState({ isOpenForget: false, isOpenReg: true })
+                      setState({
+                        isOpenForget: false,
+                        isOpenReg: true,
+                        captchaValue: generateCaptcha(),
+                        captchaInput: "",
+                        errors: {},
+                      })
                     }
                     className="text-amber-500 hover:text-amber-600 font-medium"
                   >
