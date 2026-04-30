@@ -946,6 +946,7 @@ ${userName}`;
   }, [selectedJob, isTabScreen]);
 
   useEffect(() => {
+    locationList();
     jobTypeList();
     filterList();
     masterExperienceList();

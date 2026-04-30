@@ -140,12 +140,23 @@ const ChipFilters = ({
   cacheList("academic", academicResponsibilityList);
   cacheList("tag", tagsList);
 
-  const getLabel = (prefix: string, list: any[], value: any) =>
-    findLabel(list, value) ??
-    labelCacheRef.current[`${prefix}:${String(value)}`] ??
-    (typeof value === "object" && value !== null
-      ? String((value as any).label ?? (value as any).value ?? "")
-      : String(value ?? ""));
+  const getLabel = (prefix: string, list: any[], value: any) => {
+    const direct = findLabel(list, value);
+    if (direct) return direct;
+
+    const cached = labelCacheRef.current[`${prefix}:${String(value)}`];
+    if (cached) return cached;
+
+    if (typeof value === "object" && value !== null) {
+      const objLabel = String((value as any).label ?? (value as any).value ?? "");
+      return objLabel || null;
+    }
+
+    // Avoid flashing raw numeric IDs (e.g. 1/61/7) before async label lists load.
+    const asText = String(value ?? "").trim();
+    if (/^\d+$/.test(asText)) return null;
+    return asText || null;
+  };
 
   const push = (label: string | null | undefined, onRemove: () => void) => {
     if (label !== null && label !== undefined) activeFilters.push({ label, onRemove });
