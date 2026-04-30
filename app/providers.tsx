@@ -33,8 +33,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <main className="w-full overflow-x-hidden">{children}</main>
         </div>
         <Toaster position="top-center" />
-        <ChatbotWidget />
+        
         <TourComponent />
+        <ChatbotWidget />
       </Suspense>
     </Provider>
   );

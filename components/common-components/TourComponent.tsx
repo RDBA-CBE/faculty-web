@@ -294,7 +294,7 @@ export default function TourComponent() {
       <button
         onClick={startTour}
         // title="Start Tour"
-        className="fixed bottom-6 right-6 z-[9999] w-14 h-14 rounded-full bg-[#f2b31d] text-black shadow-lg hover:bg-[#f2b31f] transition-all duration-200 flex items-center justify-center group"
+        className="fixed bottom-[70px] right-4 z-[9998] w-11 h-11 rounded-full bg-[#f2b31d] text-black shadow-lg hover:bg-[#f2b31f] transition-all duration-200 flex items-center justify-center group"
         aria-label="Start product tour"
       >
         {/* <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

@@ -1094,7 +1094,7 @@ export default function ChatbotWidget() {
   return (
     <>
       <div
-        className={`fixed bottom-20 right-1 z-50 flex flex-col rounded-3xl shadow-2xl overflow-hidden border border-[#1E3786]/25 bg-white transition-all duration-300 origin-bottom-right ${
+        className={`fixed bottom-20 right-4 z-[9999] flex flex-col rounded-3xl shadow-2xl overflow-hidden border border-[#1E3786]/25 bg-white transition-all duration-300 origin-bottom-right ${
           open
             ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
             : "opacity-0 translate-y-4 scale-95 pointer-events-none"
@@ -1404,9 +1404,9 @@ export default function ChatbotWidget() {
 
       <button
         type="button"
-        onMouseEnter={openOnHover}
+        // onMouseEnter={openOnHover}
         onClick={onFabClick}
-        className="fixed bottom-4 right-1 z-50 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/30 bg-[#1E3786] text-white shadow-lg shadow-[#1E3786]/40"
+        className="fixed bottom-4 right-4 z-[9999] w-11 h-11 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 focus:outline-none focus:ring-2 focus:ring-white/30 bg-[#1E3786] text-white shadow-lg shadow-[#1E3786]/40"
         aria-label={open ? "Close chat" : "Open chat assistant"}
       >
         {!open && (
