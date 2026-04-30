@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { Loader } from "lucide-react";
 import ChatbotWidget from "@/components/common-components/ChatbotWidget";
 import ChatbotWidgetOld from "@/components/common-components/ChatbotWidgetOld";
+import TourComponent from "@/components/common-components/TourComponent";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -32,6 +33,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <main className="w-full overflow-x-hidden">{children}</main>
         </div>
         <Toaster position="top-center" />
+        
+        <TourComponent />
         <ChatbotWidget />
       </Suspense>
     </Provider>

@@ -405,7 +405,7 @@ const Header = () => {
               {state.token ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="flex items-center space-x-2 focus:outline-none">
+                    <button className="flex items-center space-x-2 focus:outline-none profile-buttons">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-[#F2B31D] text-white">
                           <User2 className="h-4 w-4" />
@@ -446,7 +446,7 @@ const Header = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               ) : (
-                <div className="hidden lg:flex items-center space-x-3">
+                <div className="auth-buttons hidden lg:flex items-center space-x-3">
                   <Button
                     onClick={() => {
                       sessionStorage.setItem("from_login_btn", "true");

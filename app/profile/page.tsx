@@ -1851,7 +1851,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   : state.userDetail?.username || ""}
                               </h1>
                               <button
-                                className="p-2 bg-[#1E3786] rounded-full"
+                                className="profile-edit-btn p-2 bg-[#1E3786] rounded-full"
                                 onClick={() => saveProfile()}
                               >
                                 <Edit
@@ -1979,7 +1979,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                       <button
                         key={tab}
                         onClick={() => setState({ activeTab: tab })}
-                        className={`px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
+                        className={`${tab === "Profile" ? "profile-tab-profile" : tab === "Qualifications" ? "profile-tab-qualifications" : tab === "Preferrences" ? "profile-tab-preferences" : tab === "My Applications" ? "profile-tab-applications" : tab === "HR Requests" ? "profile-tab-hr-requests" : "profile-tab-saved"} px-4 py-1 rounded-md transition h-fit whitespace-nowrap flex-shrink-0 flex items-center gap-2 ${
                           state.activeTab === tab
                             ? "bg-[#1e3786] !text-[#fff]"
                             : "text-gray-800 hover:text-[#1e3786]"

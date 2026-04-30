@@ -235,7 +235,7 @@ const FindYourJob = () => {
   };
 
   return (
-    <section className="py-12 lg:py-16 bg-[#0000ff0a]">
+    <section data-tour="find-job" className="py-12 lg:py-16 bg-[#0000ff0a]">
       <div className="section-wid w-full ">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Content - Job Listings */}
@@ -247,7 +247,7 @@ const FindYourJob = () => {
               </h2>
 
               {/* Search Bar */}
-              <div className="bg-white   rounded-full  border border-[#c7c7c787] p-1.5 flex items-center gap-3 max-w-[500px]">
+              <div className="job-category-filters bg-white   rounded-full  border border-[#c7c7c787] p-1.5 flex items-center gap-3 max-w-[500px]">
                 <div className="flex items-center flex-1 px-3 py-1.5 w-[25%]">
                   {/* <Search className="w-4 h-4 text-gray-400 mr-2" /> */}
                   {/* <input
@@ -372,15 +372,10 @@ const FindYourJob = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 !gap-4 mb-6">
-                {state?.jobList.slice(0, 6)?.map((job) => (
+                {state?.jobList.slice(0, 6)?.map((job, jobIndex) => (
                   <div
                     key={job.id}
-                    className="p-3 md:p-5 border border-[#c7c7c787]
-             transition-all duration-300 bg-white cursor-pointer group
-             hover:bg-[#1E3786]
-             hover:border-gray-400
-             hover:-translate-y-1
-             hover:shadow-2xl hover:shadow-gray-500 h-full "
+                    className={`${jobIndex === 0 ? "find-job-card-first " : ""}p-3 md:p-5 border border-[#c7c7c787] transition-all duration-300 bg-white cursor-pointer group hover:bg-[#1E3786] hover:border-gray-400 hover:-translate-y-1 hover:shadow-2xl hover:shadow-gray-500 h-full`}
                     onClick={() => router.push(`/jobs?slug=${job.slug}`)}
                   >
                     <div className="flex items-start justify-between mb-3 h-full">
@@ -518,7 +513,7 @@ const FindYourJob = () => {
           {/* Right Sidebar */}
           <div className="lg:col-span-3 space-y-6">
             {/* Job Spotlight */}
-            <div className=" border ">
+            <div data-tour="job-spotlight" className=" border ">
               <div className="bg-[#1E3786] flex items-center justify-between py-3 px-4">
                 <h3 className="text-xl md:text-xl font-medium text-white">
                   Job spotlight
@@ -624,7 +619,7 @@ const FindYourJob = () => {
             </div>
 
             {/* Jobs By Category */}
-            <div className="bg-[#1E3786] border ">
+            <div data-tour="jobs-by-category" className="bg-[#1E3786] border ">
               <div className="py-3 px-4">
                 <h3 className="text-xl md:text-xl font-medium text-white">
                   Jobs By Category
