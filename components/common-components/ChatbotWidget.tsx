@@ -1417,11 +1417,11 @@ export default function ChatbotWidget() {
         ) : (
           <MessageCircle className="text-white" size={20} />
         )}
-        {unread && !open && (
+        {/* {unread && !open && (
           <span className="absolute -top-0.5 -right-0.5 min-w-3.5 h-3.5 px-0.5 rounded-full text-[8px] font-bold flex items-center justify-center bg-white text-[#1E3786] border border-white">
             1
           </span>
-        )}
+        )} */}
       </button>
 
       <style>{`
