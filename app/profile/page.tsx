@@ -1570,6 +1570,19 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
     );
   };
 
+  useEffect(() => {
+    if (state.activeTab !== "Profile") return;
+
+    const hash = window.location.hash?.replace("#", "");
+    if (!hash || !SECTION_IDS.includes(hash)) return;
+
+    const timer = window.setTimeout(() => {
+      scrollToSection(hash);
+    }, 120);
+
+    return () => window.clearTimeout(timer);
+  }, [searchParams, state.activeTab]);
+
   const toggleSection = (section: string) => {
     setState({
       expandedSections: {
@@ -5885,9 +5898,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           }}
                         >
                           {/* {filteredJobs.map((job) => ( */}
-                          {state.jobList?.map((job: any) => (
+                          {state.jobList?.map((job: any,index:number) => (
                             <div
-                              key={job.id}
+                              key={index}
                               className="cursor-pointer transition-transform hover:scale-10 job-card-item"
                             >
                               {!state.isGridView ? (

@@ -7,7 +7,9 @@ import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
 import PageTransition from "@/components/common-components/PageTransition";
 import { usePathname } from "next/navigation";
-import { Loader, Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
+import ChatbotWidget from "@/components/common-components/ChatbotWidget";
+import ChatbotWidgetOld from "@/components/common-components/ChatbotWidgetOld";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,6 +32,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <main className="w-full overflow-x-hidden">{children}</main>
         </div>
         <Toaster position="top-center" />
+        {/* <ChatbotWidget /> */}
       </Suspense>
     </Provider>
   );

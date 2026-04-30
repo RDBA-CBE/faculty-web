@@ -303,6 +303,51 @@ const job = {
     });
     return promise;
   },
+  
+  similar_job: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `jobs/slug_related?slug=${data.slug}&id=${data.id}`;
+      if(data.search) url += `&search=${data.search}`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  prompt_job: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `jobs/search`;
+      if(data.prompt) url += `?prompt=${data.prompt}`
+      else{
+        url += `?prompt=""`;
+      }
+      if(data.limit) url += `&limit=${data.limit}`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
 };
 
 export default job;

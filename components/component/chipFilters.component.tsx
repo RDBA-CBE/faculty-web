@@ -1,7 +1,95 @@
 import React from "react";
 import { X } from "lucide-react";
 
-const Chip = ({ label, onRemove }) => (
+const findLabel = (list: any, value: any) =>
+  list?.find((item: any) => String(item?.value) === String(value))?.label ??
+  null;
+
+type ChipFiltersCtx = {
+  categoryList?: any[];
+  jobTypeList?: any[];
+  experienceList?: any[];
+  salaryRangeList?: any[];
+  tagsList?: any[];
+  collegeList?: any[];
+  datePostedList?: any[];
+  locationList?: any[];
+  deptList?: any[];
+  jobRoleList?: any[];
+  academicResponsibilityList?: any[];
+};
+
+/**
+ * Same criteria as visible chips in this file — used to sync search bar with
+ * chip add/remove actions on the jobs page.
+ */
+export function chipFiltersVisibleCount(
+  filters: any,
+  ctx: ChipFiltersCtx = {},
+): number {
+  const {
+    categoryList = [],
+    jobTypeList = [],
+    salaryRangeList = [],
+    tagsList = [],
+    collegeList = [],
+    datePostedList = [],
+    locationList = [],
+    deptList = [],
+    jobRoleList = [],
+    academicResponsibilityList = [],
+  } = ctx;
+
+  let count = 0;
+
+  if (filters.searchQuery) count += 1;
+
+  count += Array.isArray(filters.locations) ? filters.locations.length : 0;
+
+  count += Array.isArray(filters.jobTypes) ? filters.jobTypes.length : 0;
+
+  if (filters.experienceLevels?.includes("Open to all experience levels"))
+    count += 1;
+  if (filters.minExperience || filters.maxExperience) count += 1;
+
+  count += Array.isArray(filters.categories) ? filters.categories.length : 0;
+
+  count += Array.isArray(filters.jobRole) ? filters.jobRole.length : 0;
+
+  count += Array.isArray(filters?.datePosted) ? filters.datePosted.length : 0;
+
+  if (filters.salaryRange?.length > 0) {
+    const selectedRanges = filters.salaryRange
+      .map((value: any) => findLabel(salaryRangeList, value))
+      .filter(Boolean);
+    const numbers = selectedRanges.flatMap((range: string) => {
+      const match = range.match(/\d+/g);
+      return match ? match.map(Number) : [];
+    });
+    if (numbers.length > 0) count += 1;
+  }
+
+  count += Array.isArray(filters.colleges) ? filters.colleges.length : 0;
+
+  count += Array.isArray(filters.department) ? filters.department.length : 0;
+
+  count += Array.isArray(filters.academic_responsibilities)
+    ? filters.academic_responsibilities.length
+    : 0;
+
+  count += Array.isArray(filters.tags) ? filters.tags.length : 0;
+
+  return count;
+}
+
+export function chipFiltersHasAnyVisibleChip(
+  filters: any,
+  ctx: ChipFiltersCtx = {},
+): boolean {
+  return chipFiltersVisibleCount(filters, ctx) > 0;
+}
+
+const Chip = ({ label, onRemove }: { label: string; onRemove: () => void }) => (
   <div className="flex items-center bg-amber-100 text-amber-800 text-sm font-medium pl-3 pr-2 py-1 rounded-full">
     <span className="text-[10px] md:text-[12px]">{label}</span>
     <button
@@ -28,13 +116,38 @@ const ChipFilters = ({
   deptList = [],
   jobRoleList = [],
   academicResponsibilityList = [],
-}) => {
-  const activeFilters = [];
+}: any) => {
+  const activeFilters: { label: string; onRemove: () => void }[] = [];
+  const labelCacheRef = React.useRef<Record<string, string>>({});
 
-  const findLabel = (list, value) =>
-    list?.find((item) => String(item?.value) === String(value))?.label ?? null;
+  const cacheList = (prefix: string, list: any[]) => {
+    (list ?? []).forEach((item: any) => {
+      if (item?.value == null || item?.label == null) return;
+      labelCacheRef.current[`${prefix}:${String(item.value)}`] = String(
+        item.label,
+      );
+    });
+  };
 
-  const push = (label, onRemove) => {
+  cacheList("location", locationList);
+  cacheList("jobType", jobTypeList);
+  cacheList("category", categoryList);
+  cacheList("jobRole", jobRoleList);
+  cacheList("datePosted", datePostedList);
+  cacheList("salaryRange", salaryRangeList);
+  cacheList("college", collegeList);
+  cacheList("department", deptList);
+  cacheList("academic", academicResponsibilityList);
+  cacheList("tag", tagsList);
+
+  const getLabel = (prefix: string, list: any[], value: any) =>
+    findLabel(list, value) ??
+    labelCacheRef.current[`${prefix}:${String(value)}`] ??
+    (typeof value === "object" && value !== null
+      ? String((value as any).label ?? (value as any).value ?? "")
+      : String(value ?? ""));
+
+  const push = (label: string | null | undefined, onRemove: () => void) => {
     if (label !== null && label !== undefined) activeFilters.push({ label, onRemove });
   };
 
@@ -45,14 +158,14 @@ const ChipFilters = ({
 
   // Location
   filters.locations?.forEach((value) => {
-    push(findLabel(locationList, value), () =>
+    push(getLabel("location", locationList, value), () =>
       onFilterChange({ ...filters, locations: filters.locations.filter((v) => v !== value) })
     );
   });
 
   // Job Types
   filters.jobTypes?.forEach((value) => {
-    push(findLabel(jobTypeList, value), () =>
+    push(getLabel("jobType", jobTypeList, value), () =>
       onFilterChange({ ...filters, jobTypes: filters.jobTypes.filter((v) => v !== value) })
     );
   });
@@ -73,21 +186,21 @@ const ChipFilters = ({
 
   // Categories
   filters.categories?.forEach((value) => {
-    push(findLabel(categoryList, value), () =>
+    push(getLabel("category", categoryList, value), () =>
       onFilterChange({ ...filters, categories: filters.categories.filter((v) => v !== value) })
     );
   });
 
   // Job Role
   filters.jobRole?.forEach((value) => {
-    push(findLabel(jobRoleList, value), () =>
+    push(getLabel("jobRole", jobRoleList, value), () =>
       onFilterChange({ ...filters, jobRole: filters.jobRole.filter((v) => v !== value) })
     );
   });
 
   // Date Posted
   filters?.datePosted?.forEach((value) => {
-    push(findLabel(datePostedList, value), () =>
+    push(getLabel("datePosted", datePostedList, value), () =>
       onFilterChange({ ...filters, datePosted: filters.datePosted.filter((v) => v !== value) })
     );
   });
@@ -112,28 +225,28 @@ const ChipFilters = ({
 
   // Colleges
   filters.colleges?.forEach((value) => {
-    push(findLabel(collegeList, value), () =>
+    push(getLabel("college", collegeList, value), () =>
       onFilterChange({ ...filters, colleges: filters.colleges.filter((v) => v !== value) })
     );
   });
 
   // Department
   filters.department?.forEach((value) => {
-    push(findLabel(deptList, value), () =>
+    push(getLabel("department", deptList, value), () =>
       onFilterChange({ ...filters, department: filters.department.filter((v) => v !== value) })
     );
   });
 
   // Academic Responsibilities
   filters.academic_responsibilities?.forEach((value) => {
-    push(findLabel(academicResponsibilityList, value), () =>
+    push(getLabel("academic", academicResponsibilityList, value), () =>
       onFilterChange({ ...filters, academic_responsibilities: filters.academic_responsibilities.filter((v) => v !== value) })
     );
   });
 
   // Tags
   filters.tags?.forEach((value) => {
-    push(findLabel(tagsList, value), () =>
+    push(getLabel("tag", tagsList, value), () =>
       onFilterChange({ ...filters, tags: filters.tags.filter((v) => v !== value) })
     );
   });

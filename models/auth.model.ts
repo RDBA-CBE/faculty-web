@@ -272,6 +272,86 @@ const auth = {
     });
     return promise;
   },
+
+
+  chatbot:  (body = {} as any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `chatbot/reply`;
+      instance()
+        .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  chatbot_record:  (body = {} as any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `chatbot-records/`;
+      instance()
+        .post(url, body)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  chatbot_history:  (body = {} as any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `chatbot-records/?user_id=${body.user_id}`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+  delete_chatbot_history:  (body = {} as any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `chatbot-records/${body.user_id}/?user_id=${body.user_id}`;
+      instance()
+        .delete(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+
+  
 };
 
 export default auth;

@@ -41,7 +41,6 @@ import {
   Bookmark,
   Share2,
   IndianRupee,
-  Loader,
   BookmarkCheck,
   Workflow,
   LayoutGrid,
@@ -55,7 +54,14 @@ import {
   ArrowRight,
   CrownIcon,
 } from "lucide-react";
-import { useMemo, useState, useEffect, useRef, useLayoutEffect } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  useCallback,
+} from "react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -89,7 +95,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Footer from "@/components/common-components/new_components/Footer";
 
 import { RWebShare } from "react-web-share";
-import ChipFilters from "@/components/component/chipFilters.component";
+import ChipFilters, {
+  chipFiltersVisibleCount,
+} from "@/components/component/chipFilters.component";
 import LightboxGallery from "@/components/common-components/Lightbox.component";
 import { set } from "date-fns";
 import PaginationComTwo from "@/components/component/PaginationComTwo";
@@ -97,13 +105,299 @@ import SkeletonLoader from "./SkeletonLoader";
 import FilterbarNew from "@/components/component/filterbarNew.component";
 // import { Failure, Success } from "@/components/common-components/toast";
 
+type PromptSuggestionRow = {
+  id: string;
+  label: string;
+  data: Record<string, unknown>;
+  jobId?: number;
+};
+
+const PROMPT_SUGGESTIONS_UI_MAX = 15;
+
+function clipPromptSuggestionsToMax(
+  rows: PromptSuggestionRow[],
+): PromptSuggestionRow[] {
+  if (rows.length <= PROMPT_SUGGESTIONS_UI_MAX) return rows;
+  return rows.slice(0, PROMPT_SUGGESTIONS_UI_MAX);
+}
+
+function normalizePromptLabel(s: string): string {
+  return s
+    .normalize("NFKD")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+/** Deterministic stringify for duplicate detection (sorted keys recursively). */
+function stableStringifyForDedupe(val: unknown): string {
+  if (val === null || typeof val !== "object") {
+    return JSON.stringify(val);
+  }
+  if (Array.isArray(val)) {
+    return `[${val.map((x) => stableStringifyForDedupe(x)).join(",")}]`;
+  }
+  const obj = val as Record<string, unknown>;
+  const keys = Object.keys(obj).sort();
+  return `{${keys
+    .map(
+      (k) =>
+        `${JSON.stringify(k)}:${stableStringifyForDedupe(obj[k] as unknown)}`,
+    )
+    .join(",")}}`;
+}
+
+function dedupePromptSuggestionRows(
+  rows: PromptSuggestionRow[],
+): PromptSuggestionRow[] {
+  const seen = new Set<string>();
+  const out: PromptSuggestionRow[] = [];
+  for (const row of rows) {
+    const key = `${normalizePromptLabel(row.label)}|${stableStringifyForDedupe(row.data ?? {})}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(row);
+  }
+  return out;
+}
+
+/** Shorter labels first; longer `line6`-style strings last. */
+function sortPromptRowsByAscendingLabelLength(
+  rows: PromptSuggestionRow[],
+): PromptSuggestionRow[] {
+  return [...rows].sort((a, b) => {
+    const d = a.label.length - b.label.length;
+    if (d !== 0) return d;
+    return normalizePromptLabel(a.label).localeCompare(
+      normalizePromptLabel(b.label),
+    );
+  });
+}
+
+/** How many whitespace-separated tokens from `queryRaw` appear in `label`. */
+function countQueryTokensMatchedInLabel(
+  label: string,
+  queryRaw: string,
+): number {
+  const nl = normalizePromptLabel(label);
+  const tokens = normalizePromptLabel(queryRaw).split(/\s+/).filter(Boolean);
+  if (!tokens.length) return 0;
+  let n = 0;
+  for (const t of tokens) {
+    if (t.length && nl.includes(t)) n += 1;
+  }
+  return n;
+}
+
+/**
+ * Prompt dropdown while user is typing: rows that contain more search tokens (e.g. "Chennai")
+ * bubble to the top; ties use shorter labels like the initial list.
+ */
+function sortPromptRowsForActiveSearchQuery(
+  rows: PromptSuggestionRow[],
+  queryRaw: string,
+): PromptSuggestionRow[] {
+  const q = (queryRaw || "").trim();
+  if (!q) return sortPromptRowsByAscendingLabelLength(rows);
+  return [...rows].sort((a, b) => {
+    const ta = countQueryTokensMatchedInLabel(a.label, q);
+    const tb = countQueryTokensMatchedInLabel(b.label, q);
+    if (tb !== ta) return tb - ta;
+    const d = a.label.length - b.label.length;
+    if (d !== 0) return d;
+    return normalizePromptLabel(a.label).localeCompare(
+      normalizePromptLabel(b.label),
+    );
+  });
+}
+
+/** One row per `display_name` line; deduped only (ordering applied by caller). */
+function buildDedupedPromptJobsRows(jobs: any[]): PromptSuggestionRow[] {
+  const rows: PromptSuggestionRow[] = [];
+  if (!Array.isArray(jobs)) return rows;
+  for (const job of jobs) {
+    const list = Array.isArray(job?.display_name) ? job.display_name : [];
+    let blockIndex = 0;
+    for (const dn of list) {
+      if (!dn || typeof dn !== "object") continue;
+      const blob = dn as Record<string, unknown>;
+      const data =
+        blob.data && typeof blob.data === "object"
+          ? (blob.data as Record<string, unknown>)
+          : {};
+      for (const [k, raw] of Object.entries(blob)) {
+        if (k === "data") continue;
+        if (!/^line\d+$/i.test(k)) continue;
+        const label = String(raw ?? "").trim();
+        if (!label) continue;
+        rows.push({
+          id: `${job?.id ?? "j"}-${blockIndex}-${k}-${rows.length}`,
+          label,
+          data,
+          jobId: job?.id,
+        });
+      }
+      blockIndex += 1;
+    }
+  }
+  return dedupePromptSuggestionRows(rows);
+}
+
+/** Initial / prefetch: dedupe then sort by ascending label length. */
+function flattenPromptJobsToRows(jobs: any[]): PromptSuggestionRow[] {
+  return sortPromptRowsByAscendingLabelLength(buildDedupedPromptJobsRows(jobs));
+}
+
+function findBestPromptSuggestion(
+  query: string,
+  rows: PromptSuggestionRow[],
+): PromptSuggestionRow | null {
+  if (!rows.length) return null;
+  const q = normalizePromptLabel(query);
+  if (!q) return rows[0] ?? null;
+  let best: PromptSuggestionRow | null = null;
+  let bestScore = Infinity;
+
+  const scorePair = (label: string) => {
+    const t = normalizePromptLabel(label);
+    if (t === q) return 0;
+    if (t.includes(q)) return 4 + Math.abs(t.length - q.length) * 0.02;
+    if (q.length >= 8 && q.includes(t)) return 10;
+    const words = q.split(" ").filter(Boolean);
+    if (words.length >= 2 && words.every((w) => t.includes(w))) return 18;
+    return Infinity;
+  };
+
+  for (const row of rows) {
+    const score = scorePair(row.label);
+    if (score < bestScore) {
+      bestScore = score;
+      best = row;
+    }
+  }
+  return Number.isFinite(bestScore) ? best : null;
+}
+
+/** Map AI `data` object (role_ids, college_id, …) into sidebar filter state. */
+function applyPromptInsightToFilters(
+  filters: any,
+  data: Record<string, unknown>,
+): any {
+  const next = {
+    ...filters,
+    categories: [],
+    locations: [],
+    jobRole: [],
+    department: [],
+    colleges: [],
+  };
+  const has = Object.prototype.hasOwnProperty;
+
+  if (has.call(data, "role_ids")) {
+    const v = data.role_ids;
+    next.jobRole = Array.isArray(v)
+      ? v.map((x) => Number(x)).filter(Number.isFinite)
+      : [];
+  }
+  if (has.call(data, "category_ids")) {
+    const v = data.category_ids;
+    next.categories = Array.isArray(v)
+      ? v.map((x) => Number(x)).filter(Number.isFinite)
+      : [];
+  }
+  if (has.call(data, "location_ids")) {
+    const v = data.location_ids;
+    next.locations = Array.isArray(v)
+      ? v.map((x) => Number(x)).filter(Number.isFinite)
+      : [];
+  }
+  if (has.call(data, "department_ids")) {
+    const v = data.department_ids;
+    next.department = Array.isArray(v)
+      ? v.map((x) => Number(x)).filter(Number.isFinite)
+      : [];
+  }
+  if (has.call(data, "college_id") && data.college_id != null) {
+    const id = Number(data.college_id);
+    next.colleges = Number.isFinite(id) ? [id] : [];
+  }
+  return next;
+}
+
+function JobSearchPromptSuggestions({
+  open,
+  rows,
+  onPick,
+  highlightedIndex,
+  onHighlight,
+}: {
+  open: boolean;
+  rows: PromptSuggestionRow[];
+  onPick: (row: PromptSuggestionRow) => void;
+  highlightedIndex: number;
+  onHighlight: (index: number) => void;
+}) {
+  const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  useEffect(() => {
+    if (!open) return;
+    if (highlightedIndex < 0) return;
+    const item = itemRefs.current[highlightedIndex];
+    if (!item) return;
+    item.scrollIntoView({ block: "nearest" });
+  }, [open, highlightedIndex, rows.length]);
+
+  if (!open) return null;
+  return (
+    <div className="pointer-events-auto absolute left-0 right-0 top-full z-[60] mt-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-black/5 motion-safe:transition-[box-shadow]">
+      <div
+        className="min-h-[220px] max-h-[min(70vh,380px)] overflow-y-auto overscroll-contain scroll-smooth"
+      >
+        {rows.length === 0 ? (
+          <p className="px-4 py-10 text-center text-sm text-slate-500">
+            No suggestions yet. Try typing a job title or keyword.
+          </p>
+        ) : (
+          <ul className="divide-y divide-slate-100 py-1">
+            {rows.map((row, index) => (
+              <li key={row.id}>
+                <button
+                  ref={(el) => {
+                    itemRefs.current[index] = el;
+                  }}
+                  type="button"
+                  className={`flex w-full px-4 py-3 text-left text-sm text-slate-800 motion-safe:transition-colors ${
+                    highlightedIndex === index
+                      ? "bg-[#eff4ff]"
+                      : "hover:bg-[#eff4ff]"
+                  }`}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => onPick(row)}
+                >
+                  <span className="line-clamp-2">{row.label}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function JobsPage() {
   const searchParams = useSearchParams();
 
   const router = useRouter();
-  const jobIdParam = searchParams.get("slug");
-  // const jobIdFromQuery = searchParams.get("id");
-  const jobIdFromQuery = searchParams.get("id")?.split("-")[0] || "";
+  const jobSlugFromQuery = searchParams.get("slug");
+  const jobIdRawFromQuery = searchParams.get("id");
+  const jobIdFromQuery = (() => {
+    const raw = `${jobIdRawFromQuery ?? ""}`.trim();
+    if (!raw) return "";
+    const m = raw.match(/^\d+/);
+    return m?.[0] ?? "";
+  })();
+  const hasSimilarQuery = Boolean(jobSlugFromQuery && jobIdFromQuery);
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
@@ -125,6 +419,8 @@ export default function JobsPage() {
     page: 1,
     count: 0,
     jobList: [],
+    similarJobs: null as any[] | null,
+    similarJobLoading: hasSimilarQuery,
     next: null,
     prev: null,
     // search: "",
@@ -192,40 +488,48 @@ export default function JobsPage() {
 
   const debouncedSearch = useDebounce(state.search, 500);
 
+  const [promptSuggestions, setPromptSuggestions] = useState<
+    PromptSuggestionRow[]
+  >([]);
+  const [promptSuggestionsHighlightIndex, setPromptSuggestionsHighlightIndex] =
+    useState(-1);
+  const [promptSuggestionsOpenMain, setPromptSuggestionsOpenMain] =
+    useState(false);
+  const [promptSuggestionsOpenSidebar, setPromptSuggestionsOpenSidebar] =
+    useState(false);
+
   // Add this useEffect after your other useEffect hooks (around line 350-400)
 
 useEffect(() => {
-  const slugParam = searchParams.get("slug");
   const hasVisited = sessionStorage.getItem("jobs_page_visited");
-  
   if (!hasVisited) {
     sessionStorage.setItem("jobs_page_visited", "true");
     return;
   }
 
-  if (isIntentionalNav.current) {
-    isIntentionalNav.current = false;
-    return;
-  }
-  
-  const allParams = Array.from(searchParams.keys());
-    const hasOtherParams = allParams.some(
-      (key) => key !== "slug" && key !== "id" && key !== "job-category",
-    );
-  
-  // If there are params other than slug, clear them on refresh
-  if (hasOtherParams) {
-    if (slugParam) {
-      // Keep slug and id if present
-      const idParam = searchParams.get("id");
-      const newUrl = idParam 
-        ? `/jobs?slug=${slugParam}&id=${idParam}` 
-        : `/jobs?slug=${slugParam}`;
-      router.replace(newUrl);
-    } else {
-      // No slug, replace with /jobs
-      router.replace("/jobs");
-    }
+  // Preserve all supported filter/query params on refresh.
+  const allowedParams = new Set([
+    "slug",
+    "id",
+    "search",
+    "location",
+    "college",
+    "job-role",
+    "job-category",
+    "department",
+  ]);
+
+  const entries = Array.from(searchParams.entries());
+  const hasUnknownParams = entries.some(([key]) => !allowedParams.has(key));
+
+  // Remove only unknown params; keep slug/id and all supported filters.
+  if (hasUnknownParams) {
+    const cleaned = new URLSearchParams();
+    entries.forEach(([key, value]) => {
+      if (allowedParams.has(key)) cleaned.set(key, value);
+    });
+    const qs = cleaned.toString();
+    router.replace(qs ? `/jobs?${qs}` : "/jobs");
     sessionStorage.removeItem("jobs_page_visited");
   }
 }, [searchParams, router]);
@@ -309,8 +613,85 @@ ${userName}`;
   const isInitialized = useRef(false);
   const isIntentionalNav = useRef(false);
   const prevFilterBodyRef = useRef<string>("");
+  const structuredSearchFreezeRef = useRef<{ keyword: string } | null>(null);
+  /** Previous visible chip count; if any chip is removed, clear search text. */
+  const prevVisibleChipCountRef = useRef(0);
+  /** Skip one chip-decrease clear after suggestion apply. */
+  const suppressChipClearOnNextFilterSyncRef = useRef(false);
+  /** Enter-typed query mode: `bodyData` should send only `search`. */
+  const strictSearchOnlyModeRef = useRef(false);
+  const promptJobsCacheRef = useRef<any[]>([]);
+  /** Prefetched once: `jobs/search?limit=10` (no `prompt`; API 400 on empty `prompt=`) — shown on focus without API. */
+  const promptEmptyPrefetchRef = useRef<any[]>([]);
+  const promptSuggestPopoverMainRef = useRef<HTMLDivElement | null>(null);
+  const promptSuggestPopoverSidebarRef = useRef<HTMLDivElement | null>(null);
+  /** Read in mount prefetch resolver so list fills when API returns after fast focus. */
+  const promptSuggestAnyOpenRef = useRef(false);
+  const searchTrimForSuggestionsRef = useRef("");
+  /** Stable invoker for prompt Enter — avoids hook deps on a re-created `jobList`. */
+  const promptJobListInvokerRef = useRef<any>(null);
+
+  promptSuggestAnyOpenRef.current =
+    promptSuggestionsOpenMain || promptSuggestionsOpenSidebar;
+  searchTrimForSuggestionsRef.current = (state.search || "").trim();
+
   const filtersRef = useRef(filters);
   filtersRef.current = filters; // always sync, no useEffect needed
+
+  useEffect(() => {
+    const f = structuredSearchFreezeRef.current;
+    if (!f) return;
+    const left = (debouncedSearch ?? "").trim();
+    const right = (f.keyword ?? "").trim();
+    if (left === right) structuredSearchFreezeRef.current = null;
+  }, [debouncedSearch]);
+
+  const chipFiltersSyncContext = useMemo(
+    () => ({
+      categoryList: state?.categoryList,
+      jobTypeList: state?.jobTypeList,
+      experienceList: state?.experienceList,
+      salaryRangeList: state?.salaryRangeList,
+      tagsList: state?.tagsList,
+      collegeList: state?.collegeList,
+      datePostedList: state?.datePostedList,
+      locationList: state?.locationList,
+      deptList: state?.masterDeptList,
+      jobRoleList: state?.masterJobRoleList,
+      academicResponsibilityList:
+        state?.academicResponsibilityList ?? [],
+    }),
+    [
+      state?.categoryList,
+      state?.jobTypeList,
+      state?.experienceList,
+      state?.salaryRangeList,
+      state?.tagsList,
+      state?.collegeList,
+      state?.datePostedList,
+      state?.locationList,
+      state?.masterDeptList,
+      state?.masterJobRoleList,
+      state?.academicResponsibilityList,
+    ],
+  );
+
+  useEffect(() => {
+    const visibleChipCount = chipFiltersVisibleCount(
+      filters,
+      chipFiltersSyncContext,
+    );
+    if (suppressChipClearOnNextFilterSyncRef.current) {
+      suppressChipClearOnNextFilterSyncRef.current = false;
+      prevVisibleChipCountRef.current = visibleChipCount;
+      return;
+    }
+    if (visibleChipCount < prevVisibleChipCountRef.current) {
+      structuredSearchFreezeRef.current = null;
+      setState({ search: "" });
+    }
+    prevVisibleChipCountRef.current = visibleChipCount;
+  }, [filters, chipFiltersSyncContext, setState]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -551,7 +932,11 @@ ${userName}`;
     masterExperienceList();
     masterDeptList();
     masterJobRoleList();
-    jobList(1);
+    if (hasSimilarQuery) {
+      similarJob();
+    } else {
+      jobList(1);
+    }
   }, []);
 
   useEffect(() => {
@@ -637,10 +1022,15 @@ ${userName}`;
     // Only call API if the filter body has actually changed
     if (currentBody !== prevFilterBodyRef.current) {
       prevFilterBodyRef.current = currentBody;
-      jobList(1);
+      if (hasSimilarQuery) {
+        similarJob();
+      } else {
+        jobList(1);
+      }
       filterList();
     }
   }, [
+    hasSimilarQuery,
     debouncedSearch,
     filters?.categories,
     filters.locations,
@@ -678,16 +1068,7 @@ ${userName}`;
           job_count: item.job_count,
         })) || [];
 
-      // Remove selected locations that no longer exist in the filtered results
-      if (filters.locations && filters.locations.length > 0) {
-        const validLocationIds = locationList.map((loc) => loc.value);
-        const validSelected = filters.locations.filter((id) =>
-          validLocationIds.includes(id),
-        );
-        if (validSelected.length !== filters.locations.length) {
-          setFilters((prev) => ({ ...prev, locations: validSelected }));
-        }
-      }
+      // Keep selected locations stable; backend facet truncation should not silently drop chips.
 
       const deptList =
         res?.data?.departments?.map((item) => ({
@@ -696,16 +1077,7 @@ ${userName}`;
           job_count: item.job_count,
         })) || [];
 
-      // Remove selected departments that no longer exist in the filtered results
-      if (filters.department && filters.department.length > 0) {
-        const validDeptIds = deptList.map((dept) => dept.value);
-        const validSelected = filters.department.filter((id) =>
-          validDeptIds.includes(id),
-        );
-        if (validSelected.length !== filters.department.length) {
-          setFilters((prev) => ({ ...prev, department: validSelected }));
-        }
-      }
+      // Keep selected departments stable; avoid auto-removing chips on facet updates.
 
       const collegeList = res?.data?.colleges?.map((item) => ({
         value: item.id,
@@ -905,7 +1277,11 @@ ${userName}`;
       page++; // 👈 increment page
     }
 
-    const dropdown = Dropdown(allResults, "name");
+    const dropdown =
+      allResults?.map((item: any) => ({
+        value: item?.id,
+        label: item?.department_name || item?.name || item?.label || `${item?.id ?? ""}`,
+      })) ?? [];
 
     setState({
       masterDeptList: dropdown,
@@ -970,6 +1346,229 @@ ${userName}`;
       // Failure("Failed to fetch jobs");
     }
   };
+  promptJobListInvokerRef.current = jobList;
+
+  const applyEmptyPromptSuggestionsFromCache = useCallback(() => {
+    const jobs = promptEmptyPrefetchRef.current;
+    promptJobsCacheRef.current = jobs;
+    setPromptSuggestions(
+      clipPromptSuggestionsToMax(flattenPromptJobsToRows(jobs)),
+    );
+  }, []);
+
+  /** Non-empty query only hits the network; empty uses mount prefetch. */
+  const fetchPromptSuggestionsForQuery = useCallback(
+    async (raw: string) => {
+      const q = (raw || "").trim();
+      if (!q) {
+        applyEmptyPromptSuggestionsFromCache();
+        return;
+      }
+      try {
+        const res: any = await Models.job.prompt_job({
+          prompt: q,
+          limit: 10,
+        });
+        const jobs = Array.isArray(res?.data) ? res.data : [];
+        const deduped = buildDedupedPromptJobsRows(jobs);
+        const rows = sortPromptRowsForActiveSearchQuery(deduped, q);
+        if (!rows.length) {
+          applyEmptyPromptSuggestionsFromCache();
+          return;
+        }
+        promptJobsCacheRef.current = jobs;
+        setPromptSuggestions(clipPromptSuggestionsToMax(rows));
+      } catch {
+        applyEmptyPromptSuggestionsFromCache();
+      }
+    },
+    [applyEmptyPromptSuggestionsFromCache],
+  );
+
+  /** Refocus same field: `onFocus` does not run; `onMouseDown` still opens the list. */
+  const openSidebarPromptSuggestionsFromValue = useCallback(
+    (raw: string) => {
+      setPromptSuggestionsOpenSidebar(true);
+      setPromptSuggestionsOpenMain(false);
+      const v = (raw || "").trim();
+      if (!v) applyEmptyPromptSuggestionsFromCache();
+      else void fetchPromptSuggestionsForQuery(v);
+    },
+    [applyEmptyPromptSuggestionsFromCache, fetchPromptSuggestionsForQuery],
+  );
+
+  const openMainPromptSuggestionsFromValue = useCallback(
+    (raw: string) => {
+      setPromptSuggestionsOpenMain(true);
+      setPromptSuggestionsOpenSidebar(false);
+      const v = (raw || "").trim();
+      if (!v) applyEmptyPromptSuggestionsFromCache();
+      else void fetchPromptSuggestionsForQuery(v);
+    },
+    [applyEmptyPromptSuggestionsFromCache, fetchPromptSuggestionsForQuery],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const res: any = await Models.job.prompt_job({
+          prompt: "",
+          limit: 10,
+        });
+        if (cancelled) return;
+        const jobs = Array.isArray(res?.data) ? res.data : [];
+        promptEmptyPrefetchRef.current = jobs;
+        promptJobsCacheRef.current = jobs;
+        if (
+          promptSuggestAnyOpenRef.current &&
+          searchTrimForSuggestionsRef.current === ""
+        ) {
+          setPromptSuggestions(
+            clipPromptSuggestionsToMax(flattenPromptJobsToRows(jobs)),
+          );
+        }
+      } catch {
+        if (!cancelled) promptEmptyPrefetchRef.current = [];
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handlePromptSuggestionPick = useCallback(
+    (row: PromptSuggestionRow) => {
+      // Show chosen line in the box; suppress keyword search in list API (`bodyData` uses freeze).
+      strictSearchOnlyModeRef.current = false;
+      suppressChipClearOnNextFilterSyncRef.current = true;
+      structuredSearchFreezeRef.current = { keyword: "" };
+      setFilters((prev) => applyPromptInsightToFilters(prev, row.data));
+      setState({ search: row.label });
+      setPromptSuggestionsHighlightIndex(-1);
+      setPromptSuggestionsOpenMain(false);
+      setPromptSuggestionsOpenSidebar(false);
+    },
+    [setFilters, setState],
+  );
+
+  const handlePromptSearchCommit = useCallback(
+    async (raw: string) => {
+      const q = raw.trim();
+      setPromptSuggestionsHighlightIndex(-1);
+      setPromptSuggestionsOpenMain(false);
+      setPromptSuggestionsOpenSidebar(false);
+      if (!q) {
+        strictSearchOnlyModeRef.current = false;
+        structuredSearchFreezeRef.current = null;
+        setState({ search: "" });
+        await promptJobListInvokerRef.current?.(1);
+        return;
+      }
+
+      // If current value comes from a picked suggestion, keep suggestion-filter mode.
+      if (
+        structuredSearchFreezeRef.current?.keyword === "" &&
+        q === (state.search || "").trim()
+      ) {
+        strictSearchOnlyModeRef.current = false;
+        await promptJobListInvokerRef.current?.(1);
+        return;
+      }
+
+      // Enter key must use exactly what user typed; no auto-pick from suggestion rows.
+      strictSearchOnlyModeRef.current = true;
+      structuredSearchFreezeRef.current = { keyword: q };
+      setState({ search: q });
+      await promptJobListInvokerRef.current?.(1);
+    },
+    [setState, state.search],
+  );
+
+  const handlePromptInputKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      const isOpen = promptSuggestionsOpenMain || promptSuggestionsOpenSidebar;
+      if (!isOpen || promptSuggestions.length === 0) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          void handlePromptSearchCommit((e.target as HTMLInputElement).value);
+        }
+        return;
+      }
+
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setPromptSuggestionsHighlightIndex((prev) =>
+          prev < 0
+            ? 0
+            : Math.min(prev + 1, promptSuggestions.length - 1),
+        );
+        return;
+      }
+
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setPromptSuggestionsHighlightIndex((prev) =>
+          prev <= 0 ? promptSuggestions.length - 1 : prev - 1,
+        );
+        return;
+      }
+
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (promptSuggestionsHighlightIndex >= 0) {
+          const chosen = promptSuggestions[promptSuggestionsHighlightIndex];
+          if (chosen) {
+            handlePromptSuggestionPick(chosen);
+            return;
+          }
+        }
+        void handlePromptSearchCommit((e.target as HTMLInputElement).value);
+      }
+    },
+    [
+      promptSuggestionsOpenMain,
+      promptSuggestionsOpenSidebar,
+      promptSuggestions,
+      promptSuggestionsHighlightIndex,
+      handlePromptSuggestionPick,
+      handlePromptSearchCommit,
+    ],
+  );
+
+  useEffect(() => {
+    setPromptSuggestionsHighlightIndex(-1);
+  }, [promptSuggestions]);
+
+  // Typing: debounced by `state.search`; empty → cached `prompt=""` data only (no API).
+  useEffect(() => {
+    if (!promptSuggestionsOpenMain && !promptSuggestionsOpenSidebar) return;
+    const q = (state.search || "").trim();
+    const t = window.setTimeout(() => {
+      if (!q) applyEmptyPromptSuggestionsFromCache();
+      else void fetchPromptSuggestionsForQuery(q);
+    }, 200);
+    return () => window.clearTimeout(t);
+  }, [
+    state.search,
+    promptSuggestionsOpenMain,
+    promptSuggestionsOpenSidebar,
+    applyEmptyPromptSuggestionsFromCache,
+    fetchPromptSuggestionsForQuery,
+  ]);
+
+  useEffect(() => {
+    if (!promptSuggestionsOpenMain && !promptSuggestionsOpenSidebar) return;
+    const onDocDown = (e: MouseEvent) => {
+      const el = e.target as Node;
+      if (promptSuggestPopoverMainRef.current?.contains(el)) return;
+      if (promptSuggestPopoverSidebarRef.current?.contains(el)) return;
+      setPromptSuggestionsOpenMain(false);
+      setPromptSuggestionsOpenSidebar(false);
+    };
+    document.addEventListener("mousedown", onDocDown);
+    return () => document.removeEventListener("mousedown", onDocDown);
+  }, [promptSuggestionsOpenMain, promptSuggestionsOpenSidebar]);
 
   useEffect(() => {
     const handleInfiniteScroll = () => {
@@ -1022,8 +1621,41 @@ ${userName}`;
     }
   };
 
+  const similarJob = async (job = null) => {
+    console.log("jobId", job);
+    setState({ similarJobLoading: true });
+    try {
+      const body: any = {
+        id: job?.id || jobIdFromQuery,
+        slug: job?.slug || jobSlugFromQuery,
+      };
+      if (debouncedSearch) body.search = debouncedSearch;
+
+      const res: any = await Models.job.similar_job(body);
+      console.log("similarJob", res);
+      setState({
+        similarJobs: res?.results ?? [],
+        similarJobLoading: false,
+      });
+    } catch (error) {
+      console.log("error", error);
+      setState({ similarJobs: [], similarJobLoading: false });
+    }
+  };
+
+  const jobSidebarLoading = hasSimilarQuery
+    ? state.similarJobLoading
+    : state.jobListLoading;
+  const showSimilarJobsEmpty =
+    hasSimilarQuery &&
+    !state.similarJobLoading &&
+    Array.isArray(state.similarJobs) &&
+    state.similarJobs.length === 0;
+  const jobSidebarList = hasSimilarQuery ? state.similarJobs : state.jobList;
+
+
   useEffect(() => {
-    if (jobIdFromQuery) {
+    if (hasSimilarQuery) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       
       // Fetch job detail directly using the ID
@@ -1034,8 +1666,20 @@ ${userName}`;
           setShowJobDetail(true);
         }
       });
+      similarJob()
+      return;
     }
-  }, [jobIdFromQuery]);
+    // Leaving detail query (`slug` + `id`) back to plain `/jobs` should rehydrate list mode.
+    setSelectedJob(null);
+    setShowJobDetail(false);
+    setState({
+      jobID: null,
+      similarJobs: null,
+      similarJobLoading: false,
+    });
+    void jobList(1);
+    void filterList();
+  }, [hasSimilarQuery, jobIdFromQuery]);
 
   console.log("jobID", state?.jobID);
   
@@ -1363,9 +2007,21 @@ ${userName}`;
   const bodyData = () => {
     const f = filtersRef.current;
     const body: any = {};
-    if (debouncedSearch) {
-      body.search = debouncedSearch;
+    const freeze = structuredSearchFreezeRef.current;
+    let searchKeyword: string | null = null;
+    if (freeze !== null) {
+      searchKeyword = freeze.keyword ?? "";
+    } else if (debouncedSearch) {
+      searchKeyword = debouncedSearch;
     }
+    if (searchKeyword !== null && `${searchKeyword}`.trim()) {
+      body.search = `${searchKeyword}`.trim();
+    }
+
+    if (strictSearchOnlyModeRef.current) {
+      return body.search ? { search: body.search } : {};
+    }
+
     if (state.sortBy) {
       body.ordering =
         state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
@@ -1486,6 +2142,8 @@ ${userName}`;
   };
 
   const handleClearFilters = () => {
+    strictSearchOnlyModeRef.current = false;
+    structuredSearchFreezeRef.current = null;
     setFilters({
       searchQuery: "",
       locations: [],
@@ -1508,6 +2166,20 @@ ${userName}`;
     setIsMobileFilterOpen(false);
     setState({ search: "" });
   };
+
+  const handleSearchInputChange = useCallback(
+    (nextRaw: string) => {
+      const next = nextRaw ?? "";
+      structuredSearchFreezeRef.current = null;
+      strictSearchOnlyModeRef.current = false;
+      if (next.trim() === "") {
+        handleClearFilters();
+        return;
+      }
+      setState({ search: next });
+    },
+    [setState],
+  );
 
   const handlePageChange = (pageNumber: number) => {
     setState({ page: pageNumber });
@@ -2059,17 +2731,45 @@ ${userName}`;
                       ref={jobListSidebarRef}
                       className="bg-white py-5 border border-[#c7c7c787]  flex flex-col max-h-[calc(100vh-100px)]"
                     >
-                      <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 flex-shrink-0">
-                        <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
-                          <Search color="#E4E4E4" size={22} />
-                          <input
-                            type="text"
-                            placeholder="Search by: Job tittle, Position, Keyword..."
-                            className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
-                            value={state.search}
-                            onChange={(e) =>
-                              setState({ search: e.target.value })
-                            }
+                      <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm py-1 flex-shrink-0 overflow-visible">
+                        <div
+                          ref={(node) => {
+                            promptSuggestPopoverSidebarRef.current = node;
+                          }}
+                          className="relative z-40 mx-4 overflow-visible"
+                        >
+                          <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] bg-[#F5F5F5]">
+                            <Search color="#E4E4E4" size={22} />
+                            <input
+                              type="text"
+                              placeholder="Search by: Job tittle, Position, Keyword..."
+                              className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                              value={state.search}
+                              onChange={(e) => {
+                                handleSearchInputChange(e.target.value);
+                              }}
+                              onFocus={(e) => {
+                                openSidebarPromptSuggestionsFromValue(
+                                  e.currentTarget.value,
+                                );
+                              }}
+                              onMouseDown={(e) => {
+                                if (e.button !== 0) return;
+                                openSidebarPromptSuggestionsFromValue(
+                                  (e.target as HTMLInputElement).value,
+                                );
+                              }}
+                              onKeyDown={(e) => {
+                                void handlePromptInputKeyDown(e);
+                              }}
+                            />
+                          </div>
+                          <JobSearchPromptSuggestions
+                            open={promptSuggestionsOpenSidebar}
+                            rows={promptSuggestions}
+                            onPick={handlePromptSuggestionPick}
+                            highlightedIndex={promptSuggestionsHighlightIndex}
+                            onHighlight={setPromptSuggestionsHighlightIndex}
                           />
                         </div>
                         <h3 className="text-black px-6 font-semibold mt-4">
@@ -2084,7 +2784,7 @@ ${userName}`;
                         className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
                         onScroll={handleSidebarScroll}
                       >
-                        {state.jobListLoading
+                        {jobSidebarLoading
                           ? Array.from({ length: 6 }).map((_, i) => (
                               <div
                                 key={i}
@@ -2119,7 +2819,13 @@ ${userName}`;
                                 </div>
                               </div>
                             ))
-                          : state.jobList?.map((job) => (
+                          : showSimilarJobsEmpty
+                            ? (
+                                <p className="px-4 py-10 text-center text-sm text-slate-500">
+                                  No job found
+                                </p>
+                              )
+                            : (jobSidebarList || []).map((job) => (
                               <div
                                 key={job.id}
                                 id={`job-list-item-${job.id}`}
@@ -2129,6 +2835,7 @@ ${userName}`;
                                   setSelectedJob(job);
                                   setState({ jobID: job.id });
                                   jobDetail(job.id);
+                                  similarJob(job)
                                 }}
                                 className={`cursor-pointer px-2 py-5 transition-all   ${
                                   selectedJob?.id === job.id
@@ -2673,7 +3380,7 @@ ${userName}`;
                                     setState({ jobID: state?.jobDetail?.id });
                                     handleApply();
                                   }}
-                                  className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                                  className=" bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
                                 >
                                   {state.jobDetail?.apply_link
                                     ? " Apply on company's site"
@@ -3138,7 +3845,13 @@ ${userName}`;
 
                 <div className="flex-grow relative" ref={jobListContainerRef}>
                   {/* content input header start */}
-                  <div ref={searchBarWrapperRef}>
+                  <div
+                    ref={(node) => {
+                      searchBarWrapperRef.current = node;
+                      promptSuggestPopoverMainRef.current = node;
+                    }}
+                    className="relative z-30"
+                  >
                     <div
                       ref={searchBarRef}
                       className="jobs-search-bar z-30 bg-white  self-start items-center flex justify-center border border-[#c7c7c787] rounded-3xl"
@@ -3151,9 +3864,23 @@ ${userName}`;
                             placeholder="Search by: Job tittle, Position, Keyword..."
                             className="w-full pl-4 bg-transparent text-sm  focus:outline-none placeholder:text-[#313131] placeholder:font-normal font-medium  text-black"
                             value={state.search}
-                            onChange={(e) =>
-                              setState({ search: e.target.value })
-                            }
+                            onChange={(e) => {
+                              handleSearchInputChange(e.target.value);
+                            }}
+                            onFocus={(e) => {
+                              openMainPromptSuggestionsFromValue(
+                                e.currentTarget.value,
+                              );
+                            }}
+                            onMouseDown={(e) => {
+                              if (e.button !== 0) return;
+                              openMainPromptSuggestionsFromValue(
+                                (e.target as HTMLInputElement).value,
+                              );
+                            }}
+                            onKeyDown={(e) => {
+                              void handlePromptInputKeyDown(e);
+                            }}
                           />
                         </div>
 
@@ -3239,6 +3966,13 @@ ${userName}`;
 
                       {/* content body job list */}
                     </div>
+                    <JobSearchPromptSuggestions
+                      open={promptSuggestionsOpenMain}
+                      rows={promptSuggestions}
+                      onPick={handlePromptSuggestionPick}
+                      highlightedIndex={promptSuggestionsHighlightIndex}
+                      onHighlight={setPromptSuggestionsHighlightIndex}
+                    />
                   </div>
 
                   <div className="py-4 lg:hidden flex items-center justify-between">
@@ -3505,8 +4239,10 @@ ${userName}`;
                                     onDepartmentClick={(e, id) =>
                                       getDepartment(e, id)
                                     }
-                                    onClick={() =>
+                                    onClick={() =>{
                                       router.push(`/jobs?slug=${job?.slug}`)
+                                  similarJob(job)
+                                }
                                     }
                                   />
                                 ) : (
@@ -3527,8 +4263,11 @@ ${userName}`;
                                     onDepartmentClick={(e, id) =>
                                       getDepartment(e, id)
                                     }
-                                    onClick={() =>
+                                    onClick={() =>{
                                       router.push(`/jobs?slug=${job?.slug}`)
+                                  similarJob(job)
+                                  }
+
                                     }
                                   />
                                 )}

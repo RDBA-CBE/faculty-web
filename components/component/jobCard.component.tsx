@@ -162,7 +162,7 @@ export const JobCard: React.FC<JobCardProps> = ({
                   : job?.roles?.length > 0
                     ? job?.roles?.[0]?.role_name
                     : "",
-                35,
+                28,
               ),
             )}{" "}
             {job?.matches_user_location && (
