@@ -895,7 +895,7 @@ const Header = () => {
             </div>
 
             <Input
-              placeholder="Enter captcha"
+              placeholder="Enter captcha *"
               value={state.loginCaptchaInput || ""}
               onChange={(e) => handleFormChange("loginCaptchaInput", e.target.value)}
               bg="ffffff"
@@ -1122,7 +1122,7 @@ const Header = () => {
               </button>
             </div>
             <Input
-              placeholder="Enter captcha"
+              placeholder="Enter captcha *"
               value={state.captchaInput || ""}
               onChange={(e) => handleFormChange("captchaInput", e.target.value)}
               bg="ffffff"

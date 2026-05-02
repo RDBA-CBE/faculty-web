@@ -93,6 +93,50 @@ const job = {
     return promise;
   },
 
+  similar_job: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `jobs/slug_related?slug=${data.slug}&id=${data.id}`;
+      if(data.search) url += `&search=${data.search}`;
+
+      if (data?.ordering) {
+        url += `&ordering=${encodeURIComponent(data.ordering)}`;
+      }
+      if (data.category) {
+        url += `&category=${encodeURIComponent(data.category)}`;
+      }
+      if (data.location) {  
+        url += `&location_id=${encodeURIComponent(data.location)}`;
+      }
+
+      if (data.job_role) {
+        url += `&job_role_id=${encodeURIComponent(data.job_role)}`;
+      }
+
+      if (data?.department) {
+        url += `&department_master_id=${encodeURIComponent(data.department)}`;
+      }
+
+      if (data.colleges) {
+        url += `&college=${encodeURIComponent(data.colleges)}`;
+      }
+
+
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
   appliedJobList: (userId, body, page = 1) => {
     let promise = new Promise((resolve, reject) => {
       let url = `users/${userId}/applied-jobs/?page=${page}`;
@@ -304,25 +348,7 @@ const job = {
     return promise;
   },
   
-  similar_job: (data: any) => {
-    let promise = new Promise((resolve, reject) => {
-      let url = `jobs/slug_related?slug=${data.slug}&id=${data.id}`;
-      if(data.search) url += `&search=${data.search}`;
-      instance()
-        .get(url)
-        .then((res) => {
-          resolve(res.data);
-        })
-        .catch((error) => {
-          if (error.response) {
-            reject(error.response);
-          } else {
-            reject(error);
-          }
-        });
-    });
-    return promise;
-  },
+ 
 
   prompt_job: (data: any) => {
     let promise = new Promise((resolve, reject) => {

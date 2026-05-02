@@ -1648,6 +1648,7 @@ ${userName}`;
       const body: any = {
         id: job?.id || jobIdFromQuery,
         slug: job?.slug || jobSlugFromQuery,
+        ...bodyData(),
       };
       if (debouncedSearch) body.search = debouncedSearch;
 
