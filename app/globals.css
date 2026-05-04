@@ -1540,6 +1540,41 @@ body {
 }
 
 
+/* Fix: Allow Google reCAPTCHA challenge iframe to receive pointer events */
+[data-radix-focus-guard] {
+  pointer-events: none !important;
+}
+
+/* Force reCAPTCHA challenge popup to center of screen */
+/* Google injects a div with inline style containing z-index: 2000000000 */
+body > div[style*="z-index: 2000000000"],
+body > div[style*="z-index:2000000000"] {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 2147483647 !important;
+  pointer-events: auto !important;
+  margin: 0 !important;
+  max-width: 100vw !important;
+  max-height: 90vh !important;
+  overflow: auto !important;
+}
+
+/* Mobile: scale down if needed */
+@media (max-width: 480px) {
+  body > div[style*="z-index: 2000000000"],
+  body > div[style*="z-index:2000000000"] {
+    transform: translate(-50%, -50%) scale(0.85) !important;
+    transform-origin: center center !important;
+  }
+}
+
+.grecaptcha-badge {
+  pointer-events: auto !important;
+}
+
+
 /* success */
 
 /* Default (Desktop) */

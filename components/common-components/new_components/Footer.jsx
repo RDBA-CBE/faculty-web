@@ -12,6 +12,8 @@ import {
 import Models from "@/imports/models.import";
 import { useRouter, usePathname } from "next/navigation";
 import Modal from "../modal";
+import { Mail } from "lucide-react";
+import Link from "next/link";
 
 const Footer = () => {
   const router = useRouter();
@@ -188,6 +190,10 @@ const Footer = () => {
                   institutions seeking excellence in teaching, research, and
                   academic leadership.
                 </p>
+                <div className="flex items-center gap-4">
+                  <div className="rounded-full bg-[#fffefe33] p-3"><Mail className="text-[#F2B31D] text-[15px] "/></div>
+                  <Link href="mailto:support@facultypro.in" className="text-[#fff]">support@facultypro.in</Link>
+                </div>
               </div>
 
               {/* Links Columns */}

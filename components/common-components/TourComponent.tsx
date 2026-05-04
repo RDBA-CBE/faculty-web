@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Joyride, STATUS, EVENTS, ACTIONS } from "react-joyride";
 import type { Step, EventData } from "react-joyride";
@@ -169,24 +169,25 @@ export default function TourComponent() {
     setIsLoggedIn(!!localStorage.getItem("token"));
   }, []);
 
-  // Auto-start on first visit (if tour not completed for this page)
+  // Auto-start on first visit — runs after isLoggedIn is resolved
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || steps.length === 0) return;
     const completed = localStorage.getItem(`${TOUR_KEY}_${pathname}`) === "true";
-    if (!completed && steps.length > 0) {
+    if (!completed) {
+      // Reset then start so Joyride picks up the updated steps
+      setRun(false);
       setTimeout(() => setRun(true), 1000);
     }
-  }, [mounted]);
+  }, [mounted, isLoggedIn]);
 
-  const steps: Step[] = (() => {
+  const steps: Step[] = useMemo(() => {
     const base = tourSteps[pathname] ?? [];
     if (pathname !== "/") return base;
-    // Replace first two steps with one dynamic auth step
     const authStep: Step = isLoggedIn
       ? base[1] // .profile-buttons step
       : base[0]; // .auth-buttons step
     return [authStep, ...base.slice(2)];
-  })();
+  }, [pathname, isLoggedIn]);
   const isCompleted = mounted && localStorage.getItem(`${TOUR_KEY}_${pathname}`) === "true";
 
   // Selectors that need manual pre-scroll before Joyride renders the tooltip

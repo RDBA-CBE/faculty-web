@@ -20,7 +20,8 @@ interface ModalProps {
   onSubmit?: () => void;
   width?: string;
   hideHeader?: boolean;
-  closeIcon?:boolean
+  closeIcon?:boolean;
+  preventOutsideClose?: boolean;
 }
 
 export default function Modal({
@@ -31,7 +32,8 @@ export default function Modal({
   renderComponent,
   width,
   hideHeader = false,
-  closeIcon=true
+  closeIcon=true,
+  preventOutsideClose = false,
 }: ModalProps) {
   const widthClasses: Record<string, string> = {
     "500px": "sm:max-w-[500px]",
@@ -45,8 +47,20 @@ export default function Modal({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent
         hideClose
-        // className={`p-0 ${width ? `sm:max-w-[${width}]` : "sm:max-w-[500px]"}`}
         className={cn("p-0 bg-[#EFF2F6] !gap-0", width ? widthClasses[width] : "sm:max-w-[500px]")}
+        onInteractOutside={(e) => {
+          e.preventDefault();
+        }}
+        onPointerDownOutside={(e) => {
+          e.preventDefault();
+        }}
+        onOpenAutoFocus={(e) => {
+          if (preventOutsideClose) e.preventDefault();
+        }}
+        // Disable focus trap so reCAPTCHA iframe can receive pointer events
+        {...(preventOutsideClose ? {
+          onFocusOutside: (e: Event) => e.preventDefault(),
+        } : {})}
       >
         {/* Custom header with title + close in one row */}
         {!hideHeader && (

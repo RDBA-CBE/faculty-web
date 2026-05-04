@@ -62,6 +62,8 @@ import CustomPhoneInput from "./phoneInput";
 import * as Validation from "@/utils/validation.utils";
 import * as Yup from "yup";
 import { Success } from "./toast";
+import ReCAPTCHA from "react-google-recaptcha";
+import { CAPTCHA_SITE_KEY } from "@/utils/constant.utils";
 
 const Header = () => {
   const router = useRouter();
@@ -76,6 +78,10 @@ const Header = () => {
   const [open, setOpen] = useState(false);
   const captchaCanvasRef = useRef(null);
   const loginCaptchaCanvasRef = useRef(null);
+  const loginRecaptchaRef = useRef(null);
+  const registerRecaptchaRef = useRef(null);
+  const [loginCaptchaToken, setLoginCaptchaToken] = useState("");
+  const [registerCaptchaToken, setRegisterCaptchaToken] = useState("");
 
   const [state, setState] = useSetState({
     token: null,
@@ -363,9 +369,7 @@ const Header = () => {
         throw { isTerms: true };
       }
 
-      if (
-        (state.captchaInput || "").trim() !== (state.captchaValue || "").trim()
-      ) {
+      if (!registerCaptchaToken) {
         throw { isCaptcha: true };
       }
 
@@ -379,7 +383,7 @@ const Header = () => {
       };
 
       console.log("body", body);
-      const formData = buildFormData(body);
+      const formData = buildFormData({ ...body, recaptcha_token: registerCaptchaToken });
 
       const res = await Models.auth.create(formData);
       console.log("✌️res --->", res);
@@ -397,6 +401,7 @@ const Header = () => {
         terms: false,
         newsletter: false,
       });
+      setRegisterCaptchaToken("");
       setState({ successRegistraion: true });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
@@ -408,11 +413,8 @@ const Header = () => {
         if (!state.terms) {
           validationErrors.terms = "Please accept terms and conditions";
         }
-        if (
-          (state.captchaInput || "").trim() !==
-          (state.captchaValue || "").trim()
-        ) {
-          validationErrors.captchaInput = "Please enter valid captcha";
+        if (!registerCaptchaToken) {
+          validationErrors.captchaInput = "Please complete the captcha";
         }
 
         console.log("✌️validationErrors --->", validationErrors);
@@ -425,7 +427,7 @@ const Header = () => {
         });
       } else if (error.isCaptcha) {
         setState({
-          errors: { captchaInput: "Please enter valid captcha" },
+          errors: { captchaInput: "Please complete the captcha" },
           btnLoading: false,
         });
       } else {
@@ -447,18 +449,16 @@ const Header = () => {
         password: state.password,
       };
       await Validation.login.validate(body, { abortEarly: false });
-      if (
-        (state.loginCaptchaInput || "").trim() !==
-        (state.loginCaptchaValue || "").trim()
-      ) {
+      if (!loginCaptchaToken) {
         throw { isLoginCaptcha: true };
       }
-      const res = await Models.auth.login(body);
+      const res = await Models.auth.login({ ...body, recaptcha_token: loginCaptchaToken });
       console.log("✌️res --->", res);
       localStorage.setItem("token", res.access);
       localStorage.setItem("refresh", res.refresh);
       localStorage.setItem("user", JSON.stringify(res.user));
 
+      setLoginCaptchaToken("");
       setState({
         token: res.access,
         errors: {},
@@ -481,18 +481,15 @@ const Header = () => {
         error.inner.forEach((err) => {
           validationErrors[err.path] = err?.message;
         });
-        if (
-          (state.loginCaptchaInput || "").trim() !==
-          (state.loginCaptchaValue || "").trim()
-        ) {
-          validationErrors.loginCaptchaInput = "Please enter valid captcha";
+        if (!loginCaptchaToken) {
+          validationErrors.loginCaptchaInput = "Please complete the captcha";
         }
         console.log("✌️validationErrors --->", validationErrors);
 
         setState({ errors: validationErrors, btnLoading: false });
       } else if (error.isLoginCaptcha) {
         setState({
-          errors: { loginCaptchaInput: "Please enter valid captcha" },
+          errors: { loginCaptchaInput: "Please complete the captcha" },
           btnLoading: false,
         });
       } else {
@@ -788,9 +785,12 @@ const Header = () => {
             loginCaptchaInput: "",
             loginCaptchaValue: "",
           });
+          setLoginCaptchaToken("");
+          loginRecaptchaRef.current?.reset();
         }}
         // closeIcon={false}
         hideHeader={true}
+        preventOutsideClose={true}
         title="Sign In"
         width="500px"
         renderComponent={() => (
@@ -871,8 +871,16 @@ const Header = () => {
                 Forget password?
               </button>
             </div>
+            
+            {/* <div className="flex items-center justify-center gap-3 py-0">
+             <RefreshCcw
+                  className={`h-5 w-5 ${
+                    state.loginCaptchaRefreshing ? "animate-spin" : ""
+                  }`}
+                />
+            </div> */}
 
-            <div className="flex items-center justify-center gap-3 py-0">
+            {/* <div className="flex items-center justify-center gap-3 py-0">
               <canvas
                 ref={loginCaptchaCanvasRef}
                 width={260}
@@ -892,15 +900,26 @@ const Header = () => {
                   }`}
                 />
               </button>
-            </div>
+            </div> */}
 
-            <Input
+            {/* <Input
               placeholder="Enter captcha *"
               value={state.loginCaptchaInput || ""}
               onChange={(e) => handleFormChange("loginCaptchaInput", e.target.value)}
               bg="ffffff"
               error={state.errors?.loginCaptchaInput}
+            /> */}
+
+            <div className="flex items-center justify-center gap-3 py-0">
+            <ReCAPTCHA
+              ref={loginRecaptchaRef}
+              sitekey={CAPTCHA_SITE_KEY}
+              onChange={(token) => setLoginCaptchaToken(token || "")}
             />
+            </div>
+            {state.errors?.loginCaptchaInput && (
+              <p className="text-red-500 text-xs text-center -mt-2">{state.errors.loginCaptchaInput}</p>
+            )}
 
             <Button
               type="button"
@@ -944,8 +963,11 @@ const Header = () => {
             terms: false,
             newsletter: false,
           });
+          setRegisterCaptchaToken("");
+          registerRecaptchaRef.current?.reset();
         }}
         hideHeader={true}
+        preventOutsideClose={true}
         title="Create Account"
         width="500px"
         renderComponent={() => (
@@ -1099,8 +1121,15 @@ const Header = () => {
                 </div>
               </div>
             </div>
-
             <div className="flex items-center justify-center gap-3 py-0">
+            <ReCAPTCHA
+              ref={registerRecaptchaRef}
+              sitekey={CAPTCHA_SITE_KEY}
+              onChange={(token) => setRegisterCaptchaToken(token || "")}
+            />
+            </div>
+
+            {/* <div className="flex items-center justify-center gap-3 py-0">
               <canvas
                 ref={captchaCanvasRef}
                 width={260}
@@ -1120,14 +1149,15 @@ const Header = () => {
                   }`}
                 />
               </button>
-            </div>
-            <Input
+            </div> */}
+            {/* <Input
               placeholder="Enter captcha *"
               value={state.captchaInput || ""}
               onChange={(e) => handleFormChange("captchaInput", e.target.value)}
               bg="ffffff"
               error={state.errors?.captchaInput}
-            />
+            /> */}
+            
             <Button
               onClick={() => {
                 handleRegister();
