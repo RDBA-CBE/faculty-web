@@ -263,10 +263,10 @@ process while providing academic professionals with access to verified career op
         <div className="section-wid w-full px-4 sm:px-6 lg:px-8 xl:px-0 relative z-10">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10 ">
             <div className="text-center gap-2 flex flex-col justify-center items-center">
-              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+              <div className="pb-6  border-b border-white/30 w-80 flex justify-center">
                 <img
-                  className="w-[70px] text-center"
-                  src="/assets/images/Vector.png"
+                  className="w-[90px] text-center"
+                  src="/assets/images/trust.png"
                   alt=""
                 />
               </div>
@@ -277,14 +277,14 @@ process while providing academic professionals with access to verified career op
                 Trusted Institutions
               </p>
               <p className="text-white">
-                Only verified academic institutions are listed.
+               Only genuine and authenticated colleges and universities are listed for trusted opportunities.
               </p>
             </div>
             <div className="text-center gap-2 flex flex-col justify-center items-center">
-              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+              <div className=" pb-3 border-b border-white/30 w-80 flex justify-center">
                 <img
-                  className="w-[70px] text-center"
-                  src="/assets/images/Vector.png"
+                  className="w-[100px] text-center"
+                  src="/assets/images/participant.png"
                   alt=""
                 />
               </div>
@@ -292,18 +292,18 @@ process while providing academic professionals with access to verified career op
               {/* <div className="hidden lg:block absolute left-2/3 top-1/2 -translate-x-1/2 h-px w-80 bg-white/30"></div> */}
 
               <p className="text-white text-lg lg:text-2xl font-medium pt-5">
-                Trusted Institutions
+                Nationwide Reach
               </p>
               <p className="text-white">
-                Only verified academic institutions are listed.
+               Explore faculty openings from institutions across multiple regions and academic disciplines.
               </p>
             </div>
 
             <div className="text-center gap-2 flex flex-col justify-center items-center">
-              <div className="pb-8  border-b border-white/30 w-80 flex justify-center">
+              <div className="pb-6  border-b border-white/30 w-80 flex justify-center">
                 <img
-                  className="w-[70px] text-center"
-                  src="/assets/images/Vector.png"
+                  className="w-[90px] text-center"
+                  src="/assets/images/career-opportunity.png"
                   alt=""
                 />
               </div>
@@ -311,10 +311,10 @@ process while providing academic professionals with access to verified career op
               {/* <div className="hidden lg:block absolute left-2/3 top-1/2 -translate-x-1/2 h-px w-80 bg-white/30"></div> */}
 
               <p className="text-white text-lg lg:text-2xl font-medium pt-5">
-                Trusted Institutions
+                Career Growth
               </p>
               <p className="text-white">
-                Only verified academic institutions are listed.
+                Discover opportunities that help you advance your academic career with confidence.
               </p>
             </div>
           </div>

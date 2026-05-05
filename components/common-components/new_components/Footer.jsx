@@ -36,6 +36,7 @@ const Footer = () => {
   useEffect(() => {
     jobList(1);
     JobCatList();
+    locationList()
   }, []);
 
   const jobList = async (page = 1) => {
@@ -86,6 +87,38 @@ const Footer = () => {
       }
     }
   };
+
+  const locationList = async () => {
+    try {
+      let page = 1;
+      let allResults = [];
+      let hasNext = true;
+       const body = {
+        has_jobs:true
+      }
+  
+      while (hasNext) {
+        const res = await Models.location.list(page, body);
+  
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+  
+        hasNext = !!res?.next;
+        page++;
+      }
+  
+      const dropdown = Dropdown(allResults, "city");
+  
+      setState({
+        locationList: dropdown,
+      });
+    } catch (error) {
+      console.log("Error fetching locations:", error);
+    }
+  };
+  console.log("locationList", state.locationList);
+  
 
   const JobCatList = async () => {
     try {
@@ -192,7 +225,7 @@ const Footer = () => {
                 </p>
                 <div className="flex items-center gap-4">
                   <div className="rounded-full bg-[#fffefe33] p-3"><Mail className="text-[#F2B31D] text-[15px] "/></div>
-                  <Link href="mailto:support@facultypro.in" className="text-[#fff]">support@facultypro.in</Link>
+                  <div className="text-[#fff]">support@facultypro.in</div>
                 </div>
               </div>
 
@@ -231,24 +264,24 @@ const Footer = () => {
 
               <div className="md:col-span-2">
                 <h3 className="text-md md:text-lg text-[#fff] font-medium mb-6 border-l-2 border-[#F2B31D] pl-3 uppercase tracking-wider">
-                  Recent Jobs
+                  Regions
                 </h3>
                 <div
                   className="grid   gap-y-2 text-md text-gray-400"
                   style={{ rowGap: "10px" }}
                 >
-                  {state?.jobList?.slice(0, 4)?.map((item, index) => (
+                  {state?.locationList?.slice(0, 4)?.map((item, index) => (
                     <p
                       key={item.id}
                       onClick={() => {
-                        router.push(`/jobs?slug=${item.slug}`);
+                        router.push(`/jobs?location=${item.value}`);
                         if (pathname === "/jobs") {
                           window.scrollTo({ top: 0, behavior: "smooth" });
                         }
                       }}
                       className="text-white hover:text-gray-400 transition-colors cursor-pointer"
                     >
-                      {item?.job_title}
+                      {item?.label}
                     </p>
                   ))}
                 </div>
