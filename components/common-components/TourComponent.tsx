@@ -248,6 +248,8 @@ export default function TourComponent() {
           scrollDuration: 600,
           showProgress: true,
           buttons: ["back", "skip", "primary"],
+          overlayClickAction: false,
+          dismissKeyAction: false,
         }}
         styles={{
           tooltip: {

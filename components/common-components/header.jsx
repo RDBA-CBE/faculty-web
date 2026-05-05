@@ -914,11 +914,14 @@ const Header = () => {
             <ReCAPTCHA
               ref={loginRecaptchaRef}
               sitekey={CAPTCHA_SITE_KEY}
-              onChange={(token) => setLoginCaptchaToken(token || "")}
+              onChange={(token) => {
+                setLoginCaptchaToken(token || "");
+                if (token) setState({ errors: { ...state.errors, loginCaptchaInput: "" } });
+              }}
             />
             </div>
             {state.errors?.loginCaptchaInput && (
-              <p className="text-red-500 text-xs text-center -mt-2">{state.errors.loginCaptchaInput}</p>
+              <p className="text-sm text-red-600 text-center -mt-2">{state.errors.loginCaptchaInput}</p>
             )}
 
             <Button
@@ -1099,7 +1102,7 @@ const Header = () => {
                   </span>
                 </div>
                 {state.errors?.terms && (
-                  <span className="text-red-500 text-xs mt-1">
+                  <span className="text-red-500 text-sm mt-1">
                     {state.errors.terms}
                   </span>
                 )}
@@ -1125,9 +1128,15 @@ const Header = () => {
             <ReCAPTCHA
               ref={registerRecaptchaRef}
               sitekey={CAPTCHA_SITE_KEY}
-              onChange={(token) => setRegisterCaptchaToken(token || "")}
+              onChange={(token) => {
+                setRegisterCaptchaToken(token || "");
+                if (token) setState({ errors: { ...state.errors, captchaInput: "" } });
+              }}
             />
             </div>
+            {state.errors?.captchaInput && (
+              <p className="text-red-500 text-sm text-center -mt-2">{state.errors.captchaInput}</p>
+            )}
 
             {/* <div className="flex items-center justify-center gap-3 py-0">
               <canvas
@@ -1571,7 +1580,16 @@ const Header = () => {
             </p>
 
             <Button
-              onClick={() => setState({ loginFailModal: false })}
+              onClick={() => {
+                setState({
+                  loginFailModal: false,
+                  // email: "",
+                  // password: "",
+                  errors: {},
+                });
+                setLoginCaptchaToken("");
+                loginRecaptchaRef.current?.reset();
+              }}
               className="mt-6 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-3xl px-8"
             >
               Try Again
@@ -1599,7 +1617,22 @@ const Header = () => {
             </p>
 
             <Button
-              onClick={() => setState({ registrationFailModal: false })}
+              onClick={() => {
+                setState({
+                  registrationFailModal: false,
+                  email: "",
+                  password: "",
+                  confirmPassword: "",
+                  first_name: "",
+                  last_name: "",
+                  department: "",
+                  terms: false,
+                  newsletter: false,
+                  errors: {},
+                });
+                setRegisterCaptchaToken("");
+                registerRecaptchaRef.current?.reset();
+              }}
               className="mt-6 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-3xl px-8"
             >
               Try Again

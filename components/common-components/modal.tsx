@@ -49,9 +49,15 @@ export default function Modal({
         hideClose
         className={cn("p-0 bg-[#EFF2F6] !gap-0", width ? widthClasses[width] : "sm:max-w-[500px]")}
         onInteractOutside={(e) => {
+          if (!preventOutsideClose) return;
+          const target = e.target as HTMLElement | null;
+          if (target?.closest(".react-joyride") || target?.closest("#react-joyride-portal")) return;
           e.preventDefault();
         }}
         onPointerDownOutside={(e) => {
+          if (!preventOutsideClose) return;
+          const target = e.target as HTMLElement | null;
+          if (target?.closest(".react-joyride") || target?.closest("#react-joyride-portal")) return;
           e.preventDefault();
         }}
         onOpenAutoFocus={(e) => {
