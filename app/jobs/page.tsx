@@ -618,6 +618,8 @@ ${userName}`;
   const prevVisibleChipCountRef = useRef(0);
   /** Skip one chip-decrease clear after suggestion apply. */
   const suppressChipClearOnNextFilterSyncRef = useRef(false);
+  /** Skip filter change effect triggered by filterList's setFilters on initial load. */
+  const suppressFilterChangeOnInitRef = useRef(false);
   /** Enter-typed query mode: `bodyData` should send only `search`. */
   const strictSearchOnlyModeRef = useRef(false);
   const promptJobsCacheRef = useRef<any[]>([]);
@@ -948,14 +950,13 @@ ${userName}`;
   useEffect(() => {
     locationList();
     jobTypeList();
-    filterList();
     masterExperienceList();
     masterDeptList();
     masterJobRoleList();
     if (hasSimilarQuery) {
       similarJob();
     } else {
-      jobList(1);
+      filterList(true);
     }
   }, []);
 
@@ -1032,7 +1033,12 @@ ${userName}`;
   useEffect(() => {
     if (!isInitialized.current) {
       isInitialized.current = true;
-      // Store the initial body
+      prevFilterBodyRef.current = JSON.stringify(bodyData());
+      return;
+    }
+
+    if (suppressFilterChangeOnInitRef.current) {
+      suppressFilterChangeOnInitRef.current = false;
       prevFilterBodyRef.current = JSON.stringify(bodyData());
       return;
     }
@@ -1047,7 +1053,7 @@ ${userName}`;
       } else {
         jobList(1);
       }
-      filterList();
+      filterList(false);
     }
   }, [
     hasSimilarQuery,
@@ -1077,28 +1083,69 @@ ${userName}`;
     }
   };
 
-  const filterList = async () => {
+  const filterList = async (validateUrlParams = false) => {
     try {
-      const body = bodyData();
-      const res: any = await Models.job.filterList(body);
+      const f = filtersRef.current;
+      const hasUrlParams = validateUrlParams &&
+        f.locations.length > 0 ||
+        f.department.length > 0 ||
+        f.jobRole.length > 0 ||
+        f.colleges.length > 0;
+
+      let validatedLocations = f.locations;
+      let validatedDepartment = f.department;
+      let validatedJobRole = f.jobRole;
+      let validatedColleges = f.colleges;
+
+      if (hasUrlParams) {
+        // Step 1: validate location
+        const r1: any = await Models.job.filterList(
+          f.locations.length > 0 ? { location: f.locations } : {}
+        );
+        const validLocIds = new Set((r1?.data?.locations ?? []).map((i: any) => i.id));
+        validatedLocations = f.locations.filter((id) => validLocIds.has(id));
+
+        // Step 2: validate department with confirmed location
+        const b2: any = {};
+        if (validatedLocations.length > 0) b2.location = validatedLocations;
+        if (f.department.length > 0) b2.department = f.department;
+        const r2: any = await Models.job.filterList(b2);
+        const validDeptIds = new Set((r2?.data?.departments ?? []).map((i: any) => i.id));
+        validatedDepartment = f.department.filter((id) => validDeptIds.has(id));
+
+        // Step 3: validate job-role + college with confirmed location + dept
+        const b3: any = {};
+        if (validatedLocations.length > 0) b3.location = validatedLocations;
+        if (validatedDepartment.length > 0) b3.department = validatedDepartment;
+        if (f.jobRole.length > 0) b3.job_role = f.jobRole;
+        if (f.colleges.length > 0) b3.colleges = f.colleges;
+        const r3: any = await Models.job.filterList(b3);
+        const validRoleIds = new Set((r3?.data?.job_roles ?? []).map((i: any) => i.id));
+        const validColIds = new Set((r3?.data?.colleges ?? []).map((i: any) => i.id));
+        validatedJobRole = f.jobRole.filter((id) => validRoleIds.has(id));
+        validatedColleges = f.colleges.filter((id) => validColIds.has(id));
+      }
+
+      // Final filterList call with all validated params for sidebar options
+      const finalBody: any = {};
+      if (validatedLocations.length > 0) finalBody.location = validatedLocations;
+      if (validatedDepartment.length > 0) finalBody.department = validatedDepartment;
+      if (validatedJobRole.length > 0) finalBody.job_role = validatedJobRole;
+      if (validatedColleges.length > 0) finalBody.colleges = validatedColleges;
+      const res: any = await Models.job.filterList(finalBody);
+
       const locationList =
         res?.data?.locations?.map((item) => ({
           value: item.id,
           label: item.city,
           job_count: item.job_count,
         })) || [];
-
-      // Keep selected locations stable; backend facet truncation should not silently drop chips.
-
       const deptList =
         res?.data?.departments?.map((item) => ({
           value: item.id,
           label: item.department_name,
           job_count: item.job_count,
         })) || [];
-
-      // Keep selected departments stable; avoid auto-removing chips on facet updates.
-
       const collegeList = res?.data?.colleges?.map((item) => ({
         value: item.id,
         label: item.college_name,
@@ -1114,18 +1161,28 @@ ${userName}`;
         label: item.role_name,
         job_count: item.job_count,
       }));
-
       const experienceList = res?.data?.experiences?.map((item) => ({
         value: item.name,
         label: item.name,
       }));
-
       const academicResponsibilityList =
         res?.data?.additional_academic_responsibilities?.map((item) => ({
-        value: item.id,
-        label: item.responsibility_title,
-        job_count: item.job_count,
-      }));
+          value: item.id,
+          label: item.responsibility_title,
+          job_count: item.job_count,
+        }));
+
+      // Set only validated filters → chips show correctly (only on initial URL param validation)
+      if (validateUrlParams) {
+        suppressFilterChangeOnInitRef.current = true;
+        setFilters((prev) => ({
+          ...prev,
+          locations: validatedLocations,
+          department: validatedDepartment,
+          jobRole: validatedJobRole,
+          colleges: validatedColleges,
+        }));
+      }
 
       setState({
         filterList: res?.data,
@@ -1138,6 +1195,13 @@ ${userName}`;
         experienceList,
         academicResponsibilityList,
       });
+
+      // Call jobList with validated body directly (avoid race condition)
+      if (hasUrlParams) {
+        jobList(1, false, preferredOnly, finalBody);
+      } else {
+        jobList(1);
+      }
     } catch (error) {
       console.log("✌️error --->", error);
     }
@@ -1699,7 +1763,7 @@ ${userName}`;
       similarJobLoading: false,
     });
     void jobList(1);
-    void filterList();
+    void filterList(false);
   }, [hasSimilarQuery, jobIdFromQuery]);
 
   console.log("jobID", state?.jobID);

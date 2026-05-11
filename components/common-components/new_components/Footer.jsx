@@ -272,7 +272,7 @@ const Footer = () => {
                 >
                   {state?.locationList?.slice(0, 4)?.map((item, index) => (
                     <p
-                      key={item.id}
+                      key={index}
                       onClick={() => {
                         router.push(`/jobs?location=${item.value}`);
                         if (pathname === "/jobs") {
