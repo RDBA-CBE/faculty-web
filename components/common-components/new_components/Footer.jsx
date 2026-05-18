@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Facebook, Twitter, Instagram, Linkedin, X } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, X, Youtube } from "lucide-react";
 import {
   Dropdown,
   Failure,
@@ -14,6 +14,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Modal from "../modal";
 import { Mail } from "lucide-react";
 import Link from "next/link";
+import { FaPinterestP } from "react-icons/fa";
 
 const Footer = () => {
   const router = useRouter();
@@ -360,11 +361,11 @@ const Footer = () => {
 
             {/* Socials and Copyright */}
             <div className="mt-8 flex flex-col items-center gap-6">
-              {/* <div className="flex gap-4">
+              <div className="flex gap-4">
               
               <a
                
-                href="#"
+                href="https://www.facebook.com/thefacultypro"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 <Facebook className="w-5 h-5 md:w-15 md:h-15" />
@@ -372,7 +373,8 @@ const Footer = () => {
 
               <a
                 
-                href="#"
+                href="https://x.com/thefacultypro"
+                target="_blank"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 {" "}
@@ -382,7 +384,8 @@ const Footer = () => {
 
               <a
                 
-                href="#"
+                href="https://www.instagram.com/thefacultypro/"
+                target="_blank"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 <Instagram className="w-5 h-5 md:w-15 md:h-15" />
@@ -390,12 +393,29 @@ const Footer = () => {
 
               <a
                
-                href="#"
+                href="https://www.linkedin.com/company/thefacultypro/"
+                target="_blank"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 <Linkedin className="w-5 h-5 md:w-15 md:h-15" />
               </a>
-            </div> */}
+              <a
+               
+                href="https://www.youtube.com/@thefacultypro"
+                target="_blank"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                <Youtube className="w-5 h-5 md:w-15 md:h-15" />
+              </a>
+              <a
+               
+                href="https://www.pinterest.com/thefacultypro/"
+                target="_blank"
+                className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
+              >
+                <FaPinterestP className="w-5 h-5 md:w-15 md:h-15" />
+              </a>
+            </div>
               <p className="text-xs md:text-[14px] text-white/80  tracking-widest">
                 Copyright 2026 © Sree Vidhya E-Learning Solutions
 
