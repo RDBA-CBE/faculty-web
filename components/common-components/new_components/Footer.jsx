@@ -366,6 +366,7 @@ const Footer = () => {
               <a
                
                 href="https://www.facebook.com/thefacultypro"
+                target="_blank"
                 className="w-10 h-10 md:w-12 md:h-12  flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-[#1E3786] transition-all"
               >
                 <Facebook className="w-5 h-5 md:w-15 md:h-15" />
