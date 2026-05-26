@@ -77,13 +77,6 @@ import CustomPhoneInput from "@/components/common-components/phoneInput";
 import FileUpload from "@/components/common-components/fileUpload";
 import { jobApplicationSchema } from "@/utils/validation.utils";
 import * as Yup from "yup";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import Models from "@/imports/models.import";
 import { JobCard } from "@/components/component/jobCard.component";
 import { NewJobCard } from "@/components/component/newJobcard.component";
@@ -122,11 +115,7 @@ function clipPromptSuggestionsToMax(
 }
 
 function normalizePromptLabel(s: string): string {
-  return s
-    .normalize("NFKD")
-    .replace(/\s+/g, " ")
-    .trim()
-    .toLowerCase();
+  return s.normalize("NFKD").replace(/\s+/g, " ").trim().toLowerCase();
 }
 
 /** Deterministic stringify for duplicate detection (sorted keys recursively). */
@@ -350,9 +339,7 @@ function JobSearchPromptSuggestions({
   if (!open) return null;
   return (
     <div className="pointer-events-auto absolute left-0 right-0 top-full z-[60] mt-2 overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-2xl ring-1 ring-black/5 motion-safe:transition-[box-shadow]">
-      <div
-        className="min-h-[220px] max-h-[min(70vh,380px)] overflow-y-auto overscroll-contain scroll-smooth"
-      >
+      <div className="min-h-[220px] max-h-[min(70vh,380px)] overflow-y-auto overscroll-contain scroll-smooth">
         {rows.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-slate-500">
             No suggestions yet. Try typing a job title or keyword.
@@ -484,7 +471,6 @@ export default function JobsPage() {
     maxExperience: "",
     academic_responsibilities: [],
   });
-  console.log("✌️filters --->", filters);
 
   const debouncedSearch = useDebounce(state.search, 500);
 
@@ -500,46 +486,47 @@ export default function JobsPage() {
 
   // Add this useEffect after your other useEffect hooks (around line 350-400)
 
-useEffect(() => {
-  const hasVisited = sessionStorage.getItem("jobs_page_visited");
-  if (!hasVisited) {
-    sessionStorage.setItem("jobs_page_visited", "true");
-    return;
-  }
+  useEffect(() => {
+    const hasVisited = sessionStorage.getItem("jobs_page_visited");
+    if (!hasVisited) {
+      sessionStorage.setItem("jobs_page_visited", "true");
+      return;
+    }
 
-  // Preserve all supported filter/query params on refresh.
-  const allowedParams = new Set([
-    "slug",
-    "id",
-    "search",
-    "location",
-    "college",
-    "job-role",
-    "job-category",
-    "department",
-  ]);
+    // Preserve all supported filter/query params on refresh.
+    const allowedParams = new Set([
+      "slug",
+      "id",
+      "search",
+      "location",
+      "college",
+      "job-role",
+      "job-category",
+      "department",
+    ]);
 
-  const entries = Array.from(searchParams.entries());
-  const hasUnknownParams = entries.some(([key]) => !allowedParams.has(key));
+    const entries = Array.from(searchParams.entries());
+    const hasUnknownParams = entries.some(([key]) => !allowedParams.has(key));
 
-  // Remove only unknown params; keep slug/id and all supported filters.
-  if (hasUnknownParams) {
-    const cleaned = new URLSearchParams();
-    entries.forEach(([key, value]) => {
-      if (allowedParams.has(key)) cleaned.set(key, value);
-    });
-    const qs = cleaned.toString();
-    router.replace(qs ? `/jobs?${qs}` : "/jobs");
-    sessionStorage.removeItem("jobs_page_visited");
-  }
-}, [searchParams, router]);
+    // Remove only unknown params; keep slug/id and all supported filters.
+    if (hasUnknownParams) {
+      const cleaned = new URLSearchParams();
+      entries.forEach(([key, value]) => {
+        if (allowedParams.has(key)) cleaned.set(key, value);
+      });
+      const qs = cleaned.toString();
+      router.replace(qs ? `/jobs?${qs}` : "/jobs");
+      sessionStorage.removeItem("jobs_page_visited");
+    }
+  }, [searchParams, router]);
 
-// Clean up on component unmount
-useEffect(() => {
-  return () => {
-    sessionStorage.removeItem("jobs_page_visited");
-  };
-}, []);
+  // Clean up on component unmount
+  useEffect(() => {
+    return () => {
+      sessionStorage.removeItem("jobs_page_visited");
+    };
+  }, []);
+
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
@@ -658,8 +645,7 @@ ${userName}`;
       locationList: state?.locationList,
       deptList: state?.masterDeptList,
       jobRoleList: state?.masterJobRoleList,
-      academicResponsibilityList:
-        state?.academicResponsibilityList ?? [],
+      academicResponsibilityList: state?.academicResponsibilityList ?? [],
     }),
     [
       state?.categoryList,
@@ -1122,10 +1108,10 @@ ${userName}`;
 
       const academicResponsibilityList =
         res?.data?.additional_academic_responsibilities?.map((item) => ({
-        value: item.id,
-        label: item.responsibility_title,
-        job_count: item.job_count,
-      }));
+          value: item.id,
+          label: item.responsibility_title,
+          job_count: item.job_count,
+        }));
 
       setState({
         filterList: res?.data,
@@ -1278,38 +1264,42 @@ ${userName}`;
   };
 
   const masterDeptList = async () => {
-  try {
-    let page = 1;
-    let hasNext = true;
-    let allResults: any[] = [];
+    try {
+      let page = 1;
+      let hasNext = true;
+      let allResults: any[] = [];
 
-    while (hasNext) {
-      const res: any = await Models.department.masterDep({
-        page,
-        has_jobs: true,
-      });
+      while (hasNext) {
+        const res: any = await Models.department.masterDep({
+          page,
+          has_jobs: true,
+        });
 
-      if (res?.results?.length) {
-        allResults = [...allResults, ...res.results];
+        if (res?.results?.length) {
+          allResults = [...allResults, ...res.results];
+        }
+
+        hasNext = !!res?.next; // 👈 check next page
+        page++; // 👈 increment page
       }
 
-      hasNext = !!res?.next; // 👈 check next page
-      page++; // 👈 increment page
+      const dropdown =
+        allResults?.map((item: any) => ({
+          value: item?.id,
+          label:
+            item?.department_name ||
+            item?.name ||
+            item?.label ||
+            `${item?.id ?? ""}`,
+        })) ?? [];
+
+      setState({
+        masterDeptList: dropdown,
+      });
+    } catch (error) {
+      console.error("Error fetching master departments:", error);
     }
-
-    const dropdown =
-      allResults?.map((item: any) => ({
-        value: item?.id,
-        label: item?.department_name || item?.name || item?.label || `${item?.id ?? ""}`,
-      })) ?? [];
-
-    setState({
-      masterDeptList: dropdown,
-    });
-  } catch (error) {
-    console.error("Error fetching master departments:", error);
-  }
-};
+  };
 
   const masterJobRoleList = async () => {
     try {
@@ -1519,9 +1509,7 @@ ${userName}`;
       if (e.key === "ArrowDown") {
         e.preventDefault();
         setPromptSuggestionsHighlightIndex((prev) =>
-          prev < 0
-            ? 0
-            : Math.min(prev + 1, promptSuggestions.length - 1),
+          prev < 0 ? 0 : Math.min(prev + 1, promptSuggestions.length - 1),
         );
         return;
       }
@@ -1628,10 +1616,29 @@ ${userName}`;
           return [];
         }) || [];
 
+        const new_description =
+        res?.new_job_qualification?.blocks?.flatMap((block) => {
+          if (block.type === "list") {
+            return block.data.items.map((item) => ({
+              type: "list",
+              text: item,
+            }));
+          }
+
+          if (block.type === "paragraph") {
+            return [{ type: "paragraph", text: block.data.text }];
+          }
+
+          return [];
+        }) || [];
+
+
+
       setState({
         loading: false,
         jobDetail: res,
         responsibilities: responsibilities || null,
+        new_job_qualification: new_description || null,
       });
 
       return res;
@@ -1674,11 +1681,10 @@ ${userName}`;
     state.similarJobs.length === 0;
   const jobSidebarList = hasSimilarQuery ? state.similarJobs : state.jobList;
 
-
   useEffect(() => {
     if (hasSimilarQuery) {
       window.scrollTo({ top: 0, behavior: "smooth" });
-      
+
       // Fetch job detail directly using the ID
       setState({ jobID: jobIdFromQuery });
       jobDetail(jobIdFromQuery).then((res) => {
@@ -1687,7 +1693,7 @@ ${userName}`;
           setShowJobDetail(true);
         }
       });
-      similarJob()
+      similarJob();
       return;
     }
     // Leaving detail query (`slug` + `id`) back to plain `/jobs` should rehydrate list mode.
@@ -1702,8 +1708,6 @@ ${userName}`;
     void filterList();
   }, [hasSimilarQuery, jobIdFromQuery]);
 
-  console.log("jobID", state?.jobID);
-  
 
   useEffect(() => {
     const checkPendingApply = () => {
@@ -1853,8 +1857,8 @@ ${userName}`;
         ),
         jobDetail:
           state.jobDetail?.id === job.id
-          ? { ...state.jobDetail, is_saved: !job.is_saved }
-          : state.jobDetail,
+            ? { ...state.jobDetail, is_saved: !job.is_saved }
+            : state.jobDetail,
       });
       // }
 
@@ -2300,50 +2304,45 @@ ${userName}`;
                         )}
                         <div className="flex-1 flex-col">
                           <div className="flex items-start gap-2 flex-wrap mb-1">
-                          <h1
-                            className="text-xl font-semibold text-[#313131] mb-1"
-                            onClick={(e) =>
-                              getCollege(e, state?.jobDetail.college?.id)
-                            }
-                          >
-                            {capitalizeFLetter(job_title(state?.jobDetail))}
-                          </h1>
-                          {state?.jobDetail?.department.length ==
-                                      1 && (
-                                      <>
-                                        {state?.jobDetail?.department?.map(
-                                          (item, index) => (
-                                            <button
-                                              key={index}
-                                              onClick={(e) =>
-                                                getDepartment(e, item.id)
-                                              }
-                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                            <h1
+                              className="text-xl font-semibold text-[#313131] mb-1"
+                              onClick={(e) =>
+                                getCollege(e, state?.jobDetail.college?.id)
+                              }
+                            >
+                              {capitalizeFLetter(job_title(state?.jobDetail))}
+                            </h1>
+                            {state?.jobDetail?.department.length == 1 && (
+                              <>
+                                {state?.jobDetail?.department?.map(
+                                  (item, index) => (
+                                    <button
+                                      key={index}
+                                      onClick={(e) => getDepartment(e, item.id)}
+                                      className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786]
                        border border-[#1E3786]
                        hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap"
-                                            >
-                                              {item.name}
-                                            </button>
-                                          ),
-                                        )}
-                                        { state?.jobDetail?.categories.length == 1 &&
-                                        state?.jobDetail?.categories?.map(
-                                          (item, index) => (
-                                            <button
-                                              key={index}
-                                             
-                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                                    >
+                                      {item.name}
+                                    </button>
+                                  ),
+                                )}
+                                {state?.jobDetail?.categories.length == 1 &&
+                                  state?.jobDetail?.categories?.map(
+                                    (item, index) => (
+                                      <button
+                                        key={index}
+                                        className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786]
                        border border-[#1E3786]
                        hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap cursor-default"
-                                            >
-                                              {item.name}
-                                            </button>
-                                          ),
-                                        )}
-                                      </>
-                                    )}
-
-                                    </div>
+                                      >
+                                        {item.name}
+                                      </button>
+                                    ),
+                                  )}
+                              </>
+                            )}
+                          </div>
                           <p className="text-md text-gray-700 mb-2">
                             {state?.jobDetail?.college?.name}
                           </p>
@@ -2402,17 +2401,17 @@ ${userName}`;
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                     {state.jobDetail?.user_is_applied === false ? (
-                    <button
-                      onClick={() => {
-                        setState({ jobID: state?.jobDetail?.id });
-                        handleApply();
-                      }}
-                      className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
-                    >
-                      {state.jobDetail?.apply_link
-                        ? " Apply on company's site"
-                        : " Apply Now"}
-                    </button>
+                      <button
+                        onClick={() => {
+                          setState({ jobID: state?.jobDetail?.id });
+                          handleApply();
+                        }}
+                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                      >
+                        {state.jobDetail?.apply_link
+                          ? " Apply on company's site"
+                          : " Apply Now"}
+                      </button>
                     ) : (
                       <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
                         ✓ Applied
@@ -2474,8 +2473,8 @@ ${userName}`;
                                   <button
                                     key={index}
                                     onClick={(e) => getDepartment(e, item.id)}
-                                    className="px-4 py-2 text-sm font-medium rounded-full 
-                       bg-blue-50 text-[#1E3786] 
+                                    className="px-4 py-2 text-sm font-medium rounded-full
+                       bg-blue-50 text-[#1E3786]
                        border border-blue-100
                        hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
@@ -2500,16 +2499,44 @@ ${userName}`;
                           </div>
                         )}
 
-                        {state?.jobDetail?.qualification && (
+                        {state?.new_job_qualification?.length > 0 ? (
                           <div>
-                            <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                           <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
                               Job Qualification
                             </h3>
+                            <ul className="space-y-3">
+                              {state?.new_job_qualification?.map(
+                                (item, index) => (
+                                  <li
+                                    key={index}
+                                    className="flex items-start gap-3"
+                                  >
+                                    {item?.type === "list" && (
+                                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                                    )}
 
-                            <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                              {state?.jobDetail?.qualification}
-                            </p>
+                                    <span
+                                      dangerouslySetInnerHTML={{
+                                        __html: item?.text ?? item,
+                                      }}
+                                    />
+                                  </li>
+                                ),
+                              )}
+                            </ul>
                           </div>
+                        ) : (
+                          state?.jobDetail?.new_job_qualification && (
+                            <div>
+                              <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                Job Qualification
+                              </h3>
+
+                              <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                {state?.jobDetail?.qualification}
+                              </p>
+                            </div>
+                          )
                         )}
                       </div>
                       <p>
@@ -2539,9 +2566,15 @@ ${userName}`;
                       <ul className="space-y-3">
                         {state?.responsibilities?.map((item, index) => (
                           <li key={index} className="flex items-start gap-3">
-                            {item?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
+                            {item?.type === "list" && (
+                              <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                            )}
 
-                            <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
+                            <span
+                              dangerouslySetInnerHTML={{
+                                __html: item?.text ?? item,
+                              }}
+                            />
                           </li>
                         ))}
                       </ul>
@@ -2816,161 +2849,160 @@ ${userName}`;
                         className="flex-1 space-y-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400 pr-2 px-3"
                         onScroll={handleSidebarScroll}
                       >
-                        {jobSidebarLoading
-                          ? Array.from({ length: 6 }).map((_, i) => (
-                              <div
-                                key={i}
-                                className="px-2 py-5 border-b border-[#c7c7c787]"
-                              >
-                                <div className="flex flex-row gap-4">
+                        {jobSidebarLoading ? (
+                          Array.from({ length: 6 }).map((_, i) => (
+                            <div
+                              key={i}
+                              className="px-2 py-5 border-b border-[#c7c7c787]"
+                            >
+                              <div className="flex flex-row gap-4">
+                                <SkeletonLoader
+                                  type="rect"
+                                  width={24}
+                                  height={24}
+                                  className="rounded-lg flex-shrink-0"
+                                />
+                                <div className="flex-1">
                                   <SkeletonLoader
-                                    type="rect"
-                                    width={24}
-                                    height={24}
-                                    className="rounded-lg flex-shrink-0"
+                                    type="text"
+                                    width="70%"
+                                    height={14}
+                                    className="mb-2"
                                   />
-                                  <div className="flex-1">
-                                    <SkeletonLoader
-                                      type="text"
-                                      width="70%"
-                                      height={14}
-                                      className="mb-2"
-                                    />
-                                    <SkeletonLoader
-                                      type="text"
-                                      width="50%"
-                                      height={12}
-                                      className="mb-2"
-                                    />
-                                    <SkeletonLoader
-                                      type="text"
-                                      width="40%"
-                                      height={12}
-                                    />
-                                  </div>
+                                  <SkeletonLoader
+                                    type="text"
+                                    width="50%"
+                                    height={12}
+                                    className="mb-2"
+                                  />
+                                  <SkeletonLoader
+                                    type="text"
+                                    width="40%"
+                                    height={12}
+                                  />
                                 </div>
                               </div>
-                            ))
-                          : showSimilarJobsEmpty
-                            ? (
-                                <p className="px-4 py-10 text-center text-sm text-slate-500">
-                                  No job found
-                                </p>
-                              )
-                            : (jobSidebarList || []).map((job) => (
-                              <div
-                                key={job.id}
-                                id={`job-list-item-${job.id}`}
-                                onClick={() => {
-                                  router.push(`/jobs?slug=${job.slug}`);
+                            </div>
+                          ))
+                        ) : showSimilarJobsEmpty ? (
+                          <p className="px-4 py-10 text-center text-sm text-slate-500">
+                            No job found
+                          </p>
+                        ) : (
+                          (jobSidebarList || []).map((job) => (
+                            <div
+                              key={job.id}
+                              id={`job-list-item-${job.id}`}
+                              onClick={() => {
+                                router.push(`/jobs?slug=${job.slug}`);
 
-                                  setSelectedJob(job);
-                                  setState({ jobID: job.id });
-                                  jobDetail(job.id);
-                                  similarJob(job)
-                                }}
-                                className={`cursor-pointer px-2 py-5 transition-all   ${
-                                  selectedJob?.id === job.id
-                                    ? "border border-[#1E3786] bg-[#fff]  "
-                                    : "border-b border-[#c7c7c787]"
-                                }`}
-                              >
-                                <div className="flex flex-row gap-4 justify-between">
-                                  <div className="flex flex-row gap-4">
-                                    <div>
-                                      {job?.college?.college_logo ? (
-                                        <img
-                                          src={job?.college?.college_logo}
-                                          alt={job?.college?.name}
-                                          className="w-6 h-6  object-contain"
-                                        />
-                                      ) : (
-                                        <div
-                                          className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
-                                            selectedJob?.id === job.id
-                                              ? "text-white bg-gray-400 text-xs"
-                                              : " text-white bg-gray-400 text-xs"
-                                          }  font-semibold flex-shrink-0`}
-                                        >
-                                          {job.college?.name
-                                            ?.slice(0, 1)
-                                            .toUpperCase()}
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div>
-                                      <div className="flex items-start gap-3">
-                                        <div className="min-w-0 flex-1">
-                                          <h3
-                                            className={`font-semibold  leading-tight mb-1 ${
-                                              selectedJob?.id === job.id
-                                                ? ""
-                                                : "text-gray-900"
-                                            }`}
-                                            title={job_title(job)}
-                                          >
-                                            {capitalizeFLetter(
-                                              CharSlice(job_title(job), 20),
-                                            )}
-                                          </h3>
-                                          <p
-                                            className={`cursor-pointer ${
-                                              selectedJob?.id === job.id
-                                                ? ""
-                                                : "text-gray-600 hover:underline"
-                                            } text-sm font-normal`}
-                                            // onClick={(e) => getCollege(e, job.college?.id)}
-                                          >
-                                            {CharSlice(job.college?.name, 20)}
-                                          </p>
-                                        </div>
-                                      </div>
-                                      {/* Header */}
-                                      {/* Experience and Salary */}
+                                setSelectedJob(job);
+                                setState({ jobID: job.id });
+                                jobDetail(job.id);
+                                similarJob(job);
+                              }}
+                              className={`cursor-pointer px-2 py-5 transition-all   ${
+                                selectedJob?.id === job.id
+                                  ? "border border-[#1E3786] bg-[#fff]  "
+                                  : "border-b border-[#c7c7c787]"
+                              }`}
+                            >
+                              <div className="flex flex-row gap-4 justify-between">
+                                <div className="flex flex-row gap-4">
+                                  <div>
+                                    {job?.college?.college_logo ? (
+                                      <img
+                                        src={job?.college?.college_logo}
+                                        alt={job?.college?.name}
+                                        className="w-6 h-6  object-contain"
+                                      />
+                                    ) : (
                                       <div
-                                        className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
+                                        className={`w-6 h-6 rounded-lg bg-gray-400  flex items-center justify-center ${
                                           selectedJob?.id === job.id
-                                            ? ""
-                                            : "text-gray-600"
-                                        }`}
+                                            ? "text-white bg-gray-400 text-xs"
+                                            : " text-white bg-gray-400 text-xs"
+                                        }  font-semibold flex-shrink-0`}
                                       >
-                                        <div className="flex gap-2">
-                                          <Briefcase
+                                        {job.college?.name
+                                          ?.slice(0, 1)
+                                          .toUpperCase()}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <div className="flex items-start gap-3">
+                                      <div className="min-w-0 flex-1">
+                                        <h3
+                                          className={`font-semibold  leading-tight mb-1 ${
+                                            selectedJob?.id === job.id
+                                              ? ""
+                                              : "text-gray-900"
+                                          }`}
+                                          title={job_title(job)}
+                                        >
+                                          {capitalizeFLetter(
+                                            CharSlice(job_title(job), 20),
+                                          )}
+                                        </h3>
+                                        <p
+                                          className={`cursor-pointer ${
+                                            selectedJob?.id === job.id
+                                              ? ""
+                                              : "text-gray-600 hover:underline"
+                                          } text-sm font-normal`}
+                                          // onClick={(e) => getCollege(e, job.college?.id)}
+                                        >
+                                          {CharSlice(job.college?.name, 20)}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    {/* Header */}
+                                    {/* Experience and Salary */}
+                                    <div
+                                      className={`flex  justify-start gap-3 flex-wrap  mb-3 border-none mt-4 ${
+                                        selectedJob?.id === job.id
+                                          ? ""
+                                          : "text-gray-600"
+                                      }`}
+                                    >
+                                      <div className="flex gap-2">
+                                        <Briefcase
+                                          className={`${
+                                            selectedJob?.id === job.id && ""
+                                          } w-3 h-3 flex-1 text-[#E6AB1D]`}
+                                        />
+                                        <span
+                                          className={`text-[12px] pt-[-2px] ${
+                                            selectedJob?.id === job.id && ""
+                                          }`}
+                                        >
+                                          {job.experiences?.name}
+                                        </span>
+                                      </div>
+
+                                      {job.locations?.length > 0 && (
+                                        <div className="flex  gap-1">
+                                          <MapPin
                                             className={`${
                                               selectedJob?.id === job.id && ""
-                                            } w-3 h-3 flex-1 text-[#E6AB1D]`}
+                                            } w-3 h-3 text-[#E6AB1D] flex-1`}
                                           />
                                           <span
                                             className={`text-[12px] pt-[-2px] ${
-                                              selectedJob?.id === job.id && ""
+                                              selectedJob?.id === job.id &&
+                                              "text-[12px]"
                                             }`}
                                           >
-                                            {job.experiences?.name}
+                                            {job.locations
+                                              ?.map((item) => item.city)
+                                              .join(", ")}
+                                            {/* {job?.college?.address} */}
                                           </span>
                                         </div>
+                                      )}
 
-                                        {job.locations?.length > 0 && (
-                                          <div className="flex  gap-1">
-                                            <MapPin
-                                              className={`${
-                                                selectedJob?.id === job.id && ""
-                                              } w-3 h-3 text-[#E6AB1D] flex-1`}
-                                            />
-                                            <span
-                                              className={`text-[12px] pt-[-2px] ${
-                                                selectedJob?.id === job.id &&
-                                                "text-[12px]"
-                                              }`}
-                                            >
-                                              {job.locations
-                                                ?.map((item) => item.city)
-                                                .join(", ")}
-                                              {/* {job?.college?.address} */}
-                                            </span>
-                                          </div>
-                                        )}
-
-                                        {/* <div className="flex items-center gap-1">
+                                      {/* <div className="flex items-center gap-1">
                                 {job.salary_range_obj?.name?.includes("$") ? (
                                   <DollarSign
                                     className={`${
@@ -2994,35 +3026,35 @@ ${userName}`;
                                   {job?.salary_range_obj?.name}
                                 </span>
                               </div> */}
-                                      </div>
-                                      <div className="flex gap-2">
-                                        <Building2 className="w-4 h-4 text-[#ffb400] " />
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <Building2 className="w-4 h-4 text-[#ffb400] " />
 
-                                        <span className="flex items-center gap-2">
-                                          {job?.department
-                                            ?.slice(0, 1)
-                                            .map((item, index) => (
-                                              <span
-                                                key={index}
-                                                className="cursor-pointer text-[12px]"
-                                                // onClick={(e) => {
-                                                //   e.stopPropagation();
-                                                //   onDepartmentClick && onDepartmentClick(e, item.id);
-                                                // }}
-                                              >
-                                                {item.name}
-                                              </span>
-                                            ))}
+                                      <span className="flex items-center gap-2">
+                                        {job?.department
+                                          ?.slice(0, 1)
+                                          .map((item, index) => (
+                                            <span
+                                              key={index}
+                                              className="cursor-pointer text-[12px]"
+                                              // onClick={(e) => {
+                                              //   e.stopPropagation();
+                                              //   onDepartmentClick && onDepartmentClick(e, item.id);
+                                              // }}
+                                            >
+                                              {item.name}
+                                            </span>
+                                          ))}
 
-                                          {/* If more than 2 departments */}
-                                          {job?.department?.length > 2 && (
-                                            <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
-                                              +{job.department.length - 2}
-                                            </div>
-                                          )}
-                                        </span>
-                                      </div>
-                                      {/* Location
+                                        {/* If more than 2 departments */}
+                                        {job?.department?.length > 2 && (
+                                          <div className="w-5 h-5 px-2 py-2 flex items-center justify-center rounded-full bg-[#1E3786] text-white text-[10px] font-medium">
+                                            +{job.department.length - 2}
+                                          </div>
+                                        )}
+                                      </span>
+                                    </div>
+                                    {/* Location
                             <div
                               className={`flex items-center gap-1 text-xs mb-3 ${
                                 selectedJob?.id === job.id
@@ -3045,18 +3077,18 @@ ${userName}`;
                                   .join(", ")}
                               </span>
                             </div> */}
-                                      {/* Footer */}
-                                      {/* <div
+                                    {/* Footer */}
+                                    {/* <div
                               className={`flex items-center justify-between pt-3 border-t ${
                                 selectedJob?.id === job.id
                                   ? "border-gray-400"
                                   : "border-gray-300"
                               }`}
                             > */}
-                                      {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
+                                    {/* <span className="bg-green-50 text-green-700 px-2 py-1 rounded-full text-xs font-medium">
                         {job?.job_type_obj?.name}
                       </span> */}
-                                      {/* <div
+                                    {/* <div
                                 className={`flex items-center gap-1 text-xs ${
                                   selectedJob?.id === job.id
                                     ? "text-white"
@@ -3079,35 +3111,35 @@ ${userName}`;
                                     : "Just now"}
                                 </span>
                               </div> */}
-                                      {/* </div> */}
-                                    </div>
+                                    {/* </div> */}
                                   </div>
+                                </div>
 
-                                  <div>
-                                    <div className="flex justify-between items-start mb-3">
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          onClick={() => handleSaveToggle(job)}
-                                          disabled={isSaving === job.id}
-                                          className="p-1 -m-1"
-                                          // aria-label={
-                                          //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
-                                          // }
-                                        >
-                                          {job?.is_saved ? (
-                                            <div className="flex items-center ">
-                                              <BookmarkCheck
-                                                className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
-                                              />
-                                            </div>
-                                          ) : (
-                                            <>
-                                              <Bookmark className="w-5 h-5 " />
-                                            </>
-                                          )}
-                                        </button>
+                                <div>
+                                  <div className="flex justify-between items-start mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <button
+                                        onClick={() => handleSaveToggle(job)}
+                                        disabled={isSaving === job.id}
+                                        className="p-1 -m-1"
+                                        // aria-label={
+                                        //   state.jobDetail.is_saved ? "Unsave job" : "Save job"
+                                        // }
+                                      >
+                                        {job?.is_saved ? (
+                                          <div className="flex items-center ">
+                                            <BookmarkCheck
+                                              className={`w-5 h-5 fill-[#1E3786] text-white cursor-pointer `}
+                                            />
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <Bookmark className="w-5 h-5 " />
+                                          </>
+                                        )}
+                                      </button>
 
-                                        {/* <RWebShare
+                                      {/* <RWebShare
                               data={{
                                 title: "Faculty Plus",
                                 text: "Check this out!",
@@ -3119,12 +3151,13 @@ ${userName}`;
                             >
                               <Share2 className="w-5 h-5  hover:text-gray-600 cursor-pointer" />
                             </RWebShare> */}
-                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            ))}
+                            </div>
+                          ))
+                        )}
                         {state.isFetchingMore && (
                           <div className="space-y-4 px-2">
                             {[1, 2].map((i) => (
@@ -3261,10 +3294,10 @@ ${userName}`;
                                 <div className="flex-1 flex-col">
                                   <div className="flex items-start gap-2 flex-wrap mb-1">
                                     <h1 className="text-2xl font-semibold text-gray-900">
-                                    {capitalizeFLetter(
-                                      job_title(state?.jobDetail),
-                                    )}
-                                  </h1>
+                                      {capitalizeFLetter(
+                                        job_title(state?.jobDetail),
+                                      )}
+                                    </h1>
                                     {state?.jobDetail?.department.length ==
                                       1 && (
                                       <>
@@ -3275,7 +3308,7 @@ ${userName}`;
                                               onClick={(e) =>
                                                 getDepartment(e, item.id)
                                               }
-                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786]
                        border border-[#1E3786]
                        hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap"
                                             >
@@ -3283,20 +3316,20 @@ ${userName}`;
                                             </button>
                                           ),
                                         )}
-                                        { state?.jobDetail?.categories.length == 1 &&
-                                        state?.jobDetail?.categories?.map(
-                                          (item, index) => (
-                                            <button
-                                              key={index}
-                                             
-                                              className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786] 
+                                        {state?.jobDetail?.categories.length ==
+                                          1 &&
+                                          state?.jobDetail?.categories?.map(
+                                            (item, index) => (
+                                              <button
+                                                key={index}
+                                                className="mt-1 px-3 py-0.5 text-xs font-semibold rounded-full border bg-blue-50 text-[#1E3786]
                        border border-[#1E3786]
                        hover:bg-[#1E3786] hover:text-white transition-all duration-200 whitespace-nowrap cursor-default"
-                                            >
-                                              {item.name}
-                                            </button>
-                                          ),
-                                        )}
+                                              >
+                                                {item.name}
+                                              </button>
+                                            ),
+                                          )}
                                       </>
                                     )}
                                   </div>
@@ -3407,17 +3440,17 @@ ${userName}`;
                                 </div>
 
                                 {state.jobDetail?.user_is_applied === false ? (
-                                <button
-                                  onClick={() => {
-                                    setState({ jobID: state?.jobDetail?.id });
-                                    handleApply();
-                                  }}
-                                  className=" bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
-                                >
-                                  {state.jobDetail?.apply_link
-                                    ? " Apply on company's site"
-                                    : " Apply Now"}
-                                </button>
+                                  <button
+                                    onClick={() => {
+                                      setState({ jobID: state?.jobDetail?.id });
+                                      handleApply();
+                                    }}
+                                    className=" bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                                  >
+                                    {state.jobDetail?.apply_link
+                                      ? " Apply on company's site"
+                                      : " Apply Now"}
+                                  </button>
                                 ) : (
                                   <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
                                     ✓ Applied
@@ -3473,8 +3506,8 @@ ${userName}`;
                                             onClick={(e) =>
                                               getDepartment(e, item.id)
                                             }
-                                            className="px-4 py-1 text-sm font-medium rounded-full 
-                       bg-blue-50 text-[#1E3786] 
+                                            className="px-4 py-1 text-sm font-medium rounded-full
+                       bg-blue-50 text-[#1E3786]
                        border border-blue-100
                        hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
@@ -3499,16 +3532,44 @@ ${userName}`;
                                   </div>
                                 )}
 
-                                 {state?.jobDetail?.qualification && (
-                                  <div>
+                                {state?.new_job_qualification?.length > 0 ? (
+                                  <div className="">
                                     <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
-                                      Job Qualification
+                                    Job Qualification
                                     </h3>
+                                    <ul className="space-y-1">
+                                      {state?.new_job_qualification?.map(
+                                        (item, index) => (
+                                          <li
+                                            key={index}
+                                            className="flex items-start gap-3"
+                                          >
+                                            {item?.type === "list" && (
+                                              <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                                            )}
 
-                                    <p className="text-gray-700 leading-relaxed text-sm md:text-base">
-                                      {state?.jobDetail?.qualification}
-                                    </p>
+                                            <span
+                                              dangerouslySetInnerHTML={{
+                                                __html: item?.text ?? item,
+                                              }}
+                                            />
+                                          </li>
+                                        ),
+                                      )}
+                                    </ul>
                                   </div>
+                                ) : (
+                                  state?.jobDetail?.qualification && (
+                                    <div>
+                                      <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                                        Job Qualification
+                                      </h3>
+
+                                      <p className="text-gray-700 leading-relaxed text-sm md:text-base">
+                                        {state?.jobDetail?.qualification}
+                                      </p>
+                                    </div>
+                                  )
                                 )}
                               </div>
                             </div>
@@ -3526,9 +3587,15 @@ ${userName}`;
                                         key={index}
                                         className="flex items-start gap-3"
                                       >
-                                        {item?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />}
+                                        {item?.type === "list" && (
+                                          <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0" />
+                                        )}
 
-                                        <span dangerouslySetInnerHTML={{ __html: item?.text ?? item }} />
+                                        <span
+                                          dangerouslySetInnerHTML={{
+                                            __html: item?.text ?? item,
+                                          }}
+                                        />
                                       </li>
                                     ),
                                   )}
@@ -3579,17 +3646,17 @@ ${userName}`;
                           </div>
 
                           {state.jobDetail?.user_is_applied === false ? (
-                          <button
-                            onClick={() => {
-                              setState({ jobID: state?.jobDetail?.id });
-                              handleApply();
-                            }}
-                            className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] whitespace-nowrap"
-                          >
-                            {state.jobDetail?.apply_link
-                              ? " Apply on company's site"
-                              : " Apply Now"}
-                          </button>
+                            <button
+                              onClick={() => {
+                                setState({ jobID: state?.jobDetail?.id });
+                                handleApply();
+                              }}
+                              className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white !mt-[10px] whitespace-nowrap"
+                            >
+                              {state.jobDetail?.apply_link
+                                ? " Apply on company's site"
+                                : " Apply Now"}
+                            </button>
                           ) : (
                             <div
                               className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 w-fit rounded-full px-4 py-1 "
@@ -4114,20 +4181,20 @@ ${userName}`;
                         Preferred Jobs
                       </button> */}
                       {isLoggedIn && (
-                      <button
-                        onClick={handlePreferredToggle}
-                        className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
-                          preferredOnly
-                            ? "bg-[#1E3786] text-white border-none"
-                            : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
-                        }`}
-                      >
-                        <CrownIcon
-                          size={13}
-                          className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
-                        />
-                        Preferred Jobs
-                      </button>
+                        <button
+                          onClick={handlePreferredToggle}
+                          className={`flex items-center gap-1 px-3 py-1.5 me-3 rounded-full text-xs font-medium transition-colors ${
+                            preferredOnly
+                              ? "bg-[#1E3786] text-white border-none"
+                              : "bg-gray-100 text-[#1E3786] border border-[#1E3786] hover:bg-gray-200"
+                          }`}
+                        >
+                          <CrownIcon
+                            size={13}
+                            className={` ${preferredOnly ? "text-white" : "text-[#1E3786]"} `}
+                          />
+                          Preferred Jobs
+                        </button>
                       )}
                     </div>
                   </div>
@@ -4284,11 +4351,10 @@ ${userName}`;
                                     onDepartmentClick={(e, id) =>
                                       getDepartment(e, id)
                                     }
-                                    onClick={() =>{
-                                      router.push(`/jobs?slug=${job?.slug}`)
-                                  similarJob(job)
-                                }
-                                    }
+                                    onClick={() => {
+                                      router.push(`/jobs?slug=${job?.slug}`);
+                                      similarJob(job);
+                                    }}
                                   />
                                 ) : (
                                   <NewJobCard
@@ -4308,12 +4374,10 @@ ${userName}`;
                                     onDepartmentClick={(e, id) =>
                                       getDepartment(e, id)
                                     }
-                                    onClick={() =>{
-                                      router.push(`/jobs?slug=${job?.slug}`)
-                                  similarJob(job)
-                                  }
-
-                                    }
+                                    onClick={() => {
+                                      router.push(`/jobs?slug=${job?.slug}`);
+                                      similarJob(job);
+                                    }}
                                   />
                                 )}
                               </div>
@@ -4550,8 +4614,8 @@ ${userName}`;
                                         onClick={(e) =>
                                           getDepartment(e, item.id)
                                         }
-                                        className="px-3 py-1 text-xs leading-relaxed rounded-full 
-                       bg-blue-50 text-[#1E3786] 
+                                        className="px-3 py-1 text-xs leading-relaxed rounded-full
+                       bg-blue-50 text-[#1E3786]
                        border border-blue-100
                        hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
@@ -4564,19 +4628,45 @@ ${userName}`;
                               </div>
                             )}
                           </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            Job Description
-                          </h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">
-                            {state.jobDetail?.job_description}
-                          </p>
-
+                       
+                          {state?.new_job_qualification?.length > 0 ? (
+                          <div>
+                                 <h3 className="text-lg font-bold text-gray-900 mb-3">
+                            Job Qualification
+                            </h3>
+                            <div className="space-y-2">
+                              {state.new_job_qualification?.map(
+                                (responsibility, index) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-start gap-2"
+                                  >
+                                    {responsibility?.type === "list" && (
+                                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
+                                    )}
+                                    <p
+                                      className="text-gray-600 text-sm"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          responsibility?.text ??
+                                          responsibility,
+                                      }}
+                                    ></p>
+                                  </div>
+                                ),
+                              )}
+                            </div>
+                          </div>
+                        ):
+                        <>
                           <h3 className="text-lg font-bold text-gray-900 mb-3 mt-2">
                             Job Qualification
                           </h3>
                           <p className="text-gray-600 text-sm leading-relaxed">
                             {state.jobDetail?.qualification}
                           </p>
+                          </>
+}
                         </div>
 
                         {state?.responsibilities?.length > 0 && (
@@ -4591,9 +4681,17 @@ ${userName}`;
                                     key={index}
                                     className="flex items-start gap-2"
                                   >
-                                    {responsibility?.type === "list" && <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />}
-                                    <p className="text-gray-600 text-sm" dangerouslySetInnerHTML={{__html:responsibility?.text ?? responsibility}}>
-                                    </p>
+                                    {responsibility?.type === "list" && (
+                                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
+                                    )}
+                                    <p
+                                      className="text-gray-600 text-sm"
+                                      dangerouslySetInnerHTML={{
+                                        __html:
+                                          responsibility?.text ??
+                                          responsibility,
+                                      }}
+                                    ></p>
                                   </div>
                                 ),
                               )}
@@ -4813,17 +4911,17 @@ ${userName}`;
 
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
                         {state.jobDetail?.user_is_applied === false ? (
-                        <button
-                          onClick={() => {
-                            setState({ jobID: state.jobDetail?.id });
-                            handleApply();
-                          }}
-                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
-                        >
-                          {state.jobDetail?.apply_link
-                            ? " Apply on company's site"
-                            : " Apply Now"}
-                        </button>
+                          <button
+                            onClick={() => {
+                              setState({ jobID: state.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                          >
+                            {state.jobDetail?.apply_link
+                              ? " Apply on company's site"
+                              : " Apply Now"}
+                          </button>
                         ) : (
                           <span className="w-full text-center text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-2 block">
                             ✓ Applied
@@ -5313,29 +5411,29 @@ ${userName}`;
                       {/* ================= Stats ================= */}
                       {(state?.collegeDetail?.intake_per_year ||
                         state?.collegeDetail?.total_strength) && (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
-                        {state.collegeDetail?.intake_per_year && (
-                          <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
-                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                              Intake Per Year
-                            </p>
-                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                              {state.collegeDetail?.intake_per_year}
-                            </h3>
-                          </div>
-                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5">
+                          {state.collegeDetail?.intake_per_year && (
+                            <div className="bg-[#1E3786] text-white rounded-xl p-4 md:p-5 text-center">
+                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                Intake Per Year
+                              </p>
+                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                                {state.collegeDetail?.intake_per_year}
+                              </h3>
+                            </div>
+                          )}
 
-                        {state.collegeDetail?.total_strength && (
-                          <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
-                            <p className="text-sm sm:text-lg font-semibold text-[#fff]">
-                              Total Strength
-                            </p>
-                            <h3 className="text-xl sm:text-2xl font-bold mt-1">
-                              {state.collegeDetail?.total_strength}
-                            </h3>
-                          </div>
-                        )}
-                      </div>
+                          {state.collegeDetail?.total_strength && (
+                            <div className="bg-[#F2B31D] text-white rounded-xl p-4 md:p-5 text-center">
+                              <p className="text-sm sm:text-lg font-semibold text-[#fff]">
+                                Total Strength
+                              </p>
+                              <h3 className="text-xl sm:text-2xl font-bold mt-1">
+                                {state.collegeDetail?.total_strength}
+                              </h3>
+                            </div>
+                          )}
+                        </div>
                       )}
 
                       {/* ================= Achievements ================= */}
