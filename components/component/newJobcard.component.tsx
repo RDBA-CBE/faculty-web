@@ -19,6 +19,7 @@ import {
   StarIcon,
   CrownIcon,
   BellRing,
+  GraduationCapIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -42,6 +43,7 @@ interface JobCardProps {
     application_status?: any;
     matches_user_location?: boolean;
     immediate_join?: boolean;
+    categories?: any;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -197,6 +199,17 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 </span>
               </div>
             )}
+             {job?.categories.length == 1 &&
+              
+                <div className="flex items-center gap-3">
+                  <GraduationCapIcon className="w-4 h-4 text-[#ffb400]" />
+                  <span className="text-sm text-[#6D6C6C]">
+                    {" "}
+                    {job?.categories?.map((item) => item.name).join(", ")}
+                    {/* {job?.college?.address} */}
+                </span>
+              </div>
+              }
           </div>
           <div className="flex items-center gap-3">
             <Building2 className="w-4 h-4 text-[#ffb400]" />
