@@ -2047,6 +2047,8 @@ ${userName}`;
       return body.search ? { search: body.search } : {};
     }
 
+    body.ordering = "-updated_at" ;
+
     if (state.sortBy) {
       body.ordering =
         state.sortOrder === "desc" ? `-${state.sortBy}` : state.sortBy;
