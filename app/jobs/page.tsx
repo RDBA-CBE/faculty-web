@@ -97,6 +97,7 @@ import PaginationComTwo from "@/components/component/PaginationComTwo";
 import SkeletonLoader from "./SkeletonLoader";
 import FilterbarNew from "@/components/component/filterbarNew.component";
 // import { Failure, Success } from "@/components/common-components/toast";
+import { triggerLogout } from "@/utils/axios.utils";
 
 type PromptSuggestionRow = {
   id: string;
@@ -427,6 +428,7 @@ export default function JobsPage() {
     isMessageEdited: false,
     masterDeptList: [],
     masterJobRoleList: [],
+    college_id: null
   });
   const [selectedJob, setSelectedJob] = useState(null);
   const [isSaving, setIsSaving] = useState<number | null>(null);
@@ -444,13 +446,40 @@ export default function JobsPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("token"));
+    const loggedIn = !!localStorage.getItem("token");
+    setIsLoggedIn(loggedIn);
+    if (!loggedIn) {
+      document.body.style.overflow = "hidden";
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent("openLoginModal"));
+      }, 300);
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, []);
+
+  // After login transition only — collegeIdRef is null means first login on this mount
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    if (collegeIdRef.current) return; // already fetched on mount
+    userDetail().then(() => jobList(1));
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    const handleLoginSuccess = () => {
+      document.body.style.overflow = "";
+      setIsLoggedIn(true);
+    };
+    window.addEventListener("loginSuccess", handleLoginSuccess);
+    return () => window.removeEventListener("loginSuccess", handleLoginSuccess);
   }, []);
 
   const handlePreferredToggle = () => {
     const next = !preferredOnly;
     setPreferredOnly(next);
     jobList(1, false, next);
+   
   };
   const [filters, setFilters] = useState({
     searchQuery: "",
@@ -526,7 +555,6 @@ export default function JobsPage() {
       sessionStorage.removeItem("jobs_page_visited");
     };
   }, []);
-
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
@@ -624,6 +652,8 @@ ${userName}`;
 
   const filtersRef = useRef(filters);
   filtersRef.current = filters; // always sync, no useEffect needed
+
+  const collegeIdRef = useRef<any>(null);
 
   useEffect(() => {
     const f = structuredSearchFreezeRef.current;
@@ -932,17 +962,19 @@ ${userName}`;
   }, [selectedJob, isTabScreen]);
 
   useEffect(() => {
-    locationList();
-    jobTypeList();
-    filterList();
-    masterExperienceList();
-    masterDeptList();
-    masterJobRoleList();
-    if (hasSimilarQuery) {
-      similarJob();
-    } else {
-      jobList(1);
-    }
+    userDetail().then(() => {
+      locationList();
+      jobTypeList();
+      filterList();
+      masterExperienceList();
+      masterDeptList();
+      masterJobRoleList();
+      if (hasSimilarQuery) {
+        similarJob();
+      } else {
+        jobList(1);
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -1064,6 +1096,7 @@ ${userName}`;
   };
 
   const filterList = async () => {
+    if (!collegeIdRef.current || !Array.isArray(collegeIdRef.current) || collegeIdRef.current.length === 0) return;
     try {
       const body = bodyData();
       const res: any = await Models.job.filterList(body);
@@ -1328,6 +1361,8 @@ ${userName}`;
     append = false,
     preferred = preferredOnly,
   ) => {
+    // Never call job list API without college_id
+    if (!collegeIdRef.current || !Array.isArray(collegeIdRef.current) || collegeIdRef.current.length === 0) return;
     try {
       if (append) {
         setState({ isFetchingMore: true });
@@ -1336,6 +1371,8 @@ ${userName}`;
       }
 
       const body = bodyData();
+      console.log("body", body);
+      
       if (preferred) body.preferred_jobs = true;
 
       const res: any = await Models.job.list(page, body);
@@ -1616,7 +1653,7 @@ ${userName}`;
           return [];
         }) || [];
 
-        const new_description =
+      const new_description =
         res?.new_job_qualification?.blocks?.flatMap((block) => {
           if (block.type === "list") {
             return block.data.items.map((item) => ({
@@ -1631,8 +1668,6 @@ ${userName}`;
 
           return [];
         }) || [];
-
-
 
       setState({
         loading: false,
@@ -1649,6 +1684,7 @@ ${userName}`;
   };
 
   const similarJob = async (job = null) => {
+    if (!collegeIdRef.current || !Array.isArray(collegeIdRef.current) || collegeIdRef.current.length === 0) return;
     console.log("jobId", job);
     setState({ similarJobLoading: true });
     try {
@@ -1707,7 +1743,6 @@ ${userName}`;
     void jobList(1);
     void filterList();
   }, [hasSimilarQuery, jobIdFromQuery]);
-
 
   useEffect(() => {
     const checkPendingApply = () => {
@@ -1887,6 +1922,34 @@ ${userName}`;
     }
   };
 
+  const userDetail = async () => {
+   
+     const profileStr = localStorage.getItem("user");
+      if (!profileStr) return;
+
+      const profile = JSON.parse(profileStr);
+       console.log("fetching user details for userId:", profile.id);
+    try {
+      console.log("fetching user details for userId in try:", profile.id);
+      const res: any = await Models.profile.details(profile.id);
+      collegeIdRef.current = res.college_ids;
+      setState({
+        loading: false,
+        college_id: res.college_ids,
+      });
+    } catch (error: any) {
+      setState({ loading: false });
+      if (
+        error?.error === "User Not Found" ||
+        error?.message === "User Not Found"
+      ) {
+        Failure("User not found. Please log in again.");
+        triggerLogout();
+        router.replace("/");
+      }
+    }
+  };
+
   const getDepartment = async (e, id) => {
     e.stopPropagation();
     try {
@@ -2034,6 +2097,11 @@ ${userName}`;
     const body: any = {};
     const freeze = structuredSearchFreezeRef.current;
     let searchKeyword: string | null = null;
+
+    if (collegeIdRef.current) {
+      body.college_id = collegeIdRef.current;
+    }
+
     if (freeze !== null) {
       searchKeyword = freeze.keyword ?? "";
     } else if (debouncedSearch) {
@@ -2047,7 +2115,7 @@ ${userName}`;
       return body.search ? { search: body.search } : {};
     }
 
-    body.ordering = "-updated_at" ;
+    body.ordering = "-updated_at";
 
     if (state.sortBy) {
       body.ordering =
@@ -2503,7 +2571,7 @@ ${userName}`;
 
                         {state?.new_job_qualification?.length > 0 ? (
                           <div>
-                           <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
+                            <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
                               Job Qualification
                             </h3>
                             <ul className="space-y-3">
@@ -3537,7 +3605,7 @@ ${userName}`;
                                 {state?.new_job_qualification?.length > 0 ? (
                                   <div className="">
                                     <h3 className="text-md font-semibold text-gray-800  tracking-wide mb-2">
-                                    Job Qualification
+                                      Job Qualification
                                     </h3>
                                     <ul className="space-y-1">
                                       {state?.new_job_qualification?.map(
@@ -4630,45 +4698,45 @@ ${userName}`;
                               </div>
                             )}
                           </div>
-                       
+
                           {state?.new_job_qualification?.length > 0 ? (
-                          <div>
-                                 <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            Job Qualification
-                            </h3>
-                            <div className="space-y-2">
-                              {state.new_job_qualification?.map(
-                                (responsibility, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-start gap-2"
-                                  >
-                                    {responsibility?.type === "list" && (
-                                      <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
-                                    )}
-                                    <p
-                                      className="text-gray-600 text-sm"
-                                      dangerouslySetInnerHTML={{
-                                        __html:
-                                          responsibility?.text ??
-                                          responsibility,
-                                      }}
-                                    ></p>
-                                  </div>
-                                ),
-                              )}
+                            <div>
+                              <h3 className="text-lg font-bold text-gray-900 mb-3">
+                                Job Qualification
+                              </h3>
+                              <div className="space-y-2">
+                                {state.new_job_qualification?.map(
+                                  (responsibility, index) => (
+                                    <div
+                                      key={index}
+                                      className="flex items-start gap-2"
+                                    >
+                                      {responsibility?.type === "list" && (
+                                        <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
+                                      )}
+                                      <p
+                                        className="text-gray-600 text-sm"
+                                        dangerouslySetInnerHTML={{
+                                          __html:
+                                            responsibility?.text ??
+                                            responsibility,
+                                        }}
+                                      ></p>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        ):
-                        <>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3 mt-2">
-                            Job Qualification
-                          </h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">
-                            {state.jobDetail?.qualification}
-                          </p>
-                          </>
-}
+                          ) : (
+                            <>
+                              <h3 className="text-lg font-bold text-gray-900 mb-3 mt-2">
+                                Job Qualification
+                              </h3>
+                              <p className="text-gray-600 text-sm leading-relaxed">
+                                {state.jobDetail?.qualification}
+                              </p>
+                            </>
+                          )}
                         </div>
 
                         {state?.responsibilities?.length > 0 && (

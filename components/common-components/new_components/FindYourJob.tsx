@@ -51,7 +51,7 @@ const categories = [
   
 ];
 
-const FindYourJob = () => {
+const FindYourJob = ({ collegeId }: { collegeId?: any }) => {
   const router = useRouter();
   const [isMobileScreen, setIsMobileScreen] = useState(false);
 
@@ -81,9 +81,8 @@ const FindYourJob = () => {
 
   useEffect(() => {
     locationList();
-   
     jobList(1);
-  }, [debouncedSearch, state.location , state?.JobCat]);
+  }, [debouncedSearch, state.location, state?.JobCat, collegeId]);
 
   useEffect(() => {
     jobList(state.page);
@@ -167,6 +166,7 @@ const FindYourJob = () => {
     
 
   const jobList: any = async (page = 1) => {
+    if (!collegeId || !Array.isArray(collegeId) || collegeId.length === 0) return;
     try {
       setState({ loading: true });
       console.log("hello");
@@ -194,6 +194,11 @@ const FindYourJob = () => {
 
   const bodyData = () => {
     const body: any = {};
+
+    if (collegeId && Array.isArray(collegeId) && collegeId.length > 0) {
+      body.college_id = collegeId;
+    }
+
     if (debouncedSearch) {
       body.search = debouncedSearch;
     }
@@ -206,19 +211,7 @@ const FindYourJob = () => {
       body.category = state.JobCat;
     }
 
-    // if (filters?.location) {
-    //   body.location = filters.location;
-    // }
-
-    // body.date_posted_after = moment()
-    //   .subtract(7, "days")
-    //   .format("YYYY-MM-DD");
-    // body.date_posted_before = moment().format("YYYY-MM-DD");
-
     return body;
-
-   
-    
   };
 
   const totalPages = Math.ceil(state.count / state.pageSize);

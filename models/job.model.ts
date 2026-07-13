@@ -4,6 +4,9 @@ const job = {
   list: (page, body) => {
     let promise = new Promise((resolve, reject) => {
       let url = `jobs/?page=${page}&is_approved=true`;
+      if(body?.college_id){
+        url += `&college=${encodeURIComponent(body.college_id)}`;
+      }
       if (body?.search) {
         url += `&search=${encodeURIComponent(body.search)}`;
       }
@@ -97,6 +100,10 @@ const job = {
     let promise = new Promise((resolve, reject) => {
       let url = `jobs/slug_related?slug=${data.slug}&id=${data.id}`;
       if(data.search) url += `&search=${data.search}`;
+
+      if(data?.college_id){
+        url += `&college=${encodeURIComponent(data.college_id)}`;
+      }
 
       if (data?.ordering) {
         url += `&ordering=${encodeURIComponent(data.ordering)}`;
@@ -214,6 +221,10 @@ const job = {
       let url = `jobs/filters/cascade`;
 
       const params = [];
+
+      if(body?.college_id){
+       params.push(`college_id=${encodeURIComponent(body.college_id)}`) ;
+      }
 
       if (body?.location?.length>0) {
         params.push(`location_id=${body.location}`);

@@ -471,10 +471,10 @@ const Header = () => {
       window.dispatchEvent(new CustomEvent("loginSuccess"));
       Success("Login Successfully!");
 
-      if (sessionStorage.getItem("from_login_btn") === "true") {
-        sessionStorage.removeItem("from_login_btn");
-        router.push("/profile");
-      }
+      // if (sessionStorage.getItem("from_login_btn") === "true") {
+      //   sessionStorage.removeItem("from_login_btn");
+      //   router.push("/profile");
+      // }
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         const validationErrors = {};
@@ -657,7 +657,7 @@ const Header = () => {
                   >
                     Login
                   </Button>
-                  <Button
+                  {/* <Button
                     onClick={() => {
                       setState({
                         isOpenReg: true,
@@ -679,7 +679,7 @@ const Header = () => {
                   >
                     Register
                     <MoveRight size={16} />
-                  </Button>
+                  </Button> */}
                 </div>
               )}
 
@@ -788,7 +788,7 @@ const Header = () => {
           setLoginCaptchaToken("");
           loginRecaptchaRef.current?.reset();
         }}
-        // closeIcon={false}
+        closeIcon={false}
         hideHeader={true}
         preventOutsideClose={true}
         title="Sign In"
@@ -812,7 +812,7 @@ const Header = () => {
 
             <div className="text-center mb-6">
               <h2 className="text-lg font-bold text-gray-900 mb-2">Sign in</h2>
-              <p className="text-gray-600 text-md">
+              {/* <p className="text-gray-600 text-md">
                 Don't have account{" "}
                 <button
                   onClick={() => {
@@ -835,7 +835,7 @@ const Header = () => {
                 >
                   Create Account
                 </button>
-              </p>
+              </p> */}
             </div>
 
             <div className="space-y-4">
