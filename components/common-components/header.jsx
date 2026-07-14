@@ -454,6 +454,21 @@ const Header = () => {
       }
       const res = await Models.auth.login({ ...body, recaptcha_token: loginCaptchaToken });
       console.log("✌️res --->", res);
+
+      if (res?.user?.role === "hr") {
+        setLoginCaptchaToken("");
+        loginRecaptchaRef.current?.reset();
+        setState({
+          btnLoading: false,
+          isOpenLogin: false,
+          email: "",
+          password: "",
+          errors: {},
+          hrRestrictModal: true,
+        });
+        return;
+      }
+
       localStorage.setItem("token", res.access);
       localStorage.setItem("refresh", res.refresh);
       localStorage.setItem("user", JSON.stringify(res.user));
@@ -1637,6 +1652,45 @@ const Header = () => {
             >
               Try Again
             </Button>
+          </div>
+        )}
+      />
+      <Modal
+        isOpen={state.hrRestrictModal}
+        setIsOpen={() => setState({ hrRestrictModal: false })}
+        title="HR Login Restricted"
+        width="500px"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="relative h-fit bg-[#f3f4f6] flex flex-col items-center justify-center text-center p-8 overflow-hidden">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <h2 className="text-xl font-bold text-gray-900 mb-3">
+              HR Login Not Allowed Here
+            </h2>
+            <p className="text-gray-600 text-sm max-w-sm leading-relaxed mb-6">
+              This portal is for faculty members only. As an HR user, please login through the dedicated HR portal.
+            </p>
+            <div className="flex flex-col gap-3 w-full max-w-xs">
+              <a
+                href={process.env.NEXT_PUBLIC_HR_PORTAL_URL || "https://faculty-fradmn.vercel.app/"}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-2.5 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white font-semibold rounded-full text-sm text-center transition-colors"
+              >
+                Go to HR Portal
+              </a>
+              <Button
+                onClick={() => setState({ hrRestrictModal: false })}
+                variant="outline"
+                className="w-full rounded-full text-sm"
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         )}
       />
