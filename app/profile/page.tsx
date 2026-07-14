@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -5690,7 +5690,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 </div>
                               </div>
 
-                              <div className="flex hidden md:block">
+                              {/* <div className="flex hidden md:block">
                                 <Button
                                   onClick={() => menusUpdate("pref")}
                                   className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -5698,7 +5698,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   <CheckCircle className="w-4 h-4 mr-2" />
                                   Update Preferences
                                 </Button>
-                              </div>
+                              </div> */}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -5731,24 +5731,45 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 <div
                                   key={item.id}
                                   onClick={async () => {
-                                    if (item.key === "reveal_name") {
-                                      const result = await Swal.fire({
-                                        title: item.state ? "Hide Your Name?" : "Reveal Your Name?",
-                                        text: item.state
-                                          ? "Your name will be hidden from recruiters."
-                                          : "Your name will be visible to recruiters.",
-                                        icon: "question",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#1E3786",
-                                        cancelButtonColor: "#6b7280",
-                                        confirmButtonText: "Yes, confirm",
-                                        background: "#fff",
-      width: "360px",
-      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
-                                      });
-                                      if (!result.isConfirmed) return;
+                                    const newValue = !item.state;
+                                    const titles = {
+                                      reveal_name: newValue ? "Reveal Your Name?" : "Hide Your Name?",
+                                      active_job_seeker: newValue ? "Activate Job Seeker?" : "Deactivate Job Seeker?",
+                                      newsletter: newValue ? "Subscribe to Newsletter?" : "Unsubscribe from Newsletter?",
+                                    };
+                                    const texts = {
+                                      reveal_name: newValue ? "Your name will be visible to recruiters." : "Your name will be hidden from recruiters.",
+                                      active_job_seeker: newValue ? "You will appear as actively looking for jobs." : "You will no longer appear as actively looking for jobs.",
+                                      newsletter: newValue ? "You will receive updates and news." : "You will stop receiving updates and news.",
+                                    };
+                                    const result = await Swal.fire({
+                                      title: titles[item.key],
+                                      text: texts[item.key],
+                                      icon: "question",
+                                      showCancelButton: true,
+                                      confirmButtonColor: "#1E3786",
+                                      cancelButtonColor: "#6b7280",
+                                      confirmButtonText: "Yes, confirm",
+                                      background: "#fff",
+                                      width: "360px",
+                                      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+                                    });
+                                    if (!result.isConfirmed) return;
+                                    setState({ [item.key]: newValue });
+                                    try {
+                                      const formData = new FormData();
+                                      formData.append("reveal_name", String(item.key === "reveal_name" ? newValue : state.reveal_name));
+                                      formData.append("newsletter", String(item.key === "newsletter" ? newValue : state.newsletter));
+                                      formData.append("active_job_seeker", String(item.key === "active_job_seeker" ? newValue : state.active_job_seeker));
+                                      formData.append("preferred_college_ids", JSON.stringify([...new Set(state.preferred_colleges?.map((i: any) => Number(i?.value || i)))]));
+                                      formData.append("location_ids", JSON.stringify(state.preferred_locations?.map((i: any) => Number(i?.value || i))));
+                                      await Models.profile.update(formData, state.userId);
+                                      userDetail(state.userId);
+                                      Success("Preference updated successfully");
+                                    } catch (error) {
+                                      setState({ [item.key]: item.state });
+                                      Failure(error?.error || "Something went wrong");
                                     }
-                                    handleFormChange(item.key, !item.state);
                                   }}
                                   className={`relative overflow-hidden cursor-pointer border rounded-md p-5 transition-all duration-300 ${
                                     item.state
@@ -5830,19 +5851,21 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                     isLoading={state.locationLoading}
                                     isMulti={true}
                                   />
+
+                                  <div className="flex hidden md:block">
+                                <Button
+                                  onClick={() => menusUpdate("pref")}
+                                  className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Update Preferences
+                                </Button>
+                              </div>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex block md:hidden">
-                              <Button
-                                onClick={() => menusUpdate("pref")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Update Preferences
-                              </Button>
-                            </div>
+                            
                           </CardContent>
                         </Card>
                       </div>
