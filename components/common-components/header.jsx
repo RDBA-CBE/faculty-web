@@ -1676,7 +1676,7 @@ const Header = () => {
             </p>
             <div className="flex flex-col gap-3 w-full max-w-xs">
               <a
-                href={process.env.NEXT_PUBLIC_HR_PORTAL_URL || "https://faculty-fradmn.vercel.app/"}
+                href={process.env.NEXT_PUBLIC_HR_PORTAL_URL || "https://hr.facultypro.in/"}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full py-2.5 bg-[#1E3786] hover:bg-[#1E3786]/90 text-white font-semibold rounded-full text-sm text-center transition-colors"
