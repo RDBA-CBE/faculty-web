@@ -5732,6 +5732,25 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   key={item.id}
                                   onClick={async () => {
                                     const newValue = !item.state;
+
+                                    // Validate required fields before activating job seeker
+                                    if (item.key === "active_job_seeker" && newValue) {
+                                      const u = state.userDetail;
+                                      const missingFields: string[] = [];
+                                      if (!u?.phone) missingFields.push("Phone");
+                                      if (!u?.current_location) missingFields.push("Location");
+                                      if (!u?.experience) missingFields.push("Experience");
+                                      if (!u?.current_position) missingFields.push("Current Position");
+                                      if (!u?.department_id) missingFields.push("Department");
+                                      if (!u?.publications?.length) missingFields.push("Publications");
+                                      if (!u?.projects?.length) missingFields.push("Projects");
+
+                                      if (missingFields.length > 0) {
+                                        setState({ missingJobSeekerFields: missingFields, showJobSeekerModal: true });
+                                        return;
+                                      }
+                                    }
+
                                     const titles = {
                                       reveal_name: newValue ? "Reveal Your Name?" : "Hide Your Name?",
                                       active_job_seeker: newValue ? "Activate Job Seeker?" : "Deactivate Job Seeker?",
@@ -7183,6 +7202,60 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
       <div ref={footerRef}>
         <Footer />
       </div>
+      <Modal
+        isOpen={state.showJobSeekerModal}
+        setIsOpen={() => setState({ showJobSeekerModal: false })}
+        title="Complete Your Profile"
+        width="500px"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="p-6 bg-[#f3f4f6] flex flex-col items-center text-center">
+            <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Complete Your Profile First</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              To activate Active Job Seeker, please fill in the following required fields:
+            </p>
+            <ul className="w-full mb-5 space-y-2">
+              {(state.missingJobSeekerFields || []).map((field: string) => (
+                <li key={field} className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 border border-red-100">
+                  <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-700">{field}</span>
+                </li>
+              ))}
+            </ul>
+            <Button
+              onClick={() => {
+                setState({ showJobSeekerModal: false, activeTab: "Profile" });
+                setTimeout(() => {
+                  if ((state.missingJobSeekerFields || []).some((f: string) =>
+                    ["Phone", "Location", "Experience", "Current Position", "Department"].includes(f)
+                  )) {
+                    saveProfile();
+                  } else if ((state.missingJobSeekerFields || []).includes("Publications")) {
+                    scrollToSection("publications-section");
+                  } else if ((state.missingJobSeekerFields || []).includes("Projects")) {
+                    scrollToSection("projects-section");
+                  }
+                }, 300);
+              }}
+              className="w-full bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-full"
+            >
+              Go to Profile & Fill Details
+            </Button>
+            <button
+              onClick={() => setState({ showJobSeekerModal: false })}
+              className="mt-3 text-sm text-gray-500 hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      />
+
       <Modal
         isOpen={state.showCollegeModal}
         setIsOpen={() => setState({ showCollegeModal: false, collegeDetail: null })}
