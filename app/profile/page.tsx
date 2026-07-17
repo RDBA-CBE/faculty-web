@@ -507,6 +507,7 @@ export default function NaukriProfilePage() {
         gender: state?.gender || "",
         phone: state?.phone || "",
         email: state?.email || "",
+        department: state?.department || ""
       };
 
       await user.validate(validateBody, { abortEarly: false });
@@ -548,6 +549,7 @@ export default function NaukriProfilePage() {
           errors: validationErrors,
           btnLoading: false,
         });
+        
       } else {
         Failure(error?.error || "Something went wrong");
         setState({ btnLoading: false });
@@ -6363,12 +6365,14 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 className="border border-gray-200"
                                 options={state.masterDeptList || []}
                                 value={state?.department || ""}
+                                required
                                 onChange={(selected) =>
                                   handleFormChange(
                                     "department",
                                     selected ? selected.value : "",
                                   )
                                 }
+                                error={state?.errors?.department}
                               />
                             </div>
                             <div className="flex flex-col">

@@ -49,6 +49,7 @@ export const register = Yup.object().shape({
     .required("Password Confirm is required")
     .min(8, "Confirm Password must be at least 8 characters")
     .oneOf([Yup.ref("password")], "Passwords must match"),
+  department:Yup.string().required("Department is required"),
 });
 
 export const user = Yup.object().shape({
@@ -62,6 +63,7 @@ export const user = Yup.object().shape({
   current_location: Yup.string().required(" Location is required"),
   experience: Yup.string().required("Experience is required"),
   gender: Yup.string().required("Gender is required"),
+  department: Yup.string().required("Department is required"),
 });
 
 export const userResume = Yup.object({

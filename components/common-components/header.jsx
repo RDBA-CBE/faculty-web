@@ -361,6 +361,7 @@ const Header = () => {
         email: state.email?.trim(),
         password: state.password,
         password_confirm: state.confirmPassword,
+        department: state.department,
       };
 
       await Validation.register.validate(validateBody, { abortEarly: false });
@@ -1088,10 +1089,12 @@ const Header = () => {
                 placeholder="Department"
                 options={state.departmentList || []}
                 value={state.department || ""}
+                required
                 onChange={(selected) =>
                   handleFormChange("department", selected ? selected.value : "")
                 }
                 className="border border-gray-200 bg-white"
+                error={state.errors?.department}
               />
             </div>
             <div className="gap-4 flex flex-col">
