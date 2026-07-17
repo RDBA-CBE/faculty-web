@@ -415,7 +415,7 @@ const FindYourJob = () => {
                                 data={{
                                   title: "Faculty Plus",
                                   text: "Check this out!",
-                                  url: window.location.href,
+                                  url: `https://www.facultypro.in/jobs?slug=${job.slug}`,
                                 }}
                               >
                                 <button className="text-gray-800 hover:text-black transition h-fit group-hover:!text-white">
