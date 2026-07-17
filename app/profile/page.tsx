@@ -905,6 +905,14 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      if (!state.company?.trim()) {
+        Failure("College Name is required.");
+        return;
+      }
+      if (!state.designation?.trim()) {
+        Failure("Job Title is required.");
+        return;
+      }
       if (!state.start_date) {
         Failure("Start date is required.");
         return;
@@ -961,6 +969,14 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      if (!state.company?.trim()) {
+        Failure("College Name is required.");
+        return;
+      }
+      if (!state.designation?.trim()) {
+        Failure("Job Title is required.");
+        return;
+      }
       if (!state.start_date) {
         Failure("Start date is required.");
         return;
@@ -2844,7 +2860,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {/* College Name */}
                                               <div className="space-y-2 w-full">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  College Name
+                                                  College Name <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Google Inc."
@@ -2862,7 +2878,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {/* Job Title */}
                                               <div className="space-y-2 w-full">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Job Title
+                                                  Job Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Senior Software Engineer"
@@ -2882,8 +2898,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {/* Start Date */}
                                               <div className="space-y-2 w-full">
                                                 <DatePicker
-                                                  placeholder="Start Date"
-                                                  title="Start Date"
+                                                  placeholder="Start Date *"
+                                                  title="Start Date *"
                                                   closeIcon={true}
                                                   selectedDate={
                                                     state.start_date
@@ -2901,8 +2917,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {!state.is_present && (
                                                 <div className="space-y-2 w-full">
                                                   <DatePicker
-                                                    placeholder="End Date"
-                                                    title="End Date"
+                                                    placeholder="End Date *"
+                                                    title="End Date *"
                                                     closeIcon={true}
                                                     selectedDate={
                                                       state.end_date
