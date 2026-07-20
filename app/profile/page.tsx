@@ -1052,18 +1052,28 @@ export default function NaukriProfilePage() {
   };
 
   const addEducation = async () => {
+    const currentYear = new Date().getFullYear();
+    const eduErrors: any = {};
+    if (!state.institution?.trim()) eduErrors.institution = "Institution Name is required.";
+    if (!state.degree?.trim()) eduErrors.degree = "Degree is required.";
+    if (!state.field?.trim()) eduErrors.field = "Field of Study is required.";
+    if (!state.start_year?.toString().trim()) eduErrors.start_year = "Start Year is required.";
+    if (!state.end_year?.toString().trim()) eduErrors.end_year = "End Year is required.";
+    if (state.end_year && parseInt(state.end_year) > currentYear) eduErrors.end_year = "End Year cannot be a future year.";
+    if (Object.keys(eduErrors).length > 0) {
+      setState({ errors: eduErrors });
+      return;
+    }
     try {
-      setState({
-        isCreateEducation: false,
-      });
+      setState({ isCreateEducation: false, errors: {} });
 
       const body = {
         user_id: state.userId,
         institution: state.institution,
         degree: state.degree,
         field: state.field,
-        start_year: state.start_year,
-        end_year: state.end_year,
+        start_year: state.start_year?.toString(),
+        end_year: state.end_year?.toString() || "",
         cgpa: state.cgpa,
       };
       console.log("body", body);
@@ -1080,18 +1090,28 @@ export default function NaukriProfilePage() {
   };
 
   const updateEducation = async () => {
+    const currentYear = new Date().getFullYear();
+    const eduErrors: any = {};
+    if (!state.institution?.trim()) eduErrors.institution = "Institution Name is required.";
+    if (!state.degree?.trim()) eduErrors.degree = "Degree is required.";
+    if (!state.field?.trim()) eduErrors.field = "Field of Study is required.";
+    if (!state.start_year?.toString().trim()) eduErrors.start_year = "Start Year is required.";
+    if (!state.end_year?.toString().trim()) eduErrors.end_year = "End Year is required.";
+    if (state.end_year && parseInt(state.end_year) > currentYear) eduErrors.end_year = "End Year cannot be a future year.";
+    if (Object.keys(eduErrors).length > 0) {
+      setState({ errors: eduErrors });
+      return;
+    }
     try {
-      setState({
-        isEditingEducation: false,
-      });
+      setState({ isEditingEducation: false, errors: {} });
 
       const body = {
         education_id: state.education_id,
         institution: state.institution,
         degree: state.degree,
         field: state.field,
-        start_year: state.start_year,
-        end_year: state.end_year,
+        start_year: state.start_year?.toString(),
+        end_year: state.end_year?.toString() || "",
         grade: state.cgpa,
         project: state.project,
       };
@@ -1132,9 +1152,14 @@ export default function NaukriProfilePage() {
   };
 
   const addProject = async () => {
+    const projErrors: any = {};
+    if (!state.project_title?.trim()) projErrors.project_title = "Project Title is required.";
+    if (!state.duration?.trim()) projErrors.duration = "Duration is required.";
+    if (!state.status?.trim()) projErrors.status = "Status is required.";
+    if (Object.keys(projErrors).length > 0) { setState({ errors: projErrors }); return; }
     try {
       setState({
-        isCreateProjects: false,
+        isCreateProjects: false, errors: {},
       });
 
       const body = {
@@ -1161,9 +1186,14 @@ export default function NaukriProfilePage() {
   };
 
   const updateProjects = async () => {
+    const projErrors: any = {};
+    if (!state.project_title?.trim()) projErrors.project_title = "Project Title is required.";
+    if (!state.duration?.trim()) projErrors.duration = "Duration is required.";
+    if (!state.status?.trim()) projErrors.status = "Status is required.";
+    if (Object.keys(projErrors).length > 0) { setState({ errors: projErrors }); return; }
     try {
       setState({
-        isEditingProject: false,
+        isEditingProject: false, errors: {},
       });
 
       const body = {
@@ -1213,11 +1243,14 @@ export default function NaukriProfilePage() {
   };
 
   const addPublication = async () => {
-    console.log("hello");
-
+    const pubErrors: any = {};
+    if (!state.publication_title?.trim()) pubErrors.publication_title = "Publication Title is required.";
+    if (!state.publication_year?.toString().trim()) pubErrors.publication_year = "Publication Year is required.";
+    else if (parseInt(state.publication_year) > new Date().getFullYear()) pubErrors.publication_year = "Year cannot be a future year.";
+    if (Object.keys(pubErrors).length > 0) { setState({ errors: pubErrors }); return; }
     try {
       setState({
-        isCreatePublication: false,
+        isCreatePublication: false, errors: {},
       });
 
       const body = {
@@ -1227,7 +1260,7 @@ export default function NaukriProfilePage() {
         publication_journal: state.publication_journal,
         publication_volume: state.publication_volume,
         publication_issue: state.publication_issue,
-        publication_year: state.publication_year,
+        publication_year: state.publication_year?.toString(),
       };
 
       const res = await Models.publications.create(body);
@@ -1241,9 +1274,14 @@ export default function NaukriProfilePage() {
   };
 
   const updatePublication = async () => {
+    const pubErrors: any = {};
+    if (!state.publication_title?.trim()) pubErrors.publication_title = "Publication Title is required.";
+    if (!state.publication_year?.toString().trim()) pubErrors.publication_year = "Publication Year is required.";
+    else if (parseInt(state.publication_year) > new Date().getFullYear()) pubErrors.publication_year = "Year cannot be a future year.";
+    if (Object.keys(pubErrors).length > 0) { setState({ errors: pubErrors }); return; }
     try {
       setState({
-        isEditingPublication: false,
+        isEditingPublication: false, errors: {},
       });
 
       const body = {
@@ -1253,7 +1291,7 @@ export default function NaukriProfilePage() {
         publication_journal: state.publication_journal,
         publication_volume: state.publication_volume,
         publication_issue: state.publication_issue,
-        publication_year: state.publication_year,
+        publication_year: state.publication_year?.toString(),
       };
 
       const res = await Models.publications.update(body, state.publication_id);
@@ -1290,8 +1328,9 @@ export default function NaukriProfilePage() {
   };
 
   const addAchievement = async () => {
+    if (!state.achievement_title?.trim()) { setState({ errors: { achievement_title: "Achievement Title is required." } }); return; }
     try {
-      setState({ isCreateAchievements: false, btnLoading: true });
+      setState({ isCreateAchievements: false, btnLoading: true, errors: {} });
 
       const body = {
         user_id: state.userId,
@@ -1321,8 +1360,9 @@ export default function NaukriProfilePage() {
   };
 
   const updateAchievement = async () => {
+    if (!state.achievement_title?.trim()) { setState({ errors: { achievement_title: "Achievement Title is required." } }); return; }
     try {
-      setState({ isEditingAchievements: false, btnLoading: true });
+      setState({ isEditingAchievements: false, btnLoading: true, errors: {} });
 
       const body = {
         achievement_id: state.achievement_id,
@@ -2898,8 +2938,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {/* Start Date */}
                                               <div className="space-y-2 w-full">
                                                 <DatePicker
-                                                  placeholder="Start Date *"
-                                                  title="Start Date *"
+                                                  placeholder="Start Date"
+                                                  title="Start Date"
+                                                  required
                                                   closeIcon={true}
                                                   selectedDate={
                                                     state.start_date
@@ -2917,8 +2958,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {!state.is_present && (
                                                 <div className="space-y-2 w-full">
                                                   <DatePicker
-                                                    placeholder="End Date *"
-                                                    title="End Date *"
+                                                    placeholder="End Date"
+                                                    title="End Date "
+                                                    required
                                                     closeIcon={true}
                                                     selectedDate={
                                                       state.end_date
@@ -3414,53 +3456,39 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Institution Name
+                                                  Institution Name <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Harvard University"
-                                                  value={
-                                                    state.institution || ""
-                                                  }
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "institution",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  value={state.institution || ""}
+                                                  onChange={(e) => handleFormChange("institution", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.institution && <p className="text-red-500 text-xs mt-1">{state.errors.institution}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Degree
+                                                  Degree <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Bachelor of Technology"
                                                   value={state.degree || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "degree",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("degree", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.degree && <p className="text-red-500 text-xs mt-1">{state.errors.degree}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Field of Study
+                                                  Field of Study <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Computer Science"
                                                   value={state.field || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "field",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("field", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.field && <p className="text-red-500 text-xs mt-1">{state.errors.field}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -3469,48 +3497,36 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <Input
                                                   placeholder="e.g., 8.5 CGPA"
                                                   value={state.cgpa || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "cgpa",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("cgpa", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Start Year
+                                                  Start Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2016"
                                                   value={state.start_year || ""}
                                                   onKeyDown={onlyNumbers}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "start_year",
-                                                      numericString(e.target.value),
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("start_year", numericString(e.target.value))}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                  required
                                                 />
+                                                {state.errors?.start_year && <p className="text-red-500 text-xs mt-1">{state.errors.start_year}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  End Year
+                                                  End Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2020"
                                                   value={state.end_year || ""}
                                                   onKeyDown={onlyNumbers}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "end_year",
-                                                      numericString(e.target.value),
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("end_year", numericString(e.target.value))}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.end_year && <p className="text-red-500 text-xs mt-1">{state.errors.end_year}</p>}
                                               </div>
                                             </div>
 
@@ -3524,11 +3540,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               </Button>
                                               <Button
                                                 variant="outline"
-                                                onClick={() =>
-                                                  setState({
-                                                    isCreateEducation: false,
-                                                  })
-                                                }
+                                                onClick={() => setState({ isCreateEducation: false, errors: {} })}
                                                 className="border-gray-300 hover:bg-gray-50"
                                               >
                                                 Cancel
@@ -3842,7 +3854,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Project Title
+                                                  Project Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., E-Commerce Platform"
@@ -3857,10 +3869,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.project_title && <p className="text-red-500 text-xs mt-1">{state.errors.project_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Duration
+                                                  Duration <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 3 months"
@@ -3873,10 +3886,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.duration && <p className="text-red-500 text-xs mt-1">{state.errors.duration}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Status
+                                                  Status <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Completed"
@@ -3889,6 +3903,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.status && <p className="text-red-500 text-xs mt-1">{state.errors.status}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -4045,6 +4060,13 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreateProjects: false,
+                                                    errors:{
+                                                      ...state.errors,
+                                                      project_title:"",
+                                                      duration:"",
+                                                      status:"",
+                                                      
+                                                    }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -4468,7 +4490,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Publication Title
+                                                  Publication Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Advanced AI Research"
@@ -4483,7 +4505,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                               
                                                 />
+                                                 {state.errors?.publication_title && <p className="text-red-500 text-xs mt-1">{state.errors.publication_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -4544,21 +4568,22 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Year
+                                                  Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2023"
                                                   value={
                                                     state.publication_year || ""
                                                   }
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "publication_year",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onKeyDown={onlyNumbers}
+                                                  onChange={(e) => {
+                                                    const val = numericString(e.target.value);
+                                                    handleFormChange("publication_year", val);
+                                                  }}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                
                                                 />
+                                                {state.errors?.publication_year && <p className="text-red-500 text-xs mt-1">{state.errors.publication_year}</p>}
                                               </div>
                                             </div>
 
@@ -4595,6 +4620,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreatePublication: false,
+                                                    errors:{
+                                                      ...state.errors,
+                                                      publication_title:"",
+                                                      publication_year:"",
+                                                    }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -5224,7 +5254,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Achievement Title
+                                                  Achievement Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Employee of the Year"
@@ -5240,6 +5270,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.achievement_title && <p className="text-red-500 text-xs mt-1">{state.errors.achievement_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -5324,6 +5355,10 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreateAchievements: false,
+                                                     errors:{
+                                                      ...state.errors,
+                                                      achievement_title:""
+                                                     }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -5924,22 +5959,38 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             >
                               All
                             </button>
-                            {state.applicationStatuses.map((s: any) => (
-                              <button
-                                key={s.id}
-                                onClick={() => {
-                                  setState({ selectedStatus: s.id, page: 1 });
-                                  appliedJobList(1, false, s.id);
-                                }}
-                                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                             {state.applicationStatuses.map((s: any) => {
+                              //  const n = s.name?.toLowerCase() || '';
+                              //  const active = state.selectedStatus === s.id;
+                              //  const colorClass = n.includes('interview')
+                              //    ? active ? 'bg-purple-600 text-white border-purple-600' : 'bg-purple-50 text-purple-700 border-purple-300 hover:border-purple-500'
+                              //    : n.includes('selected')
+                              //    ? active ? 'bg-green-600 text-white border-green-600' : 'bg-green-50 text-green-700 border-green-300 hover:border-green-500'
+                              //    : n.includes('waitlist')
+                              //    ? active ? 'bg-yellow-500 text-white border-yellow-500' : 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:border-yellow-500'
+                              //    : n.includes('reject')
+                              //    ? active ? 'bg-red-600 text-white border-red-600' : 'bg-red-50 text-red-700 border-red-300 hover:border-red-500'
+                              //    : n.includes('applied')
+                              //    ? active ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-50 text-blue-700 border-blue-300 hover:border-blue-500'
+                              //    : active ? 'bg-[#1E3786] text-white border-[#1E3786]' : 'bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]';
+                               return (
+                                 <button
+                                   key={s.id}
+                                   onClick={() => {
+                                     setState({ selectedStatus: s.id, page: 1 });
+                                     appliedJobList(1, false, s.id);
+                                   }}
+                                   className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                                   state.selectedStatus === s.id
                                     ? "bg-[#1E3786] text-white border-[#1E3786]"
                                     : "bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]"
                                 }`}
-                              >
-                                {s.name}
-                              </button>
-                            ))}
+                                  //  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${colorClass}`}
+                                 >
+                                   {s.name}
+                                 </button>
+                               );
+                             })}
                           </div>
                         )}
                       {state.jobList?.length > 0 ? (
@@ -6306,6 +6357,10 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   setState({
                                     ...state,
                                     experience: selected ? selected.value : "",
+                                    errors: {
+                                      ...state.errors,
+                                      experience: "",
+                                    },
                                   })
                                 }
                                 error={state?.errors?.experience}
@@ -6460,7 +6515,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="flex flex-col gap-4">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                College Name
+                                College Name <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Google Inc."
@@ -6468,13 +6523,15 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 onChange={(e) =>
                                   handleFormChange("company", e.target.value)
                                 }
+                                
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                
                               />
                             </div>
 
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Job Title
+                                Job Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Senior Software Engineer"
@@ -6485,6 +6542,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                     e.target.value,
                                   )
                                 }
+                                
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
                             </div>
@@ -6493,6 +6551,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                               <DatePicker
                                 placeholder="Start Date"
                                 title="Start Date"
+                                required
                                 closeIcon={true}
                                 selectedDate={state.start_date}
                                 onChange={(date) => {
@@ -6532,6 +6591,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 <DatePicker
                                   placeholder="End Date"
                                   title="End Date"
+                                  required
                                   closeIcon={true}
                                   selectedDate={state.end_date}
                                   onChange={(date) => {
@@ -6614,7 +6674,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Institution Name
+                                Institution Name <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Harvard University"
@@ -6626,11 +6686,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.institution}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Degree
+                                Degree <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Bachelor of Technology"
@@ -6639,11 +6700,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("degree", e.target.value)
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                 error={state.errors?.degree}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Field of Study
+                                Field of Study <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Computer Science"
@@ -6652,6 +6714,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("field", e.target.value)
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.field}
                               />
                             </div>
                             <div className="space-y-2">
@@ -6669,7 +6732,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Start Year
+                                Start Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2016"
@@ -6679,11 +6742,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("start_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.start_year}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                End Year
+                                End Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2020"
@@ -6693,6 +6757,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("end_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.end_year}
                               />
                             </div>
                           </div>
@@ -6746,7 +6811,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Project Title
+                                Project Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., E-Commerce Platform"
@@ -6759,10 +6824,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.project_title && <p className="text-red-500 text-xs mt-1">{state.errors.project_title}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Duration
+                                Duration <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 3 months"
@@ -6772,10 +6838,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.duration && <p className="text-red-500 text-xs mt-1">{state.errors.duration}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Status
+                                Status <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Completed"
@@ -6785,6 +6852,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.status && <p className="text-red-500 text-xs mt-1">{state.errors.status}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -6956,7 +7024,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Publication Title
+                                Publication Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Advanced AI Research"
@@ -6968,7 +7036,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              
                               />
+                              {state.errors?.publication_title && <p className="text-red-500 text-xs mt-1">{state.errors.publication_title}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -7018,22 +7088,21 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
                             </div>
-                            <div className="space-y-2">
+                            <div>
                               <label className="text-sm font-semibold text-gray-700">
-                                Year
+                                Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2023"
                                 value={state.publication_year || ""}
                                 onKeyDown={onlyNumbers}
-                                onChange={(e) =>
-                                  handleFormChange(
-                                    "publication_year",
-                                    numericString(e.target.value),
-                                  )
-                                }
+                                onChange={(e) => {
+                                  const val = numericString(e.target.value);
+                                  handleFormChange("publication_year", val);
+                                }}
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.publication_year && <p className="text-red-500 text-xs mt-1">{state.errors.publication_year}</p>}
                             </div>
                             <div className="space-y-2 md:col-span-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -7102,7 +7171,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Achievement Title
+                                Achievement Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Employee of the Year"
@@ -7115,7 +7184,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.achievement_title && <p className="text-red-500 text-xs mt-1">{state.errors.achievement_title}</p>}
                             </div>
+                              
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
                                 Organization
