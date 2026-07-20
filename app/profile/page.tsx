@@ -905,36 +905,37 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      const empErrors: any = {}
+
       if (!state.company?.trim()) {
-        Failure("College Name is required.");
-        return;
+        empErrors.company = "College Name is required."
       }
       if (!state.designation?.trim()) {
-        Failure("Job Title is required.");
-        return;
+        empErrors.designation = "Job Title is required."
       }
       if (!state.start_date) {
-        Failure("Start date is required.");
-        return;
+        empErrors.start_date = "Start date is required."
       }
       if (new Date(state.start_date) > today) {
-        Failure("Start date cannot be a future date.");
-        return;
+        empErrors.start_date = "Start date cannot be a future date."
       }
       if (!state.is_present && !state.end_date) {
-        Failure("End date is required.");
-        return;
+        empErrors.end_date = "End date is required."
       }
       if (
         !state.is_present &&
         state.end_date &&
         new Date(state.end_date) < new Date(state.start_date)
       ) {
-        Failure("End date cannot be before start date.");
-        return;
+        empErrors.end_date = "End date cannot be before start date."
       }
 
-      setState({ isCreateExperience: false });
+      if (Object.keys(empErrors).length > 0) {
+      setState({ errors: empErrors });
+      return;
+    }
+
+      setState({ isCreateExperience: false , errors: {}});
 
       const isPresent = Boolean(state.is_present);
       const endDateValue = isPresent
@@ -969,34 +970,35 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      const empErrors: any = {}
+
       if (!state.company?.trim()) {
-        Failure("College Name is required.");
-        return;
+        empErrors.company = "College Name is required."
       }
       if (!state.designation?.trim()) {
-        Failure("Job Title is required.");
-        return;
+        empErrors.designation = "Job Title is required."
       }
       if (!state.start_date) {
-        Failure("Start date is required.");
-        return;
+        empErrors.start_date = "Start date is required."
       }
       if (new Date(state.start_date) > today) {
-        Failure("Start date cannot be a future date.");
-        return;
+        empErrors.start_date = "Start date cannot be a future date."
       }
       if (!state.is_present && !state.end_date) {
-        Failure("End date is required.");
-        return;
+        empErrors.end_date = "End date is required."
       }
       if (
         !state.is_present &&
         state.end_date &&
         new Date(state.end_date) < new Date(state.start_date)
       ) {
-        Failure("End date cannot be before start date.");
-        return;
+        empErrors.end_date = "End date cannot be before start date."
       }
+
+       if (Object.keys(empErrors).length > 0) {
+      setState({ errors: empErrors });
+      return;
+    }
 
       setState({ isEditingExperience: false });
 
@@ -2913,6 +2915,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.company && <p className="text-red-500 text-xs mt-1">{state.errors.company}</p>}
                                               </div>
 
                                               {/* Job Title */}
@@ -2933,6 +2936,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.designation && <p className="text-red-500 text-xs mt-1">{state.errors.designation}</p>}
                                               </div>
 
                                               {/* Start Date */}
@@ -2948,10 +2952,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   onChange={(date) => {
                                                     setState({
                                                       start_date: date,
+                                                      errors: {...state.errors, start_date: ""}
                                                     });
                                                   }}
                                                   toDate={new Date()}
                                                 />
+                                                {state.errors?.start_date && <p className="text-red-500 text-xs mt-1">{state.errors.start_date}</p>}
                                               </div>
 
                                               {/* End Date */}
@@ -2968,6 +2974,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     onChange={(date) => {
                                                       setState({
                                                         end_date: date,
+                                                        errors: {...state.errors, end_date: ""}
                                                       });
                                                     }}
                                                     fromDate={
@@ -2979,6 +2986,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     } // ✅ prevent before start date
                                                     toDate={new Date()}
                                                   />
+                                                  {state.errors?.end_date && <p className="text-red-500 text-xs mt-1">{state.errors.end_date}</p>}
                                                 </div>
                                               )}
 
@@ -6527,6 +6535,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                 
                               />
+                              {state.errors?.company && <p className="text-red-500 text-xs mt-1">{state.errors.company}</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -6545,6 +6554,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.designation && <p className="text-red-500 text-xs mt-1">{state.errors.designation}</p>}
                             </div>
 
                             <div className="space-y-2">
@@ -6557,10 +6567,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 onChange={(date) => {
                                   setState({
                                     start_date: date,
+                                    errors: {...state.errors, start_date: ""}
                                   });
                                 }}
                                 toDate={new Date()}
                               />
+                              {state.errors?.start_date && <p className="text-red-500 text-xs mt-1">{state.errors.start_date}</p>}
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -6595,7 +6607,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   closeIcon={true}
                                   selectedDate={state.end_date}
                                   onChange={(date) => {
-                                    setState({ end_date: date });
+                                    setState({ end_date: date, errors: {...state.errors, end_date: ""}});
                                   }}
                                   fromDate={
                                     state.start_date
@@ -6604,6 +6616,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   }
                                   toDate={new Date()}
                                 />
+                                 {state.errors?.end_date && <p className="text-red-500 text-xs mt-1">{state.errors.end_date}</p>}
                               </div>
                             )}
 
