@@ -96,7 +96,43 @@ const profile = {
     return promise;
   },
 
+  send_otp: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `users/send_otp/`;
+      instance()
+        .post(url, data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 
+  verify_otp: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `users/verify_deletion_otp/`;
+      instance()
+        .post(url, data)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
 
 };
 

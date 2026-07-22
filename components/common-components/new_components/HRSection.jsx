@@ -135,7 +135,7 @@ const HRSection = () => {
                   </div>
                   <div>
                     <h3 className="sub-ti !font-medium !text-[#1E1E1E] mb-1">
-                      Promoting Your Institution to find rigt candidate
+                      Promoting Your Institution to find right candidate
                     </h3>
                     {/* <p className="text-gray-600 text-md">
                       Track applications, review candidates, and communicate
@@ -235,10 +235,11 @@ const HRSection = () => {
                   className="flex items-center gap-2 text-gray-800 font-semibold hover:text-[#1E3786] transition"
                   onClick={() => router.push(`/jobs`)}
                 >
-                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-                    <Plus className="w-4 h-4" />
-                  </div>
+                  
                   <span className="text-md">View All Job</span>
+                  <div className="w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
                 </button>
               </div>
             </div>

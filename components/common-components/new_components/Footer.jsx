@@ -33,12 +33,21 @@ const Footer = () => {
     next: null,
     prev: null,
     email: "",
+    id: null
   });
   useEffect(() => {
     jobList(1);
     JobCatList();
     locationList()
   }, []);
+
+  useEffect(()=>{
+    const user = localStorage.getItem("user")
+    if(user){
+    const parseuser = JSON.parse(user)
+    setState({id : parseuser?.id || null})
+    }
+  },[])
 
   const jobList = async (page = 1) => {
     try {
@@ -347,6 +356,7 @@ const Footer = () => {
                       Terms & Conditions
                     </a>
                   </li>
+                  {/* {state.id &&  */}
                   <li>
                     <a
                       href="/remove-account"
@@ -355,6 +365,7 @@ const Footer = () => {
                       Delete Account
                     </a>
                   </li>
+                  {/* } */}
                 </ul>
               </div>
             </div>

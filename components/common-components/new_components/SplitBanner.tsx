@@ -336,7 +336,7 @@ const departmentList = async (search = "") => {
               <div className="md:w-[25%]">
                 <CustomSelect
                   className="w-full placeholder:text-[#373535]  px-3 py-1 sm:px-2 xl:px-4 sm:py-2 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700 overflow-hidden"
-                  placeholder="Job Department"
+                  placeholder="Department"
                   options={state.departmentList}
                   value={state?.department || ""}
                   onChange={(selected) =>
@@ -353,7 +353,7 @@ const departmentList = async (search = "") => {
               <div className="md:w-[25%]">
                 <CustomSelect
                   className="w-max-[50px] placeholder:text-[#373535]  px-3 py-1 sm:px-2 xl:px-4 sm:py-2 bg-transparent text-base sm:text-base rounded-full sm:rounded-none border-none appearance-none cursor-pointer text-gray-700"
-                  placeholder="Job role"
+                  placeholder="Role"
                   options={state.jobRoleList}
                   value={state?.jobRole || ""}
                   onChange={(selected) =>
