@@ -1,38 +1,46 @@
+import type { Metadata } from 'next';
+import HomePageClient from './HomePageClient';
 
-'use client';
+export const metadata: Metadata = {
+  title: 'FacultyPro – Academic Job Portal for Faculty Recruitment',
+  description:
+    'FacultyPro connects qualified educators with top colleges and universities across India. Browse faculty, professor, and academic job openings today.',
+  keywords: [
+    'faculty jobs',
+    'professor jobs',
+    'academic jobs India',
+    'assistant professor vacancy',
+    'college teaching jobs',
+    'university jobs',
+    'faculty recruitment India',
+  ],
+  alternates: {
+    canonical: 'https://facultypro.in',
+  },
+  openGraph: {
+    title: 'FacultyPro – Academic Job Portal for Faculty Recruitment',
+    description:
+      'Browse faculty and academic job openings at top colleges and universities across India.',
+    url: 'https://facultypro.in',
+    type: 'website',
+    images: [
+      {
+        url: '/assets/images/footer_logo.png',
+        width: 1200,
+        height: 630,
+        alt: 'FacultyPro',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'FacultyPro – Academic Job Portal',
+    description:
+      'Find faculty and academic jobs at top colleges and universities across India.',
+    images: ['/assets/images/footer_logo.png'],
+  },
+};
 
-import { motion } from 'framer-motion';
-import BannerSection from '@/components/common-components/HeroSection';
-import About from '@/components/common-components/about';
-import Discover from '@/components/common-components/discover';
-import TopCategory from '@/components/common-components/top_category';
-import Banner from '@/components/common-components/home_banner';
-import InstitutionPartners from '@/components/common-components/InstitutionPartners';
-import Testimonials from '@/components/common-components/Testimonials';
-import Footer from '@/components/common-components/Footer';
-
-// ---------------- PAGE ----------------
 export default function HomePage() {
-  
-  return (
-    <div className='min-h-screen'>
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        <BannerSection />
-        <About />
-        <div>
-          <Discover />
-          <TopCategory />
-          <Banner />
-          <InstitutionPartners />
-          <Testimonials />
-        </div>
-        
-        <Footer />
-      </motion.div>
-    </div>
-  );
+  return <HomePageClient />;
 }

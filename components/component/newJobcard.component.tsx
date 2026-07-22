@@ -28,6 +28,7 @@ import { RWebShare } from "react-web-share";
 interface JobCardProps {
   job: {
     id: number;
+    slug?: string;
     job_title: string;
     job_type_obj: any;
     salary_range_obj: any;
@@ -52,15 +53,20 @@ interface JobCardProps {
   onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
 
-const getStatusStyle = (status: string) => {
-  const s = status?.toLowerCase() || "";
-  if (s.includes("interview")) return "bg-purple-100 text-purple-700";
-  if (s.includes("selected")) return "bg-green-100 text-green-700";
-  if (s.includes("waitlist")) return "bg-yellow-100 text-yellow-700";
-  if (s.includes("reject")) return "bg-red-100 text-red-700";
-  if (s.includes("applied")) return "bg-blue-100 text-blue-700";
-  return "bg-[#1E3786] text-white";
-};
+function getJobHref(job: any): string | undefined {
+  const BASE = "https://www.facultypro.in";
+  const urls: string[] = Array.isArray(job?.job_url)
+    ? job.job_url
+    : typeof job?.job_url === "string" && job.job_url
+    ? [job.job_url]
+    : [];
+  if (urls.length > 0) {
+    const longest = urls.reduce((a, b) => (a.length >= b.length ? a : b), "");
+    const slug = longest.replace(`${BASE}/jobs/`, "").split("?")[0];
+    if (slug) return `/jobs/${slug}`;
+  }
+  return job?.id ? `/jobs/${job.id}` : undefined;
+}
 
 export const NewJobCard: React.FC<JobCardProps> = ({
   isProfile,
@@ -118,9 +124,10 @@ export const NewJobCard: React.FC<JobCardProps> = ({
   };
 
   return (
-    <div
+    <a
+      href={getJobHref(job)}
       className=" border-b  border-[#c7c7c787] py-5 px-3  transition-all duration-200 cursor-pointer group flex flex-col md:flex-row "
-      onClick={onClick}
+      onClick={(e) => { if (onClick) { e.preventDefault(); onClick(); } }}
     >
       <div className="flex flex-wrap gap-2 mb-3 md:mb-0 md:mr-3">
         {isProfile && (
@@ -267,6 +274,6 @@ export const NewJobCard: React.FC<JobCardProps> = ({
           View Job
         </button>
       </div>
-    </div>
+    </a>
   );
 };

@@ -154,6 +154,30 @@ export const tourSteps: Record<string, Step[]> = {
     },
    
   ],
+  "/jobs/[slug]": [
+    {
+      target: ".jobs-search-bar",
+      title: "Search Jobs",
+      content: "Search by job title, position, or keyword to find relevant faculty openings.",
+      placement: "bottom",
+      skipBeacon: true,
+    },
+    {
+      target: ".jobs-filter-sidebar",
+      title: "Filter Jobs",
+      content: "Narrow down results by location, department, category, experience, college, and more.",
+      placement: "right",
+      skipBeacon: true,
+    },
+    {
+      target: ".job-card-item",
+      title: "Job Card",
+      content: "Each card shows the role, institution, experience, and location. Click a card to view full details and apply.",
+      placement: "top",
+      skipBeacon: true,
+      skipScroll: true,
+    },
+  ],
 };
 
 export default function TourComponent() {
@@ -181,7 +205,12 @@ export default function TourComponent() {
   }, [mounted, isLoggedIn]);
 
   const steps: Step[] = useMemo(() => {
-    const base = tourSteps[pathname] ?? [];
+    const key = tourSteps[pathname]
+      ? pathname
+      : pathname.startsWith("/jobs/")
+      ? "/jobs/[slug]"
+      : null;
+    const base = key ? tourSteps[key] ?? [] : [];
     if (pathname !== "/") return base;
     const authStep: Step = isLoggedIn
       ? base[1] // .profile-buttons step

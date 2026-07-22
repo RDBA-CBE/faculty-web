@@ -258,7 +258,7 @@ const departmentList = async (search = "") => {
       <div className="absolute inset-0 z-0">
         <Image
           src="/assets/images/banner-1.png"
-          alt="Background"
+          alt=""
           fill
           className="object-cover object-bottom w-full h-full"
           priority
@@ -406,9 +406,9 @@ const departmentList = async (search = "") => {
               {/* ))} */}
             </div>
 
-            <h1 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
+            <h2 className="text-[30px] md:text-[35px] lg:text-[40px] xl:text-[45px] leading-[50px] lg:leading-[66px] xl:leading-[60px] font-semibold text-white">
               Are You Institutional HR?
-            </h1>
+            </h2>
 
             <p
               className="group relative inline-flex text-white items-center gap-2 text-sm md:text-base font-medium whitespace-nowrap cursor-pointer"
@@ -429,7 +429,7 @@ const departmentList = async (search = "") => {
             <div className="relative w-full h-full flex items-end justify-end">
               <Image
                 src="/assets/images/banner_logo.png"
-                alt="Hero Banner"
+                alt="Faculty member exploring academic job opportunities"
                 width={800}
                 height={800}
                 className="object-contain object-bottom w-auto h-[300px] sm:h-[550px] lg:h-[600px] xl:h-[700px] 2xl:h-[800px]"

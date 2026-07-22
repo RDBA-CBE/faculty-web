@@ -1,9 +1,16 @@
 import instance from "@/utils/axios.utils";
+import axiosWithoutToken from "@/utils/axiosWithoutToken";
 
 const job = {
   list: (page, body) => {
     let promise = new Promise((resolve, reject) => {
       let url = `jobs/?page=${page}&is_approved=true`;
+      if (body?.job_url) {
+        url += `&job_url=${encodeURIComponent(body.job_url)}`;
+      }
+      if(body?.college_id){
+        url += `&college=${encodeURIComponent(body.college_id)}`;
+      }
       if (body?.search) {
         url += `&search=${encodeURIComponent(body.search)}`;
       }
@@ -98,6 +105,10 @@ const job = {
       let url = `jobs/slug_related?slug=${data.slug}&id=${data.id}`;
       if(data.search) url += `&search=${data.search}`;
 
+      if(data?.college_id){
+        url += `&college=${encodeURIComponent(data.college_id)}`;
+      }
+
       if (data?.ordering) {
         url += `&ordering=${encodeURIComponent(data.ordering)}`;
       }
@@ -118,6 +129,10 @@ const job = {
 
       if (data.colleges) {
         url += `&college=${encodeURIComponent(data.colleges)}`;
+      }
+
+      if (data.created_by) {
+        url += `&created_by=${encodeURIComponent(data.created_by)}`;
       }
 
 
@@ -214,6 +229,10 @@ const job = {
       let url = `jobs/filters/cascade`;
 
       const params = [];
+
+      if(body?.college_id){
+       params.push(`college_id=${encodeURIComponent(body.college_id)}`) ;
+      }
 
       if (body?.location?.length>0) {
         params.push(`location_id=${body.location}`);
@@ -349,6 +368,21 @@ const job = {
   },
   
  
+
+  byUrl: (jobUrl: string) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `jobs/?job_url=${encodeURIComponent(jobUrl)}&is_approved=true&is_publish=true`;
+      axiosWithoutToken()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          reject(error);
+        });
+    });
+    return promise;
+  },
 
   prompt_job: (data: any) => {
     let promise = new Promise((resolve, reject) => {

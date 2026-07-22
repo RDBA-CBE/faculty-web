@@ -21,22 +21,19 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <Provider store={store}>
-      <Suspense
-        fallback={
-          <div className="flex items-center justify-center min-h-screen">
-           <Loader className="animate-spin h-10 w-10 text-[#1E3786]" />
-          </div>
-        }
-      >
-        <div className="flex flex-col w-full min-h-screen">
-          {!isLoginPath && !isSigninPath && !isForgetPassword && <Header />}
-          <main className="w-full overflow-x-hidden">{children}</main>
-        </div>
-        <Toaster position="top-center" />
-        
+      <div className="flex flex-col w-full min-h-screen">
+        {!isLoginPath && !isSigninPath && !isForgetPassword && <Header />}
+        <main className="w-full overflow-x-hidden">
+          <Suspense fallback={null}>
+            {children}
+          </Suspense>
+        </main>
+      </div>
+      <Toaster position="top-center" />
+      <Suspense fallback={null}>
         <TourComponent />
-        <ChatbotWidget />
       </Suspense>
+      <ChatbotWidget />
     </Provider>
   );
 }
