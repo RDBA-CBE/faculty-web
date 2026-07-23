@@ -279,7 +279,7 @@ const FindYourJob = () => {
                   {/* <MapPin className="w-4 h-4 text-gray-400 mr-2" /> */}
 
                   <CustomSelect
-                    placeholder="City, state"
+                    placeholder="City"
                     options={state.locationList}
                     className="p-0 border-none focus:outline-none"
                     value={state?.location || ""}
