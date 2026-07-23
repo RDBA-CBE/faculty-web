@@ -432,6 +432,10 @@ const Header = () => {
           btnLoading: false,
         });
       } else {
+        // reCAPTCHA tokens are single-use; require a fresh verification after
+        // the registration API rejects a request.
+        setRegisterCaptchaToken("");
+        registerRecaptchaRef.current?.reset();
         setState({
           registrationErrorMessage:
             error?.error || "Registration failed. Please check your details.",
@@ -509,6 +513,10 @@ const Header = () => {
           btnLoading: false,
         });
       } else {
+        // reCAPTCHA tokens are single-use; require a fresh verification after
+        // the login API rejects a request.
+        setLoginCaptchaToken("");
+        loginRecaptchaRef.current?.reset();
         setState({
           loginErrorMessage:
             error?.error || "Login failed. Please check your credentials.",
@@ -648,7 +656,7 @@ const Header = () => {
 
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
-                      onClick={handleLogout}
+                      onClick={() => setDialogOpen(true)}
                       className="text-red-600 focus:text-red-700"
                     >
                       <LogOut className="mr-2 h-4 w-4" />
@@ -789,6 +797,38 @@ const Header = () => {
           </div>
         </div>
       </motion.header>
+
+      <Modal
+        isOpen={dialogOpen}
+        setIsOpen={() => setDialogOpen(false)}
+        title="Log out?"
+        width="500px"
+        renderComponent={() => (
+          <div className="py-5">
+            <p className="text-sm text-slate-600">
+              Are you sure you want to log out of your account?
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleCancel}
+                disabled={state.logoutLoading}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleLogout}
+                disabled={state.logoutLoading}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                {state.logoutLoading ? "Logging out..." : "Logout"}
+              </Button>
+            </div>
+          </div>
+        )}
+      />
 
       <Modal
         isOpen={state.isOpenLogin}

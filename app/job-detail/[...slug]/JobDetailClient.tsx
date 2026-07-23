@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import Filterbar from "@/components/component/filterbar.component";
@@ -57,7 +54,14 @@ import {
   Building,
   ArrowRight,
 } from "lucide-react";
-import { useMemo, useState, useEffect, useRef, useLayoutEffect, use } from "react";
+import {
+  useMemo,
+  useState,
+  useEffect,
+  useRef,
+  useLayoutEffect,
+  use,
+} from "react";
 import { Button } from "@/components/ui/button";
 import Modal from "@/components/common-components/modal";
 import { Input } from "@/components/ui/input";
@@ -93,7 +97,11 @@ import FilterbarNew from "@/components/component/filterbarNew.component";
 import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 // import { Failure, Success } from "@/components/common-components/toast";
 
-export default function JobDetailClient({ params }: { params: Promise<{ slug: string[] }> }) {
+export default function JobDetailClient({
+  params,
+}: {
+  params: Promise<{ slug: string[] }>;
+}) {
   const searchParams = useSearchParams();
   const { slug } = use(params);
   const jobIdParam = Array.isArray(slug) ? slug[0] : slug;
@@ -170,6 +178,55 @@ export default function JobDetailClient({ params }: { params: Promise<{ slug: st
   console.log("✌️filters --->", filters);
 
   const debouncedSearch = useDebounce(state.search, 500);
+  const [searchSuggestions, setSearchSuggestions] = useState<any[]>([]);
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
+
+  // Match the jobs-page search suggestions in the detail sidebar. Fetch on
+  // focus too, so the initial suggestions are available before typing.
+  useEffect(() => {
+    if (!showSearchSuggestions) return;
+    const prompt = (state.search || "").trim();
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      Models.job
+        .prompt_job({ prompt, limit: 10 })
+        .then((res: any) => {
+          if (cancelled) return;
+          const rows = (Array.isArray(res?.data) ? res.data : []).flatMap(
+            (job: any) => {
+              const displayNames = Array.isArray(job?.display_name)
+                ? job.display_name.flatMap((group: any) =>
+                    Object.entries(group || {})
+                      .filter(
+                        ([key, value]) =>
+                          key !== "data" && /^line\d+$/i.test(key) && value
+                      )
+                      .map(([, value]) => String(value).trim())
+                  )
+                : [];
+              const labels = displayNames.length
+                ? displayNames
+                : [job_title(job) || job?.job_title].filter(Boolean);
+              return labels.map((label: string, index: number) => ({
+                id: `${job?.id ?? label}-${index}`,
+                label,
+                job,
+              }));
+            }
+          );
+          setSearchSuggestions(rows.slice(0, 10));
+        })
+        .catch(() => {
+          if (!cancelled) setSearchSuggestions([]);
+        });
+    }, 200);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [state.search, showSearchSuggestions]);
 
   useEffect(() => {
     if (showApplicationModal && !state.isMessageEdited && state.jobDetail) {
@@ -240,7 +297,8 @@ ${userName}`;
   const jobListSidebarWrapperRef = useRef<HTMLDivElement>(null);
   const jobDetailContainerRef = useRef<HTMLDivElement>(null);
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
-  const inlineMobileApplyRef = useRef<HTMLButtonElement>(null);
+  const inlineMobileApplyRef = useRef<HTMLDivElement>(null);
+  const searchSuggestionsContainerRef = useRef<HTMLDivElement>(null);
 
   // Swap the fixed CTA for the inline CTA below "Openings" when it reaches
   // the viewport, so mobile never displays two Apply buttons together.
@@ -252,11 +310,24 @@ ${userName}`;
 
     const observer = new IntersectionObserver(
       ([entry]) => setShowMobileApplyBar(!entry.isIntersecting),
-      { threshold: 0.15 },
+      { threshold: 0.15 }
     );
     observer.observe(inlineMobileApplyRef.current);
     return () => observer.disconnect();
   }, [isMobileScreen, selectedJob]);
+
+  useEffect(() => {
+    if (!showSearchSuggestions) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (
+        !searchSuggestionsContainerRef.current?.contains(event.target as Node)
+      ) {
+        setShowSearchSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, [showSearchSuggestions]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -332,10 +403,7 @@ ${userName}`;
               if (cardRect.top < startFadePosition) {
                 const opacity = Math.max(
                   0.6,
-                  Math.min(
-                    1,
-                    (cardRect.top - endFadePosition) / transitionZone,
-                  ),
+                  Math.min(1, (cardRect.top - endFadePosition) / transitionZone)
                 );
                 const blur = (1 - opacity) * 4;
 
@@ -462,7 +530,7 @@ ${userName}`;
     if (isDesktopScreen && selectedJob && showJobDetail) {
       const scrollContainer = jobListSidebarScrollContainerRef.current;
       const jobElement = document.getElementById(
-        `job-list-item-${selectedJob.id}`,
+        `job-list-item-${selectedJob.id}`
       );
 
       if (scrollContainer && jobElement) {
@@ -793,19 +861,18 @@ ${userName}`;
       // The sidebar is a list of alternative jobs, so never render the job
       // currently open in the detail pane (the API may include it).
       const currentJobId = Number(
-        selectedJob?.id ?? state.jobDetail?.id ?? jobIdParam,
+        selectedJob?.id ?? state.jobDetail?.id ?? jobIdParam
       );
       const remainingJobs = (res?.results || []).filter(
-        (job: any) => !Number.isFinite(currentJobId) || Number(job?.id) !== currentJobId,
+        (job: any) =>
+          !Number.isFinite(currentJobId) || Number(job?.id) !== currentJobId
       );
       setState({
         loading: false, // For initial load
         jobListLoading: false,
         isFetchingMore: false,
         count: res?.count,
-        jobList: append
-          ? [...state.jobList, ...remainingJobs]
-          : remainingJobs,
+        jobList: append ? [...state.jobList, ...remainingJobs] : remainingJobs,
         next: res?.next,
         prev: res?.previous,
         page: page,
@@ -1115,7 +1182,7 @@ ${userName}`;
 
       if (state.department_id && state.department_id.length > 0) {
         const ids = state.department_id.map((item: any) =>
-          typeof item === "object" ? Number(item.value) : Number(item),
+          typeof item === "object" ? Number(item.value) : Number(item)
         );
         formData.append("department_id", JSON.stringify(ids));
       }
@@ -1256,7 +1323,7 @@ ${userName}`;
         "last-mon": 30, // Approximation
       };
       const maxDays = Math.max(
-        ...filters.datePosted.map((d) => durationMap[d] || 0),
+        ...filters.datePosted.map((d) => durationMap[d] || 0)
       );
 
       if (maxDays === 1) {
@@ -1422,54 +1489,54 @@ ${userName}`;
                   </div>
                 </div>
               ) : (
-              <div className="flex gap-2 pb-4 pt-2 items-start">
-                <div className="flex-1 space-y-4 p-3">
-                  <div className="bg-white p-6 border border-[#c7c7c787]">
-                    <div className="flex gap-4 mb-6">
-                      <SkeletonLoader
-                        type="rect"
-                        width={64}
-                        height={64}
-                        className="rounded-3xl"
-                      />
-                      <div className="flex-1">
+                <div className="flex gap-2 pb-4 pt-2 items-start">
+                  <div className="flex-1 space-y-4 p-3">
+                    <div className="bg-white p-6 border border-[#c7c7c787]">
+                      <div className="flex gap-4 mb-6">
                         <SkeletonLoader
-                          type="text"
-                          width="40%"
-                          height={32}
-                          className="mb-2"
+                          type="rect"
+                          width={64}
+                          height={64}
+                          className="rounded-3xl"
                         />
-                        <SkeletonLoader type="text" width="20%" height={20} />
+                        <div className="flex-1">
+                          <SkeletonLoader
+                            type="text"
+                            width="40%"
+                            height={32}
+                            className="mb-2"
+                          />
+                          <SkeletonLoader type="text" width="20%" height={20} />
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <SkeletonLoader type="text" width={100} />
+                        <SkeletonLoader type="text" width={100} />
+                        <SkeletonLoader type="text" width={100} />
                       </div>
                     </div>
                     <div className="flex gap-4">
-                      <SkeletonLoader type="text" width={100} />
-                      <SkeletonLoader type="text" width={100} />
-                      <SkeletonLoader type="text" width={100} />
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="flex-1 bg-white p-6 border border-[#c7c7c787]">
-                      <SkeletonLoader
-                        type="text"
-                        width="30%"
-                        height={24}
-                        className="mb-4"
-                      />
-                      <SkeletonLoader type="text" count={8} />
-                    </div>
-                    <div className="w-80 flex-shrink-0 bg-white p-6 border border-[#c7c7c787]">
-                      <SkeletonLoader
-                        type="text"
-                        width="50%"
-                        height={24}
-                        className="mb-4"
-                      />
-                      <SkeletonLoader type="text" count={5} />
+                      <div className="flex-1 bg-white p-6 border border-[#c7c7c787]">
+                        <SkeletonLoader
+                          type="text"
+                          width="30%"
+                          height={24}
+                          className="mb-4"
+                        />
+                        <SkeletonLoader type="text" count={8} />
+                      </div>
+                      <div className="w-80 flex-shrink-0 bg-white p-6 border border-[#c7c7c787]">
+                        <SkeletonLoader
+                          type="text"
+                          width="50%"
+                          height={24}
+                          className="mb-4"
+                        />
+                        <SkeletonLoader type="text" count={5} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
               )
             ) : isTabScreen && selectedJob ? (
               <div
@@ -1596,7 +1663,7 @@ ${userName}`;
                           {capitalizeFLetter(
                             state?.jobDetail?.locations
                               ?.map((item) => item.city)
-                              .join(", "),
+                              .join(", ")
                           )}{" "}
                           {/* {state?.jobDetail?.college?.address} */}
                         </span>
@@ -1605,7 +1672,7 @@ ${userName}`;
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                    <button
+                    {/* <button
                       onClick={() => {
                         setState({ jobID: state?.jobDetail?.id });
                         handleApply();
@@ -1615,7 +1682,25 @@ ${userName}`;
                       {state.jobDetail?.apply_link
                         ? " Apply on company's site"
                         : " Apply Now"}
-                    </button>
+                    </button> */}
+
+                    {state.jobDetail?.user_is_applied === false ? (
+                      <button
+                        onClick={() => {
+                          setState({ jobID: state?.jobDetail?.id });
+                          handleApply();
+                        }}
+                        className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                      >
+                        {state.jobDetail?.apply_link
+                          ? " Apply on company's site"
+                          : " Apply Now"}
+                      </button>
+                    ) : (
+                      <span className="text-sm  font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
+                        ✓ Applied
+                      </span>
+                    )}
 
                     <div className="flex items-center gap-2">
                       <button
@@ -1680,7 +1765,7 @@ ${userName}`;
                                   >
                                     {item.name}
                                   </button>
-                                ),
+                                )
                               )}
                             </div>
                           </div>
@@ -1904,7 +1989,7 @@ ${userName}`;
                         setSelectedJob(null);
                         window.scrollTo({ top: 0, behavior: "smooth" });
                         router.push(
-                          `/jobs?college=${state?.jobDetail?.college?.id}`,
+                          `/jobs?college=${state?.jobDetail?.college?.id}`
                         );
                       }}
                       className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -1934,18 +2019,66 @@ ${userName}`;
                       ref={jobListSidebarRef}
                       className="bg-white py-5 border border-[#c7c7c787]  flex flex-col max-h-[calc(100vh-100px)]"
                     >
-                      <div className="mb-4 flex flex-col  w-full bg-clr2  rounded-sm  overflow-hidden py-1 flex-shrink-0">
-                        <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full lg:w-auto border border-[#c7c7c787] mx-4 bg-[#F5F5F5]">
-                          <Search color="#E4E4E4" size={22} />
-                          <input
-                            type="text"
-                            placeholder="Search by: Job tittle, Position, Keyword..."
-                            className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
-                            value={state.search}
-                            onChange={(e) =>
-                              setState({ search: e.target.value })
-                            }
-                          />
+                      <div className="mb-4 flex flex-col w-full bg-clr2 rounded-sm overflow-visible py-1 flex-shrink-0">
+                        <div
+                          ref={searchSuggestionsContainerRef}
+                          className="relative mx-4"
+                        >
+                          <div className="flex-grow flex gap-3 items-center rounded-full px-4 py-3 lg:py-0 w-full border border-[#c7c7c787] bg-[#F5F5F5]">
+                            <Search color="#E4E4E4" size={22} />
+                            <input
+                              type="text"
+                              placeholder="Search by: Job tittle, Position, Keyword..."
+                              className="w-full px-2 py-3  bg-transparent text-sm text-slate-600 focus:outline-none placeholder:text-[#AFAFAF] placeholder:font-normal"
+                              value={state.search}
+                              onChange={(e) => {
+                                setState({ search: e.target.value });
+                                setShowSearchSuggestions(true);
+                              }}
+                              onFocus={() => setShowSearchSuggestions(true)}
+                            />
+                            {state.search && (
+                              <button
+                                type="button"
+                                aria-label="Clear search"
+                                onClick={() => {
+                                  setState({ search: "" });
+                                  setShowSearchSuggestions(false);
+                                }}
+                                className="p-1 text-red-400 hover:text-red-500"
+                              >
+                                <X className="h-5 w-5" />
+                              </button>
+                            )}
+                          </div>
+                          {showSearchSuggestions && (
+                            <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[60] max-h-[min(70vh,380px)] overflow-y-auto rounded-2xl border border-slate-200/90 bg-white py-1 shadow-2xl ring-1 ring-black/5">
+                              {searchSuggestions.length > 0 ? (
+                                searchSuggestions.map((suggestion) => (
+                                  <button
+                                    key={suggestion.id}
+                                    type="button"
+                                    className="block w-full border-b border-slate-100 px-4 py-3 text-left text-sm text-slate-800 last:border-b-0 hover:bg-[#eff4ff]"
+                                    onMouseDown={(event) =>
+                                      event.preventDefault()
+                                    }
+                                    onClick={() => {
+                                      setShowSearchSuggestions(false);
+                                      const jobId = suggestion.job?.id;
+                                      if (jobId)
+                                        router.push(`/job-detail/${jobId}`);
+                                    }}
+                                  >
+                                    {suggestion.label}
+                                  </button>
+                                ))
+                              ) : (
+                                <p className="px-4 py-6 text-center text-sm text-slate-500">
+                                  No suggestions yet.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
                         <h3 className="text-black px-6 font-semibold mt-4">
                           Job List
@@ -2002,9 +2135,12 @@ ${userName}`;
                                   setSelectedJob(job);
                                   setState({ jobID: job.id });
                                   jobDetail(job.id);
-                                  router.replace(job?.slug ? `/jobs/${job.slug}` : "/jobs", {
-                                    scroll: false,
-                                  });
+                                  router.replace(
+                                    job?.slug ? `/jobs/${job.slug}` : "/jobs",
+                                    {
+                                      scroll: false,
+                                    }
+                                  );
                                 }}
                                 className={`cursor-pointer px-2 py-5 transition-all   ${
                                   selectedJob?.id === job.id
@@ -2047,7 +2183,7 @@ ${userName}`;
                                             title={job_title(job)}
                                           >
                                             {capitalizeFLetter(
-                                              CharSlice(job_title(job), 20),
+                                              CharSlice(job_title(job), 20)
                                             )}
                                           </h3>
                                           <p
@@ -2350,12 +2486,12 @@ ${userName}`;
                               <div className="flex items-center gap-2 mb-3">
                                 <div className="w-fit bg-[#1E37861A] rounded-3xl px-3 py-1 text-[12px] text-[#000]">
                                   {moment(
-                                    state?.jobDetail?.created_at,
+                                    state?.jobDetail?.created_at
                                   ).isValid() &&
                                   moment(state?.jobDetail?.created_at).year() >
                                     1900
                                     ? moment(
-                                        state?.jobDetail?.created_at,
+                                        state?.jobDetail?.created_at
                                       ).fromNow()
                                     : "Just now"}
                                 </div>
@@ -2376,7 +2512,7 @@ ${userName}`;
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   />
@@ -2386,7 +2522,7 @@ ${userName}`;
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
@@ -2398,7 +2534,7 @@ ${userName}`;
                                 <div className="flex-1 flex-col">
                                   <h1 className="text-2xl font-semibold text-gray-900 mb-1">
                                     {capitalizeFLetter(
-                                      job_title(state?.jobDetail),
+                                      job_title(state?.jobDetail)
                                     )}
                                   </h1>
                                   <p
@@ -2406,12 +2542,12 @@ ${userName}`;
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
                                     {capitalizeFLetter(
-                                      state?.jobDetail?.college?.name,
+                                      state?.jobDetail?.college?.name
                                     )}
                                   </p>
                                 </div>
@@ -2441,7 +2577,7 @@ ${userName}`;
                                       {capitalizeFLetter(
                                         state?.jobDetail?.locations
                                           ?.map((item) => item.city)
-                                          .join(", "),
+                                          .join(", ")
                                       )}{" "}
                                       {/* {state?.jobDetail?.college?.address} */}
                                     </span>
@@ -2505,7 +2641,7 @@ ${userName}`;
                                   </RWebShare>
                                 </div>
 
-                                <button
+                                {/* <button
                                   onClick={() => {
                                     setState({ jobID: state?.jobDetail?.id });
                                     handleApply();
@@ -2515,7 +2651,25 @@ ${userName}`;
                                   {state.jobDetail?.apply_link
                                     ? " Apply on company's site"
                                     : " Apply Now"}
-                                </button>
+                                </button> */}
+
+                                {state.jobDetail?.user_is_applied === false ? (
+                                  <button
+                                    onClick={() => {
+                                      setState({ jobID: state?.jobDetail?.id });
+                                      handleApply();
+                                    }}
+                                    className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                                  >
+                                    {state.jobDetail?.apply_link
+                                      ? " Apply on company's site"
+                                      : " Apply Now"}
+                                  </button>
+                                ) : (
+                                  <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
+                                    ✓ Applied
+                                  </span>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -2574,7 +2728,7 @@ ${userName}`;
                                           >
                                             {item.name}
                                           </button>
-                                        ),
+                                        )
                                       )}
                                     </div>
                                   </div>
@@ -2611,7 +2765,7 @@ ${userName}`;
 
                                         <span className="">{item}</span>
                                       </li>
-                                    ),
+                                    )
                                   )}
                                 </ul>
                               </div>
@@ -2659,7 +2813,7 @@ ${userName}`;
                         )} */}
                           </div>
 
-                          <button
+                          {/* <button
                             onClick={() => {
                               setState({ jobID: state?.jobDetail?.id });
                               handleApply();
@@ -2669,7 +2823,27 @@ ${userName}`;
                             {state.jobDetail?.apply_link
                               ? " Apply on company's site"
                               : " Apply Now"}
-                          </button>
+                          </button> */}
+
+                          <div className="mt-4">
+                            {state.jobDetail?.user_is_applied === false ? (
+                              <button
+                                onClick={() => {
+                                  setState({ jobID: state?.jobDetail?.id });
+                                  handleApply();
+                                }}
+                                className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                              >
+                                {state.jobDetail?.apply_link
+                                  ? " Apply on company's site"
+                                  : " Apply Now"}
+                              </button>
+                            ) : (
+                              <span className="text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1">
+                                ✓ Applied
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         {/* Right Sidebar */}
@@ -2737,7 +2911,7 @@ ${userName}`;
                                             state.jobDetail.department.length -
                                               1 && ", "}
                                         </div>
-                                      ),
+                                      )
                                     )}
                                   </div>
                                 </div>
@@ -2799,7 +2973,7 @@ ${userName}`;
                                     onClick={(e) =>
                                       getCollege(
                                         e,
-                                        state?.jobDetail.college?.id,
+                                        state?.jobDetail.college?.id
                                       )
                                     }
                                   >
@@ -2819,7 +2993,7 @@ ${userName}`;
                                   });
 
                                   router.push(
-                                    `/jobs?college=${state?.jobDetail?.college?.id}`,
+                                    `/jobs?college=${state?.jobDetail?.college?.id}`
                                   );
                                 }}
                                 className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
@@ -2852,7 +3026,11 @@ ${userName}`;
                   </button>
                   <div className="flex items-center gap-3">
                     <button
-                      aria-label={state.jobDetail?.is_saved ? "Remove bookmark" : "Bookmark job"}
+                      aria-label={
+                        state.jobDetail?.is_saved
+                          ? "Remove bookmark"
+                          : "Bookmark job"
+                      }
                       onClick={() => handleSaveToggle(state.jobDetail)}
                       disabled={isSaving === state.jobDetail?.id}
                       className="text-slate-700"
@@ -2864,7 +3042,11 @@ ${userName}`;
                       )}
                     </button>
                     <RWebShare
-                      data={{ title: "Faculty Plus", text: "Check this out!", url: window.location.href }}
+                      data={{
+                        title: "Faculty Plus",
+                        text: "Check this out!",
+                        url: window.location.href,
+                      }}
                     >
                       <button aria-label="Share job" className="text-slate-700">
                         <Share2 className="h-5 w-5" />
@@ -2875,148 +3057,142 @@ ${userName}`;
                 <div className="space-y-6">
                   <div className="space-y-6">
                     <div>
-                          <div className="flex items-start gap-4">
-                            {state.jobDetail?.college?.college_logo ? (
-                              <img
-                                src={state.jobDetail.college?.college_logo}
-                                alt={state.jobDetail.college?.name}
-                                className="w-10 h-10 rounded-lg object-contain"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              />
-                            ) : (
-                              <div
-                                className={`w-10 h-10 rounded-lg bg-gray-400 flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {state.jobDetail?.college?.name
-                                  ?.slice(0, 1)
-                                  .toUpperCase()}
-                              </div>
-                            )}
-                            <div className="flex-1 text-left">
-                              <h2 className="text-xl font-bold text-gray-900 text-left">
-                                {capitalizeFLetter(job_title(state.jobDetail))}
-                              </h2>
-                              <p
-                                className="text-gray-600 text-left"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {state.jobDetail?.college?.name}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2">
-                                <span className="text-sm text-gray-600">
-                                  {moment(state.jobDetail?.created_at).isValid()
-                                    ? moment(
-                                        state.jobDetail?.created_at,
-                                      ).fromNow()
-                                    : "Just now"}
-                                </span>
-                                {state?.jobDetail?.immediate_join && (
-                                  <span className="bg-green-100 rounded-full px-2 py-0.5 text-[10px] text-green-700 font-semibold">
-                                    ⚡ Immediate Hiring
-                                  </span>
-                                )}
-                              </div>
-                            </div>
+                      <div className="flex items-start gap-4">
+                        {state.jobDetail?.college?.college_logo ? (
+                          <img
+                            src={state.jobDetail.college?.college_logo}
+                            alt={state.jobDetail.college?.name}
+                            className="w-10 h-10 rounded-lg object-contain"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          />
+                        ) : (
+                          <div
+                            className={`w-10 h-10 rounded-lg bg-gray-400 flex items-center justify-center text-white bg-gray-400 font-semibold text-sm`}
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          >
+                            {state.jobDetail?.college?.name
+                              ?.slice(0, 1)
+                              .toUpperCase()}
                           </div>
+                        )}
+                        <div className="flex-1 text-left">
+                          <h2 className="text-xl font-bold text-gray-900 text-left">
+                            {capitalizeFLetter(job_title(state.jobDetail))}
+                          </h2>
+                          <p
+                            className="text-gray-600 text-left"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          >
+                            {state.jobDetail?.college?.name}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-sm text-gray-600">
+                              {moment(state.jobDetail?.created_at).isValid()
+                                ? moment(state.jobDetail?.created_at).fromNow()
+                                : "Just now"}
+                            </span>
+                            {state?.jobDetail?.immediate_join && (
+                              <span className="bg-green-100 rounded-full px-2 py-0.5 text-[10px] text-green-700 font-semibold">
+                                ⚡ Immediate Hiring
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                        <div className="flex flex-wrap items-center gap-1 text-sm text-gray-600">
-                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
-                            <Briefcase className="w-3 h-3 text-[#E6AB1D]" />
-                            <span>{state.jobDetail?.experiences?.name} </span>
-                          </div>
-                          {/* <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
+                    <div className="flex flex-wrap items-center gap-1 text-sm text-gray-600">
+                      <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                        <Briefcase className="w-3 h-3 text-[#E6AB1D]" />
+                        <span>{state.jobDetail?.experiences?.name} </span>
+                      </div>
+                      {/* <div className="flex items-center gap-1 bg-clr2 px-2 py-1 rounded text-xs">
                         <Clock className="w-3 h-3" />
                         <span>{state.jobDetail?.job_type_obj?.name}</span>
                       </div> */}
-                          <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
-                            <IndianRupee className="w-3 h-3 text-[#E6AB1D]" />
-                            <span>
-                              {state.jobDetail?.salary_range_obj?.name}
-                            </span>
-                          </div>
-                          {state?.jobDetail?.college?.address && (
-                            <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
-                              <MapPin className="w-3 h-3 text-[#E6AB1D]" />
-                              <span>
-                                {state.jobDetail?.locations
-                                  ?.map((item) => item.city)
-                                  .join(", ")}
-                                {/* {state?.jobDetail?.college?.address} */}
-                              </span>
-                            </div>
-                          )}
+                      <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                        <IndianRupee className="w-3 h-3 text-[#E6AB1D]" />
+                        <span>{state.jobDetail?.salary_range_obj?.name}</span>
+                      </div>
+                      {state?.jobDetail?.college?.address && (
+                        <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
+                          <MapPin className="w-3 h-3 text-[#E6AB1D]" />
+                          <span>
+                            {state.jobDetail?.locations
+                              ?.map((item) => item.city)
+                              .join(", ")}
+                            {/* {state?.jobDetail?.college?.address} */}
+                          </span>
                         </div>
+                      )}
+                    </div>
 
-                        <div>
-                          <div className="leading-relaxed space-y-6 ">
-                            {state?.jobDetail?.department?.length > 0 && (
-                              <div>
-                                <h3 className="text-lg font-bold text-gray-900 mb-3">
-                                  Departments
-                                </h3>
+                    <div>
+                      <div className="leading-relaxed space-y-6 ">
+                        {state?.jobDetail?.department?.length > 0 && (
+                          <div>
+                            <h3 className="text-lg font-bold text-gray-900 mb-3">
+                              Departments
+                            </h3>
 
-                                <div className="flex flex-wrap gap-3 mb-5">
-                                  {state?.jobDetail?.department?.map(
-                                    (item, index) => (
-                                      <button
-                                        key={index}
-                                        onClick={(e) =>
-                                          getDepartment(e, item.id)
-                                        }
-                                        className="px-3 py-1 text-xs leading-relaxed rounded-full 
+                            <div className="flex flex-wrap gap-3 mb-5">
+                              {state?.jobDetail?.department?.map(
+                                (item, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={(e) => getDepartment(e, item.id)}
+                                    className="px-3 py-1 text-xs leading-relaxed rounded-full 
                        bg-blue-50 text-[#1E3786] 
                        border border-blue-100
                        hover:bg-[#1E3786] hover:text-white
                        transition-all duration-200"
-                                      >
-                                        {item.name}
-                                      </button>
-                                    ),
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            Job Description
-                          </h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">
-                            {state.jobDetail?.job_description}
-                          </p>
-                        </div>
-
-                        {state?.responsibilities?.length > 0 && (
-                          <div>
-                            <h3 className="text-lg font-bold text-gray-900 mb-3">
-                              Key Responsibilities
-                            </h3>
-                            <div className="space-y-2">
-                              {state.responsibilities?.map(
-                                (responsibility, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-start gap-2"
                                   >
-                                    <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
-                                    <p className="text-gray-600 text-sm">
-                                      {responsibility}
-                                    </p>
-                                  </div>
-                                ),
+                                    {item.name}
+                                  </button>
+                                )
                               )}
                             </div>
                           </div>
                         )}
+                      </div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">
+                        Job Description
+                      </h3>
+                      <p className="text-gray-600 text-sm leading-relaxed">
+                        {state.jobDetail?.job_description}
+                      </p>
+                    </div>
 
-                        {/* {state?.jobDetail?.requirements && (
+                    {state?.responsibilities?.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-bold text-gray-900 mb-3">
+                          Key Responsibilities
+                        </h3>
+                        <div className="space-y-2">
+                          {state.responsibilities?.map(
+                            (responsibility, index) => (
+                              <div
+                                key={index}
+                                className="flex items-start gap-2"
+                              >
+                                <Check className="w-5 h-5 text-[#F2B31D] mt-1 flex-shrink-0 text-sm" />
+                                <p className="text-gray-600 text-sm">
+                                  {responsibility}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* {state?.jobDetail?.requirements && (
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">
                               Requirements
@@ -3039,7 +3215,7 @@ ${userName}`;
                           </div>
                         )} */}
 
-                        {/* {state?.jobDetail?.skills && (
+                    {/* {state?.jobDetail?.skills && (
                           <div>
                             <h3 className="text-lg font-bold text-gray-900 mb-3">
                               Skills
@@ -3057,13 +3233,13 @@ ${userName}`;
                           </div>
                         )} */}
 
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            Job Overview
-                          </h3>
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">
+                        Job Overview
+                      </h3>
 
-                          <div className="space-y-3">
-                            {/* <div>
+                      <div className="space-y-3">
+                        {/* <div>
                           <p className="text-sm font-medium text-gray-500 mb-1">
                             Job type
                           </p>
@@ -3071,175 +3247,178 @@ ${userName}`;
                             {state.jobDetail?.job_type_obj?.name}
                           </p>
                         </div> */}
-                            <div>
-                              <span className=" flex gap-2 text-sm font-medium  pb-1">
-                                <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Job Title
-                              </span>
-                              <p className="text-sm text-gray-500  ps-6">
-                                {/* {capitalizeFLetter(state?.jobDetail?.job_title)} */}
-                                {capitalizeFLetter(job_title(state.jobDetail))}
-                              </p>
-                            </div>
-                            <div>
-                              <span className=" flex gap-2 text-sm font-medium  pb-1">
-                                <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Experience level
-                              </span>
-                              <p className="text-sm text-gray-500  ps-6">
-                                {state?.jobDetail?.experiences?.name}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="flex gap-2 text-sm font-medium  pb-1">
-                                <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Salary
-                              </span>
-                              <p className="text-sm text-gray-500 ps-6">
-                                {state?.jobDetail?.salary_range_obj?.name}
-                              </p>
-                            </div>
+                        <div>
+                          <span className=" flex gap-2 text-sm font-medium  pb-1">
+                            <Workflow className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                            Job Title
+                          </span>
+                          <p className="text-sm text-gray-500  ps-6">
+                            {/* {capitalizeFLetter(state?.jobDetail?.job_title)} */}
+                            {capitalizeFLetter(job_title(state.jobDetail))}
+                          </p>
+                        </div>
+                        <div>
+                          <span className=" flex gap-2 text-sm font-medium  pb-1">
+                            <Briefcase className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                            Experience level
+                          </span>
+                          <p className="text-sm text-gray-500  ps-6">
+                            {state?.jobDetail?.experiences?.name}
+                          </p>
+                        </div>
+                        <div>
+                          <span className="flex gap-2 text-sm font-medium  pb-1">
+                            <IndianRupee className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                            Salary
+                          </span>
+                          <p className="text-sm text-gray-500 ps-6">
+                            {state?.jobDetail?.salary_range_obj?.name}
+                          </p>
+                        </div>
 
-                            <div>
-                              <span className="flex gap-2 text-md font-medium  pb-1">
-                                <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                Department
-                              </span>
-                              <div className="text-md text-gray-500 ps-6">
-                                {state?.jobDetail?.department?.map(
-                                  (item, index) => (
-                                    <div
-                                      key={index}
-                                      className="text-sm text-gray-500"
-                                    >
-                                      <span
-                                        className="text-sm text-gray-500 hover:text-[#1E3786] cursor-pointer hover:underline"
-                                        onClick={(e) =>
-                                          getDepartment(e, item.id)
-                                        }
-                                      >
-                                        {item.name}
-                                      </span>
-                                      {index <
-                                        state.jobDetail.department.length - 1 &&
-                                        ", "}
-                                    </div>
-                                  ),
-                                )}
-                              </div>
-                            </div>
-                            {state?.jobDetail?.college?.address && (
-                              <div>
-                                <span className="flex gap-2 text-sm font-medium  pb-1">
-                                  <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
-                                  Location
-                                </span>
-                                <p className="text-sm text-gray-500  ps-6">
-                                  {state?.jobDetail?.locations
-                                    ?.map((item) => item.city)
-                                    .join(", ")}
-                                  {/* {state?.jobDetail?.college?.address} */}
-                                </p>
-                              </div>
+                        <div>
+                          <span className="flex gap-2 text-md font-medium  pb-1">
+                            <Building2 className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                            Department
+                          </span>
+                          <div className="text-md text-gray-500 ps-6">
+                            {state?.jobDetail?.department?.map(
+                              (item, index) => (
+                                <div
+                                  key={index}
+                                  className="text-sm text-gray-500"
+                                >
+                                  <span
+                                    className="text-sm text-gray-500 hover:text-[#1E3786] cursor-pointer hover:underline"
+                                    onClick={(e) => getDepartment(e, item.id)}
+                                  >
+                                    {item.name}
+                                  </span>
+                                  {index <
+                                    state.jobDetail.department.length - 1 &&
+                                    ", "}
+                                </div>
+                              )
                             )}
                           </div>
                         </div>
-
-                        {state?.jobDetail?.job_image && (
-                          <div
-                            className="pt-4 cursor-pointer"
-                            onClick={() => {
-                              setSelectedJob(null);
-                              setState({ imgOpen: true });
-                            }}
-                          >
-                            <img
-                              src={state?.jobDetail?.job_image}
-                              alt={state?.jobDetail?.job_title}
-                              className="w-100 max-h-[400px]"
-                            />
+                        {state?.jobDetail?.college?.address && (
+                          <div>
+                            <span className="flex gap-2 text-sm font-medium  pb-1">
+                              <MapPin className="w-4 h-4 mt-1 text-[#E6AB1D]" />{" "}
+                              Location
+                            </span>
+                            <p className="text-sm text-gray-500  ps-6">
+                              {state?.jobDetail?.locations
+                                ?.map((item) => item.city)
+                                .join(", ")}
+                              {/* {state?.jobDetail?.college?.address} */}
+                            </p>
                           </div>
                         )}
+                      </div>
+                    </div>
 
+                    {state?.jobDetail?.job_image && (
+                      <div
+                        className="pt-4 cursor-pointer"
+                        onClick={() => {
+                          setSelectedJob(null);
+                          setState({ imgOpen: true });
+                        }}
+                      >
+                        <img
+                          src={state?.jobDetail?.job_image}
+                          alt={state?.jobDetail?.job_title}
+                          className="w-100 max-h-[400px]"
+                        />
+                      </div>
+                    )}
+
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 mb-3">
+                        About
+                      </h3>
+                      <div className="flex items-start gap-3 mb-4">
+                        {state.jobDetail?.college?.college_logo ? (
+                          <img
+                            src={state.jobDetail?.college?.college_logo}
+                            alt={state.jobDetail?.college?.name}
+                            className="w-12 h-12 rounded-lg object-contain"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          />
+                        ) : (
+                          <div
+                            className={`w-12 h-12 rounded-lg bg-gray-400  flex items-center justify-center text-white bg-gray-400 font-semibold`}
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          >
+                            {state.jobDetail?.college?.name
+                              ?.slice(0, 1)
+                              .toUpperCase()}
+                          </div>
+                        )}
                         <div>
-                          <h3 className="text-lg font-bold text-gray-900 mb-3">
-                            About
-                          </h3>
-                          <div className="flex items-start gap-3 mb-4">
-                            {state.jobDetail?.college?.college_logo ? (
-                              <img
-                                src={state.jobDetail?.college?.college_logo}
-                                alt={state.jobDetail?.college?.name}
-                                className="w-12 h-12 rounded-lg object-contain"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              />
-                            ) : (
-                              <div
-                                className={`w-12 h-12 rounded-lg bg-gray-400  flex items-center justify-center text-white bg-gray-400 font-semibold`}
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {state.jobDetail?.college?.name
-                                  ?.slice(0, 1)
-                                  .toUpperCase()}
-                              </div>
-                            )}
-                            <div>
-                              <h4
-                                className="font-medium text-gray-900"
-                                onClick={(e) =>
-                                  getCollege(e, state?.jobDetail.college?.id)
-                                }
-                              >
-                                {state.jobDetail?.college?.name}
-                              </h4>
-                              {/* <p className="text-sm text-gray-500">
+                          <h4
+                            className="font-medium text-gray-900"
+                            onClick={(e) =>
+                              getCollege(e, state?.jobDetail.college?.id)
+                            }
+                          >
+                            {state.jobDetail?.college?.name}
+                          </h4>
+                          {/* <p className="text-sm text-gray-500">
                                 Technology Company
                               </p> */}
-                            </div>
-                          </div>
+                        </div>
+                      </div>
+                      <div ref={inlineMobileApplyRef} className="">
+                        <button
+                          onClick={() => {
+                            setSelectedJob(null);
+                            window.scrollTo({ top: 0, behavior: "smooth" });
+                            router.push(
+                              `/jobs?college=${state?.jobDetail?.college?.id}`
+                            );
+                          }}
+                          className="mb-4 inline-flex h-9 items-center justify-center rounded-full bg-[#1E3786] px-4 text-sm font-medium text-white transition-colors hover:bg-[#F2B31D] hover:text-black"
+                        >
+                          {state?.jobDetail?.college?.total_jobs || 0} College
+                          Openings
+                        </button>
+                        {state.jobDetail?.user_is_applied === false ? (
                           <button
                             onClick={() => {
-                              setSelectedJob(null);
-                              window.scrollTo({ top: 0, behavior: "smooth" });
-
-                              router.push(
-                                `/jobs?college=${state?.jobDetail?.college?.id}`,
-                              );
-                            }}
-                            className="px-6 py-2 rounded-full text-sm font-medium transition-colors bg-[#1E3786] text-white group-hover:bg-[#F2B31D] group-hover:text-black"
-                          >
-                            {state?.jobDetail?.college?.total_jobs || 0}{" "}
-                            Openings
-                          </button>
-                          <button
-                            ref={inlineMobileApplyRef}
-                            onClick={() => {
-                              setState({ jobID: state.jobDetail?.id });
+                              setState({ jobID: state?.jobDetail?.id });
                               handleApply();
                             }}
-                            className="mt-10 w-full rounded-full bg-[#1E3786] px-6 py-3 text-base font-medium text-white"
+                            className="flex h-12 w-full items-center justify-center rounded-full border border-[#1E3786] bg-[#1E3786] px-6 text-base font-medium text-white transition-colors hover:bg-[#1E3786]"
                           >
                             {state.jobDetail?.apply_link
                               ? "Apply on company's site"
                               : "Apply Now"}
                           </button>
-                          <p className="text-sm text-gray-700 leading-relaxed">
-                            {state.jobDetail?.company_detail}
-                          </p>
-                        </div>
+                        ) : (
+                          <div className="flex h-11   w-full items-center justify-center rounded-full border border-green-200 bg-green-50 px-6 text-center text-base font-medium text-green-600">
+                            ✓ Applied
+                          </div>
+                        )}
                       </div>
-
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        {state.jobDetail?.company_detail}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </section>
             )}
 
             {isMobileScreen && selectedJob && showMobileApplyBar && (
               <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] backdrop-blur">
-                <button
+                {/* <button
                   onClick={() => {
                     setState({ jobID: state.jobDetail?.id });
                     handleApply();
@@ -3249,7 +3428,28 @@ ${userName}`;
                   {state.jobDetail?.apply_link
                     ? "Apply on company's site"
                     : "Apply Now"}
-                </button>
+                </button> */}
+                {state.jobDetail?.user_is_applied === false ? (
+                  <button
+                    onClick={() => {
+                      setState({ jobID: state?.jobDetail?.id });
+                      handleApply();
+                    }}
+                    className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white whitespace-nowrap"
+                  >
+                    {state.jobDetail?.apply_link
+                      ? " Apply on company's site"
+                      : " Apply Now"}
+                  </button>
+                ) : (
+                  <button
+                    // className=" font-medium text-green-600 bg-green-50 border border-green-200 rounded-full px-4 py-1  text-md border rounded rounded-3xl  px-6 py-1   transition-colors text-white hover:text-white whitespace-nowrap">
+
+                    className="w-full rounded-full bg-green-50 border border-green-200 px-6 py-2 text-base font-medium text-green-600"
+                  >
+                    ✓ Applied
+                  </button>
+                )}
               </div>
             )}
 
@@ -3684,7 +3884,7 @@ ${userName}`;
                                 >
                                   {item.grade}
                                 </span>
-                              ),
+                              )
                             )}
                           </div>
                         </div>
@@ -3712,16 +3912,15 @@ ${userName}`;
                               </span>
                             )}
 
-                            {state.collegeDetail?.nirf_categories?.map(
-                              (item) =>
-                                item.is_active ? (
-                                  <span
-                                    key={item.id}
-                                    className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
-                                  >
-                                    {item.category}
-                                  </span>
-                                ) : null,
+                            {state.collegeDetail?.nirf_categories?.map((item) =>
+                              item.is_active ? (
+                                <span
+                                  key={item.id}
+                                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-purple-100 text-purple-700"
+                                >
+                                  {item.category}
+                                </span>
+                              ) : null
                             )}
                           </div>
                         </div>
@@ -3769,7 +3968,7 @@ ${userName}`;
                                   <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                   {item.achievement}
                                 </li>
-                              ),
+                              )
                             )}
                           </ul>
                         </div>
@@ -3907,7 +4106,7 @@ ${userName}`;
                                       <Award className="w-5 h-5 text-[#F2B31D] shrink-0" />
                                       {item.achievement}
                                     </li>
-                                  ),
+                                  )
                                 )}
                               </ul>
                             </div>
@@ -3945,6 +4144,3 @@ ${userName}`;
     </>
   );
 }
-
-
-
