@@ -20,6 +20,7 @@ import {
   StarIcon,
   CrownIcon,
   BellRing,
+  GraduationCapIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -44,6 +45,7 @@ interface JobCardProps {
     application_status?: any;
     matches_user_location?: boolean;
     immediate_join?: boolean;
+    categories?: any;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -51,6 +53,16 @@ interface JobCardProps {
   onCollegeClick?: (e: React.MouseEvent, id: number) => void;
   onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
+
+const getStatusStyle = (status: string) => {
+  const s = status?.toLowerCase() || "";
+  if (s.includes("interview")) return "bg-purple-100 text-purple-700";
+  if (s.includes("selected")) return "bg-green-100 text-green-700";
+  if (s.includes("waitlist")) return "bg-yellow-100 text-yellow-700";
+  if (s.includes("reject")) return "bg-red-100 text-red-700";
+  if (s.includes("applied")) return "bg-blue-100 text-blue-700";
+  return "bg-[#1E3786] text-white";
+};
 
 export const JobCard: React.FC<JobCardProps> = ({
   job,
@@ -109,12 +121,12 @@ export const JobCard: React.FC<JobCardProps> = ({
 
   return (
     <div
-      className="border border-[#c7c7c787] bg-white p-5 hover:shadow-md transition-all duration-200 cursor-pointer group h-full flex flex-col"
+      className="border border-[#c7c7c787] bg-white py-2 px-3 md:p-5 hover:shadow-md transition-all duration-200 cursor-pointer group h-full flex flex-col"
       onClick={onClick}
     >
       <div className="flex flex-wrap gap-2 mb-3">
         {isProfile && (
-          <div className="w-fit bg-[#1E3786] rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+          <div className={`w-fit rounded-3xl px-3 py-1 text-[12px] flex items-center gap-2 ${getStatusStyle(job?.application_status)}`}>
             <StarIcon size={14} />
             {capitalizeFLetter(job?.application_status)}
           </div>
@@ -146,7 +158,7 @@ export const JobCard: React.FC<JobCardProps> = ({
 
         <div className="flex-1">
           <h3
-            className="font-bold text-gray-900 text-base text-lg flex gap-2 items-center"
+            className="font-bold text-gray-900 text-base text-md md:text-lg flex gap-2 items-center"
             title={
               job?.job_title
                 ? job?.job_title
@@ -166,14 +178,14 @@ export const JobCard: React.FC<JobCardProps> = ({
               ),
             )}{" "}
             {job?.matches_user_location && (
-              <div className="w-fit !h-fit bg-[#1E3786] rounded-3xl px-2 py-[-1px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
-                <CrownIcon size={12} />
-                Preferred Job
+              <div className="w-fit !h-fit md:bg-[#1E3786] rounded-3xl p-2 md:px-2 md:py-[1.8px] text-[10px] text-[#fff] font-normal flex items-center gap-2 leading-loose">
+                <CrownIcon className="w-4 h-4 md:w-3 md:h-3 text-[#1E3786] fill-[#1E3786] -mt-1 md:text-white md:fill-none"/>
+                <span className="hidden md:block text-white text-[10px] pt-0.1">Preferred Job</span> 
               </div>
             )}
           </h3>
           <p
-            className="font-medium font-normal text-[#848282] text-md hover:underline w-fit"
+            className="font-medium font-normal text-[#848282] text-sm md:text-md hover:underline w-fit"
             title={job?.college?.name}
             onClick={(e) => onCollegeClick(e, job?.college?.id)}
           >
@@ -193,7 +205,7 @@ export const JobCard: React.FC<JobCardProps> = ({
       </div>
 
       {/* Experience and Location */}
-      <div className="flex items-center gap-2 text-sm text-gray-600 ">
+      <div className="flex items-center gap-2 text-sm text-gray-600 flex-wrap">
         <div className="flex items-center gap-3">
           <Briefcase className="w-4 h-4 text-[#ffb400]" />
           <span className="text-sm text-[#6D6C6C]">
@@ -210,6 +222,18 @@ export const JobCard: React.FC<JobCardProps> = ({
               {/* {job?.college?.address} */}
           </span>
         </div>)}
+         <span className="text-gray-400">|</span>
+
+          {job?.categories.length == 1 &&
+              
+          <div className="flex items-center gap-3  ">
+            <GraduationCapIcon className="w-4 h-4 text-[#ffb400]" />
+            <span className="text-sm text-[#6D6C6C]">
+              {" "}
+              {job?.categories?.map((item) => item.name).join(", ")}
+              {/* {job?.college?.address} */}
+          </span>
+        </div>}
       </div>
 
       <div className="flex items-center gap-3 mb-3 mt-2">

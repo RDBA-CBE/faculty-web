@@ -1,3 +1,6 @@
+
+
+
 "use client";
 
 import Filterbar from "@/components/component/filterbar.component";
@@ -54,15 +57,8 @@ import {
   Building,
   ArrowRight,
 } from "lucide-react";
-import { useMemo, useState, useEffect, useRef, useLayoutEffect } from "react";
+import { useMemo, useState, useEffect, useRef, useLayoutEffect, use } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import Modal from "@/components/common-components/modal";
 import { Input } from "@/components/ui/input";
 import TextArea from "@/components/common-components/textArea";
@@ -97,11 +93,12 @@ import FilterbarNew from "@/components/component/filterbarNew.component";
 import SkeletonLoader from "@/app/jobs/SkeletonLoader";
 // import { Failure, Success } from "@/components/common-components/toast";
 
-export default function JobsPage({ params }: { params: { id: string } } & any) {
+export default function JobDetailClient({ params }: { params: Promise<{ slug: string[] }> }) {
   const searchParams = useSearchParams();
+  const { slug } = use(params);
+  const jobIdParam = Array.isArray(slug) ? slug[0] : slug;
 
   const router = useRouter();
-  const jobIdParam = params.id;
   const searchParam = searchParams.get("search");
   const locationParam = searchParams.get("location");
   const collegeParam = searchParams.get("college");
@@ -152,6 +149,7 @@ export default function JobsPage({ params }: { params: { id: string } } & any) {
   const [isTabScreen, setIsTabScreen] = useState(false);
   const [isDesktopScreen, setIsDesktopScreen] = useState(false);
   const [isWideScreen, setIsWideScreen] = useState(false);
+  const [showMobileApplyBar, setShowMobileApplyBar] = useState(true);
   const [viewType, setViewType] = useState<"grid" | "list">("grid");
   const [filters, setFilters] = useState({
     searchQuery: "",
@@ -242,6 +240,23 @@ ${userName}`;
   const jobListSidebarWrapperRef = useRef<HTMLDivElement>(null);
   const jobDetailContainerRef = useRef<HTMLDivElement>(null);
   const jobListSidebarScrollContainerRef = useRef<HTMLDivElement>(null);
+  const inlineMobileApplyRef = useRef<HTMLButtonElement>(null);
+
+  // Swap the fixed CTA for the inline CTA below "Openings" when it reaches
+  // the viewport, so mobile never displays two Apply buttons together.
+  useEffect(() => {
+    if (!isMobileScreen || !selectedJob || !inlineMobileApplyRef.current) {
+      setShowMobileApplyBar(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowMobileApplyBar(!entry.isIntersecting),
+      { threshold: 0.15 },
+    );
+    observer.observe(inlineMobileApplyRef.current);
+    return () => observer.disconnect();
+  }, [isMobileScreen, selectedJob]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -775,14 +790,22 @@ ${userName}`;
       const body = bodyData();
 
       const res: any = await Models.job.list(page, body);
+      // The sidebar is a list of alternative jobs, so never render the job
+      // currently open in the detail pane (the API may include it).
+      const currentJobId = Number(
+        selectedJob?.id ?? state.jobDetail?.id ?? jobIdParam,
+      );
+      const remainingJobs = (res?.results || []).filter(
+        (job: any) => !Number.isFinite(currentJobId) || Number(job?.id) !== currentJobId,
+      );
       setState({
         loading: false, // For initial load
         jobListLoading: false,
         isFetchingMore: false,
         count: res?.count,
         jobList: append
-          ? [...state.jobList, ...(res?.results || [])]
-          : res?.results || [],
+          ? [...state.jobList, ...remainingJobs]
+          : remainingJobs,
         next: res?.next,
         prev: res?.previous,
         page: page,
@@ -1347,9 +1370,58 @@ ${userName}`;
           </div>
         </div>
 
-        <div className="section-wid  py-8 lg:py-6">
+        <div className="section-wid md:pt-8 lg:py-22">
           <main>
             {state.loading && !selectedJob ? (
+              isMobileScreen ? (
+                <div className="space-y-6 px-1 py-4">
+                  <div className="flex items-center justify-between">
+                    <SkeletonLoader type="text" width={72} height={20} />
+                    <div className="flex gap-3">
+                      <SkeletonLoader type="circle" width={22} height={22} />
+                      <SkeletonLoader type="circle" width={22} height={22} />
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-white p-4 shadow-sm">
+                    <div className="mb-5 flex gap-3">
+                      <SkeletonLoader
+                        type="rect"
+                        width={44}
+                        height={44}
+                        className="rounded-lg"
+                      />
+                      <div className="flex-1 space-y-2">
+                        <SkeletonLoader type="text" width="65%" height={24} />
+                        <SkeletonLoader type="text" width="85%" height={16} />
+                        <SkeletonLoader type="text" width="35%" height={14} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <SkeletonLoader type="text" height={16} />
+                      <SkeletonLoader type="text" height={16} />
+                      <SkeletonLoader type="text" width="70%" height={16} />
+                    </div>
+                  </div>
+                  <div className="rounded-xl bg-white p-4 shadow-sm">
+                    <SkeletonLoader
+                      type="text"
+                      width="45%"
+                      height={22}
+                      className="mb-4"
+                    />
+                    <SkeletonLoader type="text" count={5} height={15} />
+                  </div>
+                  <div className="rounded-xl bg-white p-4 shadow-sm">
+                    <SkeletonLoader
+                      type="text"
+                      width="40%"
+                      height={22}
+                      className="mb-4"
+                    />
+                    <SkeletonLoader type="text" count={4} height={15} />
+                  </div>
+                </div>
+              ) : (
               <div className="flex gap-2 pb-4 pt-2 items-start">
                 <div className="flex-1 space-y-4 p-3">
                   <div className="bg-white p-6 border border-[#c7c7c787]">
@@ -1398,6 +1470,7 @@ ${userName}`;
                   </div>
                 </div>
               </div>
+              )
             ) : isTabScreen && selectedJob ? (
               <div
                 className={`space-y-6 transition-all duration-500 ease-in-out transform ${
@@ -1422,7 +1495,7 @@ ${userName}`;
                   <Breadcrumb />
                   <div>
                     <button
-                      onClick={() => setSelectedJob(null)}
+                      onClick={() => router.back()}
                       className="bg-[#1E3786]  text-md border border-xl border-[#1E3786] rounded rounded-full text-sm   px-4 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white flex gap-2"
                     >
                       <ArrowLeft size={14} className="mt-[3px]" />
@@ -1488,13 +1561,6 @@ ${userName}`;
                         </div>
                       </div>
                     </div>
-
-                    <button
-                      className="p-1"
-                      onClick={() => setSelectedJob(null)}
-                    >
-                      <X size={25} className=" hover:text-gray-600" />
-                    </button>
                   </div>
 
                   <div className="mb-3">
@@ -1936,7 +2002,7 @@ ${userName}`;
                                   setSelectedJob(job);
                                   setState({ jobID: job.id });
                                   jobDetail(job.id);
-                                  router.replace(`/job-detail/${job.id}`, {
+                                  router.replace(job?.slug ? `/jobs/${job.slug}` : "/jobs", {
                                     scroll: false,
                                   });
                                 }}
@@ -2774,20 +2840,41 @@ ${userName}`;
               </>
             ) : null}
 
-            {/* Mobile Job Detail Sheet */}
-            {isMobileScreen && (
-              <Sheet
-                open={!!selectedJob}
-                onOpenChange={() => setSelectedJob(null)}
-              >
-                <SheetContent
-                  side="bottom"
-                  className="h-[90vh] rounded-t-3xl flex flex-col"
-                >
-                  {selectedJob && (
-                    <>
-                      <div className="flex-1 overflow-y-auto space-y-6 pb-20">
-                        <SheetHeader>
+            {/* Mobile detail is rendered directly in the page, not in a sheet. */}
+            {isMobileScreen && selectedJob && (
+              <section className="-mx-4 bg-white px-4 py-4 ">
+                <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-3">
+                  <button
+                    onClick={() => router.back()}
+                    className="flex items-center gap-1.5 text-sm font-medium text-[#1E3786]"
+                  >
+                    <ArrowLeft className="h-5 w-5" /> Back
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      aria-label={state.jobDetail?.is_saved ? "Remove bookmark" : "Bookmark job"}
+                      onClick={() => handleSaveToggle(state.jobDetail)}
+                      disabled={isSaving === state.jobDetail?.id}
+                      className="text-slate-700"
+                    >
+                      {state.jobDetail?.is_saved ? (
+                        <BookmarkCheck className="h-5 w-5 fill-[#1E3786] text-[#1E3786]" />
+                      ) : (
+                        <Bookmark className="h-5 w-5" />
+                      )}
+                    </button>
+                    <RWebShare
+                      data={{ title: "Faculty Plus", text: "Check this out!", url: window.location.href }}
+                    >
+                      <button aria-label="Share job" className="text-slate-700">
+                        <Share2 className="h-5 w-5" />
+                      </button>
+                    </RWebShare>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="space-y-6">
+                    <div>
                           <div className="flex items-start gap-4">
                             {state.jobDetail?.college?.college_logo ? (
                               <img
@@ -2811,9 +2898,9 @@ ${userName}`;
                               </div>
                             )}
                             <div className="flex-1 text-left">
-                              <SheetTitle className="text-xl font-bold text-gray-900 text-left">
+                              <h2 className="text-xl font-bold text-gray-900 text-left">
                                 {capitalizeFLetter(job_title(state.jobDetail))}
-                              </SheetTitle>
+                              </h2>
                               <p
                                 className="text-gray-600 text-left"
                                 onClick={(e) =>
@@ -2838,7 +2925,7 @@ ${userName}`;
                               </div>
                             </div>
                           </div>
-                        </SheetHeader>
+                    </div>
 
                         <div className="flex flex-wrap items-center gap-1 text-sm text-gray-600">
                           <div className="flex items-center gap-2 bg-clr2 px-2 py-1 rounded text-xs">
@@ -3128,31 +3215,42 @@ ${userName}`;
                             {state?.jobDetail?.college?.total_jobs || 0}{" "}
                             Openings
                           </button>
+                          <button
+                            ref={inlineMobileApplyRef}
+                            onClick={() => {
+                              setState({ jobID: state.jobDetail?.id });
+                              handleApply();
+                            }}
+                            className="mt-10 w-full rounded-full bg-[#1E3786] px-6 py-3 text-base font-medium text-white"
+                          >
+                            {state.jobDetail?.apply_link
+                              ? "Apply on company's site"
+                              : "Apply Now"}
+                          </button>
                           <p className="text-sm text-gray-700 leading-relaxed">
                             {state.jobDetail?.company_detail}
                           </p>
                         </div>
                       </div>
 
-                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-clr1 border-t">
-                        <button
-                          onClick={() => {
-                            setState({ jobID: state.jobDetail?.id });
-                            handleApply();
-                          }}
-                          className="bg-[#1E3786] w-full py-3 text-md border border-xl border-[#1E3786] rounded rounded-3xl  px-6 py-1  hover:bg-[#1E3786] transition-colors text-white hover:text-white"
+                </div>
+              </section>
+            )}
 
-                          // className="w-full py-3 bg-amber-400 hover:bg-amber-500 text-black font-bold rounded-lg"
-                        >
-                          {state.jobDetail?.apply_link
-                            ? " Apply on company's site"
-                            : " Apply Now"}
-                        </button>
-                      </div>
-                    </>
-                  )}
-                </SheetContent>
-              </Sheet>
+            {isMobileScreen && selectedJob && showMobileApplyBar && (
+              <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-8px_24px_rgba(15,23,42,0.12)] backdrop-blur">
+                <button
+                  onClick={() => {
+                    setState({ jobID: state.jobDetail?.id });
+                    handleApply();
+                  }}
+                  className="w-full rounded-full bg-[#1E3786] px-6 py-3 text-base font-medium text-white"
+                >
+                  {state.jobDetail?.apply_link
+                    ? "Apply on company's site"
+                    : "Apply Now"}
+                </button>
+              </div>
             )}
 
             <Modal
@@ -3847,3 +3945,6 @@ ${userName}`;
     </>
   );
 }
+
+
+

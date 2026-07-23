@@ -19,6 +19,7 @@ import {
   StarIcon,
   CrownIcon,
   BellRing,
+  GraduationCapIcon,
 } from "lucide-react";
 import moment from "moment";
 import React, { useState } from "react";
@@ -42,6 +43,7 @@ interface JobCardProps {
     application_status?: any;
     matches_user_location?: boolean;
     immediate_join?: boolean;
+    categories?: any;
   };
   isProfile?: boolean;
   onClick?: () => void;
@@ -49,6 +51,16 @@ interface JobCardProps {
   onCollegeClick?: (e: React.MouseEvent, id: number) => void;
   onDepartmentClick?: (e: React.MouseEvent, id: number) => void;
 }
+
+const getStatusStyle = (status: string) => {
+  const s = status?.toLowerCase() || "";
+  if (s.includes("interview")) return "bg-purple-100 text-purple-700";
+  if (s.includes("selected")) return "bg-green-100 text-green-700";
+  if (s.includes("waitlist")) return "bg-yellow-100 text-yellow-700";
+  if (s.includes("reject")) return "bg-red-100 text-red-700";
+  if (s.includes("applied")) return "bg-blue-100 text-blue-700";
+  return "bg-[#1E3786] text-white";
+};
 
 export const NewJobCard: React.FC<JobCardProps> = ({
   isProfile,
@@ -112,7 +124,7 @@ export const NewJobCard: React.FC<JobCardProps> = ({
     >
       <div className="flex flex-wrap gap-2 mb-3 md:mb-0 md:mr-3">
         {isProfile && (
-          <div className="w-fit bg-[#1E3786] rounded-3xl px-3 py-1 text-[12px] text-[#fff] flex items-center gap-2">
+          <div className={`w-fit rounded-3xl px-3 py-1 text-[12px] flex items-center gap-2 ${getStatusStyle(job?.application_status)}`}>
             <StarIcon size={14} />
             {capitalizeFLetter(job?.application_status)}
           </div>
@@ -197,6 +209,17 @@ export const NewJobCard: React.FC<JobCardProps> = ({
                 </span>
               </div>
             )}
+             {job?.categories.length == 1 &&
+              
+                <div className="flex items-center gap-3">
+                  <GraduationCapIcon className="w-4 h-4 text-[#ffb400]" />
+                  <span className="text-sm text-[#6D6C6C]">
+                    {" "}
+                    {job?.categories?.map((item) => item.name).join(", ")}
+                    {/* {job?.college?.address} */}
+                </span>
+              </div>
+              }
           </div>
           <div className="flex items-center gap-3">
             <Building2 className="w-4 h-4 text-[#ffb400]" />

@@ -543,7 +543,7 @@ function buildJobSlugLinks(
         : `Open Job ${idx + 1}`;
       return {
         label,
-        href: `/jobs?slug=${rawSlug}`,
+        href: `/jobs/${rawSlug}`,
       };
     })
     .filter((x): x is { label: string; href: string } => Boolean(x));

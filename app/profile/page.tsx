@@ -507,6 +507,7 @@ export default function NaukriProfilePage() {
         gender: state?.gender || "",
         phone: state?.phone || "",
         email: state?.email || "",
+        department: state?.department || ""
       };
 
       await user.validate(validateBody, { abortEarly: false });
@@ -548,6 +549,7 @@ export default function NaukriProfilePage() {
           errors: validationErrors,
           btnLoading: false,
         });
+        
       } else {
         Failure(error?.error || "Something went wrong");
         setState({ btnLoading: false });
@@ -903,28 +905,37 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      const empErrors: any = {}
+
+      if (!state.company?.trim()) {
+        empErrors.company = "College Name is required."
+      }
+      if (!state.designation?.trim()) {
+        empErrors.designation = "Job Title is required."
+      }
       if (!state.start_date) {
-        Failure("Start date is required.");
-        return;
+        empErrors.start_date = "Start date is required."
       }
       if (new Date(state.start_date) > today) {
-        Failure("Start date cannot be a future date.");
-        return;
+        empErrors.start_date = "Start date cannot be a future date."
       }
       if (!state.is_present && !state.end_date) {
-        Failure("End date is required.");
-        return;
+        empErrors.end_date = "End date is required."
       }
       if (
         !state.is_present &&
         state.end_date &&
         new Date(state.end_date) < new Date(state.start_date)
       ) {
-        Failure("End date cannot be before start date.");
-        return;
+        empErrors.end_date = "End date cannot be before start date."
       }
 
-      setState({ isCreateExperience: false });
+      if (Object.keys(empErrors).length > 0) {
+      setState({ errors: empErrors });
+      return;
+    }
+
+      setState({ isCreateExperience: false , errors: {}});
 
       const isPresent = Boolean(state.is_present);
       const endDateValue = isPresent
@@ -959,26 +970,35 @@ export default function NaukriProfilePage() {
       const today = new Date();
       today.setHours(23, 59, 59, 999);
 
+      const empErrors: any = {}
+
+      if (!state.company?.trim()) {
+        empErrors.company = "College Name is required."
+      }
+      if (!state.designation?.trim()) {
+        empErrors.designation = "Job Title is required."
+      }
       if (!state.start_date) {
-        Failure("Start date is required.");
-        return;
+        empErrors.start_date = "Start date is required."
       }
       if (new Date(state.start_date) > today) {
-        Failure("Start date cannot be a future date.");
-        return;
+        empErrors.start_date = "Start date cannot be a future date."
       }
       if (!state.is_present && !state.end_date) {
-        Failure("End date is required.");
-        return;
+        empErrors.end_date = "End date is required."
       }
       if (
         !state.is_present &&
         state.end_date &&
         new Date(state.end_date) < new Date(state.start_date)
       ) {
-        Failure("End date cannot be before start date.");
-        return;
+        empErrors.end_date = "End date cannot be before start date."
       }
+
+       if (Object.keys(empErrors).length > 0) {
+      setState({ errors: empErrors });
+      return;
+    }
 
       setState({ isEditingExperience: false });
 
@@ -1034,18 +1054,28 @@ export default function NaukriProfilePage() {
   };
 
   const addEducation = async () => {
+    const currentYear = new Date().getFullYear();
+    const eduErrors: any = {};
+    if (!state.institution?.trim()) eduErrors.institution = "Institution Name is required.";
+    if (!state.degree?.trim()) eduErrors.degree = "Degree is required.";
+    if (!state.field?.trim()) eduErrors.field = "Field of Study is required.";
+    if (!state.start_year?.toString().trim()) eduErrors.start_year = "Start Year is required.";
+    if (!state.end_year?.toString().trim()) eduErrors.end_year = "End Year is required.";
+    if (state.end_year && parseInt(state.end_year) > currentYear) eduErrors.end_year = "End Year cannot be a future year.";
+    if (Object.keys(eduErrors).length > 0) {
+      setState({ errors: eduErrors });
+      return;
+    }
     try {
-      setState({
-        isCreateEducation: false,
-      });
+      setState({ isCreateEducation: false, errors: {} });
 
       const body = {
         user_id: state.userId,
         institution: state.institution,
         degree: state.degree,
         field: state.field,
-        start_year: state.start_year,
-        end_year: state.end_year,
+        start_year: state.start_year?.toString(),
+        end_year: state.end_year?.toString() || "",
         cgpa: state.cgpa,
       };
       console.log("body", body);
@@ -1062,18 +1092,28 @@ export default function NaukriProfilePage() {
   };
 
   const updateEducation = async () => {
+    const currentYear = new Date().getFullYear();
+    const eduErrors: any = {};
+    if (!state.institution?.trim()) eduErrors.institution = "Institution Name is required.";
+    if (!state.degree?.trim()) eduErrors.degree = "Degree is required.";
+    if (!state.field?.trim()) eduErrors.field = "Field of Study is required.";
+    if (!state.start_year?.toString().trim()) eduErrors.start_year = "Start Year is required.";
+    if (!state.end_year?.toString().trim()) eduErrors.end_year = "End Year is required.";
+    if (state.end_year && parseInt(state.end_year) > currentYear) eduErrors.end_year = "End Year cannot be a future year.";
+    if (Object.keys(eduErrors).length > 0) {
+      setState({ errors: eduErrors });
+      return;
+    }
     try {
-      setState({
-        isEditingEducation: false,
-      });
+      setState({ isEditingEducation: false, errors: {} });
 
       const body = {
         education_id: state.education_id,
         institution: state.institution,
         degree: state.degree,
         field: state.field,
-        start_year: state.start_year,
-        end_year: state.end_year,
+        start_year: state.start_year?.toString(),
+        end_year: state.end_year?.toString() || "",
         grade: state.cgpa,
         project: state.project,
       };
@@ -1114,9 +1154,14 @@ export default function NaukriProfilePage() {
   };
 
   const addProject = async () => {
+    const projErrors: any = {};
+    if (!state.project_title?.trim()) projErrors.project_title = "Project Title is required.";
+    if (!state.duration?.trim()) projErrors.duration = "Duration is required.";
+    if (!state.status?.trim()) projErrors.status = "Status is required.";
+    if (Object.keys(projErrors).length > 0) { setState({ errors: projErrors }); return; }
     try {
       setState({
-        isCreateProjects: false,
+        isCreateProjects: false, errors: {},
       });
 
       const body = {
@@ -1143,9 +1188,14 @@ export default function NaukriProfilePage() {
   };
 
   const updateProjects = async () => {
+    const projErrors: any = {};
+    if (!state.project_title?.trim()) projErrors.project_title = "Project Title is required.";
+    if (!state.duration?.trim()) projErrors.duration = "Duration is required.";
+    if (!state.status?.trim()) projErrors.status = "Status is required.";
+    if (Object.keys(projErrors).length > 0) { setState({ errors: projErrors }); return; }
     try {
       setState({
-        isEditingProject: false,
+        isEditingProject: false, errors: {},
       });
 
       const body = {
@@ -1195,11 +1245,14 @@ export default function NaukriProfilePage() {
   };
 
   const addPublication = async () => {
-    console.log("hello");
-
+    const pubErrors: any = {};
+    if (!state.publication_title?.trim()) pubErrors.publication_title = "Publication Title is required.";
+    if (!state.publication_year?.toString().trim()) pubErrors.publication_year = "Publication Year is required.";
+    else if (parseInt(state.publication_year) > new Date().getFullYear()) pubErrors.publication_year = "Year cannot be a future year.";
+    if (Object.keys(pubErrors).length > 0) { setState({ errors: pubErrors }); return; }
     try {
       setState({
-        isCreatePublication: false,
+        isCreatePublication: false, errors: {},
       });
 
       const body = {
@@ -1209,7 +1262,7 @@ export default function NaukriProfilePage() {
         publication_journal: state.publication_journal,
         publication_volume: state.publication_volume,
         publication_issue: state.publication_issue,
-        publication_year: state.publication_year,
+        publication_year: state.publication_year?.toString(),
       };
 
       const res = await Models.publications.create(body);
@@ -1223,9 +1276,14 @@ export default function NaukriProfilePage() {
   };
 
   const updatePublication = async () => {
+    const pubErrors: any = {};
+    if (!state.publication_title?.trim()) pubErrors.publication_title = "Publication Title is required.";
+    if (!state.publication_year?.toString().trim()) pubErrors.publication_year = "Publication Year is required.";
+    else if (parseInt(state.publication_year) > new Date().getFullYear()) pubErrors.publication_year = "Year cannot be a future year.";
+    if (Object.keys(pubErrors).length > 0) { setState({ errors: pubErrors }); return; }
     try {
       setState({
-        isEditingPublication: false,
+        isEditingPublication: false, errors: {},
       });
 
       const body = {
@@ -1235,7 +1293,7 @@ export default function NaukriProfilePage() {
         publication_journal: state.publication_journal,
         publication_volume: state.publication_volume,
         publication_issue: state.publication_issue,
-        publication_year: state.publication_year,
+        publication_year: state.publication_year?.toString(),
       };
 
       const res = await Models.publications.update(body, state.publication_id);
@@ -1272,8 +1330,9 @@ export default function NaukriProfilePage() {
   };
 
   const addAchievement = async () => {
+    if (!state.achievement_title?.trim()) { setState({ errors: { achievement_title: "Achievement Title is required." } }); return; }
     try {
-      setState({ isCreateAchievements: false, btnLoading: true });
+      setState({ isCreateAchievements: false, btnLoading: true, errors: {} });
 
       const body = {
         user_id: state.userId,
@@ -1303,8 +1362,9 @@ export default function NaukriProfilePage() {
   };
 
   const updateAchievement = async () => {
+    if (!state.achievement_title?.trim()) { setState({ errors: { achievement_title: "Achievement Title is required." } }); return; }
     try {
-      setState({ isEditingAchievements: false, btnLoading: true });
+      setState({ isEditingAchievements: false, btnLoading: true, errors: {} });
 
       const body = {
         achievement_id: state.achievement_id,
@@ -2842,7 +2902,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               {/* College Name */}
                                               <div className="space-y-2 w-full">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  College Name
+                                                  College Name <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Google Inc."
@@ -2855,12 +2915,13 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.company && <p className="text-red-500 text-xs mt-1">{state.errors.company}</p>}
                                               </div>
 
                                               {/* Job Title */}
                                               <div className="space-y-2 w-full">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Job Title
+                                                  Job Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Senior Software Engineer"
@@ -2875,6 +2936,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="w-full border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.designation && <p className="text-red-500 text-xs mt-1">{state.errors.designation}</p>}
                                               </div>
 
                                               {/* Start Date */}
@@ -2882,6 +2944,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <DatePicker
                                                   placeholder="Start Date"
                                                   title="Start Date"
+                                                  required
                                                   closeIcon={true}
                                                   selectedDate={
                                                     state.start_date
@@ -2889,10 +2952,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   onChange={(date) => {
                                                     setState({
                                                       start_date: date,
+                                                      errors: {...state.errors, start_date: ""}
                                                     });
                                                   }}
                                                   toDate={new Date()}
                                                 />
+                                                {state.errors?.start_date && <p className="text-red-500 text-xs mt-1">{state.errors.start_date}</p>}
                                               </div>
 
                                               {/* End Date */}
@@ -2900,7 +2965,8 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <div className="space-y-2 w-full">
                                                   <DatePicker
                                                     placeholder="End Date"
-                                                    title="End Date"
+                                                    title="End Date "
+                                                    required
                                                     closeIcon={true}
                                                     selectedDate={
                                                       state.end_date
@@ -2908,6 +2974,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     onChange={(date) => {
                                                       setState({
                                                         end_date: date,
+                                                        errors: {...state.errors, end_date: ""}
                                                       });
                                                     }}
                                                     fromDate={
@@ -2919,6 +2986,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     } // ✅ prevent before start date
                                                     toDate={new Date()}
                                                   />
+                                                  {state.errors?.end_date && <p className="text-red-500 text-xs mt-1">{state.errors.end_date}</p>}
                                                 </div>
                                               )}
 
@@ -3396,53 +3464,39 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Institution Name
+                                                  Institution Name <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Harvard University"
-                                                  value={
-                                                    state.institution || ""
-                                                  }
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "institution",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  value={state.institution || ""}
+                                                  onChange={(e) => handleFormChange("institution", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.institution && <p className="text-red-500 text-xs mt-1">{state.errors.institution}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Degree
+                                                  Degree <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Bachelor of Technology"
                                                   value={state.degree || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "degree",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("degree", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.degree && <p className="text-red-500 text-xs mt-1">{state.errors.degree}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Field of Study
+                                                  Field of Study <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Computer Science"
                                                   value={state.field || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "field",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("field", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.field && <p className="text-red-500 text-xs mt-1">{state.errors.field}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -3451,48 +3505,36 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 <Input
                                                   placeholder="e.g., 8.5 CGPA"
                                                   value={state.cgpa || ""}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "cgpa",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("cgpa", e.target.value)}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Start Year
+                                                  Start Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2016"
                                                   value={state.start_year || ""}
                                                   onKeyDown={onlyNumbers}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "start_year",
-                                                      numericString(e.target.value),
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("start_year", numericString(e.target.value))}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                  required
                                                 />
+                                                {state.errors?.start_year && <p className="text-red-500 text-xs mt-1">{state.errors.start_year}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  End Year
+                                                  End Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2020"
                                                   value={state.end_year || ""}
                                                   onKeyDown={onlyNumbers}
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "end_year",
-                                                      numericString(e.target.value),
-                                                    )
-                                                  }
+                                                  onChange={(e) => handleFormChange("end_year", numericString(e.target.value))}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.end_year && <p className="text-red-500 text-xs mt-1">{state.errors.end_year}</p>}
                                               </div>
                                             </div>
 
@@ -3506,11 +3548,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               </Button>
                                               <Button
                                                 variant="outline"
-                                                onClick={() =>
-                                                  setState({
-                                                    isCreateEducation: false,
-                                                  })
-                                                }
+                                                onClick={() => setState({ isCreateEducation: false, errors: {} })}
                                                 className="border-gray-300 hover:bg-gray-50"
                                               >
                                                 Cancel
@@ -3824,7 +3862,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Project Title
+                                                  Project Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., E-Commerce Platform"
@@ -3839,10 +3877,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.project_title && <p className="text-red-500 text-xs mt-1">{state.errors.project_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Duration
+                                                  Duration <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 3 months"
@@ -3855,10 +3894,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.duration && <p className="text-red-500 text-xs mt-1">{state.errors.duration}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Status
+                                                  Status <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Completed"
@@ -3871,6 +3911,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.status && <p className="text-red-500 text-xs mt-1">{state.errors.status}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -4027,6 +4068,13 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreateProjects: false,
+                                                    errors:{
+                                                      ...state.errors,
+                                                      project_title:"",
+                                                      duration:"",
+                                                      status:"",
+                                                      
+                                                    }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -4450,7 +4498,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Publication Title
+                                                  Publication Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Advanced AI Research"
@@ -4465,7 +4513,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                     )
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                               
                                                 />
+                                                 {state.errors?.publication_title && <p className="text-red-500 text-xs mt-1">{state.errors.publication_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -4526,21 +4576,22 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Year
+                                                  Year <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., 2023"
                                                   value={
                                                     state.publication_year || ""
                                                   }
-                                                  onChange={(e) =>
-                                                    handleFormChange(
-                                                      "publication_year",
-                                                      e.target.value,
-                                                    )
-                                                  }
+                                                  onKeyDown={onlyNumbers}
+                                                  onChange={(e) => {
+                                                    const val = numericString(e.target.value);
+                                                    handleFormChange("publication_year", val);
+                                                  }}
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                                
                                                 />
+                                                {state.errors?.publication_year && <p className="text-red-500 text-xs mt-1">{state.errors.publication_year}</p>}
                                               </div>
                                             </div>
 
@@ -4577,6 +4628,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreatePublication: false,
+                                                    errors:{
+                                                      ...state.errors,
+                                                      publication_title:"",
+                                                      publication_year:"",
+                                                    }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -5206,7 +5262,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
-                                                  Achievement Title
+                                                  Achievement Title <span className="text-red-500">*</span>
                                                 </label>
                                                 <Input
                                                   placeholder="e.g., Employee of the Year"
@@ -5222,6 +5278,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                   }
                                                   className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                                                 />
+                                                {state.errors?.achievement_title && <p className="text-red-500 text-xs mt-1">{state.errors.achievement_title}</p>}
                                               </div>
                                               <div className="space-y-2">
                                                 <label className="text-sm font-semibold text-gray-700">
@@ -5306,6 +5363,10 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                                 onClick={() =>
                                                   setState({
                                                     isCreateAchievements: false,
+                                                     errors:{
+                                                      ...state.errors,
+                                                      achievement_title:""
+                                                     }
                                                   })
                                                 }
                                                 className="border-gray-300 hover:bg-gray-50"
@@ -5690,7 +5751,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 </div>
                               </div>
 
-                              <div className="flex hidden md:block">
+                              {/* <div className="flex hidden md:block">
                                 <Button
                                   onClick={() => menusUpdate("pref")}
                                   className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
@@ -5698,7 +5759,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   <CheckCircle className="w-4 h-4 mr-2" />
                                   Update Preferences
                                 </Button>
-                              </div>
+                              </div> */}
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
@@ -5731,24 +5792,64 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 <div
                                   key={item.id}
                                   onClick={async () => {
-                                    if (item.key === "reveal_name") {
-                                      const result = await Swal.fire({
-                                        title: item.state ? "Hide Your Name?" : "Reveal Your Name?",
-                                        text: item.state
-                                          ? "Your name will be hidden from recruiters."
-                                          : "Your name will be visible to recruiters.",
-                                        icon: "question",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#1E3786",
-                                        cancelButtonColor: "#6b7280",
-                                        confirmButtonText: "Yes, confirm",
-                                        background: "#fff",
-      width: "360px",
-      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
-                                      });
-                                      if (!result.isConfirmed) return;
+                                    const newValue = !item.state;
+
+                                    // Validate required fields before activating job seeker
+                                    if (item.key === "active_job_seeker" && newValue) {
+                                      const u = state.userDetail;
+                                      const missingFields: string[] = [];
+                                      if (!u?.phone) missingFields.push("Phone");
+                                      if (!u?.current_location) missingFields.push("Location");
+                                      if (!u?.experience) missingFields.push("Experience");
+                                      if (!u?.current_position) missingFields.push("Current Position");
+                                      if (!u?.department_id) missingFields.push("Department");
+                                      if (!u?.publications?.length) missingFields.push("Publications");
+                                      if (!u?.projects?.length) missingFields.push("Projects");
+
+                                      if (missingFields.length > 0) {
+                                        setState({ missingJobSeekerFields: missingFields, showJobSeekerModal: true });
+                                        return;
+                                      }
                                     }
-                                    handleFormChange(item.key, !item.state);
+
+                                    const titles = {
+                                      reveal_name: newValue ? "Reveal Your Name?" : "Hide Your Name?",
+                                      active_job_seeker: newValue ? "Activate Job Seeker?" : "Deactivate Job Seeker?",
+                                      newsletter: newValue ? "Subscribe to Newsletter?" : "Unsubscribe from Newsletter?",
+                                    };
+                                    const texts = {
+                                      reveal_name: newValue ? "Your name will be visible to recruiters." : "Your name will be hidden from recruiters.",
+                                      active_job_seeker: newValue ? "You will appear as actively looking for jobs." : "You will no longer appear as actively looking for jobs.",
+                                      newsletter: newValue ? "You will receive updates and news." : "You will stop receiving updates and news.",
+                                    };
+                                    const result = await Swal.fire({
+                                      title: titles[item.key],
+                                      text: texts[item.key],
+                                      icon: "question",
+                                      showCancelButton: true,
+                                      confirmButtonColor: "#1E3786",
+                                      cancelButtonColor: "#6b7280",
+                                      confirmButtonText: "Yes, confirm",
+                                      background: "#fff",
+                                      width: "360px",
+                                      didOpen: (popup) => { popup.style.padding = "20px"; popup.style.width = "340px"; const icon = popup.querySelector(".swal2-icon") as HTMLElement; if (icon) { icon.style.width = "50px"; icon.style.height = "50px"; icon.style.margin = "0 auto 8px"; } const title = popup.querySelector(".swal2-title") as HTMLElement; if (title) { title.style.fontSize = "15px"; title.style.padding = "0"; } const content = popup.querySelector(".swal2-html-container") as HTMLElement; if (content) { content.style.fontSize = "13px"; content.style.margin = "4px 0 0"; } const actions = popup.querySelector(".swal2-actions") as HTMLElement; if (actions) { actions.style.marginTop = "16px"; } const confirmBtn = popup.querySelector(".swal2-confirm") as HTMLElement; if (confirmBtn) { confirmBtn.style.fontSize = "13px"; confirmBtn.style.padding = "6px 16px"; confirmBtn.style.borderRadius = "999px"; } const cancelBtn = popup.querySelector(".swal2-cancel") as HTMLElement; if (cancelBtn) { cancelBtn.style.fontSize = "13px"; cancelBtn.style.padding = "6px 16px"; cancelBtn.style.borderRadius = "999px"; } },
+                                    });
+                                    if (!result.isConfirmed) return;
+                                    setState({ [item.key]: newValue });
+                                    try {
+                                      const formData = new FormData();
+                                      formData.append("reveal_name", String(item.key === "reveal_name" ? newValue : state.reveal_name));
+                                      formData.append("newsletter", String(item.key === "newsletter" ? newValue : state.newsletter));
+                                      formData.append("active_job_seeker", String(item.key === "active_job_seeker" ? newValue : state.active_job_seeker));
+                                      formData.append("preferred_college_ids", JSON.stringify([...new Set(state.preferred_colleges?.map((i: any) => Number(i?.value || i)))]));
+                                      formData.append("location_ids", JSON.stringify(state.preferred_locations?.map((i: any) => Number(i?.value || i))));
+                                      await Models.profile.update(formData, state.userId);
+                                      userDetail(state.userId);
+                                      Success("Preference updated successfully");
+                                    } catch (error) {
+                                      setState({ [item.key]: item.state });
+                                      Failure(error?.error || "Something went wrong");
+                                    }
                                   }}
                                   className={`relative overflow-hidden cursor-pointer border rounded-md p-5 transition-all duration-300 ${
                                     item.state
@@ -5830,19 +5931,21 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                     isLoading={state.locationLoading}
                                     isMulti={true}
                                   />
+
+                                  <div className="flex hidden md:block">
+                                <Button
+                                  onClick={() => menusUpdate("pref")}
+                                  className="h-fit bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Update Preferences
+                                </Button>
+                              </div>
                                 </div>
                               </div>
                             </div>
 
-                            <div className="flex block md:hidden">
-                              <Button
-                                onClick={() => menusUpdate("pref")}
-                                className="bg-[#1E3786] hover:bg-[#1E3786]/90 text-white shadow-lg px-8 py-2 h-auto text-sm font-semibold rounded-lg transition-all hover:scale-105 active:scale-95"
-                              >
-                                <CheckCircle className="w-4 h-4 mr-2" />
-                                Update Preferences
-                              </Button>
-                            </div>
+                            
                           </CardContent>
                         </Card>
                       </div>
@@ -5864,22 +5967,38 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             >
                               All
                             </button>
-                            {state.applicationStatuses.map((s: any) => (
-                              <button
-                                key={s.id}
-                                onClick={() => {
-                                  setState({ selectedStatus: s.id, page: 1 });
-                                  appliedJobList(1, false, s.id);
-                                }}
-                                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
+                             {state.applicationStatuses.map((s: any) => {
+                              //  const n = s.name?.toLowerCase() || '';
+                              //  const active = state.selectedStatus === s.id;
+                              //  const colorClass = n.includes('interview')
+                              //    ? active ? 'bg-purple-600 text-white border-purple-600' : 'bg-purple-50 text-purple-700 border-purple-300 hover:border-purple-500'
+                              //    : n.includes('selected')
+                              //    ? active ? 'bg-green-600 text-white border-green-600' : 'bg-green-50 text-green-700 border-green-300 hover:border-green-500'
+                              //    : n.includes('waitlist')
+                              //    ? active ? 'bg-yellow-500 text-white border-yellow-500' : 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:border-yellow-500'
+                              //    : n.includes('reject')
+                              //    ? active ? 'bg-red-600 text-white border-red-600' : 'bg-red-50 text-red-700 border-red-300 hover:border-red-500'
+                              //    : n.includes('applied')
+                              //    ? active ? 'bg-blue-600 text-white border-blue-600' : 'bg-blue-50 text-blue-700 border-blue-300 hover:border-blue-500'
+                              //    : active ? 'bg-[#1E3786] text-white border-[#1E3786]' : 'bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]';
+                               return (
+                                 <button
+                                   key={s.id}
+                                   onClick={() => {
+                                     setState({ selectedStatus: s.id, page: 1 });
+                                     appliedJobList(1, false, s.id);
+                                   }}
+                                   className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${
                                   state.selectedStatus === s.id
                                     ? "bg-[#1E3786] text-white border-[#1E3786]"
                                     : "bg-white text-gray-600 border-gray-300 hover:border-[#1E3786] hover:text-[#1E3786]"
                                 }`}
-                              >
-                                {s.name}
-                              </button>
-                            ))}
+                                  //  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors border ${colorClass}`}
+                                 >
+                                   {s.name}
+                                 </button>
+                               );
+                             })}
                           </div>
                         )}
                       {state.jobList?.length > 0 ? (
@@ -5915,7 +6034,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(`/jobs?slug=${job?.slug}`)
+                                    router.push(`/jobs/${job?.slug}`)
                                   }
                                 />
                               ) : (
@@ -5930,7 +6049,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   }
                                   isProfile={true}
                                   onClick={() =>
-                                    router.push(`/jobs?slug=${job?.slug}`)
+                                    router.push(`/jobs/${job?.slug}`)
                                   }
                                 />
                               )}
@@ -6009,7 +6128,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   console.log("first")
                                 }
                                 onClick={() =>
-                                    router.push(`/jobs?slug=${job?.job?.slug || job?.slug}`)
+                                    router.push(`/jobs/${job?.job?.slug || job?.slug}`)
                                 }
                               />
                             </div>
@@ -6246,6 +6365,10 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   setState({
                                     ...state,
                                     experience: selected ? selected.value : "",
+                                    errors: {
+                                      ...state.errors,
+                                      experience: "",
+                                    },
                                   })
                                 }
                                 error={state?.errors?.experience}
@@ -6321,12 +6444,14 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 className="border border-gray-200"
                                 options={state.masterDeptList || []}
                                 value={state?.department || ""}
+                                required
                                 onChange={(selected) =>
                                   handleFormChange(
                                     "department",
                                     selected ? selected.value : "",
                                   )
                                 }
+                                error={state?.errors?.department}
                               />
                             </div>
                             <div className="flex flex-col">
@@ -6398,7 +6523,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="flex flex-col gap-4">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                College Name
+                                College Name <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Google Inc."
@@ -6406,13 +6531,16 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 onChange={(e) =>
                                   handleFormChange("company", e.target.value)
                                 }
+                                
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                
                               />
+                              {state.errors?.company && <p className="text-red-500 text-xs mt-1">{state.errors.company}</p>}
                             </div>
 
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Job Title
+                                Job Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Senior Software Engineer"
@@ -6423,23 +6551,28 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                     e.target.value,
                                   )
                                 }
+                                
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.designation && <p className="text-red-500 text-xs mt-1">{state.errors.designation}</p>}
                             </div>
 
                             <div className="space-y-2">
                               <DatePicker
                                 placeholder="Start Date"
                                 title="Start Date"
+                                required
                                 closeIcon={true}
                                 selectedDate={state.start_date}
                                 onChange={(date) => {
                                   setState({
                                     start_date: date,
+                                    errors: {...state.errors, start_date: ""}
                                   });
                                 }}
                                 toDate={new Date()}
                               />
+                              {state.errors?.start_date && <p className="text-red-500 text-xs mt-1">{state.errors.start_date}</p>}
                             </div>
 
                             <div className="flex items-center gap-2">
@@ -6470,10 +6603,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 <DatePicker
                                   placeholder="End Date"
                                   title="End Date"
+                                  required
                                   closeIcon={true}
                                   selectedDate={state.end_date}
                                   onChange={(date) => {
-                                    setState({ end_date: date });
+                                    setState({ end_date: date, errors: {...state.errors, end_date: ""}});
                                   }}
                                   fromDate={
                                     state.start_date
@@ -6482,6 +6616,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   }
                                   toDate={new Date()}
                                 />
+                                 {state.errors?.end_date && <p className="text-red-500 text-xs mt-1">{state.errors.end_date}</p>}
                               </div>
                             )}
 
@@ -6552,7 +6687,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Institution Name
+                                Institution Name <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Harvard University"
@@ -6564,11 +6699,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.institution}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Degree
+                                Degree <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Bachelor of Technology"
@@ -6577,11 +6713,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("degree", e.target.value)
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                 error={state.errors?.degree}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Field of Study
+                                Field of Study <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Computer Science"
@@ -6590,6 +6727,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("field", e.target.value)
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.field}
                               />
                             </div>
                             <div className="space-y-2">
@@ -6607,7 +6745,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Start Year
+                                Start Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2016"
@@ -6617,11 +6755,12 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("start_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.start_year}
                               />
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                End Year
+                                End Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2020"
@@ -6631,6 +6770,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   handleFormChange("end_year", numericString(e.target.value))
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                                error={state.errors?.end_year}
                               />
                             </div>
                           </div>
@@ -6684,7 +6824,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Project Title
+                                Project Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., E-Commerce Platform"
@@ -6697,10 +6837,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.project_title && <p className="text-red-500 text-xs mt-1">{state.errors.project_title}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Duration
+                                Duration <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 3 months"
@@ -6710,10 +6851,11 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.duration && <p className="text-red-500 text-xs mt-1">{state.errors.duration}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Status
+                                Status <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Completed"
@@ -6723,6 +6865,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.status && <p className="text-red-500 text-xs mt-1">{state.errors.status}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -6894,7 +7037,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Publication Title
+                                Publication Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Advanced AI Research"
@@ -6906,7 +7049,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                   )
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
+                              
                               />
+                              {state.errors?.publication_title && <p className="text-red-500 text-xs mt-1">{state.errors.publication_title}</p>}
                             </div>
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -6956,22 +7101,21 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
                             </div>
-                            <div className="space-y-2">
+                            <div>
                               <label className="text-sm font-semibold text-gray-700">
-                                Year
+                                Year <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., 2023"
                                 value={state.publication_year || ""}
                                 onKeyDown={onlyNumbers}
-                                onChange={(e) =>
-                                  handleFormChange(
-                                    "publication_year",
-                                    numericString(e.target.value),
-                                  )
-                                }
+                                onChange={(e) => {
+                                  const val = numericString(e.target.value);
+                                  handleFormChange("publication_year", val);
+                                }}
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.publication_year && <p className="text-red-500 text-xs mt-1">{state.errors.publication_year}</p>}
                             </div>
                             <div className="space-y-2 md:col-span-2">
                               <label className="text-sm font-semibold text-gray-700">
@@ -7040,7 +7184,7 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
-                                Achievement Title
+                                Achievement Title <span className="text-red-500">*</span>
                               </label>
                               <Input
                                 placeholder="e.g., Employee of the Year"
@@ -7053,7 +7197,9 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
                                 }
                                 className="border-gray-200 focus:border-[#3b82f6] focus:ring-[#3b82f6]"
                               />
+                              {state.errors?.achievement_title && <p className="text-red-500 text-xs mt-1">{state.errors.achievement_title}</p>}
                             </div>
+                              
                             <div className="space-y-2">
                               <label className="text-sm font-semibold text-gray-700">
                                 Organization
@@ -7160,6 +7306,60 @@ console.log("acadamicResponsibilityList", state?.acadamicResponsibilityList);
       <div ref={footerRef}>
         <Footer />
       </div>
+      <Modal
+        isOpen={state.showJobSeekerModal}
+        setIsOpen={() => setState({ showJobSeekerModal: false })}
+        title="Complete Your Profile"
+        width="500px"
+        hideHeader={true}
+        renderComponent={() => (
+          <div className="p-6 bg-[#f3f4f6] flex flex-col items-center text-center">
+            <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-7 h-7 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Complete Your Profile First</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              To activate Active Job Seeker, please fill in the following required fields:
+            </p>
+            <ul className="w-full mb-5 space-y-2">
+              {(state.missingJobSeekerFields || []).map((field: string) => (
+                <li key={field} className="flex items-center gap-2 bg-white rounded-lg px-4 py-2 border border-red-100">
+                  <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
+                  <span className="text-sm font-medium text-gray-700">{field}</span>
+                </li>
+              ))}
+            </ul>
+            <Button
+              onClick={() => {
+                setState({ showJobSeekerModal: false, activeTab: "Profile" });
+                setTimeout(() => {
+                  if ((state.missingJobSeekerFields || []).some((f: string) =>
+                    ["Phone", "Location", "Experience", "Current Position", "Department"].includes(f)
+                  )) {
+                    saveProfile();
+                  } else if ((state.missingJobSeekerFields || []).includes("Publications")) {
+                    scrollToSection("publications-section");
+                  } else if ((state.missingJobSeekerFields || []).includes("Projects")) {
+                    scrollToSection("projects-section");
+                  }
+                }, 300);
+              }}
+              className="w-full bg-[#1E3786] hover:bg-[#1E3786]/90 text-white rounded-full"
+            >
+              Go to Profile & Fill Details
+            </Button>
+            <button
+              onClick={() => setState({ showJobSeekerModal: false })}
+              className="mt-3 text-sm text-gray-500 hover:underline"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+      />
+
       <Modal
         isOpen={state.showCollegeModal}
         setIsOpen={() => setState({ showCollegeModal: false, collegeDetail: null })}

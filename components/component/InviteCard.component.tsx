@@ -47,7 +47,7 @@ const InviteCard = (props) => {
       {invite?.job?.id && (
         <a
           target="_blank"
-          href={`${FRONTEND_URL}${invite?.job?.slug ? `jobs?slug=${invite?.job?.slug}` : `jobs/${invite?.job?.id}`}`}
+          href={`${FRONTEND_URL}${invite?.job?.slug ? `/jobs/${invite?.job?.slug}` : `/jobs/${invite?.job?.id}`}`}
           className="text-sm text-gray-700  underline"
         > View Job</a>
       )}

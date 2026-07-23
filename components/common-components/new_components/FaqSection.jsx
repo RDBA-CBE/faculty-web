@@ -11,7 +11,7 @@ const faqData = [
   {
     id: "02",
     question: "Who can use the FacultyPro platform?",
-    answer: "FacultyPro can be used by academic professionals such as lecturers, professors, researchers, andadministrators seeking opportunities, as well as educational institutions looking to recruit qualified faculty",
+    answer: "FacultyPro can be used by academic professionals such as lecturers, professors, researchers, and administrators seeking opportunities, as well as educational institutions looking to recruit qualified faculty",
   },
   {
     id: "03",
