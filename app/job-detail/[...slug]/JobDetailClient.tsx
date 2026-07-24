@@ -1432,7 +1432,7 @@ ${userName}`;
         <div className="bg-[#1E3786] py-[10px] md:py-[10px] px-4 ">
           <div className="max-w-7xl 0px] mx-auto text-center">
             <h1 className="!text-white text-[24px] md:text-[35px] font-medium md:font-semibold">
-              Job Detail
+              Job 
             </h1>
           </div>
         </div>
@@ -2064,9 +2064,12 @@ ${userName}`;
                                     }
                                     onClick={() => {
                                       setShowSearchSuggestions(false);
+                                      const jobSlug = suggestion.job?.slug;
                                       const jobId = suggestion.job?.id;
-                                      if (jobId)
-                                        router.push(`/job-detail/${jobId}`);
+                                      if (jobSlug)
+                                        router.push(`/jobs/${jobSlug}`);
+                                      else if (jobId)
+                                        router.push(`/jobs/${jobId}`);
                                     }}
                                   >
                                     {suggestion.label}

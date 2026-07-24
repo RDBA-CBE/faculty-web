@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import JobsPageClient from "./JobsPageClient";
 import { FRONTEND_URL } from "@/utils/constant.utils";
 
-const CANONICAL_JOBS = "https://facultypro.in/jobs";
+const CANONICAL_JOBS = "https://www.facultypro.in/jobs";
 
 export async function generateMetadata({
   searchParams,

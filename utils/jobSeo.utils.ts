@@ -5,12 +5,12 @@
 
 const BASEURL = "https://user-service.88.222.213.249.nip.io/api/";
 
-export const SITE_URL = "https://facultypro.in";
+export const SITE_URL = "https://www.facultypro.in";
 
 export async function fetchJobById(id: string) {
   try {
     const res = await fetch(`${BASEURL}jobs/${id}/`, {
-      next: { revalidate: 3600 },
+      cache: "no-store",
     });
     if (!res.ok) return null;
     return await res.json();
@@ -61,21 +61,25 @@ export function buildJobMetaFields(job: any) {
   const location    = (job.locations || []).map((l: any) => l.city).join(", ");
   const experience  = job.experiences?.name || "";
 
-  const title = collegeName
-    ? `${jobTitle} at ${collegeName} | FacultyPro`
-    : `${jobTitle} | FacultyPro`;
+  const title = job.meta_title
+    ? job.meta_title
+    : collegeName
+      ? `${jobTitle} at ${collegeName} | FacultyPro`
+      : `${jobTitle} | FacultyPro`;
 
-  const description = job.job_description
-    ? String(job.job_description).slice(0, 155)
-    : [
-        `Apply for ${jobTitle} position`,
-        collegeName && `at ${collegeName}`,
-        department  && `in ${department}`,
-        location    && `— ${location}`,
-        experience  && `| Experience: ${experience}`,
-      ]
-        .filter(Boolean)
-        .join(" ") + ". Apply now on FacultyPro.";
+  const description = job.meta_description
+    ? job.meta_description
+    : job.job_description
+      ? String(job.job_description).slice(0, 155)
+      : [
+          `Apply for ${jobTitle} position`,
+          collegeName && `at ${collegeName}`,
+          department  && `in ${department}`,
+          location    && `— ${location}`,
+          experience  && `| Experience: ${experience}`,
+        ]
+          .filter(Boolean)
+          .join(" ") + ". Apply now on FacultyPro.";
 
   const image = job.college?.college_logo || `${SITE_URL}/og-default.png`;
 

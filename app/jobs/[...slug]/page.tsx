@@ -6,6 +6,33 @@ import {  fetchJobById,
   extractJobIdFromSlug,
   SITE_URL, } from "@/utils/jobSeo.utils";
 
+const BASEURL = "https://user-service.88.222.213.249.nip.io/api/";
+
+async function fetchSeoCatList() {
+  try {
+    const res = await fetch(`${BASEURL}categories/?pagination=false`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+/** Recursively search all subcategory nodes for a slug match */
+function findBySlug(nodes: any[], slug: string): { title: string; description: string } | null {
+  for (const node of nodes) {
+    if (node.slug === slug) return { title: node.title, description: node.description };
+    const children = node.subcategories ?? node.children ?? [];
+    if (children.length) {
+      const found = findBySlug(children, slug);
+      if (found) return found;
+    }
+  }
+  return null;
+}
 
 function toText(s: string) {
   return s
@@ -30,6 +57,7 @@ export async function generateMetadata({
   const jobId = extractJobIdFromSlug(rawFirst);
   if (jobId) {
     const job = await fetchJobById(jobId);
+
     if (job) {
       const { title, description, image, canonical: jobCanonical } = buildJobMetaFields(job);
       return {
@@ -48,7 +76,33 @@ export async function generateMetadata({
     }
   }
 
-  // --- Category / location listing pages ---
+  // --- SEO category list: match last URL segment against API data ---
+  const lastSlug = slugParts[slugParts.length - 1];
+  const seoCatData = await fetchSeoCatList();
+  console.log('✌️seoCatData --->', seoCatData);
+
+  if (seoCatData?.results?.length) {
+    const allNodes = seoCatData.results.flatMap((cat: any) => [
+      cat,
+      ...(cat.subcategories ?? []),
+    ]);
+    const match = findBySlug(allNodes, lastSlug);
+    console.log('✌️match --->', match);
+
+    if (match) {
+      const title = match.title ? `${match.title} | FacultyPro` : "Faculty Jobs | FacultyPro";
+      const description = match.description ||
+        "Browse faculty and academic job openings at top colleges and universities across India.";
+      return {
+        title,
+        description,
+        alternates: { canonical },
+        openGraph: { title, description, url: canonical, type: "website" },
+      };
+    }
+  }
+
+  // --- Fallback: Category / location listing pages ---
   let title = "Faculty Jobs | FacultyPro";
   let description =
     "Browse faculty and academic job openings at top colleges and universities across India.";

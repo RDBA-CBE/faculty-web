@@ -408,6 +408,28 @@ const job = {
     return promise;
   },
 
+  seo_cat_list: (data: any) => {
+    let promise = new Promise((resolve, reject) => {
+      let url = `categories/?pagination=false`;
+    
+      if(data.limit) url += `&limit=${data.limit}`;
+      instance()
+        .get(url)
+        .then((res) => {
+          resolve(res.data);
+        })
+        .catch((error) => {
+          if (error.response) {
+            reject(error.response);
+          } else {
+            reject(error);
+          }
+        });
+    });
+    return promise;
+  },
+
+
 };
 
 export default job;
